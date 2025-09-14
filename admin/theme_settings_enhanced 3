@@ -1,0 +1,573 @@
+<?php
+/**
+ * 향상된 테마 설정 페이지
+ * 
+ * 실시간 미리보기와 색상 선택기가 포함된 현대적인 테마 설정 인터페이스
+ */
+
+// 인증 및 MVC 시스템 로드
+require_once 'auth.php';
+require_once 'mvc/bootstrap.php';
+require_once 'mvc/services/ThemeService.php';
+
+// 테마 서비스 초기화
+$themeService = new ThemeService($pdo);
+$currentSettings = $themeService->getThemeSettings();
+
+// 현재 활성화된 탭
+$active_tab = $_GET['tab'] ?? 'colors';
+
+// 페이지 변수 설정
+$page_title = '테마 설정';
+$active_menu = 'theme_settings';
+
+// CSS/JS 라이브러리
+$additional_css = [
+    'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css',
+    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css'
+];
+
+$additional_js = [
+    'https://code.jquery.com/jquery-3.6.0.min.js',
+    'https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js',
+    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
+];
+
+// 메인 콘텐츠 시작
+ob_start();
+?>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 설정 패널 -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-palette"></i> 테마 설정
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- 탭 메뉴 -->
+                    <ul class="nav nav-pills nav-fill mb-4" id="theme-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link <?= $active_tab === 'colors' ? 'active' : '' ?>" 
+                                    data-bs-toggle="tab" data-bs-target="#colors-tab">
+                                <i class="bi bi-palette"></i> 색상
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link <?= $active_tab === 'fonts' ? 'active' : '' ?>" 
+                                    data-bs-toggle="tab" data-bs-target="#fonts-tab">
+                                <i class="bi bi-fonts"></i> 폰트
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link <?= $active_tab === 'layout' ? 'active' : '' ?>" 
+                                    data-bs-toggle="tab" data-bs-target="#layout-tab">
+                                <i class="bi bi-layout-text-window"></i> 레이아웃
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- 탭 내용 -->
+                    <div class="tab-content" id="theme-content">
+                        <!-- 색상 설정 탭 -->
+                        <div class="tab-pane fade <?= $active_tab === 'colors' ? 'show active' : '' ?>" 
+                             id="colors-tab">
+                            <form id="colors-form">
+                                <!-- Primary Color -->
+                                <div class="mb-4">
+                                    <label class="form-label">주 색상 (Primary)</label>
+                                    <div class="color-picker-container">
+                                        <div class="color-picker" 
+                                             data-color="<?= htmlspecialchars($currentSettings['primary_color']) ?>"
+                                             data-name="primary"></div>
+                                        <input type="hidden" name="colors[primary]" 
+                                               value="<?= htmlspecialchars($currentSettings['primary_color']) ?>">
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        버튼, 링크, 강조 요소의 기본 색상
+                                    </small>
+                                </div>
+                                
+                                <!-- Secondary Color -->
+                                <div class="mb-4">
+                                    <label class="form-label">보조 색상 (Secondary)</label>
+                                    <div class="color-picker-container">
+                                        <div class="color-picker" 
+                                             data-color="<?= htmlspecialchars($currentSettings['secondary_color']) ?>"
+                                             data-name="secondary"></div>
+                                        <input type="hidden" name="colors[secondary]" 
+                                               value="<?= htmlspecialchars($currentSettings['secondary_color']) ?>">
+                                    </div>
+                                </div>
+                                
+                                <!-- Success Color -->
+                                <div class="mb-4">
+                                    <label class="form-label">성공 색상 (Success)</label>
+                                    <div class="color-picker-container">
+                                        <div class="color-picker" 
+                                             data-color="<?= htmlspecialchars($currentSettings['success_color']) ?>"
+                                             data-name="success"></div>
+                                        <input type="hidden" name="colors[success]" 
+                                               value="<?= htmlspecialchars($currentSettings['success_color']) ?>">
+                                    </div>
+                                </div>
+                                
+                                <!-- Warning Color -->
+                                <div class="mb-4">
+                                    <label class="form-label">경고 색상 (Warning)</label>
+                                    <div class="color-picker-container">
+                                        <div class="color-picker" 
+                                             data-color="<?= htmlspecialchars($currentSettings['warning_color']) ?>"
+                                             data-name="warning"></div>
+                                        <input type="hidden" name="colors[warning]" 
+                                               value="<?= htmlspecialchars($currentSettings['warning_color']) ?>">
+                                    </div>
+                                </div>
+                                
+                                <!-- Danger Color -->
+                                <div class="mb-4">
+                                    <label class="form-label">위험 색상 (Danger)</label>
+                                    <div class="color-picker-container">
+                                        <div class="color-picker" 
+                                             data-color="<?= htmlspecialchars($currentSettings['danger_color']) ?>"
+                                             data-name="danger"></div>
+                                        <input type="hidden" name="colors[danger]" 
+                                               value="<?= htmlspecialchars($currentSettings['danger_color']) ?>">
+                                    </div>
+                                </div>
+                                
+                                <!-- Info Color -->
+                                <div class="mb-4">
+                                    <label class="form-label">정보 색상 (Info)</label>
+                                    <div class="color-picker-container">
+                                        <div class="color-picker" 
+                                             data-color="<?= htmlspecialchars($currentSettings['info_color']) ?>"
+                                             data-name="info"></div>
+                                        <input type="hidden" name="colors[info]" 
+                                               value="<?= htmlspecialchars($currentSettings['info_color']) ?>">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- 폰트 설정 탭 -->
+                        <div class="tab-pane fade <?= $active_tab === 'fonts' ? 'show active' : '' ?>" 
+                             id="fonts-tab">
+                            <form id="fonts-form">
+                                <div class="mb-3">
+                                    <label for="body-font" class="form-label">본문 폰트</label>
+                                    <select class="form-select" id="body-font" name="fonts[body]">
+                                        <option value="'Segoe UI', sans-serif" <?= $currentSettings['body_font'] === "'Segoe UI', sans-serif" ? 'selected' : '' ?>>Segoe UI</option>
+                                        <option value="'Malgun Gothic', sans-serif" <?= $currentSettings['body_font'] === "'Malgun Gothic', sans-serif" ? 'selected' : '' ?>>맑은 고딕</option>
+                                        <option value="'Nanum Gothic', sans-serif" <?= $currentSettings['body_font'] === "'Nanum Gothic', sans-serif" ? 'selected' : '' ?>>나눔 고딕</option>
+                                        <option value="'Noto Sans KR', sans-serif" <?= $currentSettings['body_font'] === "'Noto Sans KR', sans-serif" ? 'selected' : '' ?>>Noto Sans KR</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="heading-font" class="form-label">제목 폰트</label>
+                                    <select class="form-select" id="heading-font" name="fonts[heading]">
+                                        <option value="'Segoe UI', sans-serif" <?= $currentSettings['heading_font'] === "'Segoe UI', sans-serif" ? 'selected' : '' ?>>Segoe UI</option>
+                                        <option value="'Malgun Gothic', sans-serif" <?= $currentSettings['heading_font'] === "'Malgun Gothic', sans-serif" ? 'selected' : '' ?>>맑은 고딕</option>
+                                        <option value="'Nanum Gothic', sans-serif" <?= $currentSettings['heading_font'] === "'Nanum Gothic', sans-serif" ? 'selected' : '' ?>>나눔 고딕</option>
+                                        <option value="'Noto Sans KR', sans-serif" <?= $currentSettings['heading_font'] === "'Noto Sans KR', sans-serif" ? 'selected' : '' ?>>Noto Sans KR</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="font-size" class="form-label">기본 폰트 크기</label>
+                                    <select class="form-select" id="font-size" name="fonts[size]">
+                                        <option value="0.875rem" <?= $currentSettings['font_size_base'] === '0.875rem' ? 'selected' : '' ?>>작게 (0.875rem)</option>
+                                        <option value="1rem" <?= $currentSettings['font_size_base'] === '1rem' ? 'selected' : '' ?>>보통 (1rem)</option>
+                                        <option value="1.125rem" <?= $currentSettings['font_size_base'] === '1.125rem' ? 'selected' : '' ?>>크게 (1.125rem)</option>
+                                        <option value="1.25rem" <?= $currentSettings['font_size_base'] === '1.25rem' ? 'selected' : '' ?>>아주 크게 (1.25rem)</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- 레이아웃 설정 탭 -->
+                        <div class="tab-pane fade <?= $active_tab === 'layout' ? 'show active' : '' ?>" 
+                             id="layout-tab">
+                            <form id="layout-form">
+                                <div class="mb-3">
+                                    <label for="container-width" class="form-label">컨테이너 너비</label>
+                                    <select class="form-select" id="container-width" name="layout[container]">
+                                        <option value="standard" <?= ($currentSettings['container_width'] ?? 'standard') === 'standard' ? 'selected' : '' ?>>기본 (1140px)</option>
+                                        <option value="fluid" <?= ($currentSettings['container_width'] ?? '') === 'fluid' ? 'selected' : '' ?>>유동적 (100%)</option>
+                                        <option value="narrow" <?= ($currentSettings['container_width'] ?? '') === 'narrow' ? 'selected' : '' ?>>좁게 (960px)</option>
+                                        <option value="wide" <?= ($currentSettings['container_width'] ?? '') === 'wide' ? 'selected' : '' ?>>넓게 (1320px)</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- 액션 버튼 -->
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="button" class="btn btn-primary" id="apply-theme">
+                            <i class="bi bi-check-circle"></i> 테마 적용
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary" id="reset-theme">
+                            <i class="bi bi-arrow-clockwise"></i> 기본값으로 되돌리기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 미리보기 패널 -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-eye"></i> 실시간 미리보기
+                    </h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-primary" id="preview-frontend">
+                            <i class="bi bi-box-arrow-up-right"></i> 프론트엔드 보기
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="preview-container">
+                        <!-- 미리보기 콘텐츠 -->
+                        <div class="preview-content">
+                            <!-- 네비게이션 바 미리보기 -->
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+                                <div class="container-fluid">
+                                    <a class="navbar-brand" href="#">우리동네노동권찾기</a>
+                                    <div class="navbar-nav ms-auto">
+                                        <a class="nav-link active" href="#">홈</a>
+                                        <a class="nav-link" href="#">서비스</a>
+                                        <a class="nav-link" href="#">문의</a>
+                                    </div>
+                                </div>
+                            </nav>
+                            
+                            <!-- 콘텐츠 미리보기 -->
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h1>테마 미리보기</h1>
+                                        <p class="lead">선택한 테마가 실제로 어떻게 보이는지 확인해보세요.</p>
+                                        
+                                        <!-- 버튼 미리보기 -->
+                                        <div class="mb-4">
+                                            <h3>버튼</h3>
+                                            <button class="btn btn-primary me-2">Primary</button>
+                                            <button class="btn btn-secondary me-2">Secondary</button>
+                                            <button class="btn btn-success me-2">Success</button>
+                                            <button class="btn btn-warning me-2">Warning</button>
+                                            <button class="btn btn-danger me-2">Danger</button>
+                                            <button class="btn btn-info">Info</button>
+                                        </div>
+                                        
+                                        <!-- 알림 미리보기 -->
+                                        <div class="mb-4">
+                                            <h3>알림</h3>
+                                            <div class="alert alert-primary">Primary 알림 메시지입니다.</div>
+                                            <div class="alert alert-success">Success 알림 메시지입니다.</div>
+                                            <div class="alert alert-warning">Warning 알림 메시지입니다.</div>
+                                            <div class="alert alert-danger">Danger 알림 메시지입니다.</div>
+                                        </div>
+                                        
+                                        <!-- 카드 미리보기 -->
+                                        <div class="mb-4">
+                                            <h3>카드</h3>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            카드 제목
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">특별한 제목 처리</h5>
+                                                            <p class="card-text">카드 내용입니다. 이 부분에서 폰트와 색상이 어떻게 적용되는지 확인할 수 있습니다.</p>
+                                                            <a href="#" class="btn btn-primary">더 보기</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card border-primary">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title text-primary">강조된 카드</h5>
+                                                            <p class="card-text">Primary 색상으로 강조된 카드입니다.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- 폼 미리보기 -->
+                                        <div class="mb-4">
+                                            <h3>폼</h3>
+                                            <form>
+                                                <div class="mb-3">
+                                                    <label for="example-input" class="form-label">예제 입력</label>
+                                                    <input type="text" class="form-control" id="example-input" placeholder="입력해보세요">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="example-select" class="form-label">선택 옵션</label>
+                                                    <select class="form-select" id="example-select">
+                                                        <option>옵션 1</option>
+                                                        <option>옵션 2</option>
+                                                        <option>옵션 3</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="example-check">
+                                                    <label class="form-check-label" for="example-check">
+                                                        확인란 예제
+                                                    </label>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 동적 스타일 컨테이너 -->
+<style id="dynamic-theme-styles">
+/* 동적으로 생성되는 테마 스타일이 여기에 적용됩니다 */
+</style>
+
+<?php
+$content = ob_get_clean();
+
+// JavaScript 코드
+$inline_js = '
+document.addEventListener("DOMContentLoaded", function() {
+    // 색상 선택기 초기화
+    const colorPickers = {};
+    
+    document.querySelectorAll(".color-picker").forEach(function(element) {
+        const colorName = element.dataset.name;
+        const initialColor = element.dataset.color;
+        
+        const pickr = Pickr.create({
+            el: element,
+            theme: "classic",
+            default: initialColor,
+            components: {
+                preview: true,
+                hue: true,
+                interaction: {
+                    hex: true,
+                    rgba: true,
+                    input: true,
+                    save: true
+                }
+            }
+        });
+        
+        pickr.on("save", function(color) {
+            const hexColor = color.toHEXA().toString();
+            const input = document.querySelector(`input[name="colors[${colorName}]"]`);
+            if (input) {
+                input.value = hexColor;
+            }
+            
+            // 실시간 미리보기 업데이트
+            updatePreview();
+            pickr.hide();
+        });
+        
+        colorPickers[colorName] = pickr;
+    });
+    
+    // 폼 변경 이벤트 리스너
+    document.querySelectorAll("#fonts-form select, #layout-form select").forEach(function(element) {
+        element.addEventListener("change", updatePreview);
+    });
+    
+    // 실시간 미리보기 업데이트
+    function updatePreview() {
+        const formData = new FormData();
+        
+        // CSRF 토큰 추가
+        formData.append("csrf_token", "' . ($_SESSION['csrf_token'] ?? '') . '");
+        
+        // 색상 데이터 수집
+        const colorData = {};
+        document.querySelectorAll("[name^=\'colors[\']").forEach(function(input) {
+            const match = input.name.match(/colors\[(\w+)\]/);
+            if (match) {
+                colorData[match[1]] = input.value;
+            }
+        });
+        formData.append("colors", JSON.stringify(colorData));
+        
+        // 폰트 데이터 수집
+        const fontData = {};
+        document.querySelectorAll("[name^=\'fonts[\']").forEach(function(input) {
+            const match = input.name.match(/fonts\[(\w+)\]/);
+            if (match) {
+                fontData[match[1]] = input.value;
+            }
+        });
+        formData.append("fonts", JSON.stringify(fontData));
+        
+        // AJAX 요청
+        fetch("api/theme_preview.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 동적 스타일 적용
+                const styleElement = document.getElementById("dynamic-theme-styles");
+                styleElement.textContent = data.css;
+            }
+        })
+        .catch(error => {
+            console.error("미리보기 업데이트 오류:", error);
+        });
+    }
+    
+    // 테마 적용 버튼
+    document.getElementById("apply-theme").addEventListener("click", function() {
+        const button = this;
+        const originalText = button.innerHTML;
+        
+        button.disabled = true;
+        button.innerHTML = \'<span class="spinner-border spinner-border-sm me-2"></span>적용 중...\';
+        
+        const formData = new FormData();
+        
+        // CSRF 토큰 추가
+        formData.append("csrf_token", "' . ($_SESSION['csrf_token'] ?? '') . '");
+        
+        // 모든 폼 데이터 수집
+        const colorData = {};
+        document.querySelectorAll("[name^=\'colors[\']").forEach(function(input) {
+            const match = input.name.match(/colors\[(\w+)\]/);
+            if (match) {
+                colorData[match[1]] = input.value;
+            }
+        });
+        formData.append("colors", JSON.stringify(colorData));
+        
+        const fontData = {};
+        document.querySelectorAll("[name^=\'fonts[\']").forEach(function(input) {
+            const match = input.name.match(/fonts\[(\w+)\]/);
+            if (match) {
+                fontData[match[1]] = input.value;
+            }
+        });
+        formData.append("fonts", JSON.stringify(fontData));
+        
+        const layoutData = {};
+        document.querySelectorAll("[name^=\'layout[\']").forEach(function(input) {
+            const match = input.name.match(/layout\[(\w+)\]/);
+            if (match) {
+                layoutData[match[1]] = input.value;
+            }
+        });
+        formData.append("layout", JSON.stringify(layoutData));
+        
+        // AJAX 요청
+        fetch("api/theme_apply.php", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+            
+            if (data.success) {
+                // 성공 메시지 표시
+                const alert = document.createElement("div");
+                alert.className = "alert alert-success alert-dismissible fade show mt-3";
+                alert.innerHTML = `
+                    <i class="bi bi-check-circle"></i> ${data.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.querySelector(".card-body").insertBefore(alert, document.querySelector(".d-grid"));
+                
+                // 페이지 새로고침 (선택사항)
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                // 오류 메시지 표시
+                const alert = document.createElement("div");
+                alert.className = "alert alert-danger alert-dismissible fade show mt-3";
+                alert.innerHTML = `
+                    <i class="bi bi-exclamation-triangle"></i> ${data.error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                document.querySelector(".card-body").insertBefore(alert, document.querySelector(".d-grid"));
+            }
+        })
+        .catch(error => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+            console.error("테마 적용 오류:", error);
+        });
+    });
+    
+    // 프론트엔드 미리보기 버튼
+    document.getElementById("preview-frontend").addEventListener("click", function() {
+        window.open("/", "_blank");
+    });
+    
+    // 기본값 되돌리기 버튼
+    document.getElementById("reset-theme").addEventListener("click", function() {
+        if (confirm("정말로 기본값으로 되돌리시겠습니까?")) {
+            // 기본 색상값으로 재설정
+            const defaults = {
+                primary: "#0d6efd",
+                secondary: "#6c757d",
+                success: "#198754",
+                info: "#0dcaf0", 
+                warning: "#ffc107",
+                danger: "#dc3545"
+            };
+            
+            Object.keys(defaults).forEach(colorName => {
+                const input = document.querySelector(`input[name="colors[${colorName}]"]`);
+                if (input) {
+                    input.value = defaults[colorName];
+                }
+                
+                if (colorPickers[colorName]) {
+                    colorPickers[colorName].setColor(defaults[colorName]);
+                }
+            });
+            
+            updatePreview();
+        }
+    });
+    
+    // 초기 미리보기 로드
+    updatePreview();
+});
+';
+
+// 레이아웃 렌더링
+require_once 'mvc/bootstrap.php';
+TemplateHelper::renderLayout('sidebar', compact(
+    'page_title', 
+    'active_menu', 
+    'content', 
+    'additional_css', 
+    'additional_js', 
+    'inline_js'
+));
+?>

@@ -1,0 +1,174 @@
+<?php
+/**
+ * Admin Database Connection
+ * 환경 변수를 사용한 데이터베이스 연결
+ */
+
+// 설정 로더 포함
+require_once __DIR__ . '/config/config.php';
+
+// 데이터베이스 설정 가져오기
+$dbConfig = config('database.connections.mysql');
+$tablePrefix = config('database.prefix', '');
+
+// 환경 감지 (환경 변수 우선, 없으면 자동 감지)
+$environment = env('APP_ENV', null);
+if ($environment === null) {
+    $server_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
+    $is_local = (strpos($server_host, 'localhost') !== false || 
+                 strpos($server_host, '127.0.0.1') !== false || 
+                 strpos($server_host, '.local') !== false || 
+                 strpos($server_host, '.test') !== false || 
+                 strpos($server_host, '.dev') !== false || 
+                 $server_host === '');
+    
+    $environment = $is_local ? 'local' : 'production';
+}
+
+// DSN 구성
+$dsn = "mysql:host={$dbConfig['host']};dbname={$dbConfig['database']};charset={$dbConfig['charset']}";
+
+// 소켓 연결 (필요한 경우)
+if (!empty($dbConfig['socket']) && file_exists($dbConfig['socket'])) {
+    $dsn = "mysql:host={$dbConfig['host']};dbname={$dbConfig['database']};charset={$dbConfig['charset']};unix_socket={$dbConfig['socket']}";
+}
+
+// 포트가 기본값이 아닌 경우
+if (!empty($dbConfig['port']) && $dbConfig['port'] != 3306) {
+    $dsn = "mysql:host={$dbConfig['host']};port={$dbConfig['port']};dbname={$dbConfig['database']};charset={$dbConfig['charset']}";
+}
+
+try {
+    $pdo = new PDO($dsn, $dbConfig['username'], $dbConfig['password'], $dbConfig['options']);
+    
+    // 추가 문자셋 설정
+    $pdo->exec("SET CHARACTER SET {$dbConfig['charset']}");
+    $pdo->exec("SET COLLATION_CONNECTION='{$dbConfig['collation']}'");
+} catch (PDOException $e) {
+    // 디버그 모드에서만 상세 오류 표시
+    if (env('APP_DEBUG', 'false') === 'true') {
+        die("DB 연결 실패: " . $e->getMessage());
+    } else {
+        die("데이터베이스 연결에 실패했습니다. 관리자에게 문의하세요.");
+    }
+}
+
+/**
+ * 테이블명 생성 헬퍼 함수
+ * 프리픽스를 자동으로 추가
+ */
+if (!function_exists('table')) {
+    function table($tableName) {
+        global $tablePrefix;
+        return $tablePrefix . $tableName;
+    }
+}
+
+/**
+ * Admin 전용 getSiteSettings 함수
+ * 테이블 프리픽스 적용
+ */
+function getSiteSettings($pdo, $group = null) {
+    $table = table('site_settings');
+    $sql = "SELECT setting_key, setting_value, setting_group FROM $table";
+    $params = [];
+    
+    if ($group) {
+        $sql .= " WHERE setting_group = ?";
+        $params[] = $group;
+    }
+    
+    try {
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $settings_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $settings = [];
+        foreach ($settings_data as $setting) {
+            $settings[$setting['setting_key']] = $setting['setting_value'];
+        }
+        
+        return $settings;
+    } catch (PDOException $e) {
+        // 테이블이 없는 경우 기본 설정값 반환
+        return getDefaultAdminSettings($group);
+    }
+}
+
+/**
+ * Admin 전용 기본 설정값 반환
+ * 환경 변수에서 기본값 가져오기
+ */
+function getDefaultAdminSettings($group = null) {
+    $all_defaults = [
+        // 일반 설정
+        'site_name' => env('DEFAULT_SITE_NAME', 'Admin System'),
+        'site_description' => env('DEFAULT_SITE_DESCRIPTION', 'Administrative Management System'),
+        'site_logo' => '',
+        'site_favicon' => '',
+        'admin_email' => env('DEFAULT_ADMIN_EMAIL', 'admin@example.com'),
+        
+        // 테마 설정
+        'primary_color' => env('THEME_PRIMARY_COLOR', '#0d6efd'),
+        'secondary_color' => env('THEME_SECONDARY_COLOR', '#6c757d'),
+        'success_color' => env('THEME_SUCCESS_COLOR', '#198754'),
+        'info_color' => env('THEME_INFO_COLOR', '#0dcaf0'),
+        'warning_color' => env('THEME_WARNING_COLOR', '#ffc107'),
+        'danger_color' => env('THEME_DANGER_COLOR', '#dc3545'),
+        'light_color' => env('THEME_LIGHT_COLOR', '#f8f9fa'),
+        'dark_color' => env('THEME_DARK_COLOR', '#212529'),
+        
+        // 폰트 설정
+        'body_font' => "'Segoe UI', sans-serif",
+        'heading_font' => "'Segoe UI', sans-serif",
+        'font_size_base' => '1rem',
+        
+        // 레이아웃 설정
+        'navbar_layout' => 'fixed-top',
+        'sidebar_layout' => 'left',
+        'footer_layout' => 'standard',
+        'container_width' => 'standard',
+        
+        // SNS 설정
+        'facebook_url' => '',
+        'twitter_url' => '',
+        'instagram_url' => '',
+        'youtube_url' => '',
+        'kakaotalk_url' => '',
+        
+        // 기타 설정
+        'google_analytics_id' => '',
+        'custom_css' => '',
+        'custom_js' => ''
+    ];
+    
+    if ($group === null) {
+        return $all_defaults;
+    }
+    
+    $group_settings = [];
+    foreach ($all_defaults as $key => $value) {
+        // 그룹별 설정 분류
+        $key_group = '';
+        if (strpos($key, 'site_') === 0 || $key === 'admin_email') {
+            $key_group = 'general';
+        } elseif (in_array($key, ['primary_color', 'secondary_color', 'success_color', 'info_color', 'warning_color', 'danger_color', 'light_color', 'dark_color'])) {
+            $key_group = 'theme';
+        } elseif (strpos($key, 'font') !== false) {
+            $key_group = 'font';
+        } elseif (strpos($key, '_layout') !== false || strpos($key, 'container_') !== false) {
+            $key_group = 'layout';
+        } elseif (strpos($key, '_url') !== false) {
+            $key_group = 'social';
+        } else {
+            $key_group = 'other';
+        }
+        
+        if ($key_group === $group) {
+            $group_settings[$key] = $value;
+        }
+    }
+    
+    return $group_settings;
+}
+?>

@@ -1,0 +1,358 @@
+<?php
+// 게시글 관리 페이지 - 완전한 기능 구현
+require_once '../bootstrap.php';
+
+// 페이지네이션 설정
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$records_per_page = 10;
+$offset = ($page - 1) * $records_per_page;
+
+// 검색 조건
+$search_type = isset($_GET['search_type']) ? $_GET['search_type'] : 'title';
+$search_keyword = isset($_GET['search_keyword']) ? $_GET['search_keyword'] : '';
+$board_filter = isset($_GET['board_id']) ? (int)$_GET['board_id'] : 0;
+
+// 기본 SQL 쿼리
+try {
+    // 먼저 hopec_boards 테이블이 있는지 확인
+    $table_exists = false;
+    try {
+        $check = $pdo->query("SHOW TABLES LIKE 'hopec_boards'");
+        $table_exists = ($check->rowCount() > 0);
+    } catch (PDOException $e) {
+        // 테이블 없음
+    }
+    
+    if ($table_exists) {
+        // board_name 컬럼이 있는지 확인
+        $column_board_name_exists = false;
+        try {
+            $check_column = $pdo->query("SHOW COLUMNS FROM hopec_boards LIKE 'board_name'");
+            $column_board_name_exists = ($check_column->rowCount() > 0);
+        } catch (PDOException $e) {
+            // 컬럼 검사 실패
+        }
+        
+        // 컬럼명에 따라 다른 쿼리 사용
+        if ($column_board_name_exists) {
+            // board_name 컬럼이 있는 경우
+            $sql = "SELECT p.*, b.board_name, b.category_list, b.use_category 
+                    FROM hopec_posts p
+                    LEFT JOIN hopec_boards b ON p.board_id = b.id
+                    WHERE 1=1";
+            
+            // 게시판 목록 가져오기 (필터용)
+            $stmt = $pdo->query("SELECT id, board_name FROM hopec_boards ORDER BY board_name ASC");
+            $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            // board_name 컬럼이 없고 name 컬럼이 있는지 확인
+            $column_name_exists = false;
+            try {
+                $check_column = $pdo->query("SHOW COLUMNS FROM hopec_boards LIKE 'name'");
+                $column_name_exists = ($check_column->rowCount() > 0);
+            } catch (PDOException $e) {
+                // 컬럼 검사 실패
+            }
+            
+            if ($column_name_exists) {
+                // name 컬럼을 사용
+                $sql = "SELECT p.*, b.name AS board_name, b.category_list, b.use_category 
+                        FROM hopec_posts p
+                        LEFT JOIN hopec_boards b ON p.board_id = b.id
+                        WHERE 1=1";
+                
+                // 게시판 목록 가져오기 (필터용)
+                $stmt = $pdo->query("SELECT id, name AS board_name FROM hopec_boards ORDER BY name ASC");
+                $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                // 적절한 컬럼이 없는 경우 - 조인 없이 간단한 쿼리 사용
+                $sql = "SELECT p.* FROM hopec_posts p WHERE 1=1";
+                $boards = []; // 빈 배열
+            }
+        }
+    } else {
+        // 게시판 테이블이 없는 경우 - 조인 없이 간단한 쿼리 사용
+        $sql = "SELECT p.* FROM hopec_posts p WHERE 1=1";
+        $boards = []; // 빈 배열
+    }
+    
+    $count_sql = "SELECT COUNT(*) FROM hopec_posts WHERE 1=1";
+    $params = [];
+    
+    // 검색 조건 추가
+    if (!empty($search_keyword)) {
+        if ($search_type === 'title') {
+            $sql .= " AND p.title LIKE ?";
+            $count_sql .= " AND title LIKE ?";
+            $params[] = "%{$search_keyword}%";
+        } else if ($search_type === 'content') {
+            $sql .= " AND p.content LIKE ?";
+            $count_sql .= " AND content LIKE ?";
+            $params[] = "%{$search_keyword}%";
+        } else if ($search_type === 'author') {
+            $sql .= " AND p.author LIKE ?";
+            $count_sql .= " AND author LIKE ?";
+            $params[] = "%{$search_keyword}%";
+        }
+    }
+    
+    // 게시판 필터 추가
+    if ($board_filter > 0 && $table_exists) {
+        $sql .= " AND p.board_id = ?";
+        $count_sql .= " AND board_id = ?";
+        $params[] = $board_filter;
+    }
+    
+    // 정렬 설정
+    $sql .= " ORDER BY p.is_notice DESC, p.created_at DESC";
+    $sql .= " LIMIT {$offset}, {$records_per_page}";
+    
+    // 게시글 조회
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // 총 게시글 수 계산
+    $stmt = $pdo->prepare($count_sql);
+    $stmt->execute($params);
+    $total_records = $stmt->fetchColumn();
+    $total_pages = ceil($total_records / $records_per_page);
+} catch (PDOException $e) {
+    $posts = [];
+    $total_records = 0;
+    $total_pages = 0;
+    $boards = [];
+}
+
+// 삭제 기능 처리
+if (isset($_GET['delete']) && isset($_GET['id'])) {
+    $post_id = (int)$_GET['id'];
+    
+    try {
+        $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE id = ?");
+        $stmt->execute([$post_id]);
+        
+        header("Location: list.php?deleted=1");
+        exit;
+    } catch (PDOException $e) {
+        // 오류 처리
+    }
+}
+
+// 페이지 제목 설정
+$page_title = '게시글 관리';
+?>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title><?= htmlspecialchars($page_title) ?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    body { min-height: 100vh; display: flex; font-family: 'Segoe UI', sans-serif; }
+    .sidebar { width: 220px; background-color: #343a40; color: white; min-height: 100vh; }
+    .sidebar a { color: white; padding: 12px 16px; display: block; text-decoration: none; transition: background-color 0.2s; }
+    .sidebar a:hover { background-color: #495057; }
+    .sidebar a.active { background-color: #0d6efd; }
+    .main-content { flex-grow: 1; padding: 30px; background-color: #f8f9fa; }
+    .sidebar .logo { font-weight: bold; font-size: 1.3rem; padding: 16px; border-bottom: 1px solid #495057; }
+    .table th { border-top: none; }
+    .badge-notice { background-color: #dc3545; }
+  </style>
+</head>
+<body>
+
+<!-- 사이드바 -->
+<div class="sidebar">
+  <div class="logo">
+    <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
+  </div>
+  <a href="/admin/index.php">📊 대시보드</a>
+  <a href="/admin/posts/list.php" class="active">📝 게시글 관리</a>
+  <a href="/admin/boards/list.php">📋 게시판 관리</a>
+  <a href="/admin/menu/list.php">🧭 메뉴 관리</a>
+  <a href="/admin/inquiries/list.php">📬 문의 관리</a>
+  <a href="/admin/events/list.php">📅 행사 관리</a>
+  <a href="/admin/files/list.php">📎 자료실 관리</a>
+  <a href="/admin/settings/site_settings.php">🎨 디자인 설정</a>
+  <a href="/admin/system/performance.php">⚡ 성능 모니터링</a>
+  <a href="/admin/logout.php">🚪 로그아웃</a>
+</div>
+
+<!-- 메인 컨텐츠 -->
+<div class="main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📝 게시글 관리</h2>
+        <a href="write.php" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> 새 게시글 작성
+        </a>
+    </div>
+
+    <!-- 검색 폼 -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="list.php" class="row g-3">
+                <?php if (!empty($boards)): ?>
+                <div class="col-md-3">
+                    <label class="form-label">게시판</label>
+                    <select name="board_id" class="form-select">
+                        <option value="">전체 게시판</option>
+                        <?php foreach ($boards as $board): ?>
+                            <option value="<?= $board['id'] ?>" <?= $board_filter == $board['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($board['board_name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php endif; ?>
+                
+                <div class="col-md-3">
+                    <label class="form-label">검색 조건</label>
+                    <select name="search_type" class="form-select">
+                        <option value="title" <?= $search_type === 'title' ? 'selected' : '' ?>>제목</option>
+                        <option value="content" <?= $search_type === 'content' ? 'selected' : '' ?>>내용</option>
+                        <option value="author" <?= $search_type === 'author' ? 'selected' : '' ?>>작성자</option>
+                    </select>
+                </div>
+                
+                <div class="col-md-4">
+                    <label class="form-label">검색어</label>
+                    <input type="text" name="search_keyword" class="form-control" 
+                           placeholder="검색어를 입력하세요" value="<?= htmlspecialchars($search_keyword) ?>">
+                </div>
+                
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> 검색
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 게시글 목록 -->
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">총 <?= number_format($total_records) ?>개의 게시글</span>
+                <?php if (!empty($search_keyword)): ?>
+                    <a href="list.php" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-x-circle"></i> 검색 초기화
+                    </a>
+                <?php endif; ?>
+            </div>
+
+            <?php if (empty($posts)): ?>
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <h4 class="mt-3 text-muted">게시글이 없습니다</h4>
+                    <p class="text-muted">새로운 게시글을 작성해보세요.</p>
+                </div>
+            <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">번호</th>
+                                <?php if ($table_exists && !empty($boards)): ?>
+                                    <th style="width: 120px;">게시판</th>
+                                <?php endif; ?>
+                                <th>제목</th>
+                                <th style="width: 120px;">작성자</th>
+                                <th style="width: 120px;">작성일</th>
+                                <th style="width: 80px;">조회수</th>
+                                <th style="width: 100px;">관리</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($posts as $post): ?>
+                                <tr>
+                                    <td>
+                                        <?php if ($post['is_notice'] ?? false): ?>
+                                            <span class="badge badge-notice">공지</span>
+                                        <?php else: ?>
+                                            <?= number_format($post['id']) ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    
+                                    <?php if ($table_exists && !empty($boards)): ?>
+                                        <td>
+                                            <span class="badge bg-secondary">
+                                                <?= htmlspecialchars($post['board_name'] ?? '미분류') ?>
+                                            </span>
+                                        </td>
+                                    <?php endif; ?>
+                                    
+                                    <td>
+                                        <a href="view.php?id=<?= $post['id'] ?>" class="text-decoration-none">
+                                            <?= htmlspecialchars($post['title']) ?>
+                                        </a>
+                                    </td>
+                                    
+                                    <td><?= htmlspecialchars($post['author_name'] ?? $post['author'] ?? '관리자') ?></td>
+                                    
+                                    <td>
+                                        <?= date('Y-m-d', strtotime($post['created_at'])) ?>
+                                    </td>
+                                    
+                                    <td><?= number_format($post['views'] ?? 0) ?></td>
+                                    
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="edit.php?id=<?= $post['id'] ?>" class="btn btn-outline-primary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="list.php?delete=1&id=<?= $post['id'] ?>" class="btn btn-outline-danger"
+                                               onclick="return confirm('정말 삭제하시겠습니까?')">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 페이지네이션 -->
+                <?php if ($total_pages > 1): ?>
+                    <nav aria-label="페이지 네비게이션">
+                        <ul class="pagination justify-content-center">
+                            <?php if ($page > 1): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<?= $page - 1 ?>&search_type=<?= urlencode($search_type) ?>&search_keyword=<?= urlencode($search_keyword) ?>&board_id=<?= $board_filter ?>">이전</a>
+                                </li>
+                            <?php endif; ?>
+                            
+                            <?php
+                            $start = max(1, $page - 2);
+                            $end = min($total_pages, $page + 2);
+                            ?>
+                            
+                            <?php for ($i = $start; $i <= $end; $i++): ?>
+                                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>&search_type=<?= urlencode($search_type) ?>&search_keyword=<?= urlencode($search_keyword) ?>&board_id=<?= $board_filter ?>">
+                                        <?= $i ?>
+                                    </a>
+                                </li>
+                            <?php endfor; ?>
+                            
+                            <?php if ($page < $total_pages): ?>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=<?= $page + 1 ?>&search_type=<?= urlencode($search_type) ?>&search_keyword=<?= urlencode($search_keyword) ?>&board_id=<?= $board_filter ?>">다음</a>
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

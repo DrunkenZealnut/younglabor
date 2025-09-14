@@ -1,0 +1,1119 @@
+<?php include '../auth.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// DB 연결
+require_once '../db.php';
+
+// 테이블이 없는 경우 생성
+try {
+  $pdo->query("SELECT 1 FROM hopec_site_settings LIMIT 1");
+} catch (PDOException $e) {
+  // 테이블이 없으면 생성
+  $sql = "CREATE TABLE hopec_site_settings (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    setting_key VARCHAR(100) NOT NULL COMMENT '설정 키',
+    setting_value TEXT COMMENT '설정 값',
+    setting_group VARCHAR(50) NOT NULL DEFAULT 'general' COMMENT '설정 그룹',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
+    PRIMARY KEY (id),
+    UNIQUE KEY setting_key (setting_key)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+  
+  $pdo->exec($sql);
+  
+  // 기본 설정값 추가
+  $default_settings = [
+    // 일반 설정
+    ['site_name', '우동615', 'general'],
+    ['site_description', '노동권 찾기를 위한 정보와 지원', 'general'],
+    ['site_logo', '', 'general'],
+    ['site_favicon', '', 'general'],
+    ['admin_email', 'admin@example.com', 'general'],
+    
+    // 테마 설정
+    ['primary_color', '#0d6efd', 'theme'],
+    ['secondary_color', '#6c757d', 'theme'],
+    ['success_color', '#198754', 'theme'],
+    ['info_color', '#0dcaf0', 'theme'],
+    ['warning_color', '#ffc107', 'theme'],
+    ['danger_color', '#dc3545', 'theme'],
+    ['light_color', '#f8f9fa', 'theme'],
+    ['dark_color', '#212529', 'theme'],
+    
+    // 폰트 설정
+    ['body_font', "'Segoe UI', sans-serif", 'font'],
+    ['heading_font', "'Segoe UI', sans-serif", 'font'],
+    ['font_size_base', '1rem', 'font'],
+    
+    // 레이아웃 설정
+    ['navbar_layout', 'fixed-top', 'layout'],
+    ['sidebar_layout', 'left', 'layout'],
+    ['footer_layout', 'standard', 'layout'],
+    ['container_width', 'standard', 'layout'],
+    
+    // SNS 설정
+    ['facebook_url', '', 'social'],
+    ['twitter_url', '', 'social'],
+    ['instagram_url', '', 'social'],
+    ['youtube_url', '', 'social'],
+    ['kakaotalk_url', '', 'social'],
+    
+    // 기타 설정
+    ['google_analytics_id', '', 'other'],
+    ['custom_css', '', 'other'],
+    ['custom_js', '', 'other']
+  ];
+  
+  $sql = "INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
+  $stmt = $pdo->prepare($sql);
+  
+  foreach ($default_settings as $setting) {
+    $stmt->execute($setting);
+  }
+}
+
+// 설정 가져오기
+function getSiteSettings($pdo, $group = null) {
+  $sql = "SELECT setting_key, setting_value, setting_group FROM hopec_site_settings";
+  $params = [];
+  
+  if ($group) {
+    $sql .= " WHERE setting_group = ?";
+    $params[] = $group;
+  }
+  
+  $stmt = $pdo->prepare($sql);
+  $stmt->execute($params);
+  $settings_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+  $settings = [];
+  foreach ($settings_data as $setting) {
+    $settings[$setting['setting_key']] = $setting['setting_value'];
+  }
+  
+  return $settings;
+}
+
+// 모든 설정 가져오기
+$all_settings = getSiteSettings($pdo);
+
+// 설정 저장 처리
+$success_message = '';
+$error_message = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  try {
+    $pdo->beginTransaction();
+    
+    // 일반 설정 저장
+    if (isset($_POST['save_general'])) {
+      $general_settings = [
+        'site_name' => isset($_POST['site_name']) ? trim($_POST['site_name']) : '',
+        'site_description' => isset($_POST['site_description']) ? trim($_POST['site_description']) : '',
+        'admin_email' => isset($_POST['admin_email']) ? trim($_POST['admin_email']) : ''
+      ];
+      
+      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      
+      foreach ($general_settings as $key => $value) {
+        $stmt->execute([$value, $key]);
+      }
+      
+      $success_message = '일반 설정이 저장되었습니다.';
+      $active_tab = 'general'; // 일반 탭을 활성화 상태로 유지
+    }
+    
+    // 테마 설정 저장
+    if (isset($_POST['save_theme'])) {
+      $theme_settings = [
+        'primary_color' => isset($_POST['primary_color']) ? trim($_POST['primary_color']) : '#0d6efd',
+        'secondary_color' => isset($_POST['secondary_color']) ? trim($_POST['secondary_color']) : '#6c757d',
+        'success_color' => isset($_POST['success_color']) ? trim($_POST['success_color']) : '#198754',
+        'info_color' => isset($_POST['info_color']) ? trim($_POST['info_color']) : '#0dcaf0',
+        'warning_color' => isset($_POST['warning_color']) ? trim($_POST['warning_color']) : '#ffc107',
+        'danger_color' => isset($_POST['danger_color']) ? trim($_POST['danger_color']) : '#dc3545',
+        'light_color' => isset($_POST['light_color']) ? trim($_POST['light_color']) : '#f8f9fa',
+        'dark_color' => isset($_POST['dark_color']) ? trim($_POST['dark_color']) : '#212529'
+      ];
+      
+      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      
+      foreach ($theme_settings as $key => $value) {
+        $result = $stmt->execute([$value, $key]);
+        if (!$result) {
+          throw new PDOException("Failed to update setting: $key");
+        }
+      }
+      
+      $success_message = '테마 설정이 저장되었습니다.';
+      $active_tab = 'theme'; // 테마 탭을 활성화 상태로 유지
+    }
+    
+    // 폰트 설정 저장
+    if (isset($_POST['save_font'])) {
+      $font_settings = [
+        'body_font' => isset($_POST['body_font']) ? trim($_POST['body_font']) : "'Segoe UI', sans-serif",
+        'heading_font' => isset($_POST['heading_font']) ? trim($_POST['heading_font']) : "'Segoe UI', sans-serif",
+        'font_size_base' => isset($_POST['font_size_base']) ? trim($_POST['font_size_base']) : '1rem'
+      ];
+      
+      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      
+      foreach ($font_settings as $key => $value) {
+        $stmt->execute([$value, $key]);
+      }
+      
+      $success_message = '폰트 설정이 저장되었습니다.';
+      $active_tab = 'font'; // 폰트 탭을 활성화 상태로 유지
+    }
+    
+    // 레이아웃 설정 저장
+    if (isset($_POST['save_layout'])) {
+      $layout_settings = [
+        'navbar_layout' => isset($_POST['navbar_layout']) ? trim($_POST['navbar_layout']) : 'fixed-top',
+        'sidebar_layout' => isset($_POST['sidebar_layout']) ? trim($_POST['sidebar_layout']) : 'left',
+        'footer_layout' => isset($_POST['footer_layout']) ? trim($_POST['footer_layout']) : 'standard',
+        'container_width' => isset($_POST['container_width']) ? trim($_POST['container_width']) : 'standard'
+      ];
+      
+      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      
+      foreach ($layout_settings as $key => $value) {
+        $stmt->execute([$value, $key]);
+      }
+      
+      $success_message = '레이아웃 설정이 저장되었습니다.';
+      $active_tab = 'layout'; // 레이아웃 탭을 활성화 상태로 유지
+    }
+    
+    // SNS 설정 저장
+    if (isset($_POST['save_social'])) {
+      $social_settings = [
+        'facebook_url' => isset($_POST['facebook_url']) ? trim($_POST['facebook_url']) : '',
+        'twitter_url' => isset($_POST['twitter_url']) ? trim($_POST['twitter_url']) : '',
+        'instagram_url' => isset($_POST['instagram_url']) ? trim($_POST['instagram_url']) : '',
+        'youtube_url' => isset($_POST['youtube_url']) ? trim($_POST['youtube_url']) : '',
+        'kakaotalk_url' => isset($_POST['kakaotalk_url']) ? trim($_POST['kakaotalk_url']) : ''
+      ];
+      
+      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      
+      foreach ($social_settings as $key => $value) {
+        $stmt->execute([$value, $key]);
+      }
+      
+      $success_message = 'SNS 설정이 저장되었습니다.';
+      $active_tab = 'social'; // SNS 탭을 활성화 상태로 유지
+    }
+    
+    // 기타 설정 저장
+    if (isset($_POST['save_other'])) {
+      $other_settings = [
+        'google_analytics_id' => isset($_POST['google_analytics_id']) ? trim($_POST['google_analytics_id']) : '',
+        'custom_css' => isset($_POST['custom_css']) ? trim($_POST['custom_css']) : '',
+        'custom_js' => isset($_POST['custom_js']) ? trim($_POST['custom_js']) : ''
+      ];
+      
+      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      
+      foreach ($other_settings as $key => $value) {
+        $stmt->execute([$value, $key]);
+      }
+      
+      $success_message = '기타 설정이 저장되었습니다.';
+      $active_tab = 'other'; // 기타 탭을 활성화 상태로 유지
+    }
+    
+    // 로고 업로드 처리
+    if (isset($_FILES['site_logo']) && $_FILES['site_logo']['error'] === UPLOAD_ERR_OK) {
+      $upload_dir = '../../uploads/settings/';
+      if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+      }
+      
+      $temp_name = $_FILES['site_logo']['tmp_name'];
+      $name = $_FILES['site_logo']['name'];
+      $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+      
+      // 이미지 타입 확인
+      $allowed_types = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
+      if (!in_array($ext, $allowed_types)) {
+        $error_message = '로고는 JPG, JPEG, PNG, GIF, SVG 형식만 허용됩니다.';
+      } else {
+        // 파일명 중복 방지를 위해 고유한 파일명 생성
+        $unique_name = 'site_logo_' . uniqid() . '.' . $ext;
+        $target_file = $upload_dir . $unique_name;
+        
+        if (move_uploaded_file($temp_name, $target_file)) {
+          // 이전 로고 파일 삭제
+          if (!empty($all_settings['site_logo'])) {
+            $old_logo = '../../' . $all_settings['site_logo'];
+            if (file_exists($old_logo)) {
+              unlink($old_logo);
+            }
+          }
+          
+          $logo_path = 'uploads/settings/' . $unique_name;
+          $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = 'site_logo'");
+          $stmt->execute([$logo_path]);
+          
+          $success_message = '로고가 성공적으로 업로드되었습니다.';
+          $active_tab = 'general'; // 일반 탭을 활성화 상태로 유지
+        } else {
+          $error_message = '파일 업로드 중 오류가 발생했습니다.';
+          $active_tab = 'general';
+        }
+      } else {
+        $active_tab = 'general';
+      }
+    }
+    
+    // 파비콘 업로드 처리
+    if (isset($_FILES['site_favicon']) && $_FILES['site_favicon']['error'] === UPLOAD_ERR_OK) {
+      $upload_dir = '../../uploads/settings/';
+      if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+      }
+      
+      $temp_name = $_FILES['site_favicon']['tmp_name'];
+      $name = $_FILES['site_favicon']['name'];
+      $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+      
+      // 이미지 타입 확인
+      $allowed_types = ['ico', 'png'];
+      if (!in_array($ext, $allowed_types)) {
+        $error_message = '파비콘은 ICO, PNG 형식만 허용됩니다.';
+      } else {
+        // 파일명 중복 방지를 위해 고유한 파일명 생성
+        $unique_name = 'favicon_' . uniqid() . '.' . $ext;
+        $target_file = $upload_dir . $unique_name;
+        
+        if (move_uploaded_file($temp_name, $target_file)) {
+          // 이전 파비콘 파일 삭제
+          if (!empty($all_settings['site_favicon'])) {
+            $old_favicon = '../../' . $all_settings['site_favicon'];
+            if (file_exists($old_favicon)) {
+              unlink($old_favicon);
+            }
+          }
+          
+          $favicon_path = 'uploads/settings/' . $unique_name;
+          $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = 'site_favicon'");
+          $stmt->execute([$favicon_path]);
+          
+          $success_message = '파비콘이 성공적으로 업로드되었습니다.';
+          $active_tab = 'general'; // 일반 탭을 활성화 상태로 유지
+        } else {
+          $error_message = '파일 업로드 중 오류가 발생했습니다.';
+          $active_tab = 'general';
+        }
+      } else {
+        $active_tab = 'general';
+      }
+    }
+    
+    // 로고 삭제 처리
+    if (isset($_POST['delete_logo'])) {
+      if (!empty($all_settings['site_logo'])) {
+        $old_logo = '../../' . $all_settings['site_logo'];
+        if (file_exists($old_logo)) {
+          unlink($old_logo);
+        }
+        
+        $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = '' WHERE setting_key = 'site_logo'");
+        $stmt->execute();
+        
+        $success_message = '로고가 성공적으로 삭제되었습니다.';
+        $active_tab = 'general'; // 일반 탭을 활성화 상태로 유지
+      } else {
+        $active_tab = 'general';
+      }
+    }
+    
+    // 파비콘 삭제 처리
+    if (isset($_POST['delete_favicon'])) {
+      if (!empty($all_settings['site_favicon'])) {
+        $old_favicon = '../../' . $all_settings['site_favicon'];
+        if (file_exists($old_favicon)) {
+          unlink($old_favicon);
+        }
+        
+        $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = '' WHERE setting_key = 'site_favicon'");
+        $stmt->execute();
+        
+        $success_message = '파비콘이 성공적으로 삭제되었습니다.';
+        $active_tab = 'general'; // 일반 탭을 활성화 상태로 유지
+      } else {
+        $active_tab = 'general';
+      }
+    }
+    
+    $pdo->commit();
+    
+    // 설정 다시 가져오기
+    $all_settings = getSiteSettings($pdo);
+    
+  } catch (PDOException $e) {
+    $pdo->rollBack();
+    $error_message = '설정 저장 중 오류가 발생했습니다: ' . $e->getMessage();
+  }
+}
+
+// 현재 활성화된 탭
+$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
+?>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>디자인 설정 - 관리자</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <!-- 컬러 피커 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css">
+  <!-- 코드 에디터 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/lib/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/theme/dracula.min.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #343a40;
+      color: white;
+      min-height: 100vh;
+    }
+    .sidebar a {
+      color: white;
+      padding: 12px 16px;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background-color: #f8f9fa;
+    }
+    .sidebar .logo {
+      font-weight: bold;
+      font-size: 1.3rem;
+      padding: 16px;
+      border-bottom: 1px solid #495057;
+    }
+    .nav-tabs .nav-link {
+      border: none;
+      border-bottom: 2px solid transparent;
+    }
+    .nav-tabs .nav-link.active {
+      border: none;
+      border-bottom: 2px solid #0d6efd;
+      color: #0d6efd;
+    }
+    .nav-tabs .nav-link:hover {
+      border-color: transparent;
+      border-bottom: 2px solid rgba(13, 110, 253, 0.5);
+    }
+    .color-picker-wrapper {
+      display: flex;
+      align-items: center;
+    }
+    .color-preview {
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      margin-right: 10px;
+      border: 1px solid #ced4da;
+    }
+    .CodeMirror {
+      height: 300px;
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+    }
+    .custom-preview {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+      background-color: white;
+    }
+    .logo-preview, .favicon-preview {
+      max-width: 200px;
+      max-height: 100px;
+      border: 1px solid #dee2e6;
+      padding: 10px;
+      border-radius: 0.25rem;
+      background-color: white;
+      margin-top: 10px;
+    }
+    .favicon-preview {
+      max-width: 64px;
+      max-height: 64px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 사이드바 -->
+<div class="sidebar">
+  <div class="logo">우동615 관리자</div>
+  <a href="../index.php">📊 대시보드</a>
+  <a href="../posts/list.php">📝 게시글 관리</a>
+  <a href="../boards/list.php">📋 게시판 관리</a>
+  <a href="../menu/list.php">🧭 메뉴 관리</a>
+  <a href="../inquiries/list.php">📬 문의 관리</a>
+  <a href="../events/list.php">📅 행사 관리</a>
+  <a href="../files/list.php">📂 자료실</a>
+  <a href="site_settings.php" class="active bg-primary">🎨 디자인 설정</a>
+  <a href="../logout.php">🚪 로그아웃</a>
+</div>
+
+<!-- 본문 -->
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>디자인 설정</h2>
+  </div>
+  
+  <?php if (!empty($success_message)): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle-fill"></i> <?= $success_message ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <?php endif; ?>
+  
+  <?php if (!empty($error_message)): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle-fill"></i> <?= $error_message ?>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <?php endif; ?>
+  
+  <!-- 탭 메뉴 -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link <?= $active_tab === 'general' ? 'active' : '' ?>" href="?tab=general">일반 설정</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <?= $active_tab === 'theme' ? 'active' : '' ?>" href="?tab=theme">테마 설정</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <?= $active_tab === 'font' ? 'active' : '' ?>" href="?tab=font">폰트 설정</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <?= $active_tab === 'layout' ? 'active' : '' ?>" href="?tab=layout">레이아웃 설정</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <?= $active_tab === 'social' ? 'active' : '' ?>" href="?tab=social">SNS 설정</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link <?= $active_tab === 'other' ? 'active' : '' ?>" href="?tab=other">기타 설정</a>
+    </li>
+  </ul>
+  
+  <!-- 일반 설정 탭 -->
+  <div class="tab-content">
+    <div class="tab-pane fade <?= $active_tab === 'general' ? 'show active' : '' ?>" id="general">
+      <div class="card">
+        <div class="card-body">
+          <form action="site_settings.php?tab=general" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="site_name" class="form-label">사이트 이름</label>
+              <input type="text" class="form-control" id="site_name" name="site_name" value="<?= htmlspecialchars($all_settings['site_name'] ?? '') ?>">
+              <small class="form-text text-muted">웹사이트의 이름을 입력하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="site_description" class="form-label">사이트 설명</label>
+              <textarea class="form-control" id="site_description" name="site_description" rows="2"><?= htmlspecialchars($all_settings['site_description'] ?? '') ?></textarea>
+              <small class="form-text text-muted">웹사이트에 대한 간략한 설명을 입력하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="admin_email" class="form-label">관리자 이메일</label>
+              <input type="email" class="form-control" id="admin_email" name="admin_email" value="<?= htmlspecialchars($all_settings['admin_email'] ?? '') ?>">
+              <small class="form-text text-muted">사이트 관리자의 이메일 주소를 입력하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="site_logo" class="form-label">사이트 로고</label>
+              
+              <?php if (!empty($all_settings['site_logo'])): ?>
+                <div class="mb-2">
+                  <div class="logo-preview bg-light p-2 d-inline-block">
+                    <img src="../../<?= htmlspecialchars($all_settings['site_logo']) ?>" alt="현재 로고" class="img-fluid">
+                  </div>
+                  <div class="mt-2">
+                    <button type="submit" name="delete_logo" class="btn btn-sm btn-danger" onclick="return confirm('로고를 삭제하시겠습니까?');">
+                      <i class="bi bi-trash"></i> 로고 삭제
+                    </button>
+                  </div>
+                </div>
+              <?php endif; ?>
+              
+              <input type="file" class="form-control" id="site_logo" name="site_logo" accept="image/*">
+              <small class="form-text text-muted">로고 이미지를 업로드하세요. 권장 크기: 200x50px</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="site_favicon" class="form-label">파비콘</label>
+              
+              <?php if (!empty($all_settings['site_favicon'])): ?>
+                <div class="mb-2">
+                  <div class="favicon-preview bg-light p-2 d-inline-block">
+                    <img src="../../<?= htmlspecialchars($all_settings['site_favicon']) ?>" alt="현재 파비콘" class="img-fluid">
+                  </div>
+                  <div class="mt-2">
+                    <button type="submit" name="delete_favicon" class="btn btn-sm btn-danger" onclick="return confirm('파비콘을 삭제하시겠습니까?');">
+                      <i class="bi bi-trash"></i> 파비콘 삭제
+                    </button>
+                  </div>
+                </div>
+              <?php endif; ?>
+              
+              <input type="file" class="form-control" id="site_favicon" name="site_favicon" accept=".ico,.png">
+              <small class="form-text text-muted">파비콘을 업로드하세요. (ICO 또는 PNG 파일, 권장 크기: 16x16px 또는 32x32px)</small>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+              <button type="submit" name="save_general" class="btn btn-primary">
+                <i class="bi bi-save"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 테마 설정 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'theme' ? 'show active' : '' ?>" id="theme">
+      <div class="card">
+        <div class="card-body">
+          <form action="site_settings.php?tab=theme" method="POST">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="primary_color" class="form-label">주 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['primary_color'] ?? '#0d6efd') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="primary_color" name="primary_color" value="<?= htmlspecialchars($all_settings['primary_color'] ?? '#0d6efd') ?>">
+                  </div>
+                  <small class="form-text text-muted">사이트의 주 색상입니다.</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="secondary_color" class="form-label">보조 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['secondary_color'] ?? '#6c757d') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="secondary_color" name="secondary_color" value="<?= htmlspecialchars($all_settings['secondary_color'] ?? '#6c757d') ?>">
+                  </div>
+                  <small class="form-text text-muted">사이트의 보조 색상입니다.</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="success_color" class="form-label">성공 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['success_color'] ?? '#198754') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="success_color" name="success_color" value="<?= htmlspecialchars($all_settings['success_color'] ?? '#198754') ?>">
+                  </div>
+                  <small class="form-text text-muted">성공 메시지 등에 사용되는 색상입니다.</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="info_color" class="form-label">정보 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['info_color'] ?? '#0dcaf0') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="info_color" name="info_color" value="<?= htmlspecialchars($all_settings['info_color'] ?? '#0dcaf0') ?>">
+                  </div>
+                  <small class="form-text text-muted">정보 메시지 등에 사용되는 색상입니다.</small>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="warning_color" class="form-label">경고 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['warning_color'] ?? '#ffc107') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="warning_color" name="warning_color" value="<?= htmlspecialchars($all_settings['warning_color'] ?? '#ffc107') ?>">
+                  </div>
+                  <small class="form-text text-muted">경고 메시지 등에 사용되는 색상입니다.</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="danger_color" class="form-label">위험 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['danger_color'] ?? '#dc3545') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="danger_color" name="danger_color" value="<?= htmlspecialchars($all_settings['danger_color'] ?? '#dc3545') ?>">
+                  </div>
+                  <small class="form-text text-muted">위험 메시지 등에 사용되는 색상입니다.</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="light_color" class="form-label">밝은 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['light_color'] ?? '#f8f9fa') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="light_color" name="light_color" value="<?= htmlspecialchars($all_settings['light_color'] ?? '#f8f9fa') ?>">
+                  </div>
+                  <small class="form-text text-muted">밝은 배경에 사용되는 색상입니다.</small>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="dark_color" class="form-label">어두운 색상</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <div class="color-preview" style="background-color: <?= htmlspecialchars($all_settings['dark_color'] ?? '#212529') ?>;"></div>
+                    </span>
+                    <input type="text" class="form-control color-input" id="dark_color" name="dark_color" value="<?= htmlspecialchars($all_settings['dark_color'] ?? '#212529') ?>">
+                  </div>
+                  <small class="form-text text-muted">어두운 배경에 사용되는 색상입니다.</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="custom-preview mt-4 p-3 border rounded">
+              <h5>테마 미리보기</h5>
+              <div class="row g-2 mt-2">
+                <div class="col-auto">
+                  <button type="button" class="btn btn-primary" style="background-color: var(--primary-color); border-color: var(--primary-color);">주 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-secondary" style="background-color: var(--secondary-color); border-color: var(--secondary-color);">보조 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-success" style="background-color: var(--success-color); border-color: var(--success-color);">성공 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-info" style="background-color: var(--info-color); border-color: var(--info-color);">정보 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-warning" style="background-color: var(--warning-color); border-color: var(--warning-color);">경고 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-danger" style="background-color: var(--danger-color); border-color: var(--danger-color);">위험 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-light" style="background-color: var(--light-color); border-color: var(--light-color);">밝은 색상</button>
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn btn-dark" style="background-color: var(--dark-color); border-color: var(--dark-color);">어두운 색상</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+              <button type="submit" name="save_theme" class="btn btn-primary">
+                <i class="bi bi-save"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 폰트 설정 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'font' ? 'show active' : '' ?>" id="font">
+      <div class="card">
+        <div class="card-body">
+          <form action="site_settings.php?tab=font" method="POST">
+            <div class="mb-3">
+              <label for="body_font" class="form-label">본문 폰트</label>
+              <select class="form-select" id="body_font" name="body_font">
+                <option value="'Segoe UI', sans-serif" <?= ($all_settings['body_font'] ?? '') === "'Segoe UI', sans-serif" ? 'selected' : '' ?>>Segoe UI (기본)</option>
+                <option value="'Malgun Gothic', sans-serif" <?= ($all_settings['body_font'] ?? '') === "'Malgun Gothic', sans-serif" ? 'selected' : '' ?>>맑은 고딕</option>
+                <option value="'Nanum Gothic', sans-serif" <?= ($all_settings['body_font'] ?? '') === "'Nanum Gothic', sans-serif" ? 'selected' : '' ?>>나눔 고딕</option>
+                <option value="'Noto Sans KR', sans-serif" <?= ($all_settings['body_font'] ?? '') === "'Noto Sans KR', sans-serif" ? 'selected' : '' ?>>Noto Sans KR</option>
+                <option value="'Roboto', sans-serif" <?= ($all_settings['body_font'] ?? '') === "'Roboto', sans-serif" ? 'selected' : '' ?>>Roboto</option>
+                <option value="'Open Sans', sans-serif" <?= ($all_settings['body_font'] ?? '') === "'Open Sans', sans-serif" ? 'selected' : '' ?>>Open Sans</option>
+                <option value="'Nanum Myeongjo', serif" <?= ($all_settings['body_font'] ?? '') === "'Nanum Myeongjo', serif" ? 'selected' : '' ?>>나눔 명조</option>
+                <option value="'Noto Serif KR', serif" <?= ($all_settings['body_font'] ?? '') === "'Noto Serif KR', serif" ? 'selected' : '' ?>>Noto Serif KR</option>
+              </select>
+              <small class="form-text text-muted">본문에 사용할 기본 폰트를 선택하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="heading_font" class="form-label">제목 폰트</label>
+              <select class="form-select" id="heading_font" name="heading_font">
+                <option value="'Segoe UI', sans-serif" <?= ($all_settings['heading_font'] ?? '') === "'Segoe UI', sans-serif" ? 'selected' : '' ?>>Segoe UI (기본)</option>
+                <option value="'Malgun Gothic', sans-serif" <?= ($all_settings['heading_font'] ?? '') === "'Malgun Gothic', sans-serif" ? 'selected' : '' ?>>맑은 고딕</option>
+                <option value="'Nanum Gothic', sans-serif" <?= ($all_settings['heading_font'] ?? '') === "'Nanum Gothic', sans-serif" ? 'selected' : '' ?>>나눔 고딕</option>
+                <option value="'Noto Sans KR', sans-serif" <?= ($all_settings['heading_font'] ?? '') === "'Noto Sans KR', sans-serif" ? 'selected' : '' ?>>Noto Sans KR</option>
+                <option value="'Roboto', sans-serif" <?= ($all_settings['heading_font'] ?? '') === "'Roboto', sans-serif" ? 'selected' : '' ?>>Roboto</option>
+                <option value="'Open Sans', sans-serif" <?= ($all_settings['heading_font'] ?? '') === "'Open Sans', sans-serif" ? 'selected' : '' ?>>Open Sans</option>
+                <option value="'Nanum Myeongjo', serif" <?= ($all_settings['heading_font'] ?? '') === "'Nanum Myeongjo', serif" ? 'selected' : '' ?>>나눔 명조</option>
+                <option value="'Noto Serif KR', serif" <?= ($all_settings['heading_font'] ?? '') === "'Noto Serif KR', serif" ? 'selected' : '' ?>>Noto Serif KR</option>
+              </select>
+              <small class="form-text text-muted">제목에 사용할 폰트를 선택하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="font_size_base" class="form-label">기본 폰트 크기</label>
+              <select class="form-select" id="font_size_base" name="font_size_base">
+                <option value="0.875rem" <?= ($all_settings['font_size_base'] ?? '') === '0.875rem' ? 'selected' : '' ?>>작게 (0.875rem)</option>
+                <option value="1rem" <?= ($all_settings['font_size_base'] ?? '') === '1rem' ? 'selected' : '' ?>>보통 (1rem)</option>
+                <option value="1.125rem" <?= ($all_settings['font_size_base'] ?? '') === '1.125rem' ? 'selected' : '' ?>>크게 (1.125rem)</option>
+                <option value="1.25rem" <?= ($all_settings['font_size_base'] ?? '') === '1.25rem' ? 'selected' : '' ?>>아주 크게 (1.25rem)</option>
+              </select>
+              <small class="form-text text-muted">사이트 전체에 적용될 기본 폰트 크기를 선택하세요.</small>
+            </div>
+            
+            <div class="custom-preview mt-4 p-3 border rounded">
+              <h5>폰트 미리보기</h5>
+              <div class="body-font-preview mt-2">
+                <h3 style="font-family: var(--heading-font);">제목 폰트 미리보기</h3>
+                <p style="font-family: var(--body-font); font-size: var(--font-size-base);">본문 폰트 미리보기입니다. 이 텍스트는 선택한 본문 폰트와 크기로 표시됩니다. 실제 사이트에 적용될 폰트를 확인해보세요.</p>
+                <p style="font-family: var(--body-font); font-size: var(--font-size-base);">
+                  여기에 한글 텍스트도 표시됩니다. 노동권 찾기를 위한 정보와 지원을 제공하는 우동615 사이트의 텍스트 표시 예시입니다.
+                </p>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end mt-3">
+              <button type="submit" name="save_font" class="btn btn-primary">
+                <i class="bi bi-save"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 레이아웃 설정 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'layout' ? 'show active' : '' ?>" id="layout">
+      <div class="card">
+        <div class="card-body">
+          <form action="site_settings.php?tab=layout" method="POST">
+            <div class="mb-3">
+              <label for="navbar_layout" class="form-label">내비게이션 바 레이아웃</label>
+              <select class="form-select" id="navbar_layout" name="navbar_layout">
+                <option value="fixed-top" <?= ($all_settings['navbar_layout'] ?? '') === 'fixed-top' ? 'selected' : '' ?>>상단 고정 (Fixed Top)</option>
+                <option value="sticky-top" <?= ($all_settings['navbar_layout'] ?? '') === 'sticky-top' ? 'selected' : '' ?>>스크롤 시 고정 (Sticky Top)</option>
+                <option value="static-top" <?= ($all_settings['navbar_layout'] ?? '') === 'static-top' ? 'selected' : '' ?>>정적 상단 (Static Top)</option>
+              </select>
+              <small class="form-text text-muted">내비게이션 바의 위치 및 동작을 선택하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="sidebar_layout" class="form-label">사이드바 위치</label>
+              <select class="form-select" id="sidebar_layout" name="sidebar_layout">
+                <option value="left" <?= ($all_settings['sidebar_layout'] ?? '') === 'left' ? 'selected' : '' ?>>왼쪽</option>
+                <option value="right" <?= ($all_settings['sidebar_layout'] ?? '') === 'right' ? 'selected' : '' ?>>오른쪽</option>
+                <option value="none" <?= ($all_settings['sidebar_layout'] ?? '') === 'none' ? 'selected' : '' ?>>없음</option>
+              </select>
+              <small class="form-text text-muted">사이드바의 위치를 선택하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="footer_layout" class="form-label">푸터 레이아웃</label>
+              <select class="form-select" id="footer_layout" name="footer_layout">
+                <option value="standard" <?= ($all_settings['footer_layout'] ?? '') === 'standard' ? 'selected' : '' ?>>기본</option>
+                <option value="expanded" <?= ($all_settings['footer_layout'] ?? '') === 'expanded' ? 'selected' : '' ?>>확장</option>
+                <option value="minimal" <?= ($all_settings['footer_layout'] ?? '') === 'minimal' ? 'selected' : '' ?>>최소</option>
+              </select>
+              <small class="form-text text-muted">푸터의 레이아웃을 선택하세요.</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="container_width" class="form-label">컨테이너 너비</label>
+              <select class="form-select" id="container_width" name="container_width">
+                <option value="standard" <?= ($all_settings['container_width'] ?? '') === 'standard' ? 'selected' : '' ?>>기본 (최대 1140px)</option>
+                <option value="fluid" <?= ($all_settings['container_width'] ?? '') === 'fluid' ? 'selected' : '' ?>>유동적 (100%)</option>
+                <option value="narrow" <?= ($all_settings['container_width'] ?? '') === 'narrow' ? 'selected' : '' ?>>좁게 (최대 960px)</option>
+                <option value="wide" <?= ($all_settings['container_width'] ?? '') === 'wide' ? 'selected' : '' ?>>넓게 (최대 1320px)</option>
+              </select>
+              <small class="form-text text-muted">페이지 콘텐츠의 최대 너비를 선택하세요.</small>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+              <button type="submit" name="save_layout" class="btn btn-primary">
+                <i class="bi bi-save"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- SNS 설정 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'social' ? 'show active' : '' ?>" id="social">
+      <div class="card">
+        <div class="card-body">
+          <form action="site_settings.php?tab=social" method="POST">
+            <div class="mb-3">
+              <label for="facebook_url" class="form-label">
+                <i class="bi bi-facebook text-primary"></i> Facebook
+              </label>
+              <input type="url" class="form-control" id="facebook_url" name="facebook_url" value="<?= htmlspecialchars($all_settings['facebook_url'] ?? '') ?>" placeholder="https://facebook.com/yourpage">
+              <small class="form-text text-muted">Facebook 페이지 URL을 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="twitter_url" class="form-label">
+                <i class="bi bi-twitter text-info"></i> Twitter / X
+              </label>
+              <input type="url" class="form-control" id="twitter_url" name="twitter_url" value="<?= htmlspecialchars($all_settings['twitter_url'] ?? '') ?>" placeholder="https://twitter.com/youraccount">
+              <small class="form-text text-muted">Twitter / X 계정 URL을 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="instagram_url" class="form-label">
+                <i class="bi bi-instagram text-danger"></i> Instagram
+              </label>
+              <input type="url" class="form-control" id="instagram_url" name="instagram_url" value="<?= htmlspecialchars($all_settings['instagram_url'] ?? '') ?>" placeholder="https://instagram.com/youraccount">
+              <small class="form-text text-muted">Instagram 계정 URL을 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="youtube_url" class="form-label">
+                <i class="bi bi-youtube text-danger"></i> YouTube
+              </label>
+              <input type="url" class="form-control" id="youtube_url" name="youtube_url" value="<?= htmlspecialchars($all_settings['youtube_url'] ?? '') ?>" placeholder="https://youtube.com/c/yourchannel">
+              <small class="form-text text-muted">YouTube 채널 URL을 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="kakaotalk_url" class="form-label">
+                <i class="bi bi-chat-fill text-warning"></i> 카카오톡 채널
+              </label>
+              <input type="url" class="form-control" id="kakaotalk_url" name="kakaotalk_url" value="<?= htmlspecialchars($all_settings['kakaotalk_url'] ?? '') ?>" placeholder="https://pf.kakao.com/_xxxxxx">
+              <small class="form-text text-muted">카카오톡 채널 URL을 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+              <button type="submit" name="save_social" class="btn btn-primary">
+                <i class="bi bi-save"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 기타 설정 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'other' ? 'show active' : '' ?>" id="other">
+      <div class="card">
+        <div class="card-body">
+          <form action="site_settings.php?tab=other" method="POST">
+            <div class="mb-3">
+              <label for="google_analytics_id" class="form-label">Google Analytics ID</label>
+              <input type="text" class="form-control" id="google_analytics_id" name="google_analytics_id" value="<?= htmlspecialchars($all_settings['google_analytics_id'] ?? '') ?>" placeholder="G-XXXXXXXXXX 또는 UA-XXXXXXXX-X">
+              <small class="form-text text-muted">Google Analytics 추적 ID를 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="custom_css" class="form-label">사용자 정의 CSS</label>
+              <textarea class="form-control" id="custom_css" name="custom_css" rows="8"><?= htmlspecialchars($all_settings['custom_css'] ?? '') ?></textarea>
+              <small class="form-text text-muted">사이트에 적용할 추가 CSS를 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="mb-3">
+              <label for="custom_js" class="form-label">사용자 정의 JavaScript</label>
+              <textarea class="form-control" id="custom_js" name="custom_js" rows="8"><?= htmlspecialchars($all_settings['custom_js'] ?? '') ?></textarea>
+              <small class="form-text text-muted">사이트에 적용할 추가 JavaScript를 입력하세요. (선택사항)</small>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+              <button type="submit" name="save_other" class="btn btn-primary">
+                <i class="bi bi-save"></i> 저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 컬러 피커 -->
+<script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+<!-- 코드 에디터 -->
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/lib/codemirror.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/mode/css/css.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/mode/javascript/javascript.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // 탭 활성화
+  const hash = window.location.hash;
+  if (hash) {
+    const tab = document.querySelector('a[href="' + hash + '"]');
+    if (tab) {
+      tab.click();
+    }
+  }
+  
+  // 컬러 피커 초기화
+  const colorInputs = document.querySelectorAll('.color-input');
+  colorInputs.forEach(function(input) {
+    const pickr = Pickr.create({
+      el: input.previousElementSibling.querySelector('.color-preview'),
+      theme: 'classic',
+      default: input.value,
+      components: {
+        preview: true,
+        opacity: true,
+        hue: true,
+        interaction: {
+          hex: true,
+          rgba: true,
+          hsla: false,
+          hsva: false,
+          cmyk: false,
+          input: true,
+          clear: false,
+          save: true
+        }
+      }
+    });
+    
+    pickr.on('save', (color, instance) => {
+      const hexColor = color.toHEXA().toString();
+      input.value = hexColor;
+      input.previousElementSibling.querySelector('.color-preview').style.backgroundColor = hexColor;
+      instance.hide();
+      
+      // 미리보기 업데이트
+      updateColorPreview();
+    });
+    
+    // 컬러 피커 변경 시에도 실시간 업데이트
+    pickr.on('change', (color) => {
+      const hexColor = color.toHEXA().toString();
+      input.value = hexColor;
+      input.previousElementSibling.querySelector('.color-preview').style.backgroundColor = hexColor;
+      updateColorPreview();
+    });
+  });
+  
+  function updateColorPreview() {
+    document.documentElement.style.setProperty('--primary-color', document.getElementById('primary_color').value);
+    document.documentElement.style.setProperty('--secondary-color', document.getElementById('secondary_color').value);
+    document.documentElement.style.setProperty('--success-color', document.getElementById('success_color').value);
+    document.documentElement.style.setProperty('--info-color', document.getElementById('info_color').value);
+    document.documentElement.style.setProperty('--warning-color', document.getElementById('warning_color').value);
+    document.documentElement.style.setProperty('--danger-color', document.getElementById('danger_color').value);
+    document.documentElement.style.setProperty('--light-color', document.getElementById('light_color').value);
+    document.documentElement.style.setProperty('--dark-color', document.getElementById('dark_color').value);
+  }
+  
+  // 초기 미리보기 설정
+  updateColorPreview();
+  
+  // 폰트 미리보기 업데이트
+  function updateFontPreview() {
+    if (document.getElementById('body_font')) {
+      document.documentElement.style.setProperty('--body-font', document.getElementById('body_font').value);
+    }
+    if (document.getElementById('heading_font')) {
+      document.documentElement.style.setProperty('--heading-font', document.getElementById('heading_font').value);
+    }
+    if (document.getElementById('font_size_base')) {
+      document.documentElement.style.setProperty('--font-size-base', document.getElementById('font_size_base').value);
+    }
+  }
+  
+  // 폰트 변경 시 미리보기 업데이트
+  if (document.getElementById('body_font')) {
+    document.getElementById('body_font').addEventListener('change', updateFontPreview);
+  }
+  if (document.getElementById('heading_font')) {
+    document.getElementById('heading_font').addEventListener('change', updateFontPreview);
+  }
+  if (document.getElementById('font_size_base')) {
+    document.getElementById('font_size_base').addEventListener('change', updateFontPreview);
+  }
+  
+  // 초기 폰트 미리보기 설정
+  updateFontPreview();
+  
+  // 폼 제출 전 색상 값 검증
+  const themeForm = document.querySelector('form[action*="tab=theme"]');
+  if (themeForm) {
+    themeForm.addEventListener('submit', function(e) {
+      // 모든 컬러 인풋의 값을 다시 한번 확인
+      const colorInputs = themeForm.querySelectorAll('.color-input');
+      let hasValidColors = true;
+      
+      colorInputs.forEach(input => {
+        const value = input.value.trim();
+        // 색상 값이 유효한지 검증 (# + 6자리 또는 8자리 헥스)
+        if (!value || (!value.match(/^#[0-9A-Fa-f]{6}$/) && !value.match(/^#[0-9A-Fa-f]{8}$/))) {
+          console.warn('Invalid color value for', input.name, ':', value);
+          // 기본값으로 설정
+          switch(input.name) {
+            case 'primary_color': input.value = '#0d6efd'; break;
+            case 'secondary_color': input.value = '#6c757d'; break;
+            case 'success_color': input.value = '#198754'; break;
+            case 'info_color': input.value = '#0dcaf0'; break;
+            case 'warning_color': input.value = '#ffc107'; break;
+            case 'danger_color': input.value = '#dc3545'; break;
+            case 'light_color': input.value = '#f8f9fa'; break;
+            case 'dark_color': input.value = '#212529'; break;
+          }
+        }
+      });
+    });
+  }
+  
+  // 코드 에디터 초기화
+  if (document.getElementById('custom_css')) {
+    const cssEditor = CodeMirror.fromTextArea(document.getElementById('custom_css'), {
+      mode: 'css',
+      theme: 'dracula',
+      lineNumbers: true,
+      lineWrapping: true,
+      autoCloseBrackets: true,
+      matchBrackets: true
+    });
+  }
+  
+  if (document.getElementById('custom_js')) {
+    const jsEditor = CodeMirror.fromTextArea(document.getElementById('custom_js'), {
+      mode: 'javascript',
+      theme: 'dracula',
+      lineNumbers: true,
+      lineWrapping: true,
+      autoCloseBrackets: true,
+      matchBrackets: true
+    });
+  }
+  
+  // 알림 메시지 자동 사라지기 (5초 후)
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(alert => {
+    setTimeout(() => {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    }, 5000);
+  });
+});
+</script>
+</body>
+</html> 

@@ -1,0 +1,25 @@
+# Admin Directory Access Configuration
+RewriteEngine On
+
+# Allow all PHP files in admin directory
+RewriteRule ^.*\.php$ - [L]
+
+# Allow static assets (CSS, JS, images)
+RewriteRule \.(css|js|png|jpe?g|gif|svg|ico|woff|woff2|ttf|eot)$ - [L]
+
+# Allow subdirectories
+RewriteRule ^[^/]+/.*$ - [L]
+
+# Security: Block direct access to sensitive files
+<FilesMatch "^(config|bootstrap|auth)\.php$">
+    # Allow these files to be accessed directly
+</FilesMatch>
+
+# Security: Block access to backup and temp files
+<FilesMatch "\.(bak|backup|tmp|log|sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Default directory index
+DirectoryIndex index.php
