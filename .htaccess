@@ -1,0 +1,20 @@
+# 개발환경용 htaccess - 보안 제한 완화
+RewriteEngine On
+
+# 게시판 라우팅: /board/list/{id}/ -> /board.php?id={id}
+RewriteRule ^board/list/([0-9]+)/?$ board.php?id=$1 [L,QSA]
+
+# 모든 PHP 파일 접근 허용
+RewriteRule \.php$ - [L]
+
+# 정적 파일 허용
+RewriteRule .+\.(css|js|png|jpe?g|gif|webp|svg|ico|eot|ttf|woff2?)$ - [L,NC]
+
+# 디렉터리 브라우징 비활성화 (보안)
+Options -Indexes
+
+# 개발용 기본 보안 헤더만 적용
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+</IfModule>

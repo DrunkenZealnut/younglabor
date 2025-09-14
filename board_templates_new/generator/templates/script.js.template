@@ -1,0 +1,639 @@
+/**
+ * 자동 생성된 게시판 시스템 JavaScript
+ * 공통 기능 및 유틸리티 함수들
+ */
+
+// 전역 설정
+window.BoardSystem = {
+    config: {
+        confirmDelete: true,
+        autoSave: false,
+        keyboardShortcuts: true,
+        animations: true
+    },
+    
+    // 초기화
+    init: function() {
+        this.bindEvents();
+        this.initTooltips();
+        this.initModals();
+        this.loadUserPreferences();
+        console.log('Board System initialized');
+    },
+    
+    // 이벤트 바인딩
+    bindEvents: function() {
+        // 키보드 단축키
+        if (this.config.keyboardShortcuts) {
+            this.initKeyboardShortcuts();
+        }
+        
+        // 폼 자동 저장
+        if (this.config.autoSave) {
+            this.initAutoSave();
+        }
+        
+        // 애니메이션 효과
+        if (this.config.animations) {
+            this.initAnimations();
+        }
+        
+        // 공통 이벤트들
+        this.initCommonEvents();
+    },
+    
+    // 키보드 단축키
+    initKeyboardShortcuts: function() {
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + 키 조합
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'h': // 홈으로
+                        e.preventDefault();
+                        window.location.href = '/';
+                        break;
+                    case 'n': // 새 글 작성
+                        e.preventDefault();
+                        const writeButton = document.querySelector('a[href*="_write.php"]');
+                        if (writeButton) writeButton.click();
+                        break;
+                    case 'l': // 목록으로
+                        e.preventDefault();
+                        const listButton = document.querySelector('a[href*="_list.php"]');
+                        if (listButton) listButton.click();
+                        break;
+                    case 'f': // 검색창 포커스
+                        e.preventDefault();
+                        const searchInput = document.querySelector('input[name="search_query"]');
+                        if (searchInput) searchInput.focus();
+                        break;
+                    case 'd': // 다크모드 토글
+                        e.preventDefault();
+                        BoardSystem.toggleDarkMode();
+                        break;
+                    case '/': // 단축키 도움말
+                        e.preventDefault();
+                        BoardSystem.showKeyboardShortcuts();
+                        break;
+                    case 'enter': // 빠른 저장 (글쓰기 페이지에서)
+                        if (document.querySelector('#writeForm')) {
+                            e.preventDefault();
+                            document.querySelector('#writeForm').submit();
+                        }
+                        break;
+                }
+            }
+            
+            // ESC 키
+            if (e.key === 'Escape') {
+                // 열려있는 모달 닫기
+                const openModal = document.querySelector('.modal.show');
+                if (openModal) {
+                    const modal = bootstrap.Modal.getInstance(openModal);
+                    if (modal) modal.hide();
+                }
+            }
+        });
+    },
+    
+    // 자동 저장 기능
+    initAutoSave: function() {
+        const forms = document.querySelectorAll('form[data-autosave]');
+        forms.forEach(form => {
+            const inputs = form.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', debounce(() => {
+                    this.autoSaveForm(form);
+                }, 2000));
+            });
+        });
+    },
+    
+    // 애니메이션 초기화
+    initAnimations: function() {
+        // 페이지 로드 애니메이션
+        document.body.classList.add('fade-in');
+        
+        // 스크롤 애니메이션
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('slide-in-up');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card, .table').forEach(el => {
+            observer.observe(el);
+        });
+    },
+    
+    // 공통 이벤트 초기화
+    initCommonEvents: function() {
+        // 삭제 확인
+        document.querySelectorAll('[data-confirm-delete]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+        
+        // 폼 제출 버튼 중복 클릭 방지
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton && !submitButton.disabled) {
+                    submitButton.disabled = true;
+                    const originalText = submitButton.innerHTML;
+                    submitButton.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> 처리중...';
+                    
+                    // 5초 후 다시 활성화 (오류 상황 대비)
+                    setTimeout(() => {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalText;
+                    }, 5000);
+                }
+            });
+        });
+        
+        // 파일 업로드 드래그 앤 드롭
+        const uploadZones = document.querySelectorAll('.upload-zone');
+        uploadZones.forEach(zone => {
+            this.initFileUploadZone(zone);
+        });
+        
+        // 글자수 카운터
+        document.querySelectorAll('[data-max-length]').forEach(input => {
+            this.initCharacterCounter(input);
+        });
+        
+        // 테이블 정렬
+        document.querySelectorAll('.table-sortable th[data-sort]').forEach(header => {
+            header.style.cursor = 'pointer';
+            header.addEventListener('click', () => {
+                this.sortTable(header);
+            });
+        });
+    },
+    
+    // 툴팁 초기화
+    initTooltips: function() {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => 
+            new bootstrap.Tooltip(tooltipTriggerEl)
+        );
+    },
+    
+    // 모달 초기화
+    initModals: function() {
+        // 모달 열릴 때 포커스 설정
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function() {
+                const firstInput = modal.querySelector('input, textarea, select');
+                if (firstInput) firstInput.focus();
+            });
+        });
+    },
+    
+    // 다크 모드 토글
+    toggleDarkMode: function() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', isDark);
+        
+        // 버튼 텍스트 업데이트
+        const toggleButton = document.querySelector('[onclick="toggleDarkMode()"]');
+        if (toggleButton) {
+            toggleButton.innerHTML = isDark 
+                ? '<i class="bi bi-sun"></i> 라이트 모드' 
+                : '<i class="bi bi-moon"></i> 다크 모드';
+        }
+        
+        this.showToast(isDark ? '다크 모드가 활성화되었습니다.' : '라이트 모드가 활성화되었습니다.');
+    },
+    
+    // 사용자 설정 로드
+    loadUserPreferences: function() {
+        // 다크 모드 복원
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+        
+        // 기타 설정들 복원
+        const savedConfig = localStorage.getItem('boardSystemConfig');
+        if (savedConfig) {
+            try {
+                Object.assign(this.config, JSON.parse(savedConfig));
+            } catch (e) {
+                console.warn('Failed to load user preferences:', e);
+            }
+        }
+    },
+    
+    // 설정 저장
+    saveUserPreferences: function() {
+        localStorage.setItem('boardSystemConfig', JSON.stringify(this.config));
+    },
+    
+    // 파일 업로드 영역 초기화
+    initFileUploadZone: function(zone) {
+        const fileInput = zone.querySelector('input[type="file"]');
+        if (!fileInput) return;
+        
+        zone.addEventListener('click', () => fileInput.click());
+        
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('dragover');
+        });
+        
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('dragover');
+        });
+        
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                this.showFileInfo(files[0], zone);
+                
+                // 파일 선택 이벤트 트리거
+                fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                this.showFileInfo(e.target.files[0], zone);
+            }
+        });
+    },
+    
+    // 파일 정보 표시
+    showFileInfo: function(file, zone) {
+        const infoDiv = zone.querySelector('.file-info') || document.createElement('div');
+        infoDiv.className = 'file-info mt-2';
+        infoDiv.innerHTML = `
+            <div class="alert alert-info">
+                <i class="bi bi-file-earmark"></i>
+                <strong>${file.name}</strong>
+                <span class="badge bg-secondary ms-2">${this.formatFileSize(file.size)}</span>
+            </div>
+        `;
+        
+        if (!zone.querySelector('.file-info')) {
+            zone.appendChild(infoDiv);
+        }
+    },
+    
+    // 글자수 카운터 초기화
+    initCharacterCounter: function(input) {
+        const maxLength = parseInt(input.dataset.maxLength);
+        const counterId = input.id + 'Count';
+        let counter = document.getElementById(counterId);
+        
+        if (!counter) {
+            counter = document.createElement('div');
+            counter.id = counterId;
+            counter.className = 'form-text';
+            input.parentNode.appendChild(counter);
+        }
+        
+        const updateCounter = () => {
+            const length = input.value.length;
+            counter.textContent = `${length}/${maxLength}자`;
+            
+            if (length > maxLength * 0.9) {
+                counter.className = 'form-text text-warning';
+            } else if (length >= maxLength) {
+                counter.className = 'form-text text-danger';
+            } else {
+                counter.className = 'form-text text-muted';
+            }
+        };
+        
+        input.addEventListener('input', updateCounter);
+        updateCounter(); // 초기값 설정
+    },
+    
+    // 테이블 정렬
+    sortTable: function(header) {
+        const table = header.closest('table');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const column = header.cellIndex;
+        const sortType = header.dataset.sort || 'text';
+        const currentOrder = header.dataset.order || 'asc';
+        const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+        
+        // 정렬 아이콘 업데이트
+        table.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        header.classList.add(`sort-${newOrder}`);
+        header.dataset.order = newOrder;
+        
+        // 행 정렬
+        rows.sort((a, b) => {
+            const aVal = a.cells[column].textContent.trim();
+            const bVal = b.cells[column].textContent.trim();
+            
+            let comparison = 0;
+            if (sortType === 'number') {
+                comparison = parseFloat(aVal) - parseFloat(bVal);
+            } else if (sortType === 'date') {
+                comparison = new Date(aVal) - new Date(bVal);
+            } else {
+                comparison = aVal.localeCompare(bVal);
+            }
+            
+            return newOrder === 'asc' ? comparison : -comparison;
+        });
+        
+        // DOM 업데이트
+        rows.forEach(row => tbody.appendChild(row));
+    },
+    
+    // 자동 저장
+    autoSaveForm: function(form) {
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
+        
+        const formId = form.id || form.action.split('/').pop();
+        localStorage.setItem(`autosave_${formId}`, JSON.stringify({
+            data: data,
+            timestamp: Date.now()
+        }));
+        
+        this.showToast('임시 저장되었습니다.', 'success', 2000);
+    },
+    
+    // 임시 저장된 데이터 복원
+    restoreAutoSave: function(form) {
+        const formId = form.id || form.action.split('/').pop();
+        const saved = localStorage.getItem(`autosave_${formId}`);
+        
+        if (saved) {
+            try {
+                const { data, timestamp } = JSON.parse(saved);
+                const age = Date.now() - timestamp;
+                
+                // 1시간 이내의 데이터만 복원
+                if (age < 3600000) {
+                    Object.entries(data).forEach(([key, value]) => {
+                        const input = form.querySelector(`[name="${key}"]`);
+                        if (input && !input.value) {
+                            input.value = value;
+                        }
+                    });
+                    
+                    this.showToast('임시 저장된 데이터를 복원했습니다.', 'info');
+                }
+            } catch (e) {
+                console.warn('Failed to restore autosave:', e);
+            }
+        }
+    },
+    
+    // 토스트 메시지
+    showToast: function(message, type = 'info', duration = 3000) {
+        // 기존 토스트 제거
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) {
+            existingToast.remove();
+        }
+        
+        const toast = document.createElement('div');
+        toast.className = `toast-message alert alert-${type} position-fixed`;
+        toast.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease-in-out;
+        `;
+        toast.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <span>${message}</span>
+                <button type="button" class="btn-close btn-close-sm" onclick="this.parentNode.parentNode.remove()"></button>
+            </div>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // 애니메이션
+        setTimeout(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateX(0)';
+        }, 10);
+        
+        // 자동 제거
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    },
+    
+    // 키보드 단축키 도움말
+    showKeyboardShortcuts: function() {
+        const shortcuts = [
+            { key: 'Ctrl + H', desc: '홈으로 이동' },
+            { key: 'Ctrl + N', desc: '새 글 작성' },
+            { key: 'Ctrl + L', desc: '목록으로 이동' },
+            { key: 'Ctrl + F', desc: '검색창 포커스' },
+            { key: 'Ctrl + D', desc: '다크모드 전환' },
+            { key: 'Ctrl + /', desc: '단축키 도움말' },
+            { key: 'Ctrl + Enter', desc: '빠른 저장 (글쓰기)' },
+            { key: 'ESC', desc: '모달 닫기' }
+        ];
+        
+        let modalHtml = `
+            <div class="modal fade" id="shortcutsModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">키보드 단축키</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead><tr><th>단축키</th><th>기능</th></tr></thead>
+                                    <tbody>
+        `;
+        
+        shortcuts.forEach(shortcut => {
+            modalHtml += `<tr><td><kbd>${shortcut.key}</kbd></td><td>${shortcut.desc}</td></tr>`;
+        });
+        
+        modalHtml += `
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 기존 모달 제거
+        const existing = document.getElementById('shortcutsModal');
+        if (existing) existing.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = new bootstrap.Modal(document.getElementById('shortcutsModal'));
+        modal.show();
+    },
+    
+    // 유틸리티 함수들
+    formatFileSize: function(bytes) {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        if (bytes === 0) return '0 Bytes';
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+    },
+    
+    formatNumber: function(num) {
+        return new Intl.NumberFormat('ko-KR').format(num);
+    },
+    
+    formatDate: function(date, format = 'YYYY-MM-DD HH:mm') {
+        const d = new Date(date);
+        const formats = {
+            'YYYY': d.getFullYear(),
+            'MM': String(d.getMonth() + 1).padStart(2, '0'),
+            'DD': String(d.getDate()).padStart(2, '0'),
+            'HH': String(d.getHours()).padStart(2, '0'),
+            'mm': String(d.getMinutes()).padStart(2, '0'),
+            'ss': String(d.getSeconds()).padStart(2, '0')
+        };
+        
+        return format.replace(/YYYY|MM|DD|HH|mm|ss/g, match => formats[match]);
+    },
+    
+    // AJAX 요청 헬퍼
+    request: function(url, options = {}) {
+        const defaultOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        };
+        
+        return fetch(url, { ...defaultOptions, ...options })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .catch(error => {
+                console.error('Request failed:', error);
+                this.showToast('요청 처리 중 오류가 발생했습니다.', 'danger');
+                throw error;
+            });
+    }
+};
+
+// 디바운스 유틸리티 함수
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 쓰로틀 유틸리티 함수
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+}
+
+// DOM 로드 완료시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    BoardSystem.init();
+    
+    // 자동저장 복원 (글쓰기 폼이 있는 경우)
+    const writeForm = document.getElementById('writeForm');
+    if (writeForm) {
+        BoardSystem.restoreAutoSave(writeForm);
+    }
+    
+    // 성능 모니터링 (개발 모드에서만)
+    if (window.location.hostname === 'localhost') {
+        console.log(`Page loaded in ${performance.now()}ms`);
+    }
+});
+
+// 페이지 언로드시 정리
+window.addEventListener('beforeunload', function() {
+    // 사용자 설정 저장
+    BoardSystem.saveUserPreferences();
+    
+    // 미저장된 폼 데이터가 있으면 경고
+    const forms = document.querySelectorAll('form[data-warn-unsaved]');
+    forms.forEach(form => {
+        const inputs = form.querySelectorAll('input, textarea, select');
+        let hasChanges = false;
+        
+        inputs.forEach(input => {
+            if (input.defaultValue !== input.value) {
+                hasChanges = true;
+            }
+        });
+        
+        if (hasChanges) {
+            return '변경사항이 저장되지 않았습니다. 정말 떠나시겠습니까?';
+        }
+    });
+});
+
+// 전역 함수들 (하위 호환성을 위해)
+function toggleDarkMode() {
+    BoardSystem.toggleDarkMode();
+}
+
+function showKeyboardShortcuts() {
+    BoardSystem.showKeyboardShortcuts();
+}
+
+// 에러 핸들링
+window.addEventListener('error', function(e) {
+    console.error('JavaScript error:', e.error);
+    BoardSystem.showToast('페이지 오류가 발생했습니다.', 'danger');
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled promise rejection:', e.reason);
+    BoardSystem.showToast('비동기 작업 중 오류가 발생했습니다.', 'warning');
+});

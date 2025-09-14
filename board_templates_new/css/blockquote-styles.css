@@ -1,0 +1,344 @@
+/**
+ * Blockquote Styles
+ * 인용구 전용 스타일시트
+ * 인라인 스타일을 CSS 클래스로 분리
+ */
+
+/* 공통 인용구 카드 스타일 */
+.quote-card {
+    position: relative !important;
+    margin: 16px 0 !important;
+    transition: all 0.3s ease !important;
+}
+
+.quote-card:hover {
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+.quote-card::after {
+    content: "더블클릭하여 편집";
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 11px;
+    color: #a0aec0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quote-card:hover::after {
+    opacity: 1;
+}
+
+.quote-body {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+}
+
+.quote-source {
+    font-size: 13px !important;
+    font-style: italic !important;
+    margin-top: 12px !important;
+    padding-top: 8px !important;
+}
+
+/* 기본 카드 스타일 */
+.quote-card-default {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.quote-card-default .quote-body {
+    color: #374151 !important;
+}
+
+.quote-card-default .quote-source {
+    color: #6b7280 !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+/* 말풍선 스타일 */
+.quote-card-bubble {
+    background: #ffffff !important;
+    border: 2px solid #4A90E2 !important;
+    border-radius: 20px !important;
+    padding: 20px 24px !important;
+    margin-bottom: 32px !important;
+    box-shadow: 0 4px 12px rgba(74,144,226,0.15) !important;
+}
+
+.quote-card-bubble .quote-body {
+    color: #2d3748 !important;
+}
+
+.quote-card-bubble .quote-source {
+    color: #4A90E2 !important;
+    font-weight: 500 !important;
+    border-top: 1px solid rgba(74,144,226,0.2) !important;
+}
+
+.quote-card-bubble .bubble-tail-outer {
+    position: absolute !important;
+    bottom: -12px !important;
+    left: 30px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 12px solid transparent !important;
+    border-right: 12px solid transparent !important;
+    border-top: 12px solid #4A90E2 !important;
+    z-index: 1 !important;
+}
+
+.quote-card-bubble .bubble-tail-inner {
+    position: absolute !important;
+    bottom: -10px !important;
+    left: 31px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 10px solid transparent !important;
+    border-right: 10px solid transparent !important;
+    border-top: 10px solid #ffffff !important;
+    z-index: 2 !important;
+}
+
+/* 강조 카드 스타일 */
+.quote-card-accent {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 12px rgba(102,126,234,0.3) !important;
+}
+
+.quote-card-accent .quote-body {
+    color: white !important;
+    font-weight: 500 !important;
+}
+
+.quote-card-accent .quote-source {
+    color: rgba(255,255,255,0.8) !important;
+    border-top: 1px solid rgba(255,255,255,0.2) !important;
+}
+
+/* 심플 스타일 */
+.quote-card-simple {
+    background: #f8fafc !important;
+    border-left: 4px solid #4A90E2 !important;
+    padding: 20px !important;
+}
+
+.quote-card-simple .quote-body {
+    color: #4a5568 !important;
+    font-style: italic !important;
+}
+
+.quote-card-simple .quote-source {
+    color: #718096 !important;
+    font-weight: 500 !important;
+    border-top: none !important;
+}
+
+.quote-card-simple .quote-source::before {
+    content: "— ";
+}
+
+/* 컬러 카드 스타일 */
+.quote-card-colored {
+    background: #fff5f5 !important;
+    border: 1px solid #fed7d7 !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+}
+
+.quote-card-colored .quote-body {
+    color: #c53030 !important;
+}
+
+.quote-card-colored .quote-source {
+    color: #e53e3e !important;
+    opacity: 0.8 !important;
+    border-top: 1px solid rgba(229,62,62,0.2) !important;
+}
+
+/* 모달 스타일 */
+.quote-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.quote-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.quote-modal-header {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quote-modal-header h3 {
+    margin: 0;
+    color: #1a202c;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.quote-modal-header .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #718096;
+    transition: color 0.2s;
+}
+
+.quote-modal-header .close-btn:hover {
+    color: #1a202c;
+}
+
+.quote-modal .form-group {
+    margin-bottom: 16px;
+}
+
+.quote-modal label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.quote-modal .optional-label {
+    color: #a0aec0;
+    font-weight: 400;
+    font-size: 12px;
+}
+
+.quote-modal textarea,
+.quote-modal input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.quote-modal textarea:focus,
+.quote-modal input[type="text"]:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+.quote-modal textarea {
+    min-height: 80px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.quote-modal .style-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.quote-modal .style-option {
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.quote-modal .style-option:hover {
+    border-color: #cbd5e0;
+    background: #f8fafc;
+}
+
+.quote-modal .style-option.active {
+    border-color: #4A90E2;
+    background: #f0f7ff;
+}
+
+.quote-modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.quote-modal-actions button {
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.quote-modal-actions .cancel-btn {
+    border: 1px solid #cbd5e0;
+    background: white;
+    color: #4a5568;
+}
+
+.quote-modal-actions .cancel-btn:hover {
+    background: #f8fafc;
+}
+
+.quote-modal-actions .confirm-btn {
+    border: none;
+    background: #4A90E2;
+    color: white;
+    font-weight: 500;
+}
+
+.quote-modal-actions .confirm-btn:hover {
+    background: #3a7bc8;
+}
+
+/* 드롭다운 미리보기 스타일 */
+.blockquote-preview {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.blockquote-preview:hover {
+    transform: scale(1.05);
+}

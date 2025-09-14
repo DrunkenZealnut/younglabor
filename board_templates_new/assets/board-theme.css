@@ -1,0 +1,574 @@
+/* 게시판 테마 CSS - 외부 테마 시스템과 연동 - v2.0 갤러리 카드 테두리 개선 */
+
+/* CSS 변수를 사용한 테마 기본 설정 */
+:root {
+    /* ATTI 프로젝트 현재 테마 설정 (yellow_bright) */
+    --primary-color: #FBBF24;
+    --secondary-color: #F97316;
+    --accent-color: #FED7AA;
+    --text-primary: #111827;
+    --text-secondary: #4B5563;
+    --background: #FFFBEB;
+    --border-color: #FDE68A;
+    --font-size: 16px;
+    --line-height: 1.6;
+    --container-width: 1200px;
+    --section-spacing: 60px;
+    --border-radius: 16px;
+}
+
+.board-surface {
+    /* 배경색 */
+    --theme-bg-primary: var(--background, #FFFBEB);
+    --theme-bg-secondary: #FEF3C7;
+    --theme-bg-accent: #FBBF24;
+    
+    /* 테두리 색상 - 배경색과의 구분성을 위해 조정 */
+    --theme-border-light: var(--border-color, #FDE68A);
+    --theme-border-medium: #F59E0B;
+    --theme-border-strong: #D97706;
+    --theme-border-primary: var(--primary-color, #FBBF24);
+    /* 카드 테두리 전용 - 배경과 더 명확한 대비 */
+    --theme-card-border: #E09C00; /* fallback for older browsers */
+    --theme-card-border: color-mix(in srgb, var(--theme-border-medium), var(--theme-text-secondary) 20%);
+    --theme-card-border-hover: #B8661F; /* fallback for older browsers */
+    --theme-card-border-hover: color-mix(in srgb, var(--theme-border-strong), var(--theme-text-primary) 10%);
+    
+    /* 텍스트 색상 */
+    --theme-text-primary: var(--text-primary, #111827);
+    --theme-text-secondary: var(--text-secondary, #4B5563);
+    --theme-text-muted: #9CA3AF;
+    
+    /* 상태 색상 */
+    --theme-success: #10B981;
+    --theme-warning: #F59E0B;
+    --theme-error: #EF4444;
+    --theme-info: #3B82F6;
+    
+    /* 프라이머리 색상 (현재 테마 기반) */
+    --theme-primary: var(--primary-color, #FBBF24);
+    --theme-primary-light: #FEF3C7;
+    --theme-primary-dark: #D97706;
+    
+    /* 세컨더리 색상 (현재 테마 기반) */
+    --theme-secondary: var(--secondary-color, #F97316);
+    --theme-secondary-light: var(--accent-color, #FED7AA);
+    --theme-secondary-dark: #EA580C;
+    
+    /* 그림자 (황금빛 톤) */
+    --theme-shadow-sm: 0 1px 2px 0 rgba(251, 191, 36, 0.1);
+    --theme-shadow-md: 0 4px 6px -1px rgba(251, 191, 36, 0.15);
+    --theme-shadow-lg: 0 10px 15px -3px rgba(251, 191, 36, 0.2);
+    
+    /* 둥근 모서리 (현재 테마 설정) */
+    --theme-radius: var(--border-radius, 16px);
+    --theme-radius-sm: 8px;
+    --theme-radius-lg: 24px;
+}
+
+/* 게시판 기본 스타일 - 테마 변수 적용 */
+.board-surface {
+    background-color: var(--theme-bg-primary);
+    border-color: var(--theme-border-light);
+    border-radius: var(--theme-radius);
+    box-shadow: var(--theme-shadow-sm);
+}
+
+/* 갤러리 카드 전용 테두리 클래스 - 최대 우선순위 */
+.board-surface .gallery-card-border,
+.board-surface .gallery-card-border.border,
+div.board-surface .gallery-card-border,
+div.board-surface a.gallery-card-border {
+    border-color: #E09C00 !important;
+    border-color: var(--theme-card-border, #E09C00) !important;
+}
+
+/* 갤러리 카드 스타일 - 배경색과 구분되는 테두리 - 최대 우선순위 */
+.board-surface a.block.group.gallery-card-border,
+div.board-surface a.block.group.gallery-card-border,
+div.board-surface .grid a.block.group.gallery-card-border,
+.board-surface .grid a.block.group.gallery-card-border {
+    border-color: #E09C00 !important;
+    border-color: var(--theme-card-border, #E09C00) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    /* 배경색과의 대비를 위해 더 진한 테두리 사용 */
+    background: var(--theme-bg-primary, #FFFBEB) !important;
+}
+
+.board-surface a.block.group.gallery-card-border:hover,
+div.board-surface a.block.group.gallery-card-border:hover,
+.board-surface .grid a.block.group.gallery-card-border:hover {
+    border-color: #B8661F !important;
+    border-color: var(--theme-card-border-hover, #B8661F) !important;
+    box-shadow: var(--theme-shadow-md, 0 4px 6px -1px rgba(251, 191, 36, 0.15)) !important;
+}
+
+/* 카드 내부 구분선도 동일하게 조정 - 최대 우선순위 */
+.board-surface .border-t.gallery-card-border,
+.board-surface div.border-t.gallery-card-border,
+div.board-surface .border-t.gallery-card-border {
+    border-top-color: #E09C00 !important;
+    border-top-color: var(--theme-card-border, #E09C00) !important;
+}
+
+/* 헤더 스타일 */
+.board-surface .board-header {
+    border-bottom-color: var(--theme-border-light);
+}
+
+.board-surface .board-title {
+    color: var(--theme-text-primary);
+}
+
+.board-surface .board-description {
+    color: var(--theme-text-secondary);
+}
+
+/* 버튼 스타일 재정의 */
+.board-surface .btn-primary {
+    background-color: var(--theme-primary) !important;
+    border-color: var(--theme-primary) !important;
+    color: white !important;
+    border-radius: var(--theme-radius) !important;
+}
+
+.board-surface .btn-primary:hover {
+    background-color: var(--theme-primary-dark) !important;
+    border-color: var(--theme-primary-dark) !important;
+}
+
+.board-surface .btn-secondary {
+    background-color: var(--theme-bg-secondary) !important;
+    border-color: var(--theme-border-medium) !important;
+    color: var(--theme-text-primary) !important;
+    border-radius: var(--theme-radius) !important;
+}
+
+.board-surface .btn-secondary:hover {
+    background-color: var(--theme-bg-accent) !important;
+    border-color: var(--theme-border-strong) !important;
+}
+
+.board-surface .btn-outline {
+    background-color: transparent !important;
+    border-color: var(--theme-border-medium) !important;
+    color: var(--theme-text-primary) !important;
+    border-radius: var(--theme-radius) !important;
+}
+
+.board-surface .btn-outline:hover {
+    background-color: var(--theme-bg-secondary) !important;
+    border-color: var(--theme-primary) !important;
+    color: var(--theme-primary) !important;
+}
+
+/* 테두리 색상 재정의 */
+.board-surface .border-slate-200 { 
+    border-color: var(--theme-border-light) !important; 
+}
+
+
+.board-surface .border-slate-300 { 
+    border-color: var(--theme-border-medium) !important; 
+}
+
+.board-surface .border-gray-200 { 
+    border-color: var(--theme-border-light) !important; 
+}
+
+.board-surface .border-gray-300 { 
+    border-color: var(--theme-border-medium) !important; 
+}
+
+.board-surface .divide-slate-200 > :not([hidden]) ~ :not([hidden]) { 
+    border-color: var(--theme-border-light) !important; 
+}
+
+.board-surface .border-t { 
+    border-top-color: var(--theme-border-light) !important; 
+}
+
+.board-surface .border-b { 
+    border-bottom-color: var(--theme-border-light) !important; 
+}
+
+.board-surface .border-l { 
+    border-left-color: var(--theme-border-light) !important; 
+}
+
+.board-surface .border-r { 
+    border-right-color: var(--theme-border-light) !important; 
+}
+
+/* 배경색 재정의 */
+.board-surface .bg-white {
+    background-color: var(--theme-bg-primary) !important;
+}
+
+.board-surface .bg-gray-50 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.board-surface .bg-gray-100 {
+    background-color: var(--theme-bg-accent) !important;
+}
+
+.board-surface .bg-slate-50 {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+.board-surface .bg-slate-100 {
+    background-color: var(--theme-bg-accent) !important;
+}
+
+/* 텍스트 색상 재정의 */
+.board-surface .text-slate-900 {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .text-slate-800 {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .text-slate-700 {
+    color: var(--theme-text-secondary) !important;
+}
+
+.board-surface .text-slate-600 {
+    color: var(--theme-text-secondary) !important;
+}
+
+.board-surface .text-slate-500 {
+    color: var(--theme-text-muted) !important;
+}
+
+.board-surface .text-slate-400 {
+    color: var(--theme-text-muted) !important;
+}
+
+.board-surface .text-gray-900 {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .text-gray-800 {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .text-gray-700 {
+    color: var(--theme-text-secondary) !important;
+}
+
+.board-surface .text-gray-600 {
+    color: var(--theme-text-secondary) !important;
+}
+
+.board-surface .text-gray-500 {
+    color: var(--theme-text-muted) !important;
+}
+
+/* 상태별 색상 */
+.board-surface .text-red-600,
+.board-surface .text-red-700,
+.board-surface .text-red-800 {
+    color: var(--theme-error) !important;
+}
+
+.board-surface .text-green-600,
+.board-surface .text-green-700,
+.board-surface .text-green-800 {
+    color: var(--theme-success) !important;
+}
+
+.board-surface .text-blue-600,
+.board-surface .text-blue-700,
+.board-surface .text-blue-800 {
+    color: var(--theme-info) !important;
+}
+
+.board-surface .text-amber-600,
+.board-surface .text-yellow-600 {
+    color: var(--theme-warning) !important;
+}
+
+/* 상태별 배경색 */
+.board-surface .bg-red-100 {
+    background-color: color-mix(in srgb, var(--theme-error), transparent 85%) !important;
+}
+
+.board-surface .bg-red-50 {
+    background-color: color-mix(in srgb, var(--theme-error), transparent 95%) !important;
+}
+
+.board-surface .bg-green-100 {
+    background-color: color-mix(in srgb, var(--theme-success), transparent 85%) !important;
+}
+
+.board-surface .bg-green-50 {
+    background-color: color-mix(in srgb, var(--theme-success), transparent 95%) !important;
+}
+
+.board-surface .bg-blue-100 {
+    background-color: color-mix(in srgb, var(--theme-info), transparent 85%) !important;
+}
+
+.board-surface .bg-blue-50 {
+    background-color: color-mix(in srgb, var(--theme-info), transparent 95%) !important;
+}
+
+/* 상태별 테두리 */
+.board-surface .border-red-200 {
+    border-color: color-mix(in srgb, var(--theme-error), transparent 70%) !important;
+}
+
+.board-surface .border-green-200 {
+    border-color: color-mix(in srgb, var(--theme-success), transparent 70%) !important;
+}
+
+.board-surface .border-blue-200 {
+    border-color: color-mix(in srgb, var(--theme-info), transparent 70%) !important;
+}
+
+/* 입력 필드 스타일 */
+.board-surface input[type="text"],
+.board-surface input[type="email"],
+.board-surface input[type="password"],
+.board-surface select,
+.board-surface textarea {
+    border-color: var(--theme-border-medium) !important;
+    border-radius: var(--theme-radius) !important;
+    background-color: var(--theme-bg-primary) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface input[type="text"]:focus,
+.board-surface input[type="email"]:focus,
+.board-surface input[type="password"]:focus,
+.board-surface select:focus,
+.board-surface textarea:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme-primary), transparent 90%) !important;
+}
+
+/* 공지사항/추천글 배지 */
+.board-surface .notice-badge {
+    background-color: var(--theme-error) !important;
+    color: white !important;
+}
+
+.board-surface .featured-badge {
+    background-color: var(--theme-info) !important;
+    color: white !important;
+}
+
+/* 댓글 영역 */
+.board-surface .comment-item {
+    border-left: 4px solid var(--theme-primary) !important;
+    background-color: var(--theme-bg-primary) !important;
+    border-color: var(--theme-border-light) !important;
+}
+
+/* 게시판 구조별 스타일링 */
+.board-surface .board-header {
+    background-color: var(--theme-bg-primary) !important;
+    border-bottom-color: var(--theme-border-light) !important;
+}
+
+.board-surface .board-title {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .board-description {
+    color: var(--theme-text-secondary) !important;
+}
+
+.board-surface .board-post-header {
+    background-color: var(--theme-bg-primary) !important;
+    border-color: var(--theme-border-light) !important;
+}
+
+.board-surface .board-post-title {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .board-post-meta {
+    border-bottom-color: var(--theme-border-light) !important;
+}
+
+.board-surface .board-comments-heading {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .board-write-form,
+.board-surface .board-edit-form {
+    background-color: var(--theme-bg-primary) !important;
+}
+
+/* 링크 미리보기 */
+.board-surface .preview-card {
+    background-color: var(--theme-bg-primary) !important;
+    border-color: var(--theme-border-light) !important;
+    border-radius: var(--theme-radius-lg) !important;
+    box-shadow: var(--theme-shadow-sm) !important;
+}
+
+/* 파일 첨부 */
+.board-surface .attachment-item {
+    border-color: var(--theme-border-light) !important;
+    background-color: var(--theme-bg-secondary) !important;
+    border-radius: var(--theme-radius) !important;
+}
+
+.board-surface .attachment-item:hover {
+    background-color: var(--theme-bg-accent) !important;
+}
+
+/* 검색 영역 */
+.board-surface .search-container {
+    background-color: var(--theme-bg-secondary) !important;
+    border-color: var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+}
+
+/* 페이지네이션 */
+.board-surface .pagination .page-link {
+    background-color: var(--theme-bg-primary) !important;
+    border-color: var(--theme-border-light) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .pagination .page-link:hover {
+    background-color: var(--theme-bg-secondary) !important;
+    border-color: var(--theme-primary) !important;
+    color: var(--theme-primary) !important;
+}
+
+.board-surface .pagination .page-item.active .page-link {
+    background-color: var(--theme-primary) !important;
+    border-color: var(--theme-primary) !important;
+    color: white !important;
+}
+
+/* 테이블 스타일 */
+.board-surface table {
+    background-color: var(--theme-bg-primary) !important;
+    border-color: var(--theme-border-light) !important;
+}
+
+.board-surface th {
+    background-color: var(--theme-bg-secondary) !important;
+    color: var(--theme-text-primary) !important;
+    border-bottom-color: var(--theme-border-medium) !important;
+}
+
+.board-surface td {
+    border-bottom-color: var(--theme-border-light) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface tr:hover {
+    background-color: var(--theme-bg-secondary) !important;
+}
+
+/* 캡차 시스템 스타일 */
+.board-surface .captcha-container {
+    background: var(--theme-bg-secondary) !important;
+    border: 2px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+    box-shadow: var(--theme-shadow-sm) !important;
+}
+
+.board-surface .captcha-wrapper {
+    background: var(--theme-bg-secondary) !important;
+    border: 2px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+}
+
+.board-surface .captcha-container input[name="captcha_code"] {
+    background: var(--theme-bg-primary) !important;
+    border: 1px solid var(--theme-border-medium) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .captcha-container input[name="captcha_code"]:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--theme-primary), transparent 90%) !important;
+    outline: none !important;
+}
+
+.board-surface .captcha-refresh-btn {
+    background: var(--theme-primary) !important;
+    border: 1px solid var(--theme-primary-dark) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    color: white !important;
+    transition: all 0.2s ease !important;
+}
+
+.board-surface .captcha-refresh-btn:hover {
+    background: var(--theme-primary-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--theme-shadow-md) !important;
+}
+
+.board-surface .captcha-audio-btn {
+    background: var(--theme-secondary) !important;
+    border: 1px solid var(--theme-secondary-dark) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    color: white !important;
+    transition: all 0.2s ease !important;
+}
+
+.board-surface .captcha-audio-btn:hover {
+    background: var(--theme-secondary-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--theme-shadow-md) !important;
+}
+
+.board-surface .captcha-container img {
+    border: 1px solid var(--theme-border-medium) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    transition: all 0.3s ease !important;
+}
+
+.board-surface .captcha-container img:hover {
+    transform: scale(1.05) !important;
+    box-shadow: var(--theme-shadow-md) !important;
+}
+
+.board-surface .captcha-help {
+    color: var(--theme-text-secondary) !important;
+    font-size: 0.875rem !important;
+}
+
+/* 반응형 조정 */
+@media (max-width: 640px) {
+    .board-surface {
+        border-radius: var(--theme-radius-sm) !important;
+        margin: 1rem !important;
+    }
+    
+    .board-surface .captcha-wrapper {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        text-align: center !important;
+    }
+    
+    .board-surface .captcha-buttons {
+        justify-content: center !important;
+    }
+}
+
+/* 다크모드 대응 (선택사항) */
+@media (prefers-color-scheme: dark) {
+    .board-surface {
+        --theme-bg-primary: var(--bg-primary-dark, #1e293b);
+        --theme-bg-secondary: var(--bg-secondary-dark, #334155);
+        --theme-bg-accent: var(--bg-accent-dark, #475569);
+        --theme-text-primary: var(--text-primary-dark, #f1f5f9);
+        --theme-text-secondary: var(--text-secondary-dark, #cbd5e1);
+        --theme-text-muted: var(--text-muted-dark, #94a3b8);
+        --theme-border-light: var(--border-light-dark, #475569);
+        --theme-border-medium: var(--border-medium-dark, #64748b);
+        --theme-border-strong: var(--border-strong-dark, #94a3b8);
+    }
+}

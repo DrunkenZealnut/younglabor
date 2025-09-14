@@ -1,0 +1,345 @@
+<?php
+/**
+ * {display_name} 게시판 글쓰기
+ * 
+ * 테이블: {table_name}
+ * 자동 생성된 글 작성 페이지
+ */
+
+require_once 'config.php';
+
+// 폼 처리
+$errors = [];
+$form_data = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 입력 데이터 받기
+    $form_data = [
+        'title' => trim($_POST['title'] ?? ''),
+        'content' => trim($_POST['content'] ?? ''),
+        'author' => trim($_POST['author'] ?? '')
+    ];
+    
+    // 유효성 검사
+    if (empty($form_data['title'])) {
+        $errors['title'] = '제목을 입력해주세요.';
+    } elseif (strlen($form_data['title']) > 255) {
+        $errors['title'] = '제목은 255자를 초과할 수 없습니다.';
+    }
+    
+    if (empty($form_data['content'])) {
+        $errors['content'] = '내용을 입력해주세요.';
+    }
+    
+    if (empty($form_data['author'])) {
+        $errors['author'] = '작성자를 입력해주세요.';
+    } elseif (strlen($form_data['author']) > 100) {
+        $errors['author'] = '작성자명은 100자를 초과할 수 없습니다.';
+    }
+    
+    // 오류가 없으면 저장
+    if (empty($errors)) {
+        try {
+            $sql = "INSERT INTO {table_name} (title, content, author, created_at) VALUES (?, ?, ?, NOW())";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                $form_data['title'],
+                $form_data['content'],
+                $form_data['author']
+            ]);
+            
+            // 성공시 목록으로 이동
+            header('Location: {table_key}_list.php?success=1');
+            exit;
+            
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            $errors['general'] = '저장 중 오류가 발생했습니다. 다시 시도해주세요.';
+        }
+    }
+}
+
+// 페이지 헤더
+$page_title = '{display_name} - 새 글 작성';
+include_once 'includes/header.php';
+?>
+
+<div class="container mt-4">
+    <!-- 페이지 헤더 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2>
+                <i class="bi bi-pencil-square"></i>
+                새 글 작성
+            </h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.php">홈</a></li>
+                    <li class="breadcrumb-item"><a href="{table_key}_list.php">{display_name}</a></li>
+                    <li class="breadcrumb-item active">새 글 작성</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- 오류 메시지 -->
+    <?php if (!empty($errors)): ?>
+        <div class="row mb-3">
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <h6><i class="bi bi-exclamation-triangle"></i> 입력 오류</h6>
+                    <ul class="mb-0">
+                        <?php foreach ($errors as $error): ?>
+                            <li><?= htmlspecialchars($error) ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <!-- 글 작성 폼 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-text"></i>
+                        게시글 정보
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="writeForm">
+                        <!-- 제목 -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">
+                                제목 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control <?= isset($errors['title']) ? 'is-invalid' : '' ?>" 
+                                   id="title" name="title" maxlength="255" 
+                                   value="<?= htmlspecialchars($form_data['title'] ?? '') ?>"
+                                   placeholder="게시글 제목을 입력하세요">
+                            <?php if (isset($errors['title'])): ?>
+                                <div class="invalid-feedback">
+                                    <?= htmlspecialchars($errors['title']) ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="form-text">
+                                <span id="titleCount">0</span>/255자
+                            </div>
+                        </div>
+
+                        <!-- 작성자 -->
+                        <div class="mb-3">
+                            <label for="author" class="form-label">
+                                작성자 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control <?= isset($errors['author']) ? 'is-invalid' : '' ?>" 
+                                   id="author" name="author" maxlength="100"
+                                   value="<?= htmlspecialchars($form_data['author'] ?? '') ?>"
+                                   placeholder="작성자명을 입력하세요">
+                            <?php if (isset($errors['author'])): ?>
+                                <div class="invalid-feedback">
+                                    <?= htmlspecialchars($errors['author']) ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="form-text">
+                                <span id="authorCount">0</span>/100자
+                            </div>
+                        </div>
+
+                        <!-- 내용 -->
+                        <div class="mb-3">
+                            <label for="content" class="form-label">
+                                내용 <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control <?= isset($errors['content']) ? 'is-invalid' : '' ?>" 
+                                      id="content" name="content" rows="10"
+                                      placeholder="게시글 내용을 입력하세요"><?= htmlspecialchars($form_data['content'] ?? '') ?></textarea>
+                            <?php if (isset($errors['content'])): ?>
+                                <div class="invalid-feedback">
+                                    <?= htmlspecialchars($errors['content']) ?>
+                                </div>
+                            <?php endif; ?>
+                            <div class="form-text">
+                                <span id="contentCount">0</span>자 | 
+                                <small class="text-muted">Ctrl+Enter로 빠른 저장</small>
+                            </div>
+                        </div>
+
+                        <!-- 버튼 -->
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+                                    <i class="bi bi-arrow-left"></i>
+                                    돌아가기
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline-primary me-2" onclick="previewPost()">
+                                    <i class="bi bi-eye"></i>
+                                    미리보기
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <i class="bi bi-check-lg"></i>
+                                    저장하기
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 작성 가이드 -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body py-3">
+                    <h6><i class="bi bi-lightbulb"></i> 작성 가이드</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul class="list-unstyled mb-0 small">
+                                <li><i class="bi bi-check-circle text-success"></i> 명확하고 구체적인 제목 작성</li>
+                                <li><i class="bi bi-check-circle text-success"></i> 적절한 분량의 내용 작성</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-unstyled mb-0 small">
+                                <li><i class="bi bi-check-circle text-success"></i> 정확한 정보 제공</li>
+                                <li><i class="bi bi-check-circle text-success"></i> 개인정보 노출 주의</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-unstyled mb-0 small">
+                                <li><i class="bi bi-info-circle text-info"></i> Ctrl+Enter: 빠른 저장</li>
+                                <li><i class="bi bi-info-circle text-info"></i> Ctrl+S: 임시저장 (향후 지원)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 미리보기 모달 -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">게시글 미리보기</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent">
+                    <h4 id="previewTitle"></h4>
+                    <div class="text-muted mb-3">
+                        작성자: <span id="previewAuthor"></span> | 
+                        작성일: <?= date('Y-m-d H:i') ?>
+                    </div>
+                    <hr>
+                    <div id="previewBody" style="white-space: pre-line;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">저장하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php include_once 'includes/footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 글자수 카운터
+    const titleInput = document.getElementById('title');
+    const authorInput = document.getElementById('author');
+    const contentTextarea = document.getElementById('content');
+    const titleCount = document.getElementById('titleCount');
+    const authorCount = document.getElementById('authorCount');
+    const contentCount = document.getElementById('contentCount');
+    
+    function updateCount(input, counter) {
+        counter.textContent = input.value.length;
+    }
+    
+    titleInput.addEventListener('input', () => updateCount(titleInput, titleCount));
+    authorInput.addEventListener('input', () => updateCount(authorInput, authorCount));
+    contentTextarea.addEventListener('input', () => updateCount(contentTextarea, contentCount));
+    
+    // 초기 카운트 설정
+    updateCount(titleInput, titleCount);
+    updateCount(authorInput, authorCount);
+    updateCount(contentTextarea, contentCount);
+    
+    // 키보드 단축키
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('writeForm').submit();
+        }
+    });
+    
+    // 폼 제출시 버튼 비활성화
+    document.getElementById('writeForm').addEventListener('submit', function() {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> 저장중...';
+    });
+});
+
+// 뒤로가기
+function goBack() {
+    if (confirm('작성중인 내용이 사라집니다. 정말 돌아가시겠습니까?')) {
+        history.back();
+    }
+}
+
+// 미리보기
+function previewPost() {
+    const title = document.getElementById('title').value;
+    const author = document.getElementById('author').value;
+    const content = document.getElementById('content').value;
+    
+    if (!title.trim()) {
+        alert('제목을 입력해주세요.');
+        document.getElementById('title').focus();
+        return;
+    }
+    
+    if (!content.trim()) {
+        alert('내용을 입력해주세요.');
+        document.getElementById('content').focus();
+        return;
+    }
+    
+    document.getElementById('previewTitle').textContent = title;
+    document.getElementById('previewAuthor').textContent = author || '익명';
+    document.getElementById('previewBody').textContent = content;
+    
+    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+    modal.show();
+}
+
+// 미리보기에서 폼 제출
+function submitForm() {
+    document.getElementById('writeForm').submit();
+}
+
+// 스타일
+const style = document.createElement('style');
+style.textContent = `
+    .spin {
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+</script>
