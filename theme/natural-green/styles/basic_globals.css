@@ -1,0 +1,231 @@
+/* 기존 초록색 테마 (원본) */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 14px;
+  --background: #FEFEFE;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #6B9B37;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #6B9B37;
+  --muted: #F5F7F0;
+  --muted-foreground: #717182;
+  --accent: #E9F5DB;
+  --accent-foreground: #6B9B37;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(158, 212, 72, 0.15);
+  --input: transparent;
+  --input-background: #FEFEFE;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #6B9B37;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* ========================================
+   모노크롬 테마 오버라이드 시작
+   초록색 테마를 흑백 테마로 덮어쓰기
+   ======================================== */
+
+/* 라이트 모드 - 모노크롬 테마로 덮어쓰기 */
+:root {
+  /* 초록색 → 모노크롬 변환 */
+  --background: #ffffff !important;  /* 순수 흰색 배경 */
+  --primary: #000000 !important;     /* 검은색 */
+  --secondary-foreground: #1a1a1a !important;  /* 진한 차콜 */
+  --muted: #f5f5f5 !important;       /* 매우 연한 회색 */
+  --accent: #e5e5e5 !important;      /* 연한 회색 */
+  --accent-foreground: #000000 !important;     /* 검은색 */
+  --border: rgba(0, 0, 0, 0.1) !important;  /* 검은색 10% 투명도 */
+  --input-background: #fafafa !important;  /* 오프 화이트 */
+  --sidebar-primary: #000000 !important;   /* 검은색 */
+}
+
+/* 다크 모드 - 모노크롬 테마로 덮어쓰기 */
+.dark {
+  --background: #0a0a0a !important;  /* 거의 검은색 배경 */
+  --foreground: #fafafa !important;  /* 거의 흰색 텍스트 */
+  --primary: #ffffff !important;     /* 흰색 */
+  --muted: #262626 !important;       /* 진한 회색 */
+  --accent: #404040 !important;      /* 중간 회색 */
+  --border: rgba(255, 255, 255, 0.1) !important;  /* 흰색 10% 투명도 */
+  --sidebar-primary: #ffffff !important;  /* 다크모드에서는 흰색 */
+}
+
+/* 초록색 유틸리티 클래스를 모노크롬으로 오버라이드 */
+@layer utilities {
+  /* 초록색 그라디언트를 모노크롬으로 덮어쓰기 */
+  .gradient-primary {
+    background: linear-gradient(135deg, #000000 0%, #404040 50%, #808080 100%) !important;
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%) !important;
+  }
+  
+  .gradient-success {
+    background: linear-gradient(135deg, #404040 0%, #000000 100%) !important;
+  }
+  
+  .gradient-warm {
+    background: linear-gradient(135deg, #fafafa 0%, #e5e5e5 100%) !important;
+  }
+  
+  .gradient-natural {
+    background: linear-gradient(135deg, #e5e5e5 0%, #bfbfbf 50%, #808080 100%) !important;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;  /* 검은색 그림자 */
+  }
+  
+  /* 초록색 배경 클래스를 모노크롬으로 오버라이드 */
+  .bg-natural-50 {
+    background-color: #ffffff !important;  /* 순수 흰색 */
+  }
+  
+  .bg-natural-100 {
+    background-color: #f5f5f5 !important;  /* 매우 연한 회색 */
+  }
+  
+  .bg-natural-200 {
+    background-color: #e5e5e5 !important;  /* 연한 회색 */
+  }
+  
+  .bg-natural-300 {
+    background-color: #d4d4d4 !important;  /* 라이트 그레이 */
+  }
+  
+  .bg-natural-400 {
+    background-color: #a3a3a3 !important;  /* 중간 회색 */
+  }
+  
+  /* 초록색 텍스트 클래스를 모노크롬으로 오버라이드 */
+  .text-forest-600 {
+    color: #404040 !important;  /* 다크 그레이 */
+  }
+  
+  .text-forest-700 {
+    color: #262626 !important;  /* 더 진한 회색 */
+  }
+  
+  .text-lime-500 {
+    color: #737373 !important;  /* 중간 톤 회색 */
+  }
+  
+  .text-lime-600 {
+    color: #525252 !important;  /* 다크 그레이 */
+  }
+  
+  /* 초록색 보더 클래스를 모노크롬으로 오버라이드 */
+  .border-lime-200 {
+    border-color: #e5e5e5 !important;  /* 연한 회색 */
+  }
+  
+  .border-lime-300 {
+    border-color: #d4d4d4 !important;  /* 라이트 그레이 */
+  }
+}
+
+/* ========================================
+   추가 모노크롬 테마 유틸리티 클래스
+   (초록색 테마에 없던 모노크롬 전용 클래스들)
+   ======================================== */
+
+@layer utilities {
+  /* 모노크롬 전용 새로운 유틸리티 클래스 */
+  .bg-gray-50 { background-color: #fafafa; }
+  .bg-gray-100 { background-color: #f5f5f5; }
+  .bg-gray-200 { background-color: #e5e5e5; }
+  .bg-gray-300 { background-color: #d4d4d4; }
+  .bg-gray-400 { background-color: #a3a3a3; }
+  .bg-gray-500 { background-color: #737373; }
+  .bg-gray-600 { background-color: #525252; }
+  .bg-gray-700 { background-color: #404040; }
+  .bg-gray-800 { background-color: #262626; }
+  .bg-gray-900 { background-color: #171717; }
+  
+  .text-gray-500 { color: #737373; }
+  .text-gray-600 { color: #525252; }
+  .text-gray-700 { color: #404040; }
+  .text-gray-800 { color: #262626; }
+  .text-gray-900 { color: #171717; }
+  
+  .border-gray-200 { border-color: #e5e5e5; }
+  .border-gray-300 { border-color: #d4d4d4; }
+  .border-gray-400 { border-color: #a3a3a3; }
+  
+  /* 추가 효과 클래스 (모노크롬 버전) */
+  .gradient-text-primary {
+    background: linear-gradient(135deg, #000000, #525252, #a3a3a3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .dark .glass-card {
+    background: rgba(26, 26, 26, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .animate-bounce-slow { animation: bounce 3s infinite; }
+  .animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  
+  .floating-animation { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 
+    0%, 100% { transform: translateY(0); } 
+    50% { transform: translateY(-20px); } 
+  }
+  
+  .card-glow { position: relative; overflow: hidden; }
+  .card-glow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+    transition: left 0.5s;
+  }
+  .card-glow:hover::before { left: 100%; }
+  
+  .dark .card-glow::before {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+  
+  /* 모노크롬 섀도우 유틸리티 */
+  .shadow-mono-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+  .shadow-mono { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+  .shadow-mono-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+  .shadow-mono-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+  .shadow-mono-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>희망씨 미션과 비전</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Noto Sans KR 폰트를 기본으로 설정합니다. */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* 페이지 로딩 시 나타나는 애니메이션 효과를 정의합니다. */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 애니메이션을 적용할 클래스를 만듭니다. */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        /* 각 요소에 애니메이션 지연을 다르게 설정하여 순차적으로 나타나게 합니다. */
+        .animation-delay-200 {
+            animation-delay: 0.2s;
+        }
+        .animation-delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        /* 처음에는 보이지 않도록 투명도를 0으로 설정합니다. */
+        .initial-hidden {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-blue-100 flex items-center justify-center min-h-screen p-4 sm:p-6 md:p-8">
+
+    <!-- 전체 콘텐츠를 감싸는 컨테이너 -->
+    <div class="w-full max-w-4xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- 미션 카드 -->
+            <div class="initial-hidden fade-in-up animation-delay-200 bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-lg p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                <div class="flex justify-center items-center gap-4 mb-6">
+                    <!-- 미션 아이콘 (Target) -->
+                    <svg class="w-10 h-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 15.91a4.5 4.5 0 1 1-6.364-6.364 4.5 4.5 0 0 1 6.364 6.364Z" />
+                    </svg>
+                    <h1 class="text-3xl font-bold text-gray-800">미션</h1>
+                </div>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    희망씨는 아동청소년이 차별받지 않는 세상을 위해 노동자와 함께 합니다.
+                </p>
+            </div>
+
+            <!-- 비전 카드 -->
+            <div class="initial-hidden fade-in-up animation-delay-400 bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-lg p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+                 <div class="flex justify-center items-center gap-4 mb-6">
+                    <!-- 비전 아이콘 (Lightbulb) -->
+                    <svg class="w-10 h-10 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 01-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 013.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 013.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 01-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.543L16.5 21.75l-.398-1.207a3.375 3.375 0 00-2.455-2.456L12.75 18l1.207-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.207a3.375 3.375 0 002.456 2.456L20.25 18l-1.207.398a3.375 3.375 0 00-2.456 2.456z" />
+                    </svg>
+                    <h2 class="text-3xl font-bold text-gray-800">비전</h2>
+                </div>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    구분과 격차가 없는 더불어 사는 세상을 꿈꿉니다.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

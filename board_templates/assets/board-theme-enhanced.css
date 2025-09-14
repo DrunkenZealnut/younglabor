@@ -1,0 +1,691 @@
+/* 
+ * Enhanced Board Theme CSS - Admin Theme System Integration
+ * 관리자 테마 설정과 완전히 연동되는 게시판 테마 CSS
+ * Version 3.0 - Admin Integration Enhanced
+ */
+
+/* =================== 기본 CSS 변수 설정 =================== */
+:root {
+    /* Admin 테마 시스템에서 동적으로 주입되는 변수들 */
+    /* 이 값들은 theme_integration.php에서 실시간으로 업데이트됩니다 */
+    
+    /* 기본 색상 (폴백) - Natural Green 테마 기본값 */
+    --primary-color: #3a7a4e;
+    --secondary-color: #16a34a;
+    --accent-color: #4ade80;
+    --text-primary: #1f3b2d;
+    --text-secondary: #4b5563;
+    --background: #fafffe;
+    --border-color: #86efac;
+    
+    /* 확장 테마 변수 */
+    --board-font-size: 16px; /* 전역 font-size와 구분 */
+    --line-height: 1.6;
+    --container-width: 1200px;
+    --section-spacing: 60px;
+    --border-radius: 16px;
+}
+
+/* =================== Board Surface 기본 설정 =================== */
+.board-surface {
+    /* 배경색 시스템 */
+    --theme-bg-primary: var(--background, #fafffe);
+    --theme-bg-secondary: color-mix(in srgb, var(--primary-color, #3a7a4e), var(--background, #fafffe) 85%);
+    --theme-bg-accent: var(--primary-color, #3a7a4e);
+    --theme-bg-hover: color-mix(in srgb, var(--primary-color, #3a7a4e), var(--background, #fafffe) 95%);
+    
+    /* 테두리 색상 시스템 (Admin 색상 기반) */
+    --theme-border-light: color-mix(in srgb, var(--primary-color, #3a7a4e), transparent 60%);
+    --theme-border-medium: var(--primary-color, #3a7a4e);
+    --theme-border-strong: color-mix(in srgb, var(--primary-color, #3a7a4e), black 20%);
+    --theme-border-primary: var(--primary-color, #3a7a4e);
+    
+    /* 갤러리 카드 전용 테두리 - 배경과 명확한 대비 */
+    --theme-card-border: color-mix(in srgb, var(--primary-color, #3a7a4e), black 15%);
+    --theme-card-border-hover: color-mix(in srgb, var(--primary-color, #3a7a4e), black 30%);
+    
+    /* 텍스트 색상 시스템 */
+    --theme-text-primary: var(--text-primary, #1f3b2d);
+    --theme-text-secondary: var(--text-secondary, #4b5563);
+    --theme-text-muted: color-mix(in srgb, var(--text-secondary, #4b5563), transparent 40%);
+    --theme-text-inverse: var(--background, #fafffe);
+    
+    /* 상태 색상 (Admin 설정 기반) */
+    --theme-success: var(--success-color, #65a30d);
+    --theme-warning: var(--warning-color, #a3e635);
+    --theme-error: var(--danger-color, #dc2626);
+    --theme-info: var(--info-color, #3b82f6);
+    
+    /* 프라이머리 색상 변형 */
+    --theme-primary: var(--primary-color, #3a7a4e);
+    --theme-primary-light: color-mix(in srgb, var(--primary-color, #3a7a4e), white 30%);
+    --theme-primary-dark: color-mix(in srgb, var(--primary-color, #3a7a4e), black 20%);
+    --theme-primary-subtle: color-mix(in srgb, var(--primary-color, #3a7a4e), transparent 90%);
+    
+    /* 세컨더리 색상 변형 */
+    --theme-secondary: var(--secondary-color, #16a34a);
+    --theme-secondary-light: color-mix(in srgb, var(--secondary-color, #16a34a), white 30%);
+    --theme-secondary-dark: color-mix(in srgb, var(--secondary-color, #16a34a), black 20%);
+    --theme-secondary-subtle: color-mix(in srgb, var(--secondary-color, #16a34a), transparent 90%);
+    
+    /* 그림자 시스템 */
+    --theme-shadow-sm: 0 1px 2px 0 color-mix(in srgb, var(--primary-color, #3a7a4e), transparent 90%);
+    --theme-shadow-md: 0 4px 6px -1px color-mix(in srgb, var(--primary-color, #3a7a4e), transparent 85%);
+    --theme-shadow-lg: 0 10px 15px -3px color-mix(in srgb, var(--primary-color, #3a7a4e), transparent 80%);
+    --theme-shadow-xl: 0 20px 25px -5px color-mix(in srgb, var(--primary-color, #3a7a4e), transparent 75%);
+    
+    /* 둥근 모서리 시스템 */
+    --theme-radius: var(--border-radius, 16px);
+    --theme-radius-sm: calc(var(--theme-radius) * 0.5);
+    --theme-radius-lg: calc(var(--theme-radius) * 1.5);
+    --theme-radius-xl: calc(var(--theme-radius) * 2);
+    
+    /* 애니메이션 */
+    --theme-transition-fast: 0.15s ease;
+    --theme-transition-base: 0.2s ease;
+    --theme-transition-slow: 0.3s ease;
+}
+
+/* =================== 게시판 기본 스타일 =================== */
+.board-surface {
+    background-color: var(--theme-bg-primary);
+    border: 1px solid var(--theme-border-light);
+    border-radius: var(--theme-radius);
+    box-shadow: var(--theme-shadow-sm);
+    color: var(--theme-text-primary);
+    transition: var(--theme-transition-base);
+    font-size: var(--board-font-size, 16px); /* 게시판 전용 폰트 사이즈 */
+}
+
+.board-surface:hover {
+    box-shadow: var(--theme-shadow-md);
+}
+
+/* =================== 갤러리 카드 시스템 =================== */
+.board-surface .gallery-card-border {
+    border-color: var(--theme-card-border) !important;
+    background-color: var(--theme-bg-primary) !important;
+    transition: all var(--theme-transition-base) !important;
+}
+
+.board-surface .gallery-card-border:hover {
+    border-color: var(--theme-card-border-hover) !important;
+    box-shadow: var(--theme-shadow-lg) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* 갤러리 카드 내부 구분선 */
+.board-surface .gallery-card-border .border-t {
+    border-top-color: var(--theme-card-border) !important;
+}
+
+/* =================== 헤더 스타일 =================== */
+.board-surface .board-header {
+    background-color: var(--theme-bg-primary);
+    border-bottom: 1px solid var(--theme-border-light);
+    padding: 1.5rem;
+    border-radius: var(--theme-radius) var(--theme-radius) 0 0;
+}
+
+.board-surface .board-title {
+    color: var(--theme-text-primary);
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.board-surface .board-description {
+    color: var(--theme-text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+}
+
+/* =================== 버튼 시스템 =================== */
+.board-surface .btn {
+    border-radius: var(--theme-radius-sm);
+    font-weight: 500;
+    transition: all var(--theme-transition-base);
+    border: 1px solid transparent;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.board-surface .btn-primary {
+    background-color: var(--theme-primary) !important;
+    border-color: var(--theme-primary) !important;
+    color: var(--theme-text-inverse) !important;
+}
+
+.board-surface .btn-primary:hover {
+    background-color: var(--theme-primary-dark) !important;
+    border-color: var(--theme-primary-dark) !important;
+    transform: translateY(-1px);
+    box-shadow: var(--theme-shadow-md);
+}
+
+.board-surface .btn-secondary {
+    background-color: var(--theme-secondary) !important;
+    border-color: var(--theme-secondary) !important;
+    color: var(--theme-text-inverse) !important;
+}
+
+.board-surface .btn-secondary:hover {
+    background-color: var(--theme-secondary-dark) !important;
+    border-color: var(--theme-secondary-dark) !important;
+    transform: translateY(-1px);
+    box-shadow: var(--theme-shadow-md);
+}
+
+.board-surface .btn-outline {
+    background-color: transparent !important;
+    border-color: var(--theme-border-medium) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .btn-outline:hover {
+    background-color: var(--theme-primary-subtle) !important;
+    border-color: var(--theme-primary) !important;
+    color: var(--theme-primary) !important;
+}
+
+.board-surface .btn-success {
+    background-color: var(--theme-success) !important;
+    border-color: var(--theme-success) !important;
+    color: white !important;
+}
+
+.board-surface .btn-warning {
+    background-color: var(--theme-warning) !important;
+    border-color: var(--theme-warning) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .btn-danger {
+    background-color: var(--theme-error) !important;
+    border-color: var(--theme-error) !important;
+    color: white !important;
+}
+
+/* =================== 테두리 및 구분선 시스템 =================== */
+.board-surface .border { border-color: var(--theme-border-light) !important; }
+.board-surface .border-slate-200 { border-color: var(--theme-border-light) !important; }
+.board-surface .border-slate-300 { border-color: var(--theme-border-medium) !important; }
+.board-surface .border-gray-200 { border-color: var(--theme-border-light) !important; }
+.board-surface .border-gray-300 { border-color: var(--theme-border-medium) !important; }
+
+.board-surface .border-t { border-top-color: var(--theme-border-light) !important; }
+.board-surface .border-b { border-bottom-color: var(--theme-border-light) !important; }
+.board-surface .border-l { border-left-color: var(--theme-border-light) !important; }
+.board-surface .border-r { border-right-color: var(--theme-border-light) !important; }
+
+.board-surface .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--theme-border-light) !important;
+}
+
+/* =================== 배경색 시스템 =================== */
+.board-surface .bg-white { background-color: var(--theme-bg-primary) !important; }
+.board-surface .bg-gray-50 { background-color: var(--theme-bg-secondary) !important; }
+.board-surface .bg-gray-100 { background-color: var(--theme-bg-hover) !important; }
+.board-surface .bg-slate-50 { background-color: var(--theme-bg-secondary) !important; }
+.board-surface .bg-slate-100 { background-color: var(--theme-bg-hover) !important; }
+
+/* 상태별 배경색 */
+.board-surface .bg-red-50 { background-color: color-mix(in srgb, var(--theme-error), transparent 95%) !important; }
+.board-surface .bg-red-100 { background-color: color-mix(in srgb, var(--theme-error), transparent 85%) !important; }
+.board-surface .bg-green-50 { background-color: color-mix(in srgb, var(--theme-success), transparent 95%) !important; }
+.board-surface .bg-green-100 { background-color: color-mix(in srgb, var(--theme-success), transparent 85%) !important; }
+.board-surface .bg-blue-50 { background-color: color-mix(in srgb, var(--theme-info), transparent 95%) !important; }
+.board-surface .bg-blue-100 { background-color: color-mix(in srgb, var(--theme-info), transparent 85%) !important; }
+.board-surface .bg-yellow-50 { background-color: color-mix(in srgb, var(--theme-warning), transparent 95%) !important; }
+.board-surface .bg-yellow-100 { background-color: color-mix(in srgb, var(--theme-warning), transparent 85%) !important; }
+
+/* =================== 텍스트 색상 시스템 =================== */
+.board-surface .text-slate-900,
+.board-surface .text-slate-800,
+.board-surface .text-gray-900,
+.board-surface .text-gray-800 {
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .text-slate-700,
+.board-surface .text-slate-600,
+.board-surface .text-gray-700,
+.board-surface .text-gray-600 {
+    color: var(--theme-text-secondary) !important;
+}
+
+.board-surface .text-slate-500,
+.board-surface .text-slate-400,
+.board-surface .text-gray-500,
+.board-surface .text-gray-400 {
+    color: var(--theme-text-muted) !important;
+}
+
+/* 상태별 텍스트 색상 */
+.board-surface .text-red-600,
+.board-surface .text-red-700,
+.board-surface .text-red-800 {
+    color: var(--theme-error) !important;
+}
+
+.board-surface .text-green-600,
+.board-surface .text-green-700,
+.board-surface .text-green-800 {
+    color: var(--theme-success) !important;
+}
+
+.board-surface .text-blue-600,
+.board-surface .text-blue-700,
+.board-surface .text-blue-800 {
+    color: var(--theme-info) !important;
+}
+
+.board-surface .text-amber-600,
+.board-surface .text-yellow-600,
+.board-surface .text-yellow-700 {
+    color: var(--theme-warning) !important;
+}
+
+/* =================== 입력 필드 시스템 =================== */
+.board-surface input[type="text"],
+.board-surface input[type="email"],
+.board-surface input[type="password"],
+.board-surface input[type="search"],
+.board-surface select,
+.board-surface textarea {
+    border: 1px solid var(--theme-border-medium) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    background-color: var(--theme-bg-primary) !important;
+    color: var(--theme-text-primary) !important;
+    padding: 0.5rem 0.75rem;
+    transition: all var(--theme-transition-base);
+}
+
+.board-surface input[type="text"]:focus,
+.board-surface input[type="email"]:focus,
+.board-surface input[type="password"]:focus,
+.board-surface input[type="search"]:focus,
+.board-surface select:focus,
+.board-surface textarea:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 0 2px var(--theme-primary-subtle) !important;
+    outline: none !important;
+}
+
+/* =================== 테이블 시스템 =================== */
+.board-surface table {
+    background-color: var(--theme-bg-primary) !important;
+    border: 1px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+    overflow: hidden;
+}
+
+.board-surface th {
+    background-color: var(--theme-bg-secondary) !important;
+    color: var(--theme-text-primary) !important;
+    border-bottom: 1px solid var(--theme-border-medium) !important;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+}
+
+.board-surface td {
+    border-bottom: 1px solid var(--theme-border-light) !important;
+    color: var(--theme-text-primary) !important;
+    padding: 0.75rem 1rem;
+}
+
+.board-surface tr:hover {
+    background-color: var(--theme-bg-hover) !important;
+}
+
+.board-surface tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* =================== 배지 및 알림 =================== */
+.board-surface .notice-badge {
+    background-color: var(--theme-error) !important;
+    color: white !important;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--theme-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.board-surface .featured-badge {
+    background-color: var(--theme-info) !important;
+    color: white !important;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--theme-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.board-surface .badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--theme-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.board-surface .badge-primary {
+    background-color: var(--theme-primary) !important;
+    color: white !important;
+}
+
+.board-surface .badge-success {
+    background-color: var(--theme-success) !important;
+    color: white !important;
+}
+
+.board-surface .badge-warning {
+    background-color: var(--theme-warning) !important;
+    color: var(--theme-text-primary) !important;
+}
+
+.board-surface .badge-danger {
+    background-color: var(--theme-error) !important;
+    color: white !important;
+}
+
+/* =================== 댓글 시스템 =================== */
+.board-surface .comment-item {
+    border-left: 4px solid var(--theme-primary) !important;
+    background-color: var(--theme-bg-primary) !important;
+    border: 1px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius-sm);
+    padding: 1rem;
+    margin: 1rem 0;
+    transition: var(--theme-transition-base);
+}
+
+.board-surface .comment-item:hover {
+    background-color: var(--theme-bg-hover) !important;
+    border-left-color: var(--theme-primary-dark) !important;
+}
+
+.board-surface .comment-author {
+    color: var(--theme-primary) !important;
+    font-weight: 600;
+}
+
+.board-surface .comment-date {
+    color: var(--theme-text-muted) !important;
+    font-size: 0.875rem;
+}
+
+.board-surface .comment-content {
+    color: var(--theme-text-primary) !important;
+    margin-top: 0.5rem;
+    line-height: var(--line-height);
+}
+
+/* =================== 페이지네이션 =================== */
+.board-surface .pagination {
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+.board-surface .pagination .page-link {
+    background-color: var(--theme-bg-primary) !important;
+    border: 1px solid var(--theme-border-light) !important;
+    color: var(--theme-text-primary) !important;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--theme-radius-sm);
+    text-decoration: none;
+    transition: all var(--theme-transition-base);
+}
+
+.board-surface .pagination .page-link:hover {
+    background-color: var(--theme-bg-secondary) !important;
+    border-color: var(--theme-primary) !important;
+    color: var(--theme-primary) !important;
+    transform: translateY(-1px);
+}
+
+.board-surface .pagination .page-item.active .page-link {
+    background-color: var(--theme-primary) !important;
+    border-color: var(--theme-primary) !important;
+    color: white !important;
+}
+
+.board-surface .pagination .page-item.disabled .page-link {
+    background-color: var(--theme-bg-hover) !important;
+    color: var(--theme-text-muted) !important;
+    pointer-events: none;
+}
+
+/* =================== 검색 영역 =================== */
+.board-surface .search-container {
+    background-color: var(--theme-bg-secondary) !important;
+    border: 1px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.board-surface .search-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* =================== 파일 첨부 =================== */
+.board-surface .attachment-item {
+    border: 1px solid var(--theme-border-light) !important;
+    background-color: var(--theme-bg-secondary) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    padding: 0.5rem 0.75rem;
+    margin: 0.25rem 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--theme-transition-base);
+}
+
+.board-surface .attachment-item:hover {
+    background-color: var(--theme-bg-hover) !important;
+    border-color: var(--theme-primary) !important;
+}
+
+.board-surface .attachment-icon {
+    color: var(--theme-primary) !important;
+}
+
+.board-surface .attachment-name {
+    color: var(--theme-text-primary) !important;
+    text-decoration: none;
+}
+
+.board-surface .attachment-size {
+    color: var(--theme-text-muted) !important;
+    font-size: 0.875rem;
+}
+
+/* =================== 캡차 시스템 =================== */
+.board-surface .captcha-container {
+    background: var(--theme-bg-secondary) !important;
+    border: 2px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+    box-shadow: var(--theme-shadow-sm) !important;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.board-surface .captcha-wrapper {
+    background: var(--theme-bg-secondary) !important;
+    border: 2px solid var(--theme-border-light) !important;
+    border-radius: var(--theme-radius) !important;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.board-surface .captcha-container input[name="captcha_code"] {
+    background: var(--theme-bg-primary) !important;
+    border: 1px solid var(--theme-border-medium) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    color: var(--theme-text-primary) !important;
+    padding: 0.5rem 0.75rem;
+}
+
+.board-surface .captcha-container input[name="captcha_code"]:focus {
+    border-color: var(--theme-primary) !important;
+    box-shadow: 0 0 0 2px var(--theme-primary-subtle) !important;
+    outline: none !important;
+}
+
+.board-surface .captcha-refresh-btn {
+    background: var(--theme-primary) !important;
+    border: 1px solid var(--theme-primary) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    color: white !important;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all var(--theme-transition-base) !important;
+}
+
+.board-surface .captcha-refresh-btn:hover {
+    background: var(--theme-primary-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--theme-shadow-md) !important;
+}
+
+.board-surface .captcha-audio-btn {
+    background: var(--theme-secondary) !important;
+    border: 1px solid var(--theme-secondary) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    color: white !important;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all var(--theme-transition-base) !important;
+}
+
+.board-surface .captcha-audio-btn:hover {
+    background: var(--theme-secondary-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: var(--theme-shadow-md) !important;
+}
+
+.board-surface .captcha-container img {
+    border: 1px solid var(--theme-border-medium) !important;
+    border-radius: var(--theme-radius-sm) !important;
+    transition: all var(--theme-transition-slow) !important;
+}
+
+.board-surface .captcha-container img:hover {
+    transform: scale(1.05) !important;
+    box-shadow: var(--theme-shadow-md) !important;
+}
+
+.board-surface .captcha-help {
+    color: var(--theme-text-secondary) !important;
+    font-size: 0.875rem !important;
+    margin-top: 0.5rem;
+}
+
+/* =================== 링크 및 하이퍼링크 =================== */
+.board-surface a {
+    color: var(--theme-primary) !important;
+    text-decoration: none;
+    transition: var(--theme-transition-base);
+}
+
+.board-surface a:hover {
+    color: var(--theme-primary-dark) !important;
+    text-decoration: underline;
+}
+
+.board-surface a.btn {
+    text-decoration: none !important;
+}
+
+.board-surface a.btn:hover {
+    text-decoration: none !important;
+}
+
+/* =================== 반응형 디자인 =================== */
+@media (max-width: 640px) {
+    .board-surface {
+        border-radius: var(--theme-radius-sm) !important;
+        margin: 0.5rem !important;
+    }
+    
+    .board-surface .board-header {
+        padding: 1rem;
+    }
+    
+    .board-surface .captcha-wrapper {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        text-align: center !important;
+    }
+    
+    .board-surface .captcha-buttons {
+        justify-content: center !important;
+    }
+    
+    .board-surface .search-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .board-surface .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .board-surface table {
+        font-size: 0.875rem;
+    }
+    
+    .board-surface th,
+    .board-surface td {
+        padding: 0.5rem;
+    }
+}
+
+/* =================== 다크모드 대응 =================== */
+@media (prefers-color-scheme: dark) {
+    .board-surface {
+        --theme-bg-primary: var(--bg-primary-dark, #1e293b);
+        --theme-bg-secondary: var(--bg-secondary-dark, #334155);
+        --theme-bg-hover: var(--bg-hover-dark, #475569);
+        --theme-text-primary: var(--text-primary-dark, #f1f5f9);
+        --theme-text-secondary: var(--text-secondary-dark, #cbd5e1);
+        --theme-text-muted: var(--text-muted-dark, #94a3b8);
+        --theme-border-light: var(--border-light-dark, #475569);
+        --theme-border-medium: var(--border-medium-dark, #64748b);
+        --theme-border-strong: var(--border-strong-dark, #94a3b8);
+    }
+}
+
+/* =================== 브라우저 호환성 폴백 =================== */
+@supports not (background-color: color-mix(in srgb, red, blue)) {
+    .board-surface {
+        --theme-bg-secondary: #f0f9f3;
+        --theme-bg-hover: #f7fcf8;
+        --theme-primary-subtle: #e8f5ed;
+        --theme-secondary-subtle: #ecfdf5;
+        --theme-card-border: #2d5a3a;
+        --theme-card-border-hover: #1e3d26;
+    }
+    
+    .board-surface .bg-red-50 { background-color: #fef2f2 !important; }
+    .board-surface .bg-red-100 { background-color: #fee2e2 !important; }
+    .board-surface .bg-green-50 { background-color: #f0fdf4 !important; }
+    .board-surface .bg-green-100 { background-color: #dcfce7 !important; }
+    .board-surface .bg-blue-50 { background-color: #eff6ff !important; }
+    .board-surface .bg-blue-100 { background-color: #dbeafe !important; }
+    .board-surface .bg-yellow-50 { background-color: #fefce8 !important; }
+    .board-surface .bg-yellow-100 { background-color: #fef3c7 !important; }
+}

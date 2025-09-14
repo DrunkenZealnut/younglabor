@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>텍스트 세로쓰기 방지 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/board-theme-minimal.css">
+    <link rel="stylesheet" href="../css/theme/theme.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center">📋 텍스트 세로쓰기 방지 테스트</h1>
+        
+        <div class="bg-blue-50 p-4 rounded-lg mb-6">
+            <h2 class="font-semibold mb-2">🔧 적용된 수정사항:</h2>
+            <ul class="text-sm space-y-1">
+                <li>• <code>writing-mode: horizontal-tb !important</code> - 가로쓰기 강제</li>
+                <li>• <code>text-orientation: mixed !important</code> - 혼합 텍스트 방향</li>
+                <li>• <code>direction: ltr !important</code> - 좌에서 우로 텍스트 방향</li>
+                <li>• 한글 폰트 우선순위 설정</li>
+            </ul>
+        </div>
+
+        <!-- Basic형 게시판 테이블 (수정된 CSS 적용) -->
+        <div class="board-surface bg-white rounded-lg border border-slate-200 shadow-sm">
+            <!-- 게시판 헤더 -->
+            <div class="px-6 py-4 border-b border-slate-200">
+                <h2 class="text-xl font-semibold text-slate-900">테스트 게시판</h2>
+                <p class="text-sm text-slate-600 mt-1">텍스트 세로쓰기 방지 테스트</p>
+            </div>
+
+            <!-- 테이블 목록 -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <caption class="sr-only">게시글 목록</caption>
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider w-16">번호</th>
+                            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">제목</th>
+                            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider w-24 hidden sm:table-cell">작성자</th>
+                            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider w-32 hidden md:table-cell">작성일</th>
+                            <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider w-16 hidden sm:table-cell">조회</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-200">
+                        <tr class="hover:bg-slate-50 transition-colors bg-yellow-50">
+                            <!-- 번호 -->
+                            <td class="px-4 py-3 text-sm text-slate-900 text-center">
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
+                                    공지
+                                </span>
+                            </td>
+                            
+                            <!-- 제목 -->
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-2">
+                                    <a href="#" class="text-slate-900 hover:text-blue-600 font-medium">
+                                        공지사항입니다 - 텍스트 가로쓰기 테스트
+                                    </a>
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 ml-2">
+                                        중요
+                                    </span>
+                                </div>
+                                
+                                <!-- 모바일용 추가 정보 -->
+                                <div class="md:hidden mt-1 text-xs text-slate-500 flex items-center gap-4">
+                                    <span>관리자</span>
+                                    <span>2024-01-15</span>
+                                    <span>조회 152</span>
+                                </div>
+                            </td>
+                            
+                            <!-- 작성자 (데스크톱만) -->
+                            <td class="px-4 py-3 text-sm text-slate-900 text-center hidden sm:table-cell">
+                                관리자
+                            </td>
+                            
+                            <!-- 작성일 (태블릿 이상) -->
+                            <td class="px-4 py-3 text-sm text-slate-500 hidden md:table-cell text-center">
+                                2024-01-15
+                            </td>
+                            
+                            <!-- 조회수 (데스크톱만) -->
+                            <td class="px-4 py-3 text-sm text-slate-500 hidden sm:table-cell text-center">
+                                152
+                            </td>
+                        </tr>
+                        
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-3 text-sm text-slate-900 text-center">5</td>
+                            <td class="px-4 py-3">
+                                <a href="#" class="text-slate-900 hover:text-blue-600 font-medium">
+                                    일반 게시글입니다 - 한글 텍스트 정상 표시 확인
+                                </a>
+                                <div class="md:hidden mt-1 text-xs text-slate-500 flex items-center gap-4">
+                                    <span>홍길동</span>
+                                    <span>2024-01-14</span>
+                                    <span>조회 87</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-slate-900 text-center hidden sm:table-cell">홍길동</td>
+                            <td class="px-4 py-3 text-sm text-slate-500 hidden md:table-cell text-center">2024-01-14</td>
+                            <td class="px-4 py-3 text-sm text-slate-500 hidden sm:table-cell text-center">87</td>
+                        </tr>
+                        
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-3 text-sm text-slate-900 text-center">4</td>
+                            <td class="px-4 py-3">
+                                <a href="#" class="text-slate-900 hover:text-blue-600 font-medium">
+                                    긴 제목의 게시글 테스트 - 가나다라마바사아자차카타파하
+                                </a>
+                                <div class="md:hidden mt-1 text-xs text-slate-500 flex items-center gap-4">
+                                    <span>김철수</span>
+                                    <span>2024-01-13</span>
+                                    <span>조회 45</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-slate-900 text-center hidden sm:table-cell">김철수</td>
+                            <td class="px-4 py-3 text-sm text-slate-500 hidden md:table-cell text-center">2024-01-13</td>
+                            <td class="px-4 py-3 text-sm text-slate-500 hidden sm:table-cell text-center">45</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 확인사항 -->
+        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 문제 상황 -->
+            <div class="bg-red-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-red-800 mb-2">❌ 문제 상황 (수정 전)</h3>
+                <ul class="text-sm text-red-700 space-y-1">
+                    <li>• "번호", "제목", "작성자" 등이 세로로 출력</li>
+                    <li>• 한글 텍스트가 세로 방향으로 배치</li>
+                    <li>• 가독성 저하 및 레이아웃 문제</li>
+                </ul>
+            </div>
+
+            <!-- 수정 후 -->
+            <div class="bg-green-50 p-4 rounded-lg">
+                <h3 class="font-semibold text-green-800 mb-2">✅ 수정 후</h3>
+                <ul class="text-sm text-green-700 space-y-1">
+                    <li>• 모든 텍스트가 가로 방향으로 정상 출력</li>
+                    <li>• 한글 폰트 우선순위 설정 완료</li>
+                    <li>• CSS `!important`로 강제 적용</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-blue-100 rounded-lg">
+            <h3 class="font-semibold text-blue-800 mb-2">🔧 적용된 CSS 수정사항</h3>
+            <pre class="text-sm bg-white p-3 rounded border overflow-x-auto"><code>/* 텍스트 세로 출력 방지 */
+.board-surface,
+.board-surface *,
+table, th, td {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+}
+
+/* 한글 폰트 우선순위 */
+.board-surface {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕' !important;
+}</code></pre>
+        </div>
+    </div>
+</body>
+</html>
