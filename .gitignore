@@ -16,9 +16,7 @@ desktop.ini
 .env.local
 .env.production
 .env.staging
-
-# 하지만 템플릿 파일은 포함
-!.env.example
+.env.example
 
 # ========================================
 # 데이터베이스 파일
