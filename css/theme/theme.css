@@ -1,0 +1,1181 @@
+
+:root {
+    /* Natural Green 테마 - 표준 CSS 변수 체계 */
+    
+    /* Primary Colors - Natural Green 테마 메인 색상 */
+    --primary: #84cc16;           /* Lime-500 메인 브랜드 색상 */
+    --primary-foreground: #ffffff;
+    --primary-hover: #65a30d;     /* Lime-600 호버 상태 */
+    --primary-light: #bef264;     /* Lime-300 밝은 변형 */
+    --primary-dark: #4d7c0f;      /* Lime-700 어두운 변형 */
+    --primary-rgb: 132, 204, 22;  /* RGB 값 */
+    
+    /* Secondary Colors */
+    --secondary: #16a34a;         /* Green-600 보조 색상 */
+    --secondary-foreground: #ffffff;
+    --secondary-hover: #15803d;   /* Green-700 */
+    --secondary-light: #86efac;   /* Green-300 */
+    
+    /* Success, Warning, Danger */
+    --success: #22c55e;           /* Green-500 */
+    --success-foreground: #ffffff;
+    --success-light: #dcfce7;     /* Green-100 */
+    
+    --warning: #f59e0b;          /* Amber-500 */
+    --warning-foreground: #ffffff;
+    
+    --danger: #ef4444;           /* Red-500 */
+    --danger-foreground: #ffffff;
+    
+    /* Background & Text */
+    --background: #ffffff;
+    --foreground: #0f172a;        /* Slate-900 */
+    --muted: #f8fafc;            /* Slate-50 */
+    --muted-foreground: #64748b;  /* Slate-500 */
+    
+    /* Card & Border */
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+    --border: #e2e8f0;           /* Slate-200 */
+    --input: #ffffff;
+    --input-border: #d1d5db;     /* Gray-300 */
+    
+    /* Legacy 호환성을 위한 매핑 */
+    --bs-primary: var(--primary);
+    --bs-secondary: var(--secondary);
+    --bs-success: var(--success);
+    --bs-warning: var(--warning);
+    --bs-danger: var(--danger);
+    
+    --theme-primary: var(--primary);
+    --theme-secondary: var(--secondary);
+    --theme-success: var(--success);
+    --theme-warning: var(--warning);
+    --theme-danger: var(--danger);
+    
+    /* Natural Green 레거시 변수 매핑 */
+    --forest-500: var(--primary);
+    --forest-600: var(--primary-hover);
+    --forest-700: var(--primary-dark);
+    --green-600: var(--secondary);
+    --lime-500: var(--primary);
+    --lime-600: var(--primary-hover);
+    --lime-400: var(--primary-light);
+    --lime-300: #bef264;
+    --lime-200: #d9f99d;
+    --natural-50: #fafffe;
+    --natural-100: #f4f8f3;
+    --natural-200: #e8f4e6;
+    
+    /* Typography */
+    --font-family-base: 'Noto Sans KR', 'Segoe UI', sans-serif;
+    --font-family-heading: 'Noto Sans KR', 'Segoe UI', sans-serif;
+    --font-size-base: 1rem;
+    
+    /* Legacy font variables */
+    --theme-font-family-base: var(--font-family-base);
+    --theme-font-family-heading: var(--font-family-heading);
+    --theme-font-size-base: var(--font-size-base);
+}
+
+/* Global Overrides */
+body {
+    font-family: var(--theme-font-family-base);
+    font-size: var(--theme-font-size-base);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: var(--theme-font-family-heading);
+}
+
+/* Bootstrap Components Override */
+.btn-primary {
+    background-color: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--theme-primary-dark);
+    border-color: var(--theme-primary-dark);
+}
+
+.btn-outline-primary {
+    color: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+/* Navbar Theming */
+.navbar-brand {
+    color: var(--theme-primary) !important;
+}
+
+.nav-link.active,
+.nav-link:hover {
+    color: var(--theme-primary) !important;
+}
+
+/* Links */
+a {
+    color: var(--theme-primary);
+}
+
+a:hover {
+    color: var(--theme-primary-dark);
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--theme-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+/* Cards */
+.card-header {
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+    border-bottom-color: var(--theme-primary);
+}
+
+/* Badges */
+.badge.bg-primary {
+    background-color: var(--theme-primary) !important;
+}
+
+/* Pagination */
+.page-link {
+    color: var(--theme-primary);
+}
+
+.page-link:hover {
+    color: var(--theme-primary-dark);
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+}
+
+.page-item.active .page-link {
+    background-color: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+/* Alerts */
+.alert-primary {
+    color: var(--theme-primary-dark);
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+    border-color: rgba(var(--theme-primary-rgb), 0.2);
+}
+
+/* Progress Bars */
+.progress-bar {
+    background-color: var(--theme-primary);
+}
+
+/* Dropdowns */
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+}
+
+.dropdown-item.active {
+    background-color: var(--theme-primary);
+}
+
+/* Tables */
+.table-primary {
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+}
+
+/* Sidebar Theming (Admin) */
+.sidebar .nav-link.active {
+    background-color: var(--theme-primary);
+    color: white;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+}
+
+/* Custom Components */
+.labor-rights-header {
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-primary-dark) 100%);
+}
+
+.feature-card:hover {
+    border-color: var(--theme-primary);
+}
+
+.cta-section {
+    background-color: var(--theme-primary);
+}
+
+/* Loading Spinner */
+.spinner-border-primary {
+    color: var(--theme-primary);
+}
+
+/* Custom Button Variants */
+.btn-theme {
+    background-color: var(--forest-500);
+    border-color: var(--forest-500);
+    color: white;
+}
+
+.btn-theme:hover {
+    background-color: var(--forest-600);
+    border-color: var(--forest-600);
+    color: white;
+}
+
+/* Natural Green Theme Components - Unified with standard variables */
+
+/* Navigation */
+.navbar-brand {
+    color: var(--primary) !important;
+}
+
+.nav-link.active,
+.nav-link:hover {
+    color: var(--primary) !important;
+}
+
+/* Buttons - using standard primary/secondary variables */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-success {
+    background-color: var(--success);
+    border-color: var(--success);
+}
+
+/* Links */
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Alerts */
+.alert-success {
+    background-color: var(--success-light);
+    border-color: var(--success);
+    color: var(--primary-dark);
+}
+
+.alert-primary {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-color: var(--primary-light);
+    color: var(--primary-dark);
+}
+
+/* Cards */
+.card-header {
+    background-color: var(--muted);
+    border-bottom-color: var(--primary);
+}
+
+/* Tables */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: var(--muted);
+}
+
+/* Pagination */
+.page-link {
+    color: var(--primary);
+}
+
+.page-link:hover {
+    color: var(--primary-hover);
+    background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Dropdowns */
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+.dropdown-item.active {
+    background-color: var(--primary);
+}
+
+/* Progress bars */
+.progress-bar {
+    background-color: var(--primary);
+}
+
+/* Badges */
+.badge.bg-success {
+    background-color: var(--success) !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        font-size: calc(var(--theme-font-size-base) * 0.9);
+    }
+}
+
+/* ===== TAILWIND UTILITY CLASSES ===== */
+
+/* Layout & Container */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.max-w-7xl {
+    max-width: 80rem; /* 1280px */
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Flexbox */
+.flex {
+    display: flex;
+}
+
+.flex-1 {
+    flex: 1 1 0%;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.justify-end {
+    justify-content: flex-end;
+}
+
+/* Grid */
+.grid {
+    display: grid;
+}
+
+.grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.gap-6 {
+    gap: 1.5rem;
+}
+
+.gap-8 {
+    gap: 2rem;
+}
+
+/* Spacing */
+.p-4 {
+    padding: 1rem;
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.py-12 {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+    margin-bottom: 2rem;
+}
+
+.mt-auto {
+    margin-top: auto;
+}
+
+.ml-2 {
+    margin-left: 0.5rem;
+}
+
+.space-y-3 > * + * {
+    margin-top: 0.75rem;
+}
+
+/* Text Colors */
+.text-forest-700 {
+    color: var(--forest-700);
+}
+
+.text-forest-600 {
+    color: var(--forest-600);
+}
+
+.text-gray-600 {
+    color: #4B5563;
+}
+
+.text-gray-500 {
+    color: #6B7280;
+}
+
+.text-gray-400 {
+    color: #9CA3AF;
+}
+
+.text-gray-700 {
+    color: #374151;
+}
+
+.text-white {
+    color: #ffffff;
+}
+
+.text-title {
+    color: var(--forest-700);
+}
+
+/* Background Colors */
+.bg-white {
+    background-color: #ffffff !important;
+}
+
+.bg-natural-50 {
+    background-color: var(--natural-50) !important;
+}
+
+.bg-natural-100 {
+    background-color: var(--natural-100);
+}
+
+.bg-natural-200 {
+    background-color: var(--natural-200);
+}
+
+.bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.from-natural-100 {
+    --tw-gradient-from: var(--natural-100);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(244, 248, 243, 0));
+}
+
+.to-natural-200 {
+    --tw-gradient-to: var(--natural-200);
+}
+
+.bg-gradient-to-r {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+}
+
+.from-lime-500 {
+    --tw-gradient-from: var(--lime-500);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(132, 204, 22, 0));
+}
+
+.to-green-600 {
+    --tw-gradient-to: var(--green-600);
+}
+
+/* Text Sizing & Weight */
+.text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
+
+.text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.leading-tight {
+    line-height: 1.25;
+}
+
+/* Text Alignment */
+.text-center {
+    text-align: center;
+}
+
+/* Height */
+.h-96 {
+    height: 24rem;
+}
+
+.h-64 {
+    height: 16rem;
+}
+
+.h-32 {
+    height: 8rem;
+}
+
+.h-16 {
+    height: 4rem;
+}
+
+.h-4 {
+    height: 1rem;
+}
+
+.h-full {
+    height: 100%;
+}
+
+/* Width */
+.w-16 {
+    width: 4rem;
+}
+
+.w-4 {
+    width: 1rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* Shadows & Borders */
+.shadow-md {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.border {
+    border-width: 1px;
+}
+
+.border-200 {
+    border-color: #e5e7eb;
+}
+
+.rounded-lg {
+    border-radius: 0.5rem;
+}
+
+/* Overflow */
+.overflow-hidden {
+    overflow: hidden;
+}
+
+/* Position */
+.relative {
+    position: relative;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+/* Object Fit */
+.object-cover {
+    object-fit: cover;
+}
+
+.object-contain {
+    object-fit: contain;
+}
+
+/* Display */
+.block {
+    display: block;
+}
+
+.inline {
+    display: inline;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+/* Hover & Transitions */
+.hover\:text-lime-600:hover {
+    color: var(--lime-600);
+}
+
+.hover\:text-forest-600:hover {
+    color: var(--forest-600);
+}
+
+.hover\:shadow-lg:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.hover\:bg-natural-100:hover {
+    background-color: var(--natural-100);
+}
+
+.hover\:bg-white\/30:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.transition-colors {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transition-shadow {
+    transition-property: box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transition {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Text Decoration */
+.underline {
+    text-decoration-line: underline;
+}
+
+.decoration-transparent {
+    text-decoration-color: transparent;
+}
+
+.hover\:decoration-lime-600:hover {
+    text-decoration-color: var(--lime-600);
+}
+
+.hover\:underline-offset-4:hover {
+    text-underline-offset: 4px;
+}
+
+/* Cursor */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Filter */
+.filter {
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.blur-md {
+    --tw-blur: blur(12px);
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+/* Scale */
+.scale-110 {
+    --tw-scale-x: 1.1;
+    --tw-scale-y: 1.1;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+/* Opacity */
+.opacity-60 {
+    opacity: 0.6;
+}
+
+.bg-white\/20 {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Truncate */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive Grid */
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Responsive Spacing */
+@media (min-width: 640px) {
+    .sm\:px-6 {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:px-8 {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+/* ===== ADDITIONAL UTILITY CLASSES FOR HEADER ===== */
+
+/* Header specific classes */
+.border-bottom {
+    border-bottom: 1px solid var(--border);
+}
+
+.sticky-top {
+    position: sticky;
+    top: 0;
+}
+
+.z-50 {
+    z-index: 50;
+}
+
+.z-10 {
+    z-index: 10;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.backdrop-blur-md {
+    backdrop-filter: blur(12px);
+}
+
+.container-fluid {
+    width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Bootstrap-like flex utilities */
+.d-flex {
+    display: flex !important;
+}
+
+.d-none {
+    display: none !important;
+}
+
+.d-md-none {
+    display: none !important;
+}
+
+.d-md-flex {
+    display: flex !important;
+}
+
+.d-inline-flex {
+    display: inline-flex !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.justify-content-center {
+    justify-content: center !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+.text-decoration-none {
+    text-decoration: none !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+}
+
+/* Height utilities */
+.h-16 {
+    height: 4rem;
+}
+
+.h-9 {
+    height: 2.25rem;
+}
+
+.h-7 {
+    height: 1.75rem;
+}
+
+.h-6 {
+    height: 1.5rem;
+}
+
+.h-5 {
+    height: 1.25rem;
+}
+
+.h-10 {
+    height: 2.5rem;
+}
+
+/* Width utilities */
+.w-100 {
+    width: 100% !important;
+}
+
+.w-10 {
+    width: 2.5rem;
+}
+
+.w-7 {
+    width: 1.75rem;
+}
+
+.w-6 {
+    width: 1.5rem;
+}
+
+.w-5 {
+    width: 1.25rem;
+}
+
+/* Spacing utilities */
+.px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.px-3 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.py-2\.5 {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+}
+
+.pb-3 {
+    padding-bottom: 0.75rem;
+}
+
+.gap-1 {
+    gap: 0.25rem;
+}
+
+.min-w-\[12rem\] {
+    min-width: 12rem;
+}
+
+/* Border utilities */
+.border-lime-200 {
+    border-color: var(--lime-200);
+}
+
+.rounded {
+    border-radius: 0.25rem;
+}
+
+.rounded-xl {
+    border-radius: 0.75rem;
+}
+
+.rounded-md {
+    border-radius: 0.375rem;
+}
+
+/* Position utilities */
+.fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+/* Flex utilities */
+.group {
+    /* Group class for hover states */
+}
+
+.group:hover .group-hover\:opacity-100,
+.group:focus-within .group-focus-within\:opacity-100 {
+    opacity: 1;
+}
+
+.group:hover .group-hover\:pointer-events-auto,
+.group:focus-within .group-focus-within\:pointer-events-auto {
+    pointer-events: auto;
+}
+
+.pointer-events-none {
+    pointer-events: none;
+}
+
+.pointer-events-auto {
+    pointer-events: auto;
+}
+
+/* Typography utilities */
+.font-medium {
+    font-weight: 500;
+}
+
+/* Background utilities */
+.bg-transparent {
+    background-color: transparent !important;
+}
+
+.bg-white\/95 {
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+/* Spacing utilities */
+.space-y-1 > * + * {
+    margin-top: 0.25rem;
+}
+
+.max-h-\[calc\(100svh-56px\)\] {
+    max-height: calc(100svh - 56px);
+}
+
+/* Border utilities */
+.border-0 {
+    border-width: 0 !important;
+}
+
+.border-b {
+    border-bottom-width: 1px;
+}
+
+/* Display utilities for responsive */
+@media (min-width: 768px) {
+    .d-md-none {
+        display: none !important;
+    }
+    
+    .d-md-flex {
+        display: flex !important;
+    }
+}
+
+/* Overflow utilities */
+.overflow-auto {
+    overflow: auto;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+.overflow-md-visible {
+    overflow: visible;
+}
+
+@media (min-width: 768px) {
+    .overflow-md-visible {
+        overflow: visible !important;
+    }
+}
+
+/* Visibility utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Transform utilities */
+.transition-transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* ===== 텍스트 세로 출력 방지 ===== */
+/* 게시판 텍스트가 세로로 나오는 문제 해결 */
+.board-surface,
+.board-surface *,
+table,
+table th,
+table td,
+thead,
+tbody,
+tr {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+}
+
+/* 테이블 관련 추가 설정 */
+table th,
+table td {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+    white-space: normal !important;
+}
+
+/* 한글 폰트 우선순위 설정 */
+body, 
+.board-surface,
+table,
+th,
+td {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
+    font-feature-settings: normal !important;
+}
+
+/* ===== Basic형 게시판 칼럼 너비 조정 ===== */
+/* 번호 칼럼과 조회 칼럼을 각각 74px(64px+10px)로 고정 */
+.board-surface table th[style*="width: 74px"],
+.board-surface table td[style*="width: 74px"] {
+    width: 74px !important;
+    min-width: 74px !important;
+    max-width: 74px !important;
+}
+
+/* 제목 칼럼이 나머지 공간을 차지하도록 설정 */
+.board-surface table {
+    table-layout: fixed !important;
+}
+
+.board-surface table th:nth-child(2),
+.board-surface table td:nth-child(2) {
+    width: auto !important;
+    min-width: 0 !important;
+}
+
+/* ===== 페이징 스타일 ===== */
+/* 현재 페이지 번호 배경색을 테마 메인 색상으로 설정 */
+.board-surface nav span {
+    background-color: var(--theme-primary, var(--primary, #84cc16)) !important;
+    color: white !important;
+    padding: 9px 13px !important;
+}
+
+/* 페이징 링크 호버 효과 */
+.board-surface nav a:hover {
+    background-color: var(--theme-bg-hover, #f8fafc) !important;
+    color: var(--theme-primary, var(--primary, #84cc16)) !important;
+}
+
+/* 페이징 링크 크기 통일 */
+.board-surface nav a {
+    padding: 9px 13px !important;
+}
