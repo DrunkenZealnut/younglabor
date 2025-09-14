@@ -152,7 +152,7 @@ function get_file_icon($file_type) {
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
+    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
   </div>
   <a href="/admin/index.php">📊 대시보드</a>
   <a href="/admin/posts/list.php">📝 게시글 관리</a>

@@ -53,7 +53,7 @@ class SettingsModel extends BaseModel
     {
         $defaultSettings = [
             // 일반 설정
-            ['site_name', '우동615', 'general', 'text', '사이트 이름'],
+            ['site_name', '희망씨', 'general', 'text', '사이트 이름'],
             ['site_description', '노동권 찾기를 위한 정보와 지원', 'general', 'textarea', '사이트 설명'],
             ['site_logo', '', 'general', 'file', '사이트 로고'],
             ['site_favicon', '', 'general', 'file', '파비콘'],

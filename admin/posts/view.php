@@ -2,43 +2,46 @@
 // 게시글 상세보기 페이지
 require_once '../bootstrap.php';
 
-// 게시글 ID와 테이블 확인
+// 게시글 ID와 board_type 확인
 $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$table_name = isset($_GET['table']) ? $_GET['table'] : '';
+$board_type = isset($_GET['board_type']) ? $_GET['board_type'] : '';
 
-if ($post_id <= 0 || empty($table_name)) {
+if ($post_id <= 0 || empty($board_type)) {
     header("Location: list.php");
     exit;
 }
 
-// 허용된 테이블명인지 확인
-$allowed_tables = [
-    'hopec_notices' => '공지사항',
-    'hopec_press' => '언론보도', 
-    'hopec_newsletter' => '소식지',
-    'hopec_gallery' => '갤러리',
-    'hopec_resources' => '자료실'
+// 허용된 board_type 확인 - hopec_posts 테이블의 board_type과 일치
+$allowed_board_types = [
+    'finance_reports' => '재정보고',
+    'notices' => '공지사항',
+    'press' => '언론보도', 
+    'newsletter' => '소식지',
+    'gallery' => '갤러리',
+    'resources' => '자료실',
+    'nepal_travel' => '네팔나눔연대여행'
 ];
 
-if (!array_key_exists($table_name, $allowed_tables)) {
+if (!array_key_exists($board_type, $allowed_board_types)) {
     header("Location: list.php");
     exit;
 }
 
 try {
-    // 게시글 정보 조회
+    // hopec_posts 테이블에서 게시글 정보 조회
     $sql = "SELECT 
                 wr_id as id,
+                board_type,
                 wr_subject as title,
                 wr_content as content,
                 wr_name as author,
                 wr_hit as hit_count,
                 wr_datetime as created_at
-            FROM {$table_name} 
-            WHERE wr_id = ?";
+            FROM hopec_posts 
+            WHERE wr_id = ? AND board_type = ?";
     
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$post_id]);
+    $stmt->execute([$post_id, $board_type]);
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$post) {
@@ -47,12 +50,12 @@ try {
     }
     
     // 조회수 증가
-    $update_sql = "UPDATE {$table_name} SET wr_hit = wr_hit + 1 WHERE wr_id = ?";
+    $update_sql = "UPDATE hopec_posts SET wr_hit = wr_hit + 1 WHERE wr_id = ? AND board_type = ?";
     $update_stmt = $pdo->prepare($update_sql);
-    $update_stmt->execute([$post_id]);
+    $update_stmt->execute([$post_id, $board_type]);
     
     // 게시판 이름 설정
-    $board_name = $allowed_tables[$table_name];
+    $board_name = $allowed_board_types[$board_type];
     
 } catch (PDOException $e) {
     $post = null;
@@ -65,7 +68,7 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
 
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head>희망씨
   <meta charset="UTF-8">
   <title><?= $page_title ?> - 우동615 관리자</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -103,7 +106,7 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
 <body>
 
 <!-- 사이드바 -->
-<div class="sidebar">
+<div class="sidebar">희망씨
   <div class="logo">
     <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
   </div>
@@ -142,10 +145,10 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
                 <a href="list.php" class="btn btn-secondary">
                     <i class="bi bi-list"></i> 목록
                 </a>
-                <a href="edit.php?id=<?= $post['id'] ?>&table=<?= urlencode($table_name) ?>" class="btn btn-primary">
+                <a href="edit.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($board_type) ?>" class="btn btn-primary">
                     <i class="bi bi-pencil"></i> 수정
                 </a>
-                <a href="list.php?delete=1&id=<?= $post['id'] ?>&table=<?= urlencode($table_name) ?>" class="btn btn-danger"
+                <a href="list.php?delete=1&id=<?= $post['id'] ?>&board_type=<?= urlencode($board_type) ?>" class="btn btn-danger"
                    onclick="return confirm('정말 삭제하시겠습니까?')">
                     <i class="bi bi-trash"></i> 삭제
                 </a>

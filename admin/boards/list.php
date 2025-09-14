@@ -12,41 +12,56 @@ $type = $_GET['type'] ?? '';
 $is_active = $_GET['is_active'] ?? '';
 $search = trim($_GET['search'] ?? '');
 
-// 쿼리 빌더 시작 - 게시글 수까지 포함하여 조회
-$query = "SELECT b.*, 
-          (SELECT COUNT(*) FROM hopec_posts p WHERE p.board_id = b.id AND p.is_published = 1) as post_count
-          FROM hopec_boards b WHERE 1=1";
-$params = [];
-
-// 필터 조건 추가
-if ($type !== '') {
-    $query .= " AND b.board_type = ?";
-    $params[] = $type;
-}
-
-if ($is_active !== '') {
-    $query .= " AND b.is_active = ?";
-    $params[] = (int)$is_active;
-}
-
-if ($search !== '') {
-    $query .= " AND (b.board_name LIKE ? OR b.description LIKE ?)";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-}
-
-// 정렬 조건 추가
-$query .= " ORDER BY b.sort_order ASC, b.id ASC";
-
+// 게시판 목록을 hopec_boards 테이블에서 조회
 try {
-    // 게시판 목록 조회
-    $stmt = $pdo->prepare($query);
-    $stmt->execute($params);
+    $sql = "SELECT * FROM hopec_boards ORDER BY sort_order ASC, id ASC";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
     $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // 각 게시판별 게시글 수 조회 (실제 게시판 데이터 테이블들)
+    $table_mapping = [
+        '재정보고' => 'hopec_finance_reports',
+        '공지사항' => 'hopec_notices', 
+        '언론보도' => 'hopec_press',
+        '소식지' => 'hopec_newsletter',
+        '갤러리' => 'hopec_gallery',
+        '자료실' => 'hopec_resources',
+        '네팔나눔연대여행' => 'hopec_nepal_travel'
+    ];
+    
+    foreach ($boards as &$board) {
+        $table_name = $table_mapping[$board['board_name']] ?? null;
+        if ($table_name) {
+            try {
+                $count_query = "SELECT COUNT(*) as post_count FROM $table_name";
+                $stmt = $pdo->prepare($count_query);
+                $stmt->execute();
+                $count_result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $board['post_count'] = $count_result['post_count'] ?? 0;
+            } catch (PDOException $e) {
+                $board['post_count'] = 0;
+            }
+        } else {
+            $board['post_count'] = 0;
+        }
+    }
+    unset($board);
+    
 } catch (PDOException $e) {
-    $error_message = $e->getMessage();
+    // hopec_boards 테이블이 없는 경우 fallback
     $boards = [];
 }
+
+// 필터 적용
+if ($search !== '') {
+    $boards = array_filter($boards, function($board) use ($search) {
+        return stripos($board['board_name'], $search) !== false || 
+               stripos($board['description'], $search) !== false;
+    });
+}
+
+// 게시판 목록이 이미 $boards 배열에 준비됨
 
 // 현재 적용된 필터를 쿼리스트링으로 유지
 function buildQueryString($exclude = []) {
@@ -99,9 +114,6 @@ ob_start();
 ?>
 
 <!-- 알림 메시지 -->
-<?php if (isset($error_message)): ?>
-    <div class="alert alert-danger"><?= htmlspecialchars($error_message) ?></div>
-<?php endif; ?>
 
 <?php if (isset($_SESSION['success_message'])): ?>
     <div class="alert alert-success"><?= htmlspecialchars($_SESSION['success_message']) ?></div>

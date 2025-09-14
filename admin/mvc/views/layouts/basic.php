@@ -54,7 +54,7 @@ $show_navbar = isset($show_navbar) ? $show_navbar : true;
 <!-- 상단 네비게이션 -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="<?= t_url('index.php') ?>">우동615 관리자</a>
+    <a class="navbar-brand" href="<?= t_url('index.php') ?>">희망씨 관리자</a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">

@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>메뉴 수정 - 우동615 관리자</title>
+  <title>메뉴 수정 - 희망씨 관리자</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -175,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
+    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
   </div>
   <a href="/admin/index.php">📊 대시보드</a>
   <a href="/admin/posts/list.php">📝 게시글 관리</a>

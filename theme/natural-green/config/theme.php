@@ -6,7 +6,7 @@ return [
     'display_name' => 'Natural Green',
     'description' => '자연스럽고 친환경적인 녹색 테마',
     'version' => '3.0.0',
-    'author' => '우동615',
+    'author' => '희망씨',
     
     // 표준 CSS 변수 (globals.css와 동기화)
     'font-size' => '14px',

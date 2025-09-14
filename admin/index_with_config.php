@@ -408,7 +408,7 @@ $content = ob_get_clean();
 $layout_data = [
     'page_title' => '대시보드',
     'active_menu' => 'dashboard',
-    'site_name' => '우동615 관리자',
+    'site_name' => '희망씨 관리자',
     'content' => $content
 ];
 

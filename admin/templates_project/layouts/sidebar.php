@@ -96,7 +96,7 @@ if (isset($_GET['debug_menu'])) {
 <div class="sidebar">
   <div class="logo">
     <a href="<?= t_url('index.php') ?>" class="text-white text-decoration-none">
-      우동615 관리자
+      희망씨 관리자
     </a>
   </div>
   

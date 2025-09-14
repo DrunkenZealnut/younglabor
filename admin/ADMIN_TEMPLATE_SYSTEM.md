@@ -361,7 +361,7 @@ http://your-domain/shared_admin_framework/database/migrate.php?confirm=yes&no-ba
 
 ---
 
-## 🎯 실제 사용 예시 (우동615 프로젝트)
+## 🎯 실제 사용 예시 (희망씨 프로젝트)
 
 ### 1. 대시보드 통계 구현
 ```php

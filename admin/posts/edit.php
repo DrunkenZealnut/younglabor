@@ -5,25 +5,32 @@ ini_set('display_errors', 1);
 
 require_once '../bootstrap.php';
 
-// 게시글 ID와 테이블 확인
-$post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$table_name = isset($_GET['table']) ? $_GET['table'] : '';
+// CSRF 토큰 생성 보장
+if (!isset($_SESSION['csrf_token'])) {
+    generateCSRFToken();
+}
 
-if ($post_id <= 0 || empty($table_name)) {
+// 게시글 ID와 board_type 확인
+$post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$board_type = isset($_GET['board_type']) ? $_GET['board_type'] : '';
+
+if ($post_id <= 0 || empty($board_type)) {
     header("Location: list.php");
     exit;
 }
 
-// 허용된 테이블명인지 확인
-$allowed_tables = [
-    'hopec_notices' => '공지사항',
-    'hopec_press' => '언론보도', 
-    'hopec_newsletter' => '소식지',
-    'hopec_gallery' => '갤러리',
-    'hopec_resources' => '자료실'
+// board_type 매핑 (write.php와 동일)
+$board_types = [
+    'finance_reports' => '재정보고',
+    'notices' => '공지사항', 
+    'press' => '언론보도',
+    'newsletter' => '소식지',
+    'gallery' => '갤러리',
+    'resources' => '자료실',
+    'nepal_travel' => '네팔나눔연대여행'
 ];
 
-if (!array_key_exists($table_name, $allowed_tables)) {
+if (!array_key_exists($board_type, $board_types)) {
     header("Location: list.php");
     exit;
 }
@@ -36,15 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (!empty($title)) {
         try {
-            $sql = "UPDATE {$table_name} SET 
+            $sql = "UPDATE hopec_posts SET 
                     wr_subject = ?, wr_content = ?, wr_name = ?
-                    WHERE wr_id = ?";
+                    WHERE wr_id = ? AND board_type = ?";
             
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $content, $author, $post_id]);
+            $stmt->execute([$title, $content, $author, $post_id, $board_type]);
             
             $_SESSION['success_message'] = '게시글이 성공적으로 수정되었습니다.';
-            header("Location: view.php?id=" . $post_id . "&table=" . urlencode($table_name));
+            header("Location: view.php?id=" . $post_id . "&board_type=" . urlencode($board_type));
             exit;
             
         } catch (PDOException $e) {
@@ -56,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
-    // 게시글 정보 조회
+    // 게시글 정보 조회 (hopec_posts 테이블에서 board_type으로)
     $sql = "SELECT 
                 wr_id as id,
                 wr_subject as title,
@@ -65,11 +72,11 @@ try {
                 wr_hit as hit_count,
                 wr_datetime as created_at,
                 wr_ip as ip_address
-            FROM {$table_name} 
-            WHERE wr_id = ?";
+            FROM hopec_posts 
+            WHERE wr_id = ? AND board_type = ?";
     
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$post_id]);
+    $stmt->execute([$post_id, $board_type]);
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$post) {
@@ -78,7 +85,7 @@ try {
     }
     
     // 게시판 이름 설정
-    $board_name = $allowed_tables[$table_name];
+    $board_name = $board_types[$board_type];
     
 } catch (PDOException $e) {
     $_SESSION['error_message'] = '게시글을 불러올 수 없습니다: ' . $e->getMessage();
@@ -92,7 +99,7 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
 
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+<head>희망씨
   <meta charset="UTF-8">
   <title><?= $page_title ?> - 우동615 관리자</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -120,7 +127,7 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
 <body>
 
 <!-- 사이드바 -->
-<div class="sidebar">
+<div class="sidebar">희망씨
   <div class="logo">
     <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
   </div>
@@ -182,7 +189,7 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
                 <a href="list.php" class="btn btn-secondary">
                     <i class="bi bi-list"></i> 목록
                 </a>
-                <a href="view.php?id=<?= $post['id'] ?>&table=<?= urlencode($table_name) ?>" class="btn btn-outline-primary">
+                <a href="view.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($board_type) ?>" class="btn btn-outline-primary">
                     <i class="bi bi-eye"></i> 보기
                 </a>
             </div>
@@ -227,7 +234,7 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
                             <a href="list.php" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> 취소
                             </a>
-                            <a href="view.php?id=<?= $post['id'] ?>&table=<?= urlencode($table_name) ?>" class="btn btn-outline-info">
+                            <a href="view.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($board_type) ?>" class="btn btn-outline-info">
                                 <i class="bi bi-eye"></i> 미리보기
                             </a>
                         </div>
@@ -274,6 +281,257 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
         </div>
     <?php endif; ?>
 </div>
+
+<!-- Summernote Editor Integration -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/lang/summernote-ko-KR.min.js"></script>
+
+<style>
+/* Summernote Admin Theme Integration */
+.note-editor.note-frame {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.note-editor.note-frame.note-focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.note-toolbar {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 0.375rem 0.375rem 0 0;
+    padding: 0.75rem;
+}
+
+.note-btn-group {
+    margin-right: 0.25rem;
+}
+
+.note-btn {
+    padding: 0.375rem 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    background: transparent;
+    transition: all 0.15s ease-in-out;
+}
+
+.note-btn:hover {
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+}
+
+.note-btn.active {
+    background: #0d6efd;
+    color: white;
+}
+
+.note-editing-area {
+    min-height: 350px;
+}
+
+.note-editable {
+    padding: 1.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #495057;
+}
+
+.note-editable h1, .note-editable h2, .note-editable h3,
+.note-editable h4, .note-editable h5, .note-editable h6 {
+    margin-bottom: 0.75rem;
+    color: #212529;
+}
+
+.note-editable p {
+    margin-bottom: 1rem;
+}
+
+.note-editable img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.note-modal .modal-dialog {
+    max-width: 90%;
+}
+
+/* Loading toast styling */
+.toast.show {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+}
+
+.toast-body {
+    padding: 0.75rem 1rem;
+}
+
+/* Admin responsive adjustments */
+@media (max-width: 768px) {
+    .note-toolbar {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    .note-btn-group {
+        margin-bottom: 0.25rem;
+        margin-right: 0.125rem;
+    }
+    
+    .note-btn {
+        padding: 0.25rem 0.375rem;
+        font-size: 0.875rem;
+    }
+    
+    .note-editable {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // CSRF 토큰 설정 (PHP session에서 가져오기)
+    const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
+    
+    // Summernote 초기화
+    $('#content').summernote({
+        height: 350,
+        lang: 'ko-KR',
+        placeholder: '내용을 입력하세요...',
+        fontNames: [
+            '맑은 고딕', 'Noto Sans KR', 'Noto Serif KR', 
+            'Nanum Gothic', 'Nanum Myeongjo', 'Gothic A1', 
+            'IBM Plex Sans KR', 'Pretendard', 'Arial', 
+            'Helvetica', 'Tahoma', 'Verdana', 'Georgia', 
+            'Times New Roman', 'Courier New', 'sans-serif', 
+            'serif', 'monospace'
+        ],
+        fontNamesIgnoreCheck: [
+            '맑은 고딕', 'Noto Sans KR', 'Noto Serif KR', 
+            'Nanum Gothic', 'Nanum Myeongjo', 'Gothic A1', 
+            'IBM Plex Sans KR', 'Pretendard', 'Arial', 
+            'Helvetica', 'Tahoma', 'Verdana', 'Georgia', 
+            'Times New Roman', 'Courier New', 'sans-serif', 
+            'serif', 'monospace'
+        ],
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'italic', 'strikethrough', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color', 'forecolor', 'backcolor']],
+            ['para', ['ul', 'ol', 'paragraph', 'height']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'hr']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ],
+        callbacks: {
+            onImageUpload: function(files) {
+                for (let i = 0; i < files.length; i++) {
+                    uploadImage(files[i]);
+                }
+            },
+            onDrop: function(e) {
+                var dataTransfer = e.originalEvent.dataTransfer;
+                if (dataTransfer && dataTransfer.files && dataTransfer.files.length) {
+                    e.preventDefault();
+                    for (let i = 0; i < dataTransfer.files.length; i++) {
+                        uploadImage(dataTransfer.files[i]);
+                    }
+                }
+            }
+        }
+    });
+    
+    // 이미지 업로드 함수
+    function uploadImage(file) {
+        // 파일 크기 체크 (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('파일 크기는 5MB를 초과할 수 없습니다.');
+            return;
+        }
+        
+        // 파일 형식 체크
+        if (!file.type.match(/^image\//)) {
+            alert('이미지 파일만 업로드할 수 있습니다.');
+            return;
+        }
+
+        // 현재 테이블 정보 가져오기 (URL에서 추출)
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentTable = urlParams.get('table') || 'general';
+        
+        var formData = new FormData();
+        formData.append('image', file);  // 'file'에서 'image'로 수정
+        formData.append('board_table', currentTable);  // 게시판 테이블 정보 추가
+        formData.append('csrf_token', csrfToken);
+        
+        // 로딩 표시
+        const loadingToast = $('<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999"><div class="toast show" role="alert"><div class="toast-body">이미지 업로드 중...</div></div></div>');
+        $('body').append(loadingToast);
+        
+        $.ajax({
+            url: '/admin/posts/upload_image.php',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                loadingToast.remove();
+                try {
+                    var data = typeof response === 'string' ? JSON.parse(response) : response;
+                    if (data && data.success && data.url) {
+                        $('#content').summernote('insertImage', data.url);
+                    } else {
+                        alert('이미지 업로드 실패: ' + (data.error || '알 수 없는 오류'));
+                    }
+                } catch (e) {
+                    console.error('Response parsing error:', e);
+                    alert('이미지 업로드 응답 처리 중 오류가 발생했습니다.');
+                }
+            },
+            error: function(xhr, status, error) {
+                loadingToast.remove();
+                console.error('Upload error:', {
+                    status: status,
+                    error: error,
+                    responseText: xhr.responseText,
+                    readyState: xhr.readyState,
+                    statusCode: xhr.status
+                });
+                alert('Upload error: ' + error + '\n' + xhr.responseText);
+            }
+        });
+    }
+    
+    // 폼 제출 전 검증
+    $('form').on('submit', function(e) {
+        const title = $('input[name="title"]').val().trim();
+        if (!title) {
+            alert('제목을 입력해주세요.');
+            e.preventDefault();
+            return false;
+        }
+        
+        const author = $('input[name="author"]').val().trim();
+        if (!author) {
+            alert('작성자를 입력해주세요.');
+            e.preventDefault();
+            return false;
+        }
+    });
+});
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

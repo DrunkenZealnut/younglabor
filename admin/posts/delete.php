@@ -35,7 +35,7 @@ try {
     $post_id = (int)$post_id;
 
     // 게시글 정보 가져오기 (첨부파일 및 이미지 삭제를 위해)
-    $stmt = $pdo->prepare("SELECT * FROM hopec_posts WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT * FROM hopec_posts WHERE wr_id = ?");
     $stmt->execute([$post_id]);
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -44,7 +44,7 @@ try {
     }
     
     // 게시글 내용에서 이미지 파일 찾기
-    preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $post['content'], $matches);
+    preg_match_all('/<img[^>]+src="([^"]+)"[^>]*>/i', $post['wr_content'], $matches);
     
     // 업로드된 이미지 삭제
     if (isset($matches[1]) && is_array($matches[1])) {
@@ -82,7 +82,7 @@ try {
     $stmt->execute([$post_id]);
     
     // 게시글 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE id = ?");
+    $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE wr_id = ?");
     $stmt->execute([$post_id]);
     
     // 트랜잭션 완료
@@ -92,7 +92,7 @@ try {
     echo json_encode([
         'success' => true,
         'message' => '게시글이 성공적으로 삭제되었습니다.',
-        'deleted_post' => $post['title']
+        'deleted_post' => $post['wr_subject']
     ], JSON_UNESCAPED_UNICODE);
     
 } catch (PDOException $e) {

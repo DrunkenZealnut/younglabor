@@ -4,7 +4,7 @@
  * 복잡한 동적 생성 없이 정적 CSS 파일만 로드
  * 
  * Version: 3.0.0
- * Author: 우동615
+ * Author: 희망씨
  * Description: 단일 테마 시스템으로 성능과 유지보수성 최적화
  */
 
@@ -117,7 +117,7 @@ class NaturalGreenThemeLoader {
             'display_name' => 'Natural Green',
             'description' => '자연스럽고 친환경적인 녹색 테마',
             'version' => '3.0.0',
-            'author' => '우동615',
+            'author' => '희망씨',
             'primary' => '#84cc16',
             'background' => '#f4f8f3',
             'foreground' => 'oklch(0.145 0 0)',

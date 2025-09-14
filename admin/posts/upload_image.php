@@ -1,10 +1,13 @@
 <?php
 include '../auth.php'; // 관리자 인증 확인
+require_once '../env_loader.php'; // .env 파일 로더
 
 // 제출된 요청 기록 (디버깅용)
 $request_log = [
     'method' => $_SERVER['REQUEST_METHOD'],
     'files' => isset($_FILES) ? array_keys($_FILES) : [],
+    'post_data' => $_POST ?? [],
+    'files_detail' => $_FILES ?? [],
     'time' => date('Y-m-d H:i:s')
 ];
 
@@ -16,15 +19,47 @@ $response = [
     'request_log' => $request_log
 ];
 
-// 업로드 디렉토리 설정
+// .env에서 업로드 디렉토리 설정 가져오기
+$upload_base_path = env('UPLOAD_PATH', 'data/file');
+$bt_upload_path = env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file');
+
+// 게시판 정보 추출 (POST 데이터에서)
+$board_table = isset($_POST['board_table']) ? $_POST['board_table'] : 'general';
+
+// board_type을 폴더명으로 사용 (write.php의 새로운 방식과 일치)
+$board_type_mapping = [
+    'finance_reports' => 'finance_reports',
+    'notices' => 'notices', 
+    'press' => 'press',
+    'newsletter' => 'newsletter',
+    'gallery' => 'gallery',
+    'resources' => 'resources',
+    'nepal_travel' => 'nepal_travel'
+];
+
+$board_folder = isset($board_type_mapping[$board_table]) ? $board_type_mapping[$board_table] : 'general';
+
 // 연도/월 폴더 구조 생성
 $date = new DateTime();
 $year = $date->format('Y');
 $month = $date->format('m');
-$upload_dir = "../../uploads/posts/$year/$month/";
+
+// 절대 경로 사용 (BT_UPLOAD_PATH 기반) - 게시판별 폴더 추가
+$upload_dir = rtrim($bt_upload_path, '/') . "/posts/$board_folder/$year/$month/";
+$relative_upload_path = "data/file/posts/$board_folder/$year/$month/";
 
 // 디버깅 메시지 초기화
 $debug_info = '';
+
+// 초기 환경 정보 추가
+$debug_info .= "=== 업로드 환경 정보 ===\n";
+$debug_info .= "PHP 버전: " . phpversion() . "\n";
+$debug_info .= "upload_max_filesize: " . ini_get('upload_max_filesize') . "\n";
+$debug_info .= "post_max_size: " . ini_get('post_max_size') . "\n";
+$debug_info .= "max_file_uploads: " . ini_get('max_file_uploads') . "\n";
+$debug_info .= "upload_tmp_dir: " . (ini_get('upload_tmp_dir') ?: sys_get_temp_dir()) . "\n";
+$debug_info .= "현재 시간: " . date('Y-m-d H:i:s') . "\n";
+$debug_info .= "요청 방법: " . $_SERVER['REQUEST_METHOD'] . "\n\n";
 
 // 디렉토리 존재 여부 확인 및 생성
 if (!is_dir($upload_dir)) {
@@ -118,17 +153,17 @@ if (!in_array($type, $allowed_types)) {
         $debug_info .= "파일 업로드 성공\n";
         $response['success'] = true;
         
-        // 업로드 성공 시 서버 루트 기준 상대 경로를 반환
-        // URL이 어떤 상황에서든 일관되게 처리될 수 있도록 경로 설정
-        $url_path = "uploads/posts/$year/$month/" . $new_filename;
+        // 업로드 성공 시 .env 설정 기반으로 URL 생성
+        $bt_upload_url = env('BT_UPLOAD_URL', '/data/file');
+        $url_path = rtrim($bt_upload_url, '/') . "/posts/$board_folder/$year/$month/" . $new_filename;
         $response['url'] = $url_path;
         
         // 다양한 URL 형식 제공
         $response['urls'] = [
-            'relative' => $url_path,                                  // 기본 상대 경로
-            'root_relative' => '/' . $url_path,                      // 루트 기준 경로
-            'project_relative' => '/' . $url_path,                   // 프로젝트 기준 경로 (hopec)
-            'admin_relative' => '../../' . $url_path,                // admin 기준 경로
+            'relative' => $relative_upload_path . $new_filename,      // 기본 상대 경로
+            'root_relative' => $url_path,                             // 루트 기준 경로
+            'project_relative' => $url_path,                          // 프로젝트 기준 경로
+            'admin_relative' => '../../' . $relative_upload_path . $new_filename, // admin 기준 경로
         ];
         
         $response['absolute_path'] = realpath($target_file);          // 디버깅용 절대 경로

@@ -95,17 +95,38 @@ function getStatistics($pdo) {
     }
     
     try {
-        // 최근 게시글 가져오기 (게시판 이름 포함)
+        // 최근 게시글 가져오기 - 중복 제목 방지
+        $board_type_names = [
+            'finance_reports' => '재정보고',
+            'notices' => '공지사항',
+            'press' => '언론보도', 
+            'newsletter' => '소식지',
+            'gallery' => '갤러리',
+            'resources' => '자료실',
+            'nepal_travel' => '네팔나눔연대여행'
+        ];
+        
         $stmt = $pdo->query("
-            SELECT p.id, p.title, p.created_at, p.author, 
-                   p.view_count, b.board_name 
-            FROM hopec_posts p
-            LEFT JOIN hopec_boards b ON p.board_id = b.id 
-            WHERE p.is_published = 1
-            ORDER BY p.created_at DESC 
+            SELECT DISTINCT
+                wr_id as id, 
+                wr_subject as title, 
+                wr_datetime as created_at, 
+                wr_name as author,
+                wr_hit as view_count, 
+                board_type
+            FROM hopec_posts
+            WHERE wr_is_comment = 0
+            ORDER BY wr_datetime DESC 
             LIMIT 5
         ");
-        $statistics['recent_posts'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $recent_posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // board_type을 한글 게시판 이름으로 변환
+        foreach ($recent_posts as &$post) {
+            $post['board_name'] = $board_type_names[$post['board_type']] ?? $post['board_type'];
+        }
+        
+        $statistics['recent_posts'] = $recent_posts;
     } catch (Exception $e) {
         // 게시글 테이블이 없거나 오류 시 기본값 유지
         error_log("최근 게시글 가져오기 실패: " . $e->getMessage());

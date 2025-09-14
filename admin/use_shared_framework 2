@@ -1,6 +1,6 @@
 <?php
 /**
- * Shared Admin Framework 통합 데모 - 우동615 Admin 디자인
+ * Shared Admin Framework 통합 데모 - 희망씨 Admin 디자인
  */
 
 require_once 'framework_integration.php';
@@ -48,7 +48,7 @@ $page_title = 'Shared Admin Framework 통합 데모';
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title><?= admin_escape($page_title) ?> - 우동615</title>
+  <title><?= admin_escape($page_title) ?> - 희망씨</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -94,7 +94,7 @@ $page_title = 'Shared Admin Framework 통합 데모';
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
+    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
   </div>
   <a href="/admin/index.php">📊 대시보드</a>
   <a href="/admin/use_shared_framework.php" class="active">🚀 프레임워크 데모</a>
@@ -357,7 +357,7 @@ $page_title = 'Shared Admin Framework 통합 데모';
     <!-- 시스템 정보 -->
     <div class="alert alert-light mt-4">
         <strong>🎉 Shared Admin Framework 통합 성공!</strong><br>
-        모든 기능이 현재 우동615 관리자 시스템에 완벽하게 통합되었습니다. | 
+        모든 기능이 현재 희망씨 관리자 시스템에 완벽하게 통합되었습니다. | 
         현재 시간: <?= date('Y-m-d H:i:s') ?> | 
         로그인: <?= $_SESSION['admin_username'] ?? 'admin' ?>
     </div>

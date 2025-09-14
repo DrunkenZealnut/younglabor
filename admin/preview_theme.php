@@ -211,7 +211,7 @@ $config = $themeManager->getMergedThemeConfig($themeName);
             <h2 style="font-family: var(--font-family-heading, var(--font-family-base));">제목 2 (H2)</h2>
             <h3 style="font-family: var(--font-family-heading, var(--font-family-base));">제목 3 (H3)</h3>
             <p>본문 텍스트입니다. 이 텍스트는 설정된 본문 폰트와 크기로 표시됩니다. 
-            노동권 찾기를 위한 정보와 지원을 제공하는 우동615 사이트의 텍스트 표시 예시입니다.</p>
+            노동권 찾기를 위한 정보와 지원을 제공하는 희망씨 사이트의 텍스트 표시 예시입니다.</p>
             <p><small class="text-muted">작은 텍스트 예시입니다.</small></p>
         </div>
         

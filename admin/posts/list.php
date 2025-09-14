@@ -14,103 +14,93 @@ $board_filter = isset($_GET['board_id']) ? (int)$_GET['board_id'] : 0;
 
 // 여러 게시판 테이블을 통합하여 조회하는 쿼리
 try {
-    // 사용 가능한 게시판 테이블들과 해당 게시판명 정의
-    $board_tables = [
-        'hopec_notices' => '공지사항',
-        'hopec_press' => '언론보도',
-        'hopec_newsletter' => '소식지',
-        'hopec_gallery' => '갤러리',
-        'hopec_resources' => '자료실'
+    // 사용 가능한 게시판 타입들과 해당 게시판명 정의 (write.php와 동일)
+    $board_types = [
+        1 => ['name' => '재정보고', 'board_type' => 'finance_reports'],
+        2 => ['name' => '공지사항', 'board_type' => 'notices'],
+        3 => ['name' => '언론보도', 'board_type' => 'press'],
+        4 => ['name' => '소식지', 'board_type' => 'newsletter'],
+        5 => ['name' => '갤러리', 'board_type' => 'gallery'],
+        6 => ['name' => '자료실', 'board_type' => 'resources'],
+        7 => ['name' => '네팔나눔연대여행', 'board_type' => 'nepal_travel']
     ];
     
     // 게시판 필터 옵션용 배열
     $boards = [];
-    $board_id = 1;
-    foreach ($board_tables as $table => $name) {
-        $boards[] = ['id' => $board_id, 'board_name' => $name, 'table_name' => $table];
-        $board_id++;
+    foreach ($board_types as $id => $info) {
+        $boards[] = ['id' => $id, 'board_name' => $info['name'], 'board_type' => $info['board_type']];
     }
     
-    // UNION을 사용하여 모든 게시판의 게시글을 합쳐서 조회
-    $union_parts = [];
+    // hopec_posts 테이블에서 board_type으로 통합 조회
+    $where_clause = "WHERE wr_is_comment = 0";
+    $params = [];
     
-    // 게시판 필터가 있는 경우 해당 테이블만 조회
-    $tables_to_query = $board_tables;
-    if ($board_filter > 0) {
-        $selected_board = $boards[$board_filter - 1] ?? null;
-        if ($selected_board) {
-            $tables_to_query = [$selected_board['table_name'] => $selected_board['board_name']];
+    // 게시판 필터가 있는 경우 해당 board_type만 조회
+    if ($board_filter > 0 && isset($board_types[$board_filter])) {
+        $where_clause .= " AND board_type = ?";
+        $params[] = $board_types[$board_filter]['board_type'];
+    }
+    
+    // 검색 조건 추가
+    if (!empty($search_keyword)) {
+        if ($search_type === 'title') {
+            $where_clause .= " AND wr_subject LIKE ?";
+            $params[] = '%' . $search_keyword . '%';
+        } else if ($search_type === 'content') {
+            $where_clause .= " AND wr_content LIKE ?";
+            $params[] = '%' . $search_keyword . '%';
+        } else if ($search_type === 'author') {
+            $where_clause .= " AND wr_name LIKE ?";
+            $params[] = '%' . $search_keyword . '%';
         }
     }
     
-    foreach ($tables_to_query as $table_name => $board_name) {
-        // 검색 조건 생성
-        $where_conditions = ["1=1"];
-        
-        if (!empty($search_keyword)) {
-            if ($search_type === 'title') {
-                $where_conditions[] = "wr_subject LIKE '%{$search_keyword}%'";
-            } else if ($search_type === 'content') {
-                $where_conditions[] = "wr_content LIKE '%{$search_keyword}%'";
-            } else if ($search_type === 'author') {
-                $where_conditions[] = "wr_name LIKE '%{$search_keyword}%'";
-            }
-        }
-        
-        $where_clause = implode(' AND ', $where_conditions);
-        
-        $union_parts[] = "
-            SELECT 
+    // 테스트 페이지와 동일한 단순한 쿼리 (정상 작동 확인됨)
+    $sql = "SELECT DISTINCT
                 wr_id as id,
-                '{$board_name}' as board_name,
+                board_type,
                 wr_subject as title,
                 wr_content as content,
                 wr_name as author,
                 wr_hit as hit_count,
                 wr_datetime as created_at,
-                0 as is_notice,
-                '{$table_name}' as source_table
-            FROM {$table_name} 
-            WHERE {$where_clause}
-        ";
+                0 as is_notice
+            FROM hopec_posts 
+            {$where_clause}
+            ORDER BY wr_id DESC 
+            LIMIT {$offset}, {$records_per_page}";
+    
+    // 게시글 조회
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $raw_posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // 완전한 중복 제거: 연관배열로 중복 방지
+    $unique_posts = [];
+    foreach ($raw_posts as $post) {
+        $unique_key = $post['id']; // ID를 유니크 키로 사용
+        $unique_posts[$unique_key] = $post;
     }
     
-    if (empty($union_parts)) {
-        $posts = [];
-        $total_records = 0;
-        $total_pages = 0;
-    } else {
-        $sql = "(" . implode(") UNION ALL (", $union_parts) . ") ORDER BY created_at DESC LIMIT {$offset}, {$records_per_page}";
-        
-        // 게시글 조회
-        $stmt = $pdo->query($sql);
-        $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        
-        // 총 게시글 수 계산을 위한 COUNT 쿼리 생성
-        $count_union_parts = [];
-        foreach ($tables_to_query as $table_name => $board_name) {
-            $where_conditions = ["1=1"];
-            
-            if (!empty($search_keyword)) {
-                if ($search_type === 'title') {
-                    $where_conditions[] = "wr_subject LIKE '%{$search_keyword}%'";
-                } else if ($search_type === 'content') {
-                    $where_conditions[] = "wr_content LIKE '%{$search_keyword}%'";
-                } else if ($search_type === 'author') {
-                    $where_conditions[] = "wr_name LIKE '%{$search_keyword}%'";
-                }
+    // 배열 값만 추출하여 최종 결과 생성
+    $posts = array_values($unique_posts);
+    
+    // board_type을 board_name으로 변환 (참조 전달 없이 안전하게)
+    for ($i = 0; $i < count($posts); $i++) {
+        foreach ($board_types as $info) {
+            if ($info['board_type'] === $posts[$i]['board_type']) {
+                $posts[$i]['board_name'] = $info['name'];
+                break;
             }
-            
-            $where_clause = implode(' AND ', $where_conditions);
-            $count_union_parts[] = "SELECT COUNT(*) as cnt FROM {$table_name} WHERE {$where_clause}";
         }
-        
-        $count_sql = "SELECT SUM(cnt) as total FROM ((" . implode(") UNION ALL (", $count_union_parts) . ")) as combined";
-        $stmt = $pdo->query($count_sql);
-        $total_records = $stmt->fetchColumn();
-        $total_pages = ceil($total_records / $records_per_page);
     }
+    
+    // 총 게시글 수 계산 - 단순 카운트
+    $count_sql = "SELECT COUNT(*) FROM hopec_posts {$where_clause}";
+    $count_stmt = $pdo->prepare($count_sql);
+    $count_stmt->execute($params);
+    $total_records = $count_stmt->fetchColumn();
+    $total_pages = ceil($total_records / $records_per_page);
 } catch (PDOException $e) {
     $posts = [];
     $total_records = 0;
@@ -119,17 +109,17 @@ try {
 }
 
 // 삭제 기능 처리
-if (isset($_GET['delete']) && isset($_GET['id']) && isset($_GET['table'])) {
+if (isset($_GET['delete']) && isset($_GET['id']) && isset($_GET['board_type'])) {
     $post_id = (int)$_GET['id'];
-    $table_name = $_GET['table'];
+    $board_type = $_GET['board_type'];
     
-    // 테이블명 보안 검사
-    $allowed_tables = ['hopec_notices', 'hopec_press', 'hopec_newsletter', 'hopec_gallery', 'hopec_resources'];
+    // board_type 보안 검사
+    $allowed_board_types = ['finance_reports', 'notices', 'press', 'newsletter', 'gallery', 'resources', 'nepal_travel'];
     
-    if (in_array($table_name, $allowed_tables)) {
+    if (in_array($board_type, $allowed_board_types)) {
         try {
-            $stmt = $pdo->prepare("DELETE FROM {$table_name} WHERE wr_id = ?");
-            $stmt->execute([$post_id]);
+            $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE wr_id = ? AND board_type = ?");
+            $stmt->execute([$post_id, $board_type]);
             
             header("Location: list.php?deleted=1");
             exit;
@@ -168,7 +158,7 @@ $page_title = '게시글 관리';
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
+    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
   </div>
   <a href="/admin/index.php">📊 대시보드</a>
   <a href="/admin/posts/list.php" class="active">📝 게시글 관리</a>
@@ -288,7 +278,7 @@ $page_title = '게시글 관리';
                                     <?php endif; ?>
                                     
                                     <td>
-                                        <a href="view.php?id=<?= $post['id'] ?>&table=<?= $post['source_table'] ?>" class="text-decoration-none">
+                                        <a href="view.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($post['board_type']) ?>" class="text-decoration-none">
                                             <?= htmlspecialchars($post['title']) ?>
                                         </a>
                                     </td>
@@ -305,10 +295,10 @@ $page_title = '게시글 관리';
                                     
                                     <td>
                                         <div class="btn-group btn-group-sm">
-                                            <a href="edit.php?id=<?= $post['id'] ?>&table=<?= $post['source_table'] ?>" class="btn btn-outline-primary">
+                                            <a href="edit.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($post['board_type']) ?>" class="btn btn-outline-primary">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <a href="list.php?delete=1&id=<?= $post['id'] ?>&table=<?= $post['source_table'] ?>" class="btn btn-outline-danger"
+                                            <a href="list.php?delete=1&id=<?= $post['id'] ?>&board_type=<?= urlencode($post['board_type']) ?>" class="btn btn-outline-danger"
                                                onclick="return confirm('정말 삭제하시겠습니까?')">
                                                 <i class="bi bi-trash"></i>
                                             </a>
@@ -320,35 +310,62 @@ $page_title = '게시글 관리';
                     </table>
                 </div>
 
-                <!-- 페이지네이션 -->
+                <!-- 페이지네이션 - board_templates 방식 적용 -->
                 <?php if ($total_pages > 1): ?>
-                    <nav aria-label="페이지 네비게이션">
-                        <ul class="pagination justify-content-center">
-                            <?php if ($page > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<?= $page - 1 ?>&search_type=<?= urlencode($search_type) ?>&search_keyword=<?= urlencode($search_keyword) ?>&board_id=<?= $board_filter ?>">이전</a>
-                                </li>
-                            <?php endif; ?>
-                            
-                            <?php
-                            $start = max(1, $page - 2);
-                            $end = min($total_pages, $page + 2);
-                            ?>
-                            
-                            <?php for ($i = $start; $i <= $end; $i++): ?>
-                                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
-                                    <a class="page-link" href="?page=<?= $i ?>&search_type=<?= urlencode($search_type) ?>&search_keyword=<?= urlencode($search_keyword) ?>&board_id=<?= $board_filter ?>">
-                                        <?= $i ?>
-                                    </a>
-                                </li>
-                            <?php endfor; ?>
-                            
-                            <?php if ($page < $total_pages): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<?= $page + 1 ?>&search_type=<?= urlencode($search_type) ?>&search_keyword=<?= urlencode($search_keyword) ?>&board_id=<?= $board_filter ?>">다음</a>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
+                    <nav aria-label="페이지 네비게이션" class="mt-4">
+                        <div class="d-flex justify-content-center">
+                            <ul class="pagination">
+                                <?php
+                                // board_templates와 동일한 페이지 범위 계산
+                                $start_page = max(1, $page - 2);
+                                $end_page = min($total_pages, $start_page + 4);
+                                $start_page = max(1, $end_page - 4);
+                                
+                                // URL 파라미터 구성 (board_templates 방식)
+                                $url_params = $_GET;
+                                unset($url_params['page']);
+                                $query_string = !empty($url_params) ? '&' . http_build_query($url_params) : '';
+                                ?>
+                                
+                                <?php if ($page > 1): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1<?= $query_string ?>" title="첫 페이지">
+                                            <i class="bi bi-chevron-double-left"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<?= $page - 1 ?><?= $query_string ?>" title="이전 페이지">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                                
+                                <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+                                    <?php if ($i === $page): ?>
+                                        <li class="page-item active">
+                                            <span class="page-link"><?= $i ?></span>
+                                        </li>
+                                    <?php else: ?>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=<?= $i ?><?= $query_string ?>"><?= $i ?></a>
+                                        </li>
+                                    <?php endif; ?>
+                                <?php endfor; ?>
+                                
+                                <?php if ($page < $total_pages): ?>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<?= $page + 1 ?><?= $query_string ?>" title="다음 페이지">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=<?= $total_pages ?><?= $query_string ?>" title="마지막 페이지">
+                                            <i class="bi bi-chevron-double-right"></i>
+                                        </a>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </nav>
                 <?php endif; ?>
             <?php endif; ?>

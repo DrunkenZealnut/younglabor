@@ -14,7 +14,7 @@ if (file_exists($framework_path)) {
     
     // 현재 프로젝트 설정
     $project_config = [
-        'project_name' => '우동615 관리자',
+        'project_name' => '희망씨 관리자',
         'theme' => 'udong',
         'lang' => 'ko',
         'template_path' => __DIR__ . '/templates_project',  // 프로젝트 전용 템플릿

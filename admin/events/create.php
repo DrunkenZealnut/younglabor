@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- 사이드바 -->
 <div class="sidebar">
-  <div class="logo">우동615 관리자</div>
+  <div class="logo">희망씨 관리자</div>
   <a href="../index.php">📊 대시보드</a>
   <a href="../posts/list.php">📝 게시글 관리</a>
   <a href="../boards/list.php">📋 게시판 관리</a>
@@ -179,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h2>새 행사 등록</h2>
-      <p class="text-muted">우동615 행사 정보를 등록합니다.</p>
+      <p class="text-muted">희망씨 행사 정보를 등록합니다.</p>
     </div>
     <a href="list.php" class="btn btn-outline-secondary">
       <i class="bi bi-arrow-left"></i> 행사 목록으로 돌아가기

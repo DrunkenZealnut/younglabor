@@ -32,7 +32,7 @@ try {
   // 기본 설정값 추가
   $default_settings = [
     // 일반 설정
-    ['site_name', '우동615', 'general'],
+    ['site_name', '희망씨', 'general'],
     ['site_description', '노동권 찾기를 위한 정보와 지원', 'general'],
     ['site_logo', '', 'general'],
     ['site_favicon', '', 'general'],
@@ -505,7 +505,7 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
 
 <!-- 사이드바 -->
 <div class="sidebar">
-  <div class="logo">우동615 관리자</div>
+  <div class="logo">희망씨 관리자</div>
   <a href="../index.php">📊 대시보드</a>
   <a href="../posts/list.php">📝 게시글 관리</a>
   <a href="../boards/list.php">📋 게시판 관리</a>
@@ -845,7 +845,7 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
                 <h3 style="font-family: var(--heading-font);">제목 폰트 미리보기</h3>
                 <p style="font-family: var(--body-font); font-size: var(--font-size-base);">본문 폰트 미리보기입니다. 이 텍스트는 선택한 본문 폰트와 크기로 표시됩니다. 실제 사이트에 적용될 폰트를 확인해보세요.</p>
                 <p style="font-family: var(--body-font); font-size: var(--font-size-base);">
-                  여기에 한글 텍스트도 표시됩니다. 노동권 찾기를 위한 정보와 지원을 제공하는 우동615 사이트의 텍스트 표시 예시입니다.
+                  여기에 한글 텍스트도 표시됩니다. 노동권 찾기를 위한 정보와 지원을 제공하는 희망씨 사이트의 텍스트 표시 예시입니다.
                 </p>
               </div>
             </div>

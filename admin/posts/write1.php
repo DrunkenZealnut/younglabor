@@ -240,7 +240,7 @@ function processContentImages($content, $post_id, $pdo) {
 
 <!-- 사이드바 -->
 <div class="sidebar">
-  <div class="logo">우동615 관리자</div>
+  <div class="logo">희망씨 관리자</div>
   <a href="../index.php">📊 대시보드</a>
   <a href="list.php" class="active" style="background-color: #495057;">📝 게시글 관리</a>
   <a href="../boards/list.php">📋 게시판 관리</a>

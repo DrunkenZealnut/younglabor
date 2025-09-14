@@ -1,6 +1,6 @@
 <?php
 /**
- * 우동615 기존 Admin 시스템과 Shared Admin Framework 통합
+ * 희망씨 기존 Admin 시스템과 Shared Admin Framework 통합
  * 
  * 이 파일을 기존 admin 파일들에서 include하면 
  * 자동으로 Shared Admin Framework 기능을 사용할 수 있습니다.
