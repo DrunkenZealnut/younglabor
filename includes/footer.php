@@ -34,19 +34,13 @@
     $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
     $currentPath = parse_url($requestUri, PHP_URL_PATH) ?? '/';
     
-    // 홈페이지 감지 조건을 확장
+    // 홈페이지 감지 조건 - 메인페이지만 엄격하게 감지
     $isHomePage = (
-        // 기본 홈페이지 경로들
-        $currentPath === '/' || 
-        $currentPath === '/index.php' || 
-        $requestUri === '/' || 
-        $requestUri === '/index.php' ||
-        // currentSlug 기반 감지
-        (!isset($currentSlug) || $currentSlug === 'home' || empty($currentSlug)) ||
-        // 스크립트 이름 기반 감지 (index.php로 끝나는 경우)
-        (basename($scriptName) === 'index.php' && dirname($scriptName) === '') ||
-        // 홈페이지 관련 파라미터가 없는 경우
-        (empty($_GET) && $currentPath === '/')
+        // 루트 경로만 허용 (정확한 메인페이지)
+        ($currentPath === '/' && (empty($_GET) || (isset($_GET['page']) && $_GET['page'] === 'home'))) ||
+        ($currentPath === '/index.php' && (empty($_GET) || (isset($_GET['page']) && $_GET['page'] === 'home'))) ||
+        // currentSlug가 명시적으로 home인 경우만
+        (isset($currentSlug) && $currentSlug === 'home')
     );
     
     // 디버깅 정보 (개발 환경에서만)

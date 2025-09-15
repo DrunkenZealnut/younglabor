@@ -20,6 +20,22 @@ $userIP = $_SERVER['REMOTE_ADDR'] ?? '';
 $sessionId = session_id();
 $currentUrl = $_SERVER['REQUEST_URI'] ?? '';
 
+// 메인페이지 재검증 - 하위 페이지에서 팝업 차단
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$currentPath = parse_url($requestUri, PHP_URL_PATH) ?? '/';
+
+$isMainPageOnly = (
+    ($currentPath === '/' && (empty($_GET) || (isset($_GET['page']) && $_GET['page'] === 'home'))) ||
+    ($currentPath === '/index.php' && (empty($_GET) || (isset($_GET['page']) && $_GET['page'] === 'home'))) ||
+    ($currentPage === 'home' && !isset($_GET['bo_table']) && !isset($_GET['wr_id']))
+);
+
+// 메인페이지가 아니면 팝업 표시하지 않음
+if (!$isMainPageOnly) {
+    error_log("Popup Engine: Not main page - currentPath: {$currentPath}, currentPage: {$currentPage}");
+    return;
+}
+
 try {
     // 데이터베이스 연결 확인
     if (!isset($pdo)) {
@@ -354,6 +370,11 @@ function generatePopupScript($popupId, $styles) {
         document.cookie = name + "=" + (value || "") + expires + "; path=/";
     }
     
+    // 세션 쿠키 설정 (브라우저 종료 시 자동 삭제)
+    function setSessionCookie(name, value) {
+        document.cookie = name + "=" + (value || "") + "; path=/";
+    }
+    
     function getCookie(name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(";");
@@ -402,8 +423,10 @@ function generatePopupScript($popupId, $styles) {
         if (noShow24h) {
             // 24시간 동안 안보이기 쿠키 설정
             setCookie("hopec_popup_" + popupId + "_no_show_24h", "1", 1);
+        } else {
+            // 일반 닫기 - 현재 세션 동안 안보이기 (세션 쿠키)
+            setSessionCookie("hopec_popup_" + popupId + "_closed_session", "1");
         }
-        // 일반 닫기는 쿠키 설정하지 않음 (즉시 재표시 가능)
     }
     
     // 팝업 클릭 이벤트
@@ -428,6 +451,12 @@ function generatePopupScript($popupId, $styles) {
         // 24시간 안보이기 쿠키 확인
         if (getCookie("hopec_popup_' . $popupId . '_no_show_24h")) {
             console.log("팝업 ' . $popupId . ' - 24시간 안보이기 설정으로 인해 차단됨");
+            return;
+        }
+        
+        // 세션 중 닫기 쿠키 확인 (현재 세션 동안 안보이기)
+        if (getCookie("hopec_popup_' . $popupId . '_closed_session")) {
+            console.log("팝업 ' . $popupId . ' - 현재 세션에서 이미 닫혔음");
             return;
         }
         

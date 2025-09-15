@@ -65,7 +65,7 @@ include_once __DIR__ . '/../includes/header.php';
 <main id="main" role="main" class="flex-1">
   <article class="max-w-5xl mx-auto px-4 py-10">
     <header class="mb-8">
-      <p class="text-sm text-gray-500">About</p>
+      <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>">About</p>
       <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">연혁</h1>
     </header>
 
@@ -75,7 +75,8 @@ include_once __DIR__ . '/../includes/header.php';
       <nav class="mb-8 flex flex-wrap gap-2 items-center" aria-label="연도 선택" role="tablist">
         <?php foreach ($years as $y): ?>
           <button type="button"
-                  class="year-btn inline-flex items-center justify-center px-3 py-2 rounded-lg border <?php echo ($y===$activeYear ? getThemeClass('bg', 'secondary', '50') . ' ' . getThemeClass('border', 'secondary', '400') . ' ' . getThemeClass('text', 'primary', '700') : 'bg-white ' . getThemeClass('border', 'border', '200') . ' ' . getThemeClass('text', 'primary', '600')); ?> hover:<?= getThemeClass('bg', 'secondary', '100') ?> focus:outline-none focus:ring-2 focus:<?= getThemeClass('ring', 'secondary', '400') ?>"
+                  class="year-btn inline-flex items-center justify-center px-3 py-2 rounded-lg border <?php echo ($y===$activeYear ? 'text-white border-transparent' : 'bg-white ' . getThemeClass('border', 'border', '200') . ' ' . getThemeClass('text', 'primary', '600')); ?> hover:<?= getThemeClass('bg', 'secondary', '100') ?> focus:outline-none focus:ring-2 focus:<?= getThemeClass('ring', 'secondary', '400') ?>"
+                  <?php if ($y===$activeYear): ?>style="background-color: var(--primary);"<?php endif; ?>
                   data-year="<?php echo htmlspecialchars($y); ?>"
                   role="tab"
                   aria-selected="<?php echo ($y===$activeYear?'true':'false'); ?>"
@@ -92,12 +93,12 @@ include_once __DIR__ . '/../includes/header.php';
             <ul class="flex-1">
               <?php foreach ($entries as $entry): ?>
                 <li class="grid timeline-row grid-cols-[var(--date-col,_max-content)_1.5rem_1fr] gap-4 py-2">
-                  <div class="date-cell text-right font-semibold text-gray-700 tabular-nums whitespace-nowrap pr-2 md:pr-3"><?php echo htmlspecialchars($entry['month']); ?></div>
+                  <div class="date-cell text-right font-semibold <?= getThemeClass('text', 'muted-foreground') ?> tabular-nums whitespace-nowrap pr-2 md:pr-3"><?php echo htmlspecialchars($entry['month']); ?></div>
                   <div class="relative" aria-hidden="true">
                     <span class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px <?= getThemeClass('bg', 'secondary', '300') ?>"></span>
                     <span class="relative z-10 block mt-2 w-2 h-2 rounded-full <?= getThemeClass('bg', 'primary', '600') ?>"></span>
                   </div>
-                  <div class="text-gray-800 leading-7"><?php echo nl2br(htmlspecialchars($entry['content'])); ?></div>
+                  <div class="<?= getThemeClass('text', 'foreground') ?> leading-7"><?php echo nl2br(htmlspecialchars($entry['content'])); ?></div>
                 </li>
               <?php endforeach; ?>
             </ul>
@@ -112,9 +113,8 @@ include_once __DIR__ . '/../includes/header.php';
     try{
       // 테마 클래스를 JavaScript 변수로 전달
       var themeClasses = {
-        activeBackground: '<?= getThemeClass("bg", "secondary", "50") ?>',
-        activeBorder: '<?= getThemeClass("border", "secondary", "400") ?>',
-        activeText: '<?= getThemeClass("text", "primary", "700") ?>',
+        activeText: 'text-white',
+        activeBorder: 'border-transparent',
         inactiveBackground: 'bg-white',
         inactiveBorder: '<?= getThemeClass("border", "border", "200") ?>',
         inactiveText: '<?= getThemeClass("text", "primary", "600") ?>'
@@ -141,14 +141,16 @@ include_once __DIR__ . '/../includes/header.php';
           btn.setAttribute('aria-selected', selected ? 'true' : 'false');
           
           // 모든 테마 관련 클래스 제거
-          btn.classList.remove(themeClasses.activeBackground, themeClasses.activeBorder, themeClasses.activeText);
+          btn.classList.remove(themeClasses.activeText, themeClasses.activeBorder);
           btn.classList.remove(themeClasses.inactiveBackground, themeClasses.inactiveBorder, themeClasses.inactiveText);
           
-          // 선택 상태에 따라 테마 클래스 적용
+          // 선택 상태에 따라 테마 클래스 및 스타일 적용
           if (selected) {
-            btn.classList.add(themeClasses.activeBackground, themeClasses.activeBorder, themeClasses.activeText);
+            btn.classList.add(themeClasses.activeText, themeClasses.activeBorder);
+            btn.style.backgroundColor = 'var(--primary)';
           } else {
             btn.classList.add(themeClasses.inactiveBackground, themeClasses.inactiveBorder, themeClasses.inactiveText);
+            btn.style.backgroundColor = '';
           }
           
           document.getElementById('panel-'+y)?.classList.toggle('hidden', !selected);

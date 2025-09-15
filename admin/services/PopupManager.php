@@ -52,6 +52,21 @@ class PopupManager {
      * 팝업 표시 조건 확인
      */
     private function checkDisplayConditions($popup, $currentPage) {
+        // 메인페이지가 아니면 무조건 차단
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $currentPath = parse_url($requestUri, PHP_URL_PATH) ?? '/';
+        
+        $isMainPageStrict = (
+            ($currentPath === '/' && (empty($_GET) || (isset($_GET['page']) && $_GET['page'] === 'home'))) ||
+            ($currentPath === '/index.php' && (empty($_GET) || (isset($_GET['page']) && $_GET['page'] === 'home'))) ||
+            ($currentPage === 'home' && !isset($_GET['bo_table']) && !isset($_GET['wr_id']) && !isset($_GET['page_id']))
+        );
+        
+        if (!$isMainPageStrict) {
+            error_log("PopupManager: Blocking popup on non-main page - currentPath: {$currentPath}, currentPage: {$currentPage}");
+            return false;
+        }
+        
         if (empty($popup['display_condition'])) {
             return true;
         }

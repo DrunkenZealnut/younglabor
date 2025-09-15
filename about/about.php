@@ -81,13 +81,25 @@ include __DIR__ . '/../includes/header.php';
     </header>
 
     <?php if ($introHeading || $introParagraph): ?>
-    <section class="rounded-2xl <?= getThemeClass('bg', 'secondary', '100') ?> p-6 md:p-8 mb-10 hover-lift" aria-labelledby="intro-title">
-      <?php if ($introHeading): ?>
-        <h2 id="intro-title" class="text-2xl font-semibold <?= getThemeClass('text', 'primary', '700') ?> mb-3"><?php echo htmlspecialchars($introHeading, ENT_QUOTES, 'UTF-8'); ?></h2>
-      <?php endif; ?>
-      <?php if ($introParagraph): ?>
-        <p class="leading-7 text-gray-700"><?php echo nl2br(htmlspecialchars($introParagraph, ENT_QUOTES, 'UTF-8')); ?></p>
-      <?php endif; ?>
+    <section class="relative rounded-2xl p-6 md:p-8 mb-10 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2" 
+             style="background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 80%, transparent) 50%, color-mix(in srgb, var(--primary) 60%, transparent) 100%); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);" 
+             aria-labelledby="intro-title">
+      <!-- 장식 요소 -->
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 transform translate-x-16 -translate-y-16" style="background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 rounded-full opacity-5 transform -translate-x-12 translate-y-12" style="background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);"></div>
+      
+      <!-- 콘텐츠 -->
+      <div class="relative z-10">
+        <?php if ($introHeading): ?>
+          <h2 id="intro-title" class="text-2xl md:text-3xl font-bold text-white mb-4 drop-shadow-lg"><?php echo htmlspecialchars($introHeading, ENT_QUOTES, 'UTF-8'); ?></h2>
+        <?php endif; ?>
+        <?php if ($introParagraph): ?>
+          <p class="leading-7 md:leading-8 text-white/95 text-lg drop-shadow-sm"><?php echo nl2br(htmlspecialchars($introParagraph, ENT_QUOTES, 'UTF-8')); ?></p>
+        <?php endif; ?>
+      </div>
+      
+      <!-- 하단 그라데이션 오버레이 -->
+      <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
     </section>
     <?php endif; ?>
 

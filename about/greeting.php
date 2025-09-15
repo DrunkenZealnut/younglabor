@@ -13,15 +13,26 @@ include __DIR__ . '/../includes/header.php';
 <main id="container" role="main">
   <article aria-labelledby="greeting-title" class="max-w-4xl mx-auto px-4 py-10">
     <header class="mb-8">
-      <p class="text-sm text-gray-500">About</p>
+      <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>">About</p>
       <h1 id="greeting-title" class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">이사장 인사말</h1>
     </header>
 
-    <section aria-labelledby="headline" class="mb-8 rounded-2xl <?= getThemeClass('bg', 'secondary', '100') ?> p-6 md:p-8">
-      <h2 id="headline" class="text-2xl md:text-3xl font-extrabold <?= getThemeClass('text', 'primary', '700') ?>">희망씨가 희망입니다.</h2>
+    <section aria-labelledby="headline" class="relative rounded-2xl p-6 md:p-8 mb-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2" 
+             style="background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 80%, transparent) 50%, color-mix(in srgb, var(--primary) 60%, transparent) 100%); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);">
+      <!-- 장식 요소 -->
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 transform translate-x-16 -translate-y-16" style="background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);"></div>
+      <div class="absolute bottom-0 left-0 w-24 h-24 rounded-full opacity-5 transform -translate-x-12 translate-y-12" style="background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);"></div>
+      
+      <!-- 콘텐츠 -->
+      <div class="relative z-10">
+        <h2 id="headline" class="text-2xl md:text-3xl font-extrabold text-white drop-shadow-lg">희망씨가 희망입니다.</h2>
+      </div>
+      
+      <!-- 하단 그라데이션 오버레이 -->
+      <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
     </section>
 
-    <section class="prose prose-lg max-w-none leading-8 text-gray-700">
+    <section class="prose prose-lg max-w-none leading-8 <?= getThemeClass('text', 'foreground') ?>">
       <p>안녕하세요.</p>
       <p>희망씨의 멋진 4대 활동원칙을 되뇌어봅니다.</p>
       <p><strong>시혜가 아닌 나눔, 봉사가 아닌 연대, 기부가 아닌 참여, 사람 중심 조직문화.</strong></p>
