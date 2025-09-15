@@ -172,12 +172,37 @@ foreach ($helperFiles as $helper) {
 if (class_exists('DatabaseManager')) {
     try {
         DatabaseManager::initialize();
+        // 전역 PDO 변수 설정 (레거시 호환성)
+        $GLOBALS['pdo'] = DatabaseManager::getConnection();
     } catch (Exception $e) {
         if (env('APP_DEBUG')) {
             die('데이터베이스 연결 실패: ' . $e->getMessage());
         } else {
             error_log('Database connection failed: ' . $e->getMessage());
             die('일시적인 시스템 오류가 발생했습니다.');
+        }
+    }
+} else {
+    // DatabaseManager가 없는 경우 직접 PDO 연결
+    try {
+        $dbConfigPath = HOPEC_BASE_PATH . '/data/dbconfig.php';
+        if (file_exists($dbConfigPath)) {
+            include $dbConfigPath;
+            
+            // 그누보드 설정에서 변수 추출
+            $db_host = defined('G5_MYSQL_HOST') ? G5_MYSQL_HOST : 'localhost';
+            $db_user = defined('G5_MYSQL_USER') ? G5_MYSQL_USER : 'root';
+            $db_pass = defined('G5_MYSQL_PASSWORD') ? G5_MYSQL_PASSWORD : '';
+            $db_name = defined('G5_MYSQL_DB') ? G5_MYSQL_DB : 'hopec';
+            
+            $GLOBALS['pdo'] = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
+            $GLOBALS['pdo']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+    } catch (Exception $e) {
+        if (env('APP_DEBUG')) {
+            die('데이터베이스 연결 실패: ' . $e->getMessage());
+        } else {
+            error_log('Database connection failed: ' . $e->getMessage());
         }
     }
 }

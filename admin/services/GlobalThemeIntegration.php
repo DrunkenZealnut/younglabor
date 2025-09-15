@@ -4,20 +4,22 @@
  * GlobalThemeLoader와 기존 ThemeManager를 통합하는 서비스
  */
 
-require_once __DIR__ . '/../../theme/globals/config/theme-loader.php';
+// GlobalThemeLoader 파일이 존재하지 않으므로 기본 구현으로 대체
+// require_once __DIR__ . '/../../theme/globals/config/theme-loader.php';
 require_once __DIR__ . '/ThemeManager.php';
 
 class GlobalThemeIntegration
 {
     private $pdo;
     private $themeManager;
-    private $globalThemeLoader;
+    // GlobalThemeLoader가 없으므로 제거
+    // private $globalThemeLoader;
     
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
         $this->themeManager = new ThemeManager($pdo);
-        $this->globalThemeLoader = new GlobalThemeLoader();
+        // $this->globalThemeLoader = new GlobalThemeLoader(); // 존재하지 않으므로 제거
     }
     
     /**
@@ -39,8 +41,8 @@ class GlobalThemeIntegration
             ]);
         }
         
-        // 2. GlobalThemeLoader의 글로벌 테마들
-        $globalThemes = $this->globalThemeLoader->getAvailableThemes();
+        // 2. GlobalThemeLoader가 없으므로 빈 배열로 대체
+        $globalThemes = [];
         foreach ($globalThemes as $themeName => $themeInfo) {
             // natural-green은 이미 추가되었으므로 스킵
             if ($themeName === 'natural-green') continue;
@@ -69,7 +71,7 @@ class GlobalThemeIntegration
     public function setActiveTheme($themeName)
     {
         // 글로벌 테마인지 확인
-        $globalThemes = $this->globalThemeLoader->getAvailableThemes();
+        $globalThemes = []; // GlobalThemeLoader가 없으므로 빈 배열
         $existingThemes = $this->themeManager->getAvailableThemes();
         
         if (isset($globalThemes[$themeName]) || isset($existingThemes[$themeName])) {
@@ -303,7 +305,7 @@ class GlobalThemeIntegration
             'timestamp' => date('Y-m-d H:i:s'),
             'active_theme' => $this->getActiveTheme(),
             'all_themes' => $this->getAllThemes(),
-            'global_themes' => $this->globalThemeLoader->getAvailableThemes(),
+            'global_themes' => [], // GlobalThemeLoader가 없으므로 빈 배열
             'traditional_themes' => $this->themeManager->getAvailableThemes(),
             'theme_stats' => $this->getThemeStats()
         ];

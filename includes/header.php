@@ -46,6 +46,16 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Remodal CSS (팝업 라이브러리) -->
+    <link rel="stylesheet" href="<?= $siteUrl ?>/js/remodal/remodal.css">
+    <link rel="stylesheet" href="<?= $siteUrl ?>/js/remodal/remodal-default-theme.css">
+    
+    <!-- Remodal JavaScript (팝업 라이브러리) -->
+    <script src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     

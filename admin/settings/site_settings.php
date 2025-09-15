@@ -226,6 +226,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $active_tab = 'social'; // SNS 탭을 활성화 상태로 유지
     }
     
+    // 팝업 관리 처리
+    if ($active_tab === 'popup') {
+      $active_tab = 'popup'; // 팝업 탭을 활성화 상태로 유지
+    }
+    
     
     // 통합 테마 관리 설정 저장 (Bootstrap 색상 + 테마 오버라이드)
     //각 색상의 역할
@@ -719,6 +724,12 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
               id="social-tab" data-bs-toggle="tab" data-bs-target="#social-pane" 
               type="button" role="tab" onclick="location.href='?tab=social'">SNS 설정</button>
     </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link <?= $active_tab === 'popup' ? 'active' : '' ?>" 
+              id="popup-tab" data-bs-toggle="tab" data-bs-target="#popup-pane" 
+              type="button" role="tab" onclick="location.href='?tab=popup'">
+              <i class="bi bi-window-stack"></i> 팝업 관리</button>
+    </li>
   </ul>
   
   <!-- 탭 내용 -->
@@ -991,6 +1002,17 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
           </form>
         </div>
       </div>
+    </div>
+    
+    <!-- 팝업 관리 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'popup' ? 'show active' : '' ?>" 
+         id="popup-pane" role="tabpanel" aria-labelledby="popup-tab">
+      <?php
+      // 팝업 관리 탭에서는 Bootstrap Modal 사용 (별도 라이브러리 불필요)
+      
+      // 팝업 관리 컴포넌트 포함
+      include __DIR__ . '/popup/popup-manager.php';
+      ?>
     </div>
     
     <!-- 테마 관리 탭 -->
