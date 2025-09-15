@@ -176,9 +176,14 @@ $page_title = '게시글 관리';
 <div class="main-content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>📝 게시글 관리</h2>
-        <a href="write.php" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> 새 게시글 작성
-        </a>
+        <div>
+            <a href="write.php" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> 새 게시글 작성
+            </a>
+            <a href="orphaned_files.php" class="btn btn-outline-warning ms-2">
+                <i class="bi bi-file-earmark-x"></i> 고아 파일 관리
+            </a>
+        </div>
     </div>
 
     <!-- 검색 폼 -->

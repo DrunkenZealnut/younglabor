@@ -27,6 +27,10 @@ foreach ($board_types as $id => $info) {
     $boards[] = ['id' => $id, 'board_name' => $info['name'], 'board_type' => $info['board_type']];
 }
 
+// 환경 변수 로드 (파일 업로드용)
+require_once '../env_loader.php';
+require_once 'attachment_helpers.php';
+
 // 게시글 저장 처리
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 폼 데이터 가져오기
@@ -58,6 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 오류가 없으면 게시글 저장
     if (empty($errors)) {
         try {
+            // 트랜잭션 시작
+            $pdo->beginTransaction();
+            
             // 선택된 게시판의 board_type 가져오기
             $selected_board = $boards[$board_id - 1];
             $board_type = $selected_board['board_type'];
@@ -89,17 +96,144 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             
             if ($result) {
+                $post_id = $pdo->lastInsertId();
+                
+                // wr_parent를 새로 생성된 게시글의 ID로 업데이트 (첨부파일 연결을 위해)
+                $update_parent_sql = "UPDATE hopec_posts SET wr_parent = ? WHERE wr_id = ?";
+                $update_parent_stmt = $pdo->prepare($update_parent_sql);
+                $update_parent_stmt->execute([$post_id, $post_id]);
+                
+                // 첨부파일 처리
+                $attachment_count = 0;
+                if (isset($_FILES['attachments']) && is_array($_FILES['attachments']['name'])) {
+                    $attachment_count = processAttachments($post_id, $board_type, $_FILES['attachments'], $pdo);
+                }
+                
+                // 첨부파일 개수 업데이트
+                if ($attachment_count > 0) {
+                    $update_sql = "UPDATE hopec_posts SET wr_file = ? WHERE wr_id = ?";
+                    $update_stmt = $pdo->prepare($update_sql);
+                    $update_stmt->execute([$attachment_count, $post_id]);
+                }
+                
+                $pdo->commit();
                 $_SESSION['success_message'] = '게시글이 성공적으로 작성되었습니다.';
                 header("Location: list.php");
                 exit;
             } else {
+                $pdo->rollback();
                 $errors[] = "게시글 저장에 실패했습니다.";
             }
             
         } catch (PDOException $e) {
+            $pdo->rollback();
             $errors[] = "데이터베이스 오류: " . $e->getMessage();
+        } catch (Exception $e) {
+            $pdo->rollback();
+            $errors[] = "파일 업로드 오류: " . $e->getMessage();
         }
     }
+}
+
+/**
+ * 첨부파일 처리 함수 (기존 .env 경로 기반)
+ */
+function processAttachments($post_id, $board_type, $files, $pdo) {
+    $upload_count = 0;
+    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
+    $allowed_types = explode(',', env('ALLOWED_DOCUMENT_TYPES', 'pdf,doc,docx,hwp,hwpx,xls,xlsx'));
+    $allowed_images = explode(',', env('ALLOWED_IMAGE_TYPES', 'jpg,jpeg,png,gif,webp'));
+    $max_size = (int)env('UPLOAD_MAX_SIZE', 5242880); // 5MB
+    
+    // 기존 파일 시스템 구조에 맞게 폴더 설정
+    $folder_mapping = [
+        'finance_reports' => 'finance_reports',
+        'notices' => 'notices', 
+        'press' => 'press',
+        'newsletter' => 'newsletters',
+        'gallery' => 'gallery',
+        'resources' => 'resources',
+        'nepal_travel' => 'nepal_travel'
+    ];
+    
+    $folder_name = $folder_mapping[$board_type] ?? $board_type;
+    $upload_dir = "{$upload_path}/{$folder_name}/";
+    
+    if (!is_dir($upload_dir)) {
+        if (!mkdir($upload_dir, 0755, true)) {
+            throw new Exception("업로드 디렉토리 생성 실패: {$upload_dir}");
+        }
+    }
+    
+    // 각 파일 처리
+    for ($i = 0; $i < count($files['name']); $i++) {
+        if ($files['error'][$i] === UPLOAD_ERR_NO_FILE) {
+            continue; // 파일이 업로드되지 않은 경우 건너뛰기
+        }
+        
+        if ($files['error'][$i] !== UPLOAD_ERR_OK) {
+            continue; // 업로드 오류가 있는 경우 건너뛰기
+        }
+        
+        // 개별 파일 정보 구성 (validateFileUpload 함수용)
+        $single_file = [
+            'name' => $files['name'][$i],
+            'tmp_name' => $files['tmp_name'][$i],
+            'size' => $files['size'][$i],
+            'type' => $files['type'][$i],
+            'error' => $files['error'][$i]
+        ];
+        
+        // 파일 보안 검증
+        $validation_errors = validateFileUpload($single_file);
+        if (!empty($validation_errors)) {
+            error_log("파일 업로드 검증 실패: " . implode(', ', $validation_errors));
+            continue; // 검증 실패한 파일은 건너뛰기
+        }
+        
+        $original_name = $files['name'][$i];
+        $tmp_name = $files['tmp_name'][$i];
+        $file_size = $files['size'][$i];
+        $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+        
+        // 안전한 파일명 생성
+        $new_filename = generateSafeFilename($original_name);
+        $file_path = $upload_dir . $new_filename;
+        
+        // 파일 이동
+        if (move_uploaded_file($tmp_name, $file_path)) {
+            // 파일 정보 DB 저장
+            $bf_type = in_array($ext, $allowed_images) ? 1 : 0; // 이미지면 1, 일반파일이면 0
+            // 기존 시스템과 호환되도록 파일명만 저장
+            
+            // 이미지 크기 정보
+            $width = 0; $height = 0;
+            if ($bf_type === 1 && function_exists('getimagesize')) {
+                $image_info = @getimagesize($file_path);
+                if ($image_info !== false) {
+                    $width = $image_info[0];
+                    $height = $image_info[1];
+                }
+            }
+            
+            $file_sql = "INSERT INTO hopec_post_files (
+                wr_id, board_type, bf_source, bf_file, bf_content, bf_filesize, 
+                bf_width, bf_height, bf_type, bf_download, bf_datetime
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+            
+            $file_stmt = $pdo->prepare($file_sql);
+            $file_result = $file_stmt->execute([
+                $post_id, $board_type, $original_name, $new_filename, 
+                '', $file_size, $width, $height, $bf_type, 0
+            ]);
+            
+            if ($file_result) {
+                $upload_count++;
+            }
+        }
+    }
+    
+    return $upload_count;
 }
 
 // 페이지 제목 설정
@@ -191,7 +325,7 @@ $page_title = '새 게시글 작성';
         </div>
         
         <div class="card-body">
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="board_id" class="form-label">게시판 <span class="text-danger">*</span></label>
@@ -220,6 +354,34 @@ $page_title = '새 게시글 작성';
                 <div class="mb-3">
                     <label for="content" class="form-label">내용</label>
                     <textarea class="form-control" id="content" name="content" rows="15"><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                </div>
+
+                <!-- 첨부파일 섹션 -->
+                <div class="mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-paperclip"></i> 첨부파일
+                                <small class="text-muted">(최대 5개, 각 5MB 이하)</small>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="file-upload-container">
+                                <div class="file-upload-item mb-2">
+                                    <div class="input-group">
+                                        <input type="file" class="form-control" name="attachments[]" accept=".pdf,.doc,.docx,.hwp,.hwpx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp">
+                                        <button type="button" class="btn btn-outline-success" onclick="addFileUpload()" title="파일 추가">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i> 
+                                허용 형식: PDF, Word(doc, docx), 한글(hwp, hwpx), Excel(xls, xlsx), 이미지(jpg, png, gif, webp)
+                            </small>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-between">
@@ -487,7 +649,105 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             return false;
         }
+        
+        // 파일 크기 검증
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const fileInputs = document.querySelectorAll('input[type="file"][name="attachments[]"]');
+        for (const input of fileInputs) {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                if (file.size > maxSize) {
+                    alert(`파일 "${file.name}"의 크기가 5MB를 초과합니다.`);
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        }
     });
+});
+
+// 파일 업로드 필드 추가/제거 함수
+function addFileUpload() {
+    const container = document.getElementById('file-upload-container');
+    const items = container.querySelectorAll('.file-upload-item');
+    
+    if (items.length >= 5) {
+        alert('최대 5개의 파일만 업로드할 수 있습니다.');
+        return;
+    }
+    
+    const newItem = document.createElement('div');
+    newItem.className = 'file-upload-item mb-2';
+    newItem.innerHTML = `
+        <div class="input-group">
+            <input type="file" class="form-control" name="attachments[]" accept=".pdf,.doc,.docx,.hwp,.hwpx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.webp">
+            <button type="button" class="btn btn-outline-danger" onclick="removeFileUpload(this)" title="파일 제거">
+                <i class="bi bi-dash"></i>
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(newItem);
+    
+    // 첫 번째 항목의 + 버튼을 - 버튼으로 변경
+    const firstItem = container.querySelector('.file-upload-item:first-child');
+    const firstButton = firstItem.querySelector('.btn-outline-success');
+    if (firstButton && items.length === 1) {
+        firstButton.className = 'btn btn-outline-danger';
+        firstButton.setAttribute('onclick', 'removeFileUpload(this)');
+        firstButton.setAttribute('title', '파일 제거');
+        firstButton.innerHTML = '<i class="bi bi-dash"></i>';
+    }
+}
+
+function removeFileUpload(button) {
+    const container = document.getElementById('file-upload-container');
+    const items = container.querySelectorAll('.file-upload-item');
+    
+    if (items.length <= 1) {
+        // 최소 1개는 유지하되, 파일 선택을 초기화
+        const input = button.closest('.file-upload-item').querySelector('input[type="file"]');
+        input.value = '';
+        return;
+    }
+    
+    // 현재 항목 제거
+    const item = button.closest('.file-upload-item');
+    item.remove();
+    
+    // 항목이 하나만 남은 경우 + 버튼으로 변경
+    const remainingItems = container.querySelectorAll('.file-upload-item');
+    if (remainingItems.length === 1) {
+        const lastButton = remainingItems[0].querySelector('.btn');
+        lastButton.className = 'btn btn-outline-success';
+        lastButton.setAttribute('onclick', 'addFileUpload()');
+        lastButton.setAttribute('title', '파일 추가');
+        lastButton.innerHTML = '<i class="bi bi-plus"></i>';
+    }
+}
+
+// 파일 선택 시 크기 검증
+document.addEventListener('change', function(e) {
+    if (e.target.matches('input[type="file"][name="attachments[]"]')) {
+        const file = e.target.files[0];
+        if (file) {
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                alert(`파일 "${file.name}"의 크기가 5MB를 초과합니다. 다른 파일을 선택해주세요.`);
+                e.target.value = '';
+                return;
+            }
+            
+            // 파일 형식 검증
+            const allowedTypes = ['pdf', 'doc', 'docx', 'hwp', 'hwpx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!allowedTypes.includes(ext)) {
+                alert(`허용되지 않은 파일 형식입니다. (${ext})`);
+                e.target.value = '';
+                return;
+            }
+        }
+    }
 });
 </script>
 

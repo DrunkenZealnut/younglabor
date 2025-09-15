@@ -4,6 +4,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once '../bootstrap.php';
+require_once '../env_loader.php';
+require_once 'attachment_helpers.php';
 
 // CSRF 토큰 생성 보장
 if (!isset($_SESSION['csrf_token'])) {
@@ -86,6 +88,9 @@ try {
     
     // 게시판 이름 설정
     $board_name = $board_types[$board_type];
+    
+    // 첨부파일 조회 (board_type도 함께 전달)
+    $attachments = getPostAttachments($post_id, $pdo, $board_type);
     
 } catch (PDOException $e) {
     $_SESSION['error_message'] = '게시글을 불러올 수 없습니다: ' . $e->getMessage();
@@ -279,6 +284,26 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
                 <?php endif; ?>
             </div>
         </div>
+
+        <!-- 첨부파일 관리 섹션 -->
+        <?php if (!empty($attachments)): ?>
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-paperclip"></i> 첨부파일 관리
+                </h5>
+            </div>
+            <div class="card-body">
+                <?= renderAttachmentList($attachments, true) ?>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i> 
+                        첨부파일을 삭제하려면 별도의 파일 관리 기능을 사용하세요.
+                    </small>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
     <?php endif; ?>
 </div>
 

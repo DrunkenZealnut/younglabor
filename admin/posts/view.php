@@ -1,6 +1,7 @@
 <?php
 // 게시글 상세보기 페이지
 require_once '../bootstrap.php';
+require_once 'attachment_helpers.php';
 
 // 게시글 ID와 board_type 확인
 $post_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -57,8 +58,12 @@ try {
     // 게시판 이름 설정
     $board_name = $allowed_board_types[$board_type];
     
+    // 첨부파일 조회 (board_type도 함께 전달)
+    $attachments = getPostAttachments($post_id, $pdo, $board_type);
+    
 } catch (PDOException $e) {
     $post = null;
+    $attachments = [];
     error_log("게시글 조회 오류: " . $e->getMessage());
 }
 
@@ -201,6 +206,13 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
                         <p class="text-muted fst-italic">게시글 내용이 없습니다.</p>
                     <?php endif; ?>
                 </div>
+
+                <!-- 첨부파일 섹션 -->
+                <?php if (!empty($attachments)): ?>
+                    <div class="mt-4">
+                        <?= renderAttachmentList($attachments, true) ?>
+                    </div>
+                <?php endif; ?>
 
                 <?php if (!empty($post['tags'])): ?>
                     <div class="mt-3">
