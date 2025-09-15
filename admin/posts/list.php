@@ -55,7 +55,7 @@ try {
         }
     }
     
-    // 테스트 페이지와 동일한 단순한 쿼리 (정상 작동 확인됨)
+    // 최신 등록일시순으로 정렬
     $sql = "SELECT DISTINCT
                 wr_id as id,
                 board_type,
@@ -67,7 +67,7 @@ try {
                 0 as is_notice
             FROM hopec_posts 
             {$where_clause}
-            ORDER BY wr_id DESC 
+            ORDER BY wr_datetime DESC, wr_id DESC 
             LIMIT {$offset}, {$records_per_page}";
     
     // 게시글 조회
@@ -180,9 +180,23 @@ $page_title = '게시글 관리';
             <a href="write.php" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> 새 게시글 작성
             </a>
-            <a href="orphaned_files.php" class="btn btn-outline-warning ms-2">
-                <i class="bi bi-file-earmark-x"></i> 고아 파일 관리
-            </a>
+            <?php
+            // 고아 파일 존재 여부 확인
+            try {
+                $orphan_check = $pdo->query("SELECT COUNT(*) FROM hopec_post_files pf LEFT JOIN hopec_posts p ON pf.wr_id = p.wr_parent AND pf.board_type = p.board_type WHERE p.wr_id IS NULL")->fetchColumn();
+                if ($orphan_check > 0): ?>
+                    <a href="orphaned_files.php" class="btn btn-outline-warning ms-2">
+                        <i class="bi bi-file-earmark-x"></i> 고아 파일 관리 
+                        <span class="badge bg-warning text-dark"><?= $orphan_check ?></span>
+                    </a>
+                <?php endif;
+            } catch (PDOException $e) {
+                // 오류 시 버튼 표시
+                ?>
+                <a href="orphaned_files.php" class="btn btn-outline-secondary ms-2">
+                    <i class="bi bi-file-earmark-x"></i> 파일 관리
+                </a>
+            <?php } ?>
         </div>
     </div>
 
@@ -283,7 +297,8 @@ $page_title = '게시글 관리';
                                     <?php endif; ?>
                                     
                                     <td>
-                                        <a href="view.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($post['board_type']) ?>" class="text-decoration-none">
+                                        <a href="view.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($post['board_type']) ?>" 
+                                           class="text-decoration-none" onclick="saveSearchState()">
                                             <?= htmlspecialchars($post['title']) ?>
                                         </a>
                                     </td>
@@ -379,5 +394,50 @@ $page_title = '게시글 관리';
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// 검색 상태 저장 및 복원 기능
+function saveSearchState() {
+    const searchData = {
+        board_id: '<?= $board_filter ?>',
+        search_type: '<?= $search_type ?>',
+        search_keyword: '<?= htmlspecialchars($search_keyword, ENT_QUOTES) ?>',
+        page: '<?= $page ?>',
+        url: window.location.href
+    };
+    sessionStorage.setItem('admin_posts_search', JSON.stringify(searchData));
+}
+
+// 페이지 로드 시 검색 상태 복원
+document.addEventListener('DOMContentLoaded', function() {
+    // 뒤로가기로 온 경우 검색 상태 복원
+    if (performance.navigation.type === performance.navigation.TYPE_BACK_FORWARD) {
+        const savedSearch = sessionStorage.getItem('admin_posts_search');
+        if (savedSearch) {
+            const searchData = JSON.parse(savedSearch);
+            
+            // 현재 URL과 저장된 URL이 다르면 검색 페이지로 복원
+            if (searchData.url && window.location.href !== searchData.url) {
+                // 저장된 검색 조건으로 리다이렉트
+                window.location.href = searchData.url;
+                return;
+            }
+        }
+    }
+    
+    // 검색 폼 변경 시 자동 저장
+    const searchForm = document.querySelector('form[action="list.php"]');
+    if (searchForm) {
+        searchForm.addEventListener('change', saveSearchState);
+    }
+});
+
+// 검색 초기화 시 세션 스토리지도 클리어
+document.addEventListener('click', function(e) {
+    if (e.target.closest('a[href="list.php"]') && e.target.textContent.includes('검색 초기화')) {
+        sessionStorage.removeItem('admin_posts_search');
+    }
+});
+</script>
 </body>
 </html>

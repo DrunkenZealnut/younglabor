@@ -147,7 +147,7 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
             </nav>
             
             <div class="btn-group">
-                <a href="list.php" class="btn btn-secondary">
+                <a href="list.php" class="btn btn-secondary" onclick="goBackToSearch()">
                     <i class="bi bi-list"></i> 목록
                 </a>
                 <a href="edit.php?id=<?= $post['id'] ?>&board_type=<?= urlencode($board_type) ?>" class="btn btn-primary">
@@ -237,7 +237,7 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
                     </small>
                     
                     <div>
-                        <a href="list.php" class="btn btn-outline-secondary btn-sm">
+                        <a href="list.php" class="btn btn-outline-secondary btn-sm" onclick="goBackToSearch()">
                             <i class="bi bi-arrow-left"></i> 목록으로
                         </a>
                         <?php if ($post['is_notice'] ?? false): ?>
@@ -251,5 +251,22 @@ $page_title = $post ? htmlspecialchars($post['title']) : '게시글을 찾을 �
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// 검색 페이지로 돌아가기 기능
+function goBackToSearch() {
+    const savedSearch = sessionStorage.getItem('admin_posts_search');
+    if (savedSearch) {
+        const searchData = JSON.parse(savedSearch);
+        if (searchData.url) {
+            // 저장된 검색 페이지로 돌아가기
+            window.location.href = searchData.url;
+            return false;
+        }
+    }
+    // 검색 정보가 없으면 기본 목록 페이지로
+    return true;
+}
+</script>
 </body>
 </html>
