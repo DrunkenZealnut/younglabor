@@ -109,31 +109,37 @@ include_once __DIR__ . '/../includes/header.php';
 
     <?php if (!empty($imgSrcs)): ?>
     <section class="mb-8" aria-label="해외아동지원사업 이미지 슬라이드">
-      <style>
-        .slider{position:relative;border-radius:1rem;overflow:hidden;background:#f8faf9}
-        .slide{display:none;width:100%;height:auto}
-        .slide.active{display:block}
-        .slider .nav{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 .5rem;opacity:0;pointer-events:none;transition:opacity .2s ease}
-        .slider:hover .nav,.slider:focus-within .nav{opacity:1;pointer-events:auto}
-      </style>
-      <div id="slider-b12" class="slider">
+      <div class="image-slider-container" style="position:relative;border-radius:1rem;overflow:hidden;background:#f8faf9;">
         <?php foreach ($imgSrcs as $i => $src): ?>
-          <img src="<?= h($src) ?>" alt="해외아동지원사업 이미지 <?= $i+1 ?>" class="slide <?= $i===0?'active':'' ?>" loading="lazy">
+          <div class="slider-item" style="<?= $i===0?'':'display:none;' ?>position:relative;width:100%;">
+            <img src="<?= h($src) ?>" alt="해외아동지원사업 이미지 <?= $i+1 ?>" style="width:100%;height:auto;display:block;" loading="lazy">
+          </div>
         <?php endforeach; ?>
-        <div class="nav" aria-hidden="true">
-          <button type="button" class="prev" aria-label="이전">‹</button>
-          <button type="button" class="next" aria-label="다음">›</button>
+        
+        <div class="slider-controls" style="position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 1rem;opacity:0;transition:opacity 0.3s;z-index:10;">
+          <button onclick="changeSlide(-1)" style="background:rgba(0,0,0,0.7);color:white;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all 0.2s;">‹</button>
+          <button onclick="changeSlide(1)" style="background:rgba(0,0,0,0.7);color:white;border:none;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:all 0.2s;">›</button>
         </div>
       </div>
+      
+      <style>
+        .image-slider-container:hover .slider-controls { opacity: 1; }
+        .slider-controls button:hover { background: rgba(0,0,0,0.9) !important; transform: scale(1.1); }
+        @media (hover: none) { .slider-controls { opacity: 0.8; } }
+      </style>
+      
       <script>
-        (function(){
-          var el=document.getElementById('slider-b12'); if(!el) return;
-          var slides=el.querySelectorAll('.slide'); if(!slides.length) return; var idx=0;
-          function show(n){slides[idx].classList.remove('active'); idx=(n+slides.length)%slides.length; slides[idx].classList.add('active');}
-          el.querySelector('.prev').addEventListener('click',function(){show(idx-1)});
-          el.querySelector('.next').addEventListener('click',function(){show(idx+1)});
-          setInterval(function(){show(idx+1)}, 5000);
-        })();
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slider-item');
+        
+        function changeSlide(direction) {
+          slides[currentSlideIndex].style.display = 'none';
+          currentSlideIndex = (currentSlideIndex + direction + slides.length) % slides.length;
+          slides[currentSlideIndex].style.display = 'block';
+        }
+        
+        // 자동 슬라이드
+        setInterval(() => changeSlide(1), 5000);
       </script>
     </section>
     <?php endif; ?>
