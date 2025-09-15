@@ -44,7 +44,7 @@ try {
 } catch (Exception $e) {
     $pageTitle = '활동 갤러리 | ' . app_name();
     include_once __DIR__ . '/../includes/header.php';
-    echo '<div class="max-w-7xl mx-auto px-4 py-8"><div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center text-red-600">';
+    echo '<div class="max-w-7xl mx-auto px-4 py-8"><div class="bg-red-50 border border-error rounded-lg p-6 text-center text-red-600">';
     echo is_debug() ? h($e->getMessage()) : '게시글을 불러올 수 없습니다.';
     echo '</div></div>';
     include_once __DIR__ . '/../includes/footer.php';
@@ -81,9 +81,9 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
     </nav>
 
     <!-- 게시글 내용 -->
-    <article class="bg-white rounded-lg shadow-sm border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden">
+    <article class="bg-white rounded-lg shadow-sm border border-primary-light hover:border-primary overflow-hidden transition-all duration-300">
       <!-- 헤더 -->
-      <div class="border-b bg-gray-50 px-6 py-4">
+      <div class="border-b border-primary-light bg-gray-50 px-6 py-4">
         <h1 class="text-2xl font-bold text-gray-900 mb-3"><?= h($gallery_item['wr_subject']) ?></h1>
         
         <div class="flex flex-col md:flex-row md:items-center md:justify-between text-sm text-gray-600">

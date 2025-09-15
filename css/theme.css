@@ -4,20 +4,20 @@
   --font-size: 14px;
   --background: #f4f8f3;
   --foreground: oklch(0.145 0 0);
-  --card: #ffffff;
+  --card: oklch(1 0 0);  /* #ffffff */
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: #84cc16;
+  --primary: oklch(0.855 0.165 130.5);  /* #85E546 - 밝은 라임 그린 */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #84cc16;
-  --muted: #e8f4e6;
-  --muted-foreground: #717182;
-  --accent: #d9f99d;
-  --accent-foreground: #84cc16;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
+  --secondary-foreground: oklch(0.722 0.193 120.75);  /* #84cc16 - lime-500와 동일 */
+  --muted: oklch(0.932 0.025 135.62);  /* #e8f4e6 - natural-200와 동일 */
+  --muted-foreground: oklch(0.465 0.015 264.53);  /* #717182 */
+  --accent: oklch(0.892 0.109 120.75);  /* #d9f99d - lime-200와 동일 */
+  --accent-foreground: oklch(0.722 0.193 120.75);  /* #84cc16 - lime-500와 동일 */
+  --destructive: oklch(0.488 0.240 25.33);  /* #d4183d */
+  --destructive-foreground: oklch(1 0 0);  /* #ffffff */
   --border: rgba(132, 204, 22, 0.15);
   --input: transparent;
   --input-background: #f4f8f3;
@@ -33,27 +33,103 @@
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #84cc16;
+  --sidebar-primary: oklch(0.722 0.193 120.75);  /* #84cc16 - lime-500와 동일 */
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --title-color: #1f2937;
+  --title-color: oklch(0.225 0.058 152.48);  /* 통합: forest-700과 동일한 값으로 일관성 확보 */
   
-  /* 기존 색상 변수 (호환성 유지) */
-  --forest-700: #1f3b2d;
-  --forest-600: #2b5d3e;
-  --forest-500: #3a7a4e;
-  --natural-100: #f4f8f3;
-  --natural-50: #fafffe;
-  --natural-200: #e8f4e6;
-  --lime-200: #d9f99d;
-  --lime-300: #bef264;
-  --lime-400: #a3e635;
-  --lime-500: #84cc16;
-  --lime-600: #65a30d;
-  --green-600: #16a34a;
+  /* 기존 색상 변수 (OKLCH 표준화) */
+  --forest-700: oklch(0.225 0.058 152.48);  /* #1f3b2d */
+  --forest-600: oklch(0.335 0.069 152.48);  /* #2b5d3e */
+  --forest-500: oklch(0.445 0.081 152.48);  /* #3a7a4e */
+  --natural-100: oklch(0.967 0.015 135.62); /* #f4f8f3 */
+  --natural-50: oklch(0.993 0.005 135.62);  /* #fafffe */
+  --natural-200: oklch(0.932 0.025 135.62); /* #e8f4e6 */
+  --lime-200: oklch(0.892 0.109 120.75);    /* #d9f99d */
+  --lime-300: oklch(0.842 0.150 120.75);    /* #bef264 */
+  --lime-400: oklch(0.782 0.190 120.75);    /* #a3e635 */
+  --lime-500: oklch(0.722 0.193 120.75);    /* #84cc16 */
+  --lime-600: oklch(0.582 0.155 120.75);    /* #65a30d */
+  
+  /* 브랜드 그라디언트 색상 정의 - OKLCH 표준화 */
+  --brand-gradient-primary: oklch(0.855 0.165 130.5);   /* #85E546 - 밝은 라임 그린 */
+  --brand-gradient-secondary: oklch(0.335 0.069 152.48); /* forest-600 활용으로 브랜드 조화 */
+  
+  /* 의미론적 상태 색상 시스템 - OKLCH 표준화 */
+  --success: var(--lime-500);          /* 성공 상태 - 기존 브랜드 색상 활용 */
+  --success-foreground: var(--primary-foreground);
+  --success-muted: var(--lime-200);
+  
+  --warning: oklch(0.693 0.156 53.24);     /* #f59e0b - 경고 상태 자연 조화 색상 */
+  --warning-foreground: oklch(1 0 0);      /* #ffffff */
+  --warning-muted: oklch(0.950 0.054 53.24); /* #fef3c7 */
+  
+  --error: oklch(0.488 0.240 25.33);       /* #dc2626 - 오류 상태 자연스러운 적색 */
+  --error-foreground: oklch(1 0 0);        /* #ffffff */
+  --error-muted: oklch(0.947 0.069 25.33); /* #fee2e2 */
+  
+  --info: var(--forest-600);           /* 정보 상태 - forest 계열 활용 */
+  --info-foreground: oklch(1 0 0);     /* #ffffff */
+  --info-muted: var(--natural-200);
+
+  /* 컴포넌트 색상 토큰 시스템 */
+  
+  /* 버튼 컴포넌트 토큰 */
+  --button-primary-bg: var(--primary);
+  --button-primary-fg: var(--primary-foreground);
+  --button-primary-hover: oklch(0.775 0.145 130.5); /* #85E546보다 어두운 톤 */
+  --button-primary-active: oklch(0.695 0.125 130.5); /* 더 어두운 활성 상태 */
+  
+  --button-secondary-bg: var(--secondary);
+  --button-secondary-fg: var(--secondary-foreground);
+  --button-secondary-hover: oklch(0.92 0.0058 264.53);
+  --button-secondary-active: oklch(0.88 0.0058 264.53);
+  
+  --button-success-bg: var(--success);
+  --button-success-fg: var(--success-foreground);
+  --button-success-hover: var(--button-primary-hover);
+  --button-success-active: var(--button-primary-active);
+  
+  --button-warning-bg: var(--warning);
+  --button-warning-fg: var(--warning-foreground);
+  --button-warning-hover: oklch(0.613 0.136 53.24);
+  --button-warning-active: oklch(0.553 0.116 53.24);
+  
+  --button-error-bg: var(--error);
+  --button-error-fg: var(--error-foreground);
+  --button-error-hover: oklch(0.408 0.220 25.33);
+  --button-error-active: oklch(0.368 0.200 25.33);
+  
+  /* 카드 컴포넌트 토큰 */
+  --card-bg: var(--card);
+  --card-fg: var(--card-foreground);
+  --card-border: var(--border);
+  --card-shadow: rgba(31, 59, 45, 0.1); /* forest-700 기반 그림자 */
+  --card-hover-shadow: rgba(31, 59, 45, 0.15);
+  
+  /* 링크 컴포넌트 토큰 */
+  --link-default: var(--primary);
+  --link-hover: var(--button-primary-hover);
+  --link-active: var(--button-primary-active);
+  --link-visited: oklch(0.445 0.081 152.48); /* forest-500 */
+  
+  /* 입력 필드 컴포넌트 토큰 */
+  --input-bg: var(--input-background);
+  --input-fg: var(--foreground);
+  --input-border: var(--border);
+  --input-border-focus: var(--primary);
+  --input-placeholder: var(--muted-foreground);
+  
+  /* 네비게이션 컴포넌트 토큰 */
+  --nav-bg: var(--background);
+  --nav-fg: var(--foreground);
+  --nav-link: var(--foreground);
+  --nav-link-hover: var(--primary);
+  --nav-link-active: var(--primary);
+  --nav-border: var(--border);
 }
 
 .dark {
@@ -91,6 +167,12 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  
+  /* 다크 모드 의미론적 색상 */
+  --success: #65a30d;                  /* 다크 모드에서 조금 더 어두운 lime */
+  --warning: #f59e0b;                  /* 경고는 동일 유지 */
+  --error: #ef4444;                    /* 다크 모드에서 조금 더 밝은 적색 */
+  --info: #3a7a4e;                     /* 다크 모드에서 forest-500 사용 */
 }
 
 @theme inline {
@@ -212,6 +294,12 @@ html {
 .text-lime-700 { color: #4d7c0f; }
 .text-title { color: var(--title-color); }
 
+/* 의미론적 텍스트 색상 */
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-error { color: var(--error); }
+.text-info { color: var(--info); }
+
 /* 배경 색상 */
 .bg-natural-100 { background-color: var(--natural-100); }
 .bg-natural-50 { background-color: var(--natural-50); }
@@ -223,10 +311,52 @@ html {
 .bg-forest-100 { background-color: #e6f3e6; }
 .bg-forest-200 { background-color: #c5e4c5; }
 
+/* 의미론적 배경 색상 */
+.bg-success { background-color: var(--success); }
+.bg-warning { background-color: var(--warning); }
+.bg-error { background-color: var(--error); }
+.bg-info { background-color: var(--info); }
+.bg-success-muted { background-color: var(--success-muted); }
+.bg-warning-muted { background-color: var(--warning-muted); }
+.bg-error-muted { background-color: var(--error-muted); }
+.bg-info-muted { background-color: var(--info-muted); }
+
 /* 테두리 색상 */
 .border-lime-200 { border-color: var(--lime-200); }
 .border-lime-300 { border-color: var(--lime-300); }
 .border-lime-400 { border-color: var(--lime-400); }
+.border-primary { border-color: var(--primary) !important; }
+.border-primary-light { border-color: #a3e635 !important; } /* 더 진한 라임 그린 - lime-400와 동일 */
+.border-forest-200 { border-color: #c5e4c5; }
+.border-forest-300 { border-color: #a8d4a8; }
+
+/* 의미론적 테두리 색상 */
+.border-success { border-color: var(--success); }
+.border-warning { border-color: var(--warning); }
+.border-error { border-color: var(--error); }
+.border-info { border-color: var(--info); }
+
+/* 게시물 카드 테두리 스타일 */
+.card-border { 
+  border: 1px solid var(--border); 
+  transition: border-color 0.3s ease; 
+}
+.card-border:hover { 
+  border-color: var(--primary); 
+  box-shadow: 0 0 0 1px rgba(133, 229, 70, 0.2); 
+}
+
+/* 게시판 테두리 스타일 */
+.board-border { 
+  border: 1px solid #a3e635; 
+}
+.board-header-border { 
+  border-bottom: 2px solid var(--primary); 
+}
+
+/* 호버 테두리 색상 */
+.hover\:border-primary:hover { border-color: var(--primary) !important; }
+.hover\:border-primary-light:hover { border-color: #85E546 !important; }
 
 /* 링 색상 */
 .ring-lime-400 { --tw-ring-color: var(--lime-400); }
@@ -331,6 +461,13 @@ header, header nav, header [role="navigation"], .navbar, .navbar-nav {
               linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(240,253,244,1) 100%);
 }
 
+/* 브랜드 그라디언트 */
+.gradient-brand {
+  background: linear-gradient(135deg, 
+    var(--brand-gradient-primary) 0%, 
+    var(--brand-gradient-secondary) 100%);
+}
+
 /* 애니메이션 효과 */
 .hover-lift { transition: transform .2s ease, box-shadow .2s ease; }
 .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
@@ -424,6 +561,7 @@ main { flex: 1 1 auto; }
 .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
 .block { display: block; }
 .inline { display: inline; }
+.no-underline { text-decoration: none !important; }
 .w-4 { width: 1rem; }
 .h-4 { height: 1rem; }
 .w-8 { width: 2rem; }
@@ -542,4 +680,223 @@ main { flex: 1 1 auto; }
   .text-title {
     color: var(--title-color);
   }
+}
+
+/* Phase 2.3: 확장된 컴포넌트 유틸리티 클래스 */
+
+/* 버튼 컴포넌트 클래스 */
+.btn-primary {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-fg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--button-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+  background-color: var(--button-primary-active);
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-fg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: var(--button-secondary-hover);
+}
+
+.btn-secondary:active {
+  background-color: var(--button-secondary-active);
+}
+
+.btn-success {
+  background-color: var(--button-success-bg);
+  color: var(--button-success-fg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-success:hover {
+  background-color: var(--button-success-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(132, 204, 22, 0.25);
+}
+
+.btn-warning {
+  background-color: var(--button-warning-bg);
+  color: var(--button-warning-fg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-warning:hover {
+  background-color: var(--button-warning-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+}
+
+.btn-error {
+  background-color: var(--button-error-bg);
+  color: var(--button-error-fg);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-error:hover {
+  background-color: var(--button-error-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+}
+
+/* 카드 컴포넌트 클래스 */
+.card {
+  background-color: var(--card-bg);
+  color: var(--card-fg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--card-hover-shadow);
+  transform: translateY(-2px);
+  border-color: var(--primary);
+}
+
+.card-compact {
+  padding: 1rem;
+}
+
+.card-large {
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+}
+
+/* 링크 컴포넌트 클래스 */
+.link {
+  color: var(--link-default);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+.link:active {
+  color: var(--link-active);
+}
+
+.link:visited {
+  color: var(--link-visited);
+}
+
+/* 입력 필드 컴포넌트 클래스 */
+.input {
+  background-color: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--input-border-focus);
+  box-shadow: 0 0 0 2px rgba(132, 204, 22, 0.2);
+}
+
+.input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* 네비게이션 컴포넌트 클래스 */
+.nav {
+  background-color: var(--nav-bg);
+  color: var(--nav-fg);
+  border-bottom: 1px solid var(--nav-border);
+}
+
+.nav-link {
+  color: var(--nav-link);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: block;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--nav-link-hover);
+}
+
+.nav-link.active {
+  color: var(--nav-link-active);
+  font-weight: 600;
+}
+
+/* 상태 알림 컴포넌트 클래스 */
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid;
+  margin-bottom: 1rem;
+}
+
+.alert-success {
+  background-color: var(--success-muted);
+  border-color: var(--success);
+  color: var(--forest-700);
+}
+
+.alert-warning {
+  background-color: var(--warning-muted);
+  border-color: var(--warning);
+  color: #92400e;
+}
+
+.alert-error {
+  background-color: var(--error-muted);
+  border-color: var(--error);
+  color: #991b1b;
+}
+
+.alert-info {
+  background-color: var(--info-muted);
+  border-color: var(--info);
+  color: var(--forest-700);
 }

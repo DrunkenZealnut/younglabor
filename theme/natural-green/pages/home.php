@@ -21,7 +21,7 @@
   <section class="py-12 bg-white" style="background: #ffffff !important;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
-        <a href="/community/gallery.php" class="hover:text-lime-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-lime-600 hover:underline-offset-4">최근 활동 보기</a>
+        <a href="/community/gallery.php" class="hover:text-lime-600 transition-colors cursor-pointer no-underline">최근 활동 보기</a>
       </h2>
       <p class="text-center text-gray-600 mb-8">현장의 따끈한 이야기들을 카드로 확인하세요</p>
       
@@ -52,7 +52,7 @@
                     $imageUrl = '/theme/natural-green/assets/images/default-gallery.jpg';
                 }
                 ?>
-                <a href="/community/gallery_view.php?wr_id=<?= $post['id'] ?>" class="block bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden hover:shadow-lg transition-shadow h-96 cursor-pointer">
+                <a href="/community/gallery_view.php?wr_id=<?= $post['id'] ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
                   <div class="relative overflow-hidden h-64 bg-gradient-to-br from-natural-100 to-natural-200">
                     <!-- 블러 배경 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
@@ -81,7 +81,7 @@
             if (empty($galleryPosts)) {
                 for ($i = 0; $i < 3; $i++) {
                     ?>
-                    <div class="bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden h-96">
+                    <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
                       <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                         <div class="flex items-center justify-center h-full text-gray-400">
                           <i data-lucide="image" class="w-16 h-16"></i>
@@ -119,14 +119,14 @@
   </section>
 
   <!-- 공지사항 & 후원안내 섹션 -->
-  <section class="py-12 bg-white" style="background: #ffffff !important;">
+  <section class="py-8 bg-white" style="background: #ffffff !important;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-2 gap-8">
         <!-- 공지사항 -->
-        <div class="bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> p-6">
+        <div class="bg-white rounded-lg shadow-md border border-primary-light hover:border-primary p-6 transition-all duration-300">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold text-forest-700">공지사항</h3>
-            <a href="/community/notices.php" class="text-sm text-forest-600 hover:text-lime-600">
+            <h3 class="text-2xl font-bold text-forest-700">공지사항</h3>
+            <a href="/community/notices.php" class="text-sm text-forest-600 hover:text-lime-600 font-medium">
               더보기 <i data-lucide="plus" class="inline w-4 h-4"></i>
             </a>
           </div>
@@ -140,12 +140,12 @@
                 
                 foreach ($notices as $notice) {
                     ?>
-                    <li class="flex justify-between items-center">
+                    <li class="flex justify-between items-start py-1.5 border-b border-gray-100 last:border-b-0">
                       <a href="/community/notice_view.php?wr_id=<?= $notice['id'] ?>" 
-                         class="flex-1 text-gray-700 hover:text-forest-600 truncate">
+                         class="flex-1 text-gray-700 hover:text-forest-600 pr-4">
                         <?= htmlspecialchars($notice['title']) ?>
                       </a>
-                      <span class="text-sm text-gray-500 ml-2">
+                      <span class="text-sm text-gray-500 whitespace-nowrap">
                         <?= date('m.d', strtotime($notice['created_at'])) ?>
                       </span>
                     </li>
@@ -153,19 +153,19 @@
                 }
                 
                 if (empty($notices)) {
-                    echo '<li class="text-gray-400">등록된 공지사항이 없습니다.</li>';
+                    echo '<li class="text-gray-400 py-6 text-center">등록된 공지사항이 없습니다.</li>';
                 }
             } catch (Exception $e) {
-                echo '<li class="text-gray-400">공지사항을 불러올 수 없습니다.</li>';
+                echo '<li class="text-gray-400 py-6 text-center">공지사항을 불러올 수 없습니다.</li>';
             }
             ?>
           </ul>
         </div>
 
         <!-- 후원 안내 -->
-        <div class="bg-gradient-to-r from-lime-500 to-green-600 rounded-lg shadow-md p-6 text-white">
-          <h3 class="text-xl font-bold mb-4">함께하는 희망씨</h3>
-          <p class="mb-6">
+        <div class="gradient-brand rounded-lg shadow-md p-6 text-white hover-lift transition-all duration-300">
+          <h3 class="text-2xl font-bold mb-4">함께하는 희망씨</h3>
+          <p class="mb-4">
             희망씨와 함께 더불어 사는 삶을 만들어가요.<br>
             여러분의 작은 관심이 큰 희망이 됩니다.
           </p>
@@ -181,7 +181,7 @@
             </a>
           </div>
           
-          <div class="mt-6 text-sm">
+          <div class="mt-4 text-sm">
             <p class="font-semibold mb-1">후원계좌</p>
             <p>우리은행 1005-502-430760</p>
             <p>(예금주: 사단법인 희망씨)</p>
@@ -255,7 +255,7 @@
             if (empty($newsletterPosts)) {
                 for ($i = 0; $i < 3; $i++) {
                     ?>
-                    <div class="bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden h-96">
+                    <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
                       <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                         <div class="flex items-center justify-center h-full text-gray-400">
                           <i data-lucide="newspaper" class="w-16 h-16"></i>

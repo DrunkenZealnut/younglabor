@@ -159,7 +159,7 @@ include_once __DIR__ . '/../includes/header.php';
     <?php if (!empty($sections)): ?>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <?php foreach ($sections as $sec): ?>
-          <section class="bg-white rounded-2xl border <?= getThemeClass('border', 'border', '200') ?> shadow-sm p-6 md:p-8 h-full max-w-full">
+          <section class="bg-white rounded-2xl border border-primary-light hover:border-primary shadow-sm p-6 md:p-8 h-full max-w-full transition-all duration-300">
             <h2 class="text-xl font-semibold <?= getThemeClass('text', 'primary', '700') ?> mb-2"><?= h($sec['title']) ?></h2>
             <?php if (!empty($sec['desc'])): ?>
               <p class="text-gray-700 leading-7 mb-3"><?= h($sec['desc']) ?></p>
@@ -173,7 +173,7 @@ include_once __DIR__ . '/../includes/header.php';
         <?php endforeach; ?>
       </div>
     <?php else: ?>
-      <section class="bg-white rounded-2xl border <?= getThemeClass('border', 'border', '200') ?> shadow-sm p-6 md:p-8">
+      <section class="bg-white rounded-2xl border border-primary-light hover:border-primary shadow-sm p-6 md:p-8 transition-all duration-300">
         <?= $rawHtml ?: '<p>콘텐츠가 없습니다.</p>' ?>
       </section>
     <?php endif; ?>

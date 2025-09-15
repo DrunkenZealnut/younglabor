@@ -146,17 +146,17 @@ try {
 
     <!-- 갤러리 그리드 -->
     <?php if (isset($error_message)): ?>
-      <div class="bg-red-50 border border-red-200 rounded-lg p-8 text-center text-red-600">
+      <div class="bg-red-50 border border-error rounded-lg p-8 text-center text-red-600">
         <?= h($error_message) ?>
       </div>
     <?php elseif (empty($gallery_posts)): ?>
-      <div class="bg-gray-50 rounded-lg p-8 text-center text-gray-500">
+      <div class="bg-gray-50 border border-primary-light rounded-lg p-8 text-center text-gray-500">
         <?= !empty($search_keyword) ? '검색 결과가 없습니다.' : '등록된 갤러리가 없습니다.' ?>
       </div>
     <?php else: ?>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php foreach ($gallery_posts as $index => $post): ?>
-        <article class="bg-white rounded-lg shadow-sm border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden hover:shadow-md transition-shadow">
+        <article class="bg-white rounded-lg shadow-sm border border-primary-light hover:border-primary overflow-hidden hover:shadow-md transition-all duration-300">
           <a href="/community/gallery_view.php?wr_id=<?= $post['wr_id'] ?>" class="block">
             <!-- 이미지 (높이 증가 및 블러 배경 적용) -->
             <div class="relative h-56 bg-gray-100 overflow-hidden">

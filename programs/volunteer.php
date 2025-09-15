@@ -22,10 +22,10 @@ include_once __DIR__ . '/../includes/header.php';
       <p class="text-gray-600 mt-2">함께하는 나눔, 기록되는 시간</p>
     </header>
 
-    <section class="bg-white rounded-2xl border <?= getThemeClass('border', 'border', '200') ?> shadow-sm p-6 md:p-8">
+    <section class="bg-white rounded-2xl border border-primary-light hover:border-primary shadow-sm p-6 md:p-8 transition-all duration-300">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
         <div class="md:col-span-2">
-          <img src="/programs/img/b15_img.png" alt="자원봉사안내 이미지" class="w-full h-auto rounded-lg border <?= getThemeClass('border', 'border', '200') ?>" />
+          <img src="/programs/img/b15_img.png" alt="자원봉사안내 이미지" class="w-full h-auto rounded-lg border border-primary-light" />
         </div>
         <div class="md:col-span-3">
           <h2 class="text-2xl font-semibold <?= getThemeClass('text', 'primary', '700') ?> mb-3">자원봉사안내</h2>
@@ -37,7 +37,7 @@ include_once __DIR__ . '/../includes/header.php';
             로 들어가셔서 회원가입을 한 후, 간단한 개인정보를 희망씨에 알려주시면 나눔활동에 대한 자원봉사시간을 부여해 드립니다.
           </p>
           <div class="mt-5">
-            <a href="https://www.1365.go.kr/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border <?= getThemeClass('border', 'border', '300') ?> <?= getThemeClass('text', 'primary', '700') ?> hover:<?= getThemeClass('bg', 'secondary', '50') ?> focus:outline-none focus:ring-2 focus:<?= getThemeClass('ring', 'secondary', '400') ?>">
+            <a href="https://www.1365.go.kr/" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary hover:border-primary-hover hover:bg-primary/10 <?= getThemeClass('text', 'primary', '700') ?> focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300">
               <span>www.1365.go.kr</span>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
                 <path d="M13.5 4.5h6v6m0-6L10.5 13.5m9-9H15a6 6 0 00-6 6v1.5" stroke="currentColor" stroke-width="1.5" fill="none" />

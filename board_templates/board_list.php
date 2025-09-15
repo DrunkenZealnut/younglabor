@@ -99,9 +99,9 @@ if (function_exists('renderSafeBoardTheme')) {
 }
 ?>
 
-<div class="board-surface bg-white rounded-lg border <?= getThemeClass('border', 'border', '200') ?> shadow-sm <?= htmlspecialchars($containerMaxWidthClass) ?> mx-auto my-8">
+<div class="board-surface bg-white rounded-lg border border-primary-light hover:border-primary shadow-sm <?= htmlspecialchars($containerMaxWidthClass) ?> mx-auto my-8 transition-all duration-300">
     <!-- 게시판 헤더 -->
-    <div class="px-6 py-4 border-b <?= getThemeClass('border', 'border', '200') ?>">
+    <div class="px-6 py-4 border-b border-primary-light board-header-border">
         <div class="flex justify-between items-center flex-wrap gap-4">
             <div>
                 <h2 class="text-xl font-semibold <?= getThemeClass('text', 'primary', '900') ?>">
@@ -129,7 +129,7 @@ if (function_exists('renderSafeBoardTheme')) {
     </div>
 
     <!-- 게시글 통계 -->
-    <div class="px-6 py-3 <?= getThemeClass('bg', 'background', '50') ?> border-b <?= getThemeClass('border', 'border', '200') ?>">
+    <div class="px-6 py-3 <?= getThemeClass('bg', 'background', '50') ?> border-b border-primary-light">
         <div class="flex justify-between items-center flex-wrap gap-4">
             <div class="text-sm <?= getThemeClass('text', 'text', '600') ?>">
                 <?php if (!empty($search_keyword)): ?>
@@ -221,7 +221,7 @@ if (function_exists('renderSafeBoardTheme')) {
         <div class="px-6 py-6">
             <div class="grid gap-6 <?= htmlspecialchars($gridColsClass) ?>">
             <?php foreach ($posts as $index => $post): ?>
-                <a href="<?= htmlspecialchars(($config['detail_url'] ?? 'detail.php')) ?>?id=<?= (int)$post['post_id'] ?>" class="block group rounded-lg border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <a href="<?= htmlspecialchars(($config['detail_url'] ?? 'detail.php')) ?>?id=<?= (int)$post['post_id'] ?>" class="block group rounded-lg border border-primary-light hover:border-primary overflow-hidden bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300">
                     <div class="<?= getThemeClass('bg', 'background', '100') ?>" style="aspect-ratio:<?= htmlspecialchars($cardAspectRatio) ?>;">
                         <?php if (!empty($post['thumbnail_url'])): ?>
                             <img src="<?= htmlspecialchars($post['thumbnail_url']) ?>" alt="<?= htmlspecialchars($post['title']) ?>" class="w-full h-full object-cover" loading="lazy" decoding="async">
@@ -231,7 +231,7 @@ if (function_exists('renderSafeBoardTheme')) {
                             </div>
                         <?php endif; ?>
                     </div>
-                    <div class="p-4 border-t <?= getThemeClass('border', 'border', '200') ?>">
+                    <div class="p-4 border-t border-primary-light">
                         <div class="<?= getThemeClass('text', 'primary', '900') ?> font-medium truncate group-hover:<?= getThemeClass('text', 'primary', '600') ?>">
                             <?= htmlspecialchars($post['title']) ?>
                         </div>
@@ -255,7 +255,7 @@ if (function_exists('renderSafeBoardTheme')) {
         <div class="overflow-x-auto">
             <table class="w-full">
                 <caption class="sr-only">게시글 목록</caption>
-                <thead class="<?= getThemeClass('bg', 'background', '50') ?> border-b <?= getThemeClass('border', 'border', '200') ?>">
+                <thead class="<?= getThemeClass('bg', 'background', '50') ?> border-b border-primary-light">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider" style="width: 74px;">번호</th>
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider">제목</th>
@@ -264,7 +264,7 @@ if (function_exists('renderSafeBoardTheme')) {
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider hidden sm:table-cell" style="width: 74px;">조회</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y <?= getThemeClass('border', 'border', '200') ?>">
+                <tbody class="bg-white divide-y border-primary-light">
                     <?php foreach ($posts as $index => $post): ?>
                     <tr class="hover:<?= getThemeClass('bg', 'background', '50') ?> transition-colors <?= $post['is_notice'] ? getThemeClass('bg', 'warning', '50') : '' ?>">
                         <!-- 번호 -->
@@ -323,7 +323,7 @@ if (function_exists('renderSafeBoardTheme')) {
 
     <!-- 페이징 -->
     <?php if ($total_pages > 1): ?>
-    <div class="px-6 py-4 border-t <?= getThemeClass('border', 'border', '200') ?>">
+    <div class="px-6 py-4 border-t border-primary-light">
         <div class="flex justify-center">
             <!-- 페이징 버튼들 -->
             <nav class="flex items-center gap-1" aria-label="페이지 네비게이션">
