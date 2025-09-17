@@ -156,7 +156,7 @@ $communityLinks = [
 
 <header class="bg-white border-bottom sticky-top z-50 shadow-sm backdrop-blur-md" style="background-color: rgba(255, 255, 255, 0.95); border-color: var(--border);" role="banner">
   <div class="container-xl px-3">
-    <div class="d-flex align-items-center h-100" style="min-height: 4rem;">
+    <div class="d-flex align-items-center h-100" style="min-height: 5rem;">
       <!-- 로고 -->
       <div class="me-4">
         <a href="<?php echo app_url(''); ?>" 
@@ -166,7 +166,7 @@ $communityLinks = [
             src="<?php echo app_url('assets/images/logo.png'); ?>"
             alt="사단법인 희망씨"
             class="object-fit-contain"
-            style="height: 2.5rem; width: auto; max-width: 10rem;"
+            style="height: 3.5rem; width: auto; max-width: 14rem;"
             onerror="this.style.display='none';" />
         </a>
       </div>

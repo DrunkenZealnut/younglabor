@@ -281,6 +281,7 @@ html {
 .text-forest-700 { color: var(--forest-700); }
 .text-forest-600 { color: var(--forest-600); }
 .text-forest-500 { color: var(--forest-500); }
+.text-lime-400 { color: var(--lime-400); }
 .text-lime-500 { color: var(--lime-500); }
 .text-lime-600 { color: var(--lime-600); }
 .text-lime-700 { color: #4d7c0f; }
@@ -293,11 +294,13 @@ html {
 .text-info { color: var(--info); }
 
 /* 배경 색상 */
-.bg-natural-100 { background-color: var(--natural-100); }
 .bg-natural-50 { background-color: var(--natural-50); }
+.bg-natural-100 { background-color: var(--natural-100); }
 .bg-natural-200 { background-color: var(--natural-200); }
 .bg-lime-200 { background-color: var(--lime-200); }
 .bg-lime-400 { background-color: var(--lime-400); }
+.bg-lime-500 { background-color: var(--lime-500); }
+.bg-lime-600 { background-color: var(--lime-600); }
 .bg-forest-600 { background-color: var(--forest-600); }
 .bg-forest-700 { background-color: var(--forest-700); }
 .bg-forest-100 { background-color: #e6f3e6; }
@@ -317,6 +320,7 @@ html {
 .border-lime-200 { border-color: var(--lime-200); }
 .border-lime-300 { border-color: var(--lime-300); }
 .border-lime-400 { border-color: var(--lime-400); }
+.border-lime-500 { border-color: var(--lime-500); }
 .border-primary { border-color: var(--primary) !important; }
 .border-primary-light { border-color: #a3e635 !important; } /* 더 진한 라임 그린 - lime-400와 동일 */
 .border-forest-200 { border-color: #c5e4c5; }
@@ -892,3 +896,14 @@ main { flex: 1 1 auto; }
   border-color: var(--info);
   color: var(--forest-700);
 }
+
+/* Additional classes for about.php styling */
+.text-gray-500 { color: var(--gray-500); }
+.text-gray-600 { color: var(--gray-600); }
+.text-gray-700 { color: var(--gray-700); }
+
+/* Additional background classes */
+.bg-white\/70 { background-color: rgba(255, 255, 255, 0.7); }
+
+/* Additional border classes */
+.border-white\/30 { border-color: rgba(255, 255, 255, 0.3); }

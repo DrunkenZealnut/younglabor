@@ -15,6 +15,17 @@ if ($cssMode->isOptimizedMode()) {
     return; // 여기서 종료
 }
 
+// Legacy 모드 성능 최적화 활성화 체크
+$legacyOptimized = isset($_GET['legacy_optimized']) || 
+                  (isset($_COOKIE['legacy_optimized']) && $_COOKIE['legacy_optimized'] === 'true') ||
+                  (defined('LEGACY_OPTIMIZED_DEFAULT') && LEGACY_OPTIMIZED_DEFAULT);
+
+if ($legacyOptimized) {
+    // Legacy 최적화된 헤더 로드
+    include __DIR__ . '/header-legacy-optimized.php';
+    return; // 여기서 종료
+}
+
 // Legacy 모드: 기존 Natural Green 테마 로드
 require_once __DIR__ . '/NaturalGreenThemeLoader.php';
 $theme = getNaturalGreenTheme();

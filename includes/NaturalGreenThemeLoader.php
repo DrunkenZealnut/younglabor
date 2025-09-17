@@ -177,3 +177,80 @@ if (!function_exists('getThemeSetting')) {
         return $loader->getConfig($key, $default);
     }
 }
+
+// Theme class helper function for consistency between legacy and optimized modes
+if (!function_exists('getThemeClass')) {
+    function getThemeClass($type, $category, $shade = null) {
+        // 완전한 테마 클래스 매핑 - globals.css 변수만 사용
+        $themeMapping = [
+            'text' => [
+                'primary' => [
+                    '500' => 'text-lime-500',
+                    '600' => 'text-lime-600', 
+                    '700' => 'text-forest-700',
+                    '800' => 'text-forest-700',
+                    '900' => 'text-forest-700'
+                ],
+                'secondary' => [
+                    '400' => 'text-lime-400',
+                    '500' => 'text-lime-500',
+                    '600' => 'text-lime-600'
+                ],
+                'foreground' => 'text-forest-700',
+                'muted-foreground' => 'text-gray-500',
+                'white' => 'text-white'
+            ],
+            'bg' => [
+                'primary' => [
+                    '100' => 'bg-natural-100',
+                    '200' => 'bg-natural-200',
+                    '300' => 'bg-lime-200',
+                    '500' => 'bg-lime-500',
+                    '600' => 'bg-lime-600'
+                ],
+                'secondary' => [
+                    '100' => 'bg-natural-100',
+                    '500' => 'bg-lime-500'
+                ],
+                'background' => [
+                    '50' => 'bg-natural-50',
+                    '100' => 'bg-natural-100'
+                ],
+                'gray' => [
+                    '50' => 'bg-natural-50',
+                    '200' => 'bg-natural-200'
+                ],
+                'white' => 'bg-white',
+                'warning' => [
+                    '50' => 'bg-warning-muted'
+                ],
+                'danger' => [
+                    '100' => 'bg-error-muted'
+                ]
+            ],
+            'border' => [
+                'primary' => [
+                    '500' => 'border-lime-500'
+                ],
+                'secondary' => [
+                    '500' => 'border-lime-500'
+                ],
+                'border' => [
+                    '200' => 'border-lime-200'
+                ],
+                'gray' => [
+                    '200' => 'border-lime-200'
+                ]
+            ]
+        ];
+        
+        if (isset($themeMapping[$type][$category])) {
+            if (is_array($themeMapping[$type][$category]) && $shade !== null) {
+                return $themeMapping[$type][$category][$shade] ?? '';
+            }
+            return $themeMapping[$type][$category] ?? '';
+        }
+        
+        return '';
+    }
+}

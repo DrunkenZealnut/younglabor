@@ -18,3 +18,81 @@ Options -Indexes
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-Content-Type-Options "nosniff"
 </IfModule>
+
+# 성능 최적화: 브라우저 캐시 설정
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # CSS 및 JS 파일: 1년 캐시
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    
+    # 이미지 파일: 6개월 캐시
+    ExpiresByType image/png "access plus 6 months"
+    ExpiresByType image/jpg "access plus 6 months" 
+    ExpiresByType image/jpeg "access plus 6 months"
+    ExpiresByType image/gif "access plus 6 months"
+    ExpiresByType image/webp "access plus 6 months"
+    ExpiresByType image/svg+xml "access plus 6 months"
+    
+    # 폰트 파일: 1년 캐시
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/eot "access plus 1 year"
+    
+    # HTML 파일: 1시간 캐시 (동적 콘텐츠)
+    ExpiresByType text/html "access plus 1 hour"
+</IfModule>
+
+# GZIP 압축 활성화
+<IfModule mod_deflate.c>
+    # 텍스트 기반 파일 압축
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    
+    # 이미 압축된 파일은 제외
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|zip|gz|bz2)$ no-gzip dont-vary
+    SetEnvIfNoCase Request_URI \.(?:exe|t?gz|zip|bz2|sit|rar)$ no-gzip dont-vary
+</IfModule>
+
+# Cache-Control 헤더 최적화
+<IfModule mod_headers.c>
+    # CSS, JS 파일: 강력한 캐시
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+    
+    # 이미지 파일: 중간 캐시
+    <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
+        Header set Cache-Control "public, max-age=15552000"
+    </FilesMatch>
+    
+    # 폰트 파일: 강력한 캐시
+    <FilesMatch "\.(woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+    
+    # HTML 파일: 짧은 캐시 (개발용)
+    <FilesMatch "\.php$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+</IfModule>
+
+# ETag 최적화
+FileETag MTime Size
+
+# 성능을 위한 Keep-Alive 설정 권장
+<IfModule mod_headers.c>
+    Header always set Connection keep-alive
+</IfModule>

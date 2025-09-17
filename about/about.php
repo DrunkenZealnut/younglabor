@@ -121,7 +121,7 @@ include __DIR__ . '/../includes/header.php';
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 15.91a4.5 4.5 0 1 1-6.364-6.364 4.5 4.5 0 0 1 6.364 6.364Z" />
               </svg>
-              <h3 class="text-3xl font-bold text-gray-800">미션</h3>
+              <h3 class="text-3xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">미션</h3>
             </div>
             <p class="text-lg text-gray-600 leading-relaxed">희망씨는 아동청소년이 차별받지 않는 세상을 위해 노동자와 함께 합니다.</p>
           </div>
@@ -131,7 +131,7 @@ include __DIR__ . '/../includes/header.php';
               <svg class="w-10 h-10 <?= getThemeClass('text', 'secondary', '600') ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 01-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 013.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 013.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 01-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.543L16.5 21.75l-.398-1.207a3.375 3.375 0 00-2.455-2.456L12.75 18l1.207-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.207a3.375 3.375 0 002.456 2.456L20.25 18l-1.207.398a3.375 3.375 0 00-2.456 2.456z" />
               </svg>
-              <h3 class="text-3xl font-bold text-gray-800">비전</h3>
+              <h3 class="text-3xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">비전</h3>
             </div>
             <p class="text-lg text-gray-600 leading-relaxed">구분과 격차가 없는 더불어 사는 세상을 꿈꿉니다.</p>
           </div>

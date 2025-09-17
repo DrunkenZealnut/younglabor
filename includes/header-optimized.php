@@ -11,6 +11,8 @@
 require_once __DIR__ . '/critical-css-generator.php';
 require_once __DIR__ . '/NaturalGreenThemeLoader.php';
 
+// template_helpers.php에서 getThemeClass 함수가 이미 올바르게 정의되었으므로 여기서는 제거
+
 // Critical CSS 생성기 초기화
 $criticalGenerator = new CriticalCSSGenerator();
 $cssMode = getCSSMode();
@@ -68,6 +70,19 @@ $cssMode->startPerformanceTracking();
 
 <!-- Font Loading with font-display: swap -->
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<!-- Footer Fix Override - Prevent footer from sticking to viewport -->
+<style id="hopec-footer-fix">
+body {
+    display: block !important;
+    flex-direction: unset !important;
+    min-height: 100vh !important;
+}
+body.min-vh-100.d-flex.flex-column {
+    display: block !important;
+    flex-direction: unset !important;
+}
+</style>
 
 <!-- Essential Icons (minimal Font Awesome alternatives) -->
 <style id="hopec-essential-icons">
@@ -193,27 +208,75 @@ renderNaturalGreenTheme();
             <?php endif; ?>
         });
         
-        // Load extended theme CSS if exists
-        var extendedCSS = '/css/hopec-extended.css?v=<?= time() ?>';
-        loadCSS(extendedCSS, null, 'all', function() {
-            <?php if ($cssMode->isDebugMode()): ?>
-            console.log('✅ Extended CSS loaded');
-            <?php endif; ?>
-        });
+        // Load extended theme CSS if exists - Check file existence first
+        var extendedCSSPath = '/css/hopec-extended.css';
+        var extendedCSS = extendedCSSPath + '?v=<?= time() ?>';
+        
+        // Only load if file exists to prevent 404 errors
+        fetch(extendedCSSPath, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    loadCSS(extendedCSS, null, 'all', function() {
+                        <?php if ($cssMode->isDebugMode()): ?>
+                        console.log('✅ Extended CSS loaded');
+                        <?php endif; ?>
+                    });
+                } else {
+                    <?php if ($cssMode->isDebugMode()): ?>
+                    console.log('ℹ️ Extended CSS not found, skipping');
+                    <?php endif; ?>
+                }
+            })
+            .catch(() => {
+                <?php if ($cssMode->isDebugMode()): ?>
+                console.log('ℹ️ Extended CSS not available, skipping');
+                <?php endif; ?>
+            });
     });
     
-    // Fallback: Load essential CSS if critical CSS fails
+    // Enhanced Fallback: Load essential CSS if critical CSS fails
     var criticalStyle = document.getElementById('hopec-critical-css');
-    if (!criticalStyle || criticalStyle.textContent.length < 1000) {
-        console.warn('⚠️ Critical CSS seems to have failed, loading fallback...');
+    var criticalCSSSize = criticalStyle ? criticalStyle.textContent.length : 0;
+    
+    if (!criticalStyle || criticalCSSSize < 1000) {
+        console.warn('⚠️ Critical CSS seems to have failed (size: ' + criticalCSSSize + '), loading fallback...');
         
-        // Emergency fallback to CDN
-        loadCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css', null, 'all');
+        // Emergency fallback to CDN with proper error handling
+        loadCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css', null, 'all', function() {
+            console.log('🔄 Bootstrap fallback loaded');
+        });
         
-        // Add Tailwind as script fallback
-        var tailwindScript = document.createElement('script');
-        tailwindScript.src = 'https://cdn.tailwindcss.com';
-        document.head.appendChild(tailwindScript);
+        // Load theme CSS directly as fallback
+        var fallbackThemeCSS = '/css/theme.css?v=<?= time() ?>';
+        loadCSS(fallbackThemeCSS, null, 'all', function() {
+            console.log('🔄 Theme CSS fallback loaded');
+        });
+        
+        // Add essential container styles inline as emergency fallback
+        var emergencyStyles = document.createElement('style');
+        emergencyStyles.id = 'hopec-emergency-styles';
+        emergencyStyles.textContent = `
+            .container { margin: 0 auto; padding: 0 15px; max-width: 1140px; }
+            #container { margin: 0 auto; padding: 0 15px; max-width: 1320px; }
+            #container_wr { margin: 0 auto; }
+            #wrapper { margin: 0 auto; }
+            body { font-family: 'Noto Sans KR', sans-serif; }
+        `;
+        document.head.appendChild(emergencyStyles);
+        
+        // Add Tailwind as script fallback only if really needed
+        setTimeout(function() {
+            if (!document.querySelector('link[href*="bootstrap"]')) {
+                var tailwindScript = document.createElement('script');
+                tailwindScript.src = 'https://cdn.tailwindcss.com';
+                document.head.appendChild(tailwindScript);
+                console.log('🔄 Tailwind fallback loaded');
+            }
+        }, 1000);
+    } else {
+        <?php if ($cssMode->isDebugMode()): ?>
+        console.log('✅ Critical CSS loaded successfully (' + criticalCSSSize + ' chars)');
+        <?php endif; ?>
     }
 })();
 </script>
@@ -226,6 +289,60 @@ renderNaturalGreenTheme();
 
 <!-- Remodal JavaScript -->
 <script src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
+
+<!-- Theme Helper Functions for Optimized Mode -->
+<script>
+// Theme helper functions for consistency between legacy and optimized modes
+window.getThemeClass = function(type, category, shade) {
+    // Map theme classes to actual CSS classes
+    const themeMapping = {
+        'text': {
+            'primary': {
+                '600': 'text-green-600',
+                '900': 'text-green-900'
+            },
+            'foreground': 'text-gray-900',
+            'muted-foreground': 'text-gray-500',
+            'text': {
+                '400': 'text-gray-400',
+                '500': 'text-gray-500',
+                '600': 'text-gray-600'
+            }
+        },
+        'bg': {
+            'background': {
+                '50': 'bg-gray-50',
+                '100': 'bg-gray-100'
+            },
+            'warning': {
+                '50': 'bg-yellow-50'
+            },
+            'danger': {
+                '100': 'bg-red-100'
+            }
+        },
+        'border': {
+            'border': {
+                '200': 'border-gray-200'
+            }
+        }
+    };
+    
+    if (themeMapping[type] && themeMapping[type][category]) {
+        if (typeof themeMapping[type][category] === 'object' && shade) {
+            return themeMapping[type][category][shade] || '';
+        }
+        return themeMapping[type][category] || '';
+    }
+    
+    return '';
+};
+
+// Make getThemeClass available globally for PHP integration
+if (typeof window.phpThemeClass === 'undefined') {
+    window.phpThemeClass = window.getThemeClass;
+}
+</script>
 
 <!-- Natural Green 테마 JavaScript -->
 <script>
@@ -291,7 +408,7 @@ if ($cssMode->isDebugMode()) {
 <!-- 최적화된 CSS 로딩 끝 -->
 
   </head>
-  <body class="min-vh-100 d-flex flex-column" style="font-family: 'Noto Sans KR', sans-serif; background-color: var(--background); color: var(--foreground);">
+  <body style="font-family: 'Noto Sans KR', sans-serif; background-color: var(--background); color: var(--foreground);">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:m-4 focus:p-2 focus:bg-white focus:border focus:border-gray-400">본문 바로가기</a>
     
     <?php 

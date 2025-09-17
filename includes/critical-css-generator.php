@@ -55,8 +55,10 @@ class CriticalCSSGenerator {
         // 6. Bootstrap 호환 최소 클래스
         $criticalCSS .= $this->generateBootstrapMinimal();
         
-        // 7. Tailwind 유틸리티 최소 세트
-        $criticalCSS .= $this->generateTailwindUtilities();
+        // 7. Essential utilities only
+        
+        // 11. Theme-specific utility classes
+        $criticalCSS .= $this->generateThemeUtilities();
         
         // CSS 최적화 (압축)
         $criticalCSS = $this->minifyCSS($criticalCSS);
@@ -92,20 +94,87 @@ class CriticalCSSGenerator {
     }
     
     /**
-     * 기본 CSS 변수 (폴백)
+     * 기본 CSS 변수 (폴백) - 완전한 OKLCH 시스템
      */
     private function getDefaultCSSVariables() {
         return ":root {
   --font-size: 14px;
   --background: #f4f8f3;
   --foreground: oklch(0.145 0 0);
-  --primary: #84cc16;
-  --primary-foreground: #ffffff;
-  --secondary: #e8f4e6;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.855 0.165 130.5);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: oklch(0.722 0.193 120.75);
+  --muted: oklch(0.932 0.025 135.62);
+  --muted-foreground: oklch(0.465 0.015 264.53);
+  --accent: oklch(0.892 0.109 120.75);
+  --accent-foreground: oklch(0.722 0.193 120.75);
+  --destructive: oklch(0.488 0.240 25.33);
+  --destructive-foreground: oklch(1 0 0);
   --border: rgba(132, 204, 22, 0.15);
-  --radius: 0.625rem;
+  --input: transparent;
+  --input-background: #f4f8f3;
+  --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.722 0.193 120.75);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+  --title-color: oklch(0.225 0.058 152.48);
+  
+  /* 기존 색상 변수 (OKLCH 표준화) */
+  --forest-700: oklch(0.225 0.058 152.48);
+  --forest-600: oklch(0.335 0.069 152.48);
+  --forest-500: oklch(0.445 0.081 152.48);
+  --natural-100: oklch(0.967 0.015 135.62);
+  --natural-50: oklch(0.993 0.005 135.62);
+  --natural-200: oklch(0.932 0.025 135.62);
+  --lime-200: oklch(0.892 0.109 120.75);
+  --lime-300: oklch(0.842 0.150 120.75);
+  --lime-400: oklch(0.782 0.190 120.75);
+  --lime-500: oklch(0.722 0.193 120.75);
+  --lime-600: oklch(0.582 0.155 120.75);
+  
+  /* 브랜드 그라디언트 색상 정의 */
+  --brand-gradient-primary: oklch(0.855 0.165 130.5);
+  --brand-gradient-secondary: oklch(0.335 0.069 152.48);
+  
+  /* Gray 색상 시스템 */
+  --gray-50: oklch(0.985 0 0);
+  --gray-100: oklch(0.970 0 0);
+  --gray-200: oklch(0.922 0 0);
+  --gray-300: oklch(0.869 0 0);
+  --gray-400: oklch(0.691 0 0);
+  --gray-500: oklch(0.523 0 0);
+  --gray-600: oklch(0.465 0 0);
+  --gray-700: oklch(0.362 0 0);
+  --gray-800: oklch(0.258 0 0);
+  --gray-900: oklch(0.156 0 0);
+  
+  /* 의미론적 상태 색상 시스템 */
+  --success: var(--lime-500);
+  --success-foreground: var(--primary-foreground);
+  --success-muted: var(--lime-200);
+  --warning: oklch(0.693 0.156 53.24);
+  --warning-foreground: oklch(1 0 0);
+  --warning-muted: oklch(0.950 0.054 53.24);
+  --error: oklch(0.488 0.240 25.33);
+  --error-foreground: oklch(1 0 0);
+  --error-muted: oklch(0.947 0.069 25.33);
+  --info: var(--forest-600);
+  --info-foreground: oklch(1 0 0);
+  --info-muted: var(--natural-200);
 }
 
 ";
@@ -132,10 +201,9 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-weight: var(--font-weight-normal);
-}
-
-.min-vh-100 {
   min-height: 100vh;
+  display: block !important;
+  flex-direction: unset !important;
 }
 
 .d-flex {
@@ -442,6 +510,40 @@ a:hover {
   box-sizing: border-box;
 }
 
+/* Enhanced Container Centering - Ensures consistent behavior across all pages */
+.container,
+.container-xl,
+#container {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Responsive Container Margins for Different Page Types */
+@media (min-width: 1400px) {
+  #container {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1320px;
+  }
+  
+  /* Special handling for board pages */
+  body.board-page #container_wr {
+    margin-left: 100px;
+    margin-right: 100px;
+  }
+}
+
+/* Force proper centering on all container elements */
+#wrapper,
+#container_wr,
+#container,
+.container,
+.container-xl {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .container-fluid {
   width: 100%;
   padding-right: 15px;
@@ -477,6 +579,12 @@ a:hover {
 .d-block { display: block !important; }
 .d-flex { display: flex !important; }
 .d-inline-flex { display: inline-flex !important; }
+
+/* Force body to use block layout, preventing footer from sticking */
+body {
+  display: block !important;
+  flex-direction: unset !important;
+}
 
 /* Responsive Display Classes */
 @media (min-width: 768px) {
@@ -677,6 +785,134 @@ body {
     }
     
     /**
+     * Complete Theme Utilities - ALL getThemeClass() mappings
+     */
+    private function generateThemeUtilities() {
+        return "/* Complete Theme Color Classes - Direct CSS Variable Mapping */
+
+/* Text Colors - All getThemeClass() mappings */
+.text-lime-400 { color: var(--lime-400); }
+.text-lime-500 { color: var(--lime-500); }
+.text-lime-600 { color: var(--lime-600); }
+.text-forest-500 { color: var(--forest-500); }
+.text-forest-600 { color: var(--forest-600); }
+.text-forest-700 { color: var(--forest-700); }
+.text-gray-500 { color: var(--gray-500); }
+.text-gray-600 { color: var(--gray-600); }
+.text-gray-700 { color: var(--gray-700); }
+.text-white { color: #ffffff; }
+
+/* Background Colors - All getThemeClass() mappings */
+.bg-natural-50 { background-color: var(--natural-50); }
+.bg-natural-100 { background-color: var(--natural-100); }
+.bg-natural-200 { background-color: var(--natural-200); }
+.bg-lime-200 { background-color: var(--lime-200); }
+.bg-lime-500 { background-color: var(--lime-500); }
+.bg-lime-600 { background-color: var(--lime-600); }
+.bg-white { background-color: #ffffff; }
+.bg-white\/70 { background-color: rgba(255, 255, 255, 0.7); }
+
+/* Gradient Classes */
+.gradient-natural {
+  background: radial-gradient(70% 70% at 50% 30%, rgba(168, 232, 144, 0.25), rgba(255,255,255,0) 60%),
+              linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(240,253,244,1) 100%);
+}
+
+/* Border Colors - All getThemeClass() mappings */
+.border-lime-200 { border-color: var(--lime-200); }
+.border-lime-500 { border-color: var(--lime-500); }
+.border-white\/30 { border-color: rgba(255, 255, 255, 0.3); }
+
+/* Essential Layout Utilities for about.php */
+.max-w-5xl { max-width: 64rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mb-10 { margin-bottom: 2.5rem; }
+.mb-12 { margin-bottom: 3rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-1 { margin-bottom: 0.25rem; }
+.p-6 { padding: 1.5rem; }
+.p-8 { padding: 2rem; }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+.text-4xl { font-size: 2.25rem; }
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.font-extrabold { font-weight: 800; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-2xl { border-radius: 1rem; }
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+.backdrop-blur-xl { backdrop-filter: blur(24px); }
+.border { border-width: 1px; }
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.justify-center { justify-content: center; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.text-center { text-align: center; }
+.leading-7 { line-height: 1.75rem; }
+.leading-relaxed { line-height: 1.625; }
+.w-10 { width: 2.5rem; }
+.h-10 { height: 2.5rem; }
+.shrink-0 { flex-shrink: 0; }
+.rounded-full { border-radius: 9999px; }
+.transition-all { transition-property: all; }
+.duration-300 { transition-duration: 300ms; }
+.hover\\:shadow-2xl:hover { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+.hover\\:-translate-y-2:hover { transform: translateY(-0.5rem); }
+.relative { position: relative; }
+.absolute { position: absolute; }
+.top-0 { top: 0; }
+.right-0 { right: 0; }
+.bottom-0 { bottom: 0; }
+.left-0 { left: 0; }
+.w-32 { width: 8rem; }
+.h-32 { height: 8rem; }
+.w-24 { width: 6rem; }
+.h-24 { height: 6rem; }
+.transform { transform: translateZ(0); }
+.translate-x-16 { transform: translateX(4rem); }
+.-translate-y-16 { transform: translateY(-4rem); }
+.-translate-x-12 { transform: translateX(-3rem); }
+.translate-y-12 { transform: translateY(3rem); }
+.opacity-10 { opacity: 0.1; }
+.opacity-5 { opacity: 0.05; }
+.z-10 { z-index: 10; }
+.drop-shadow-lg { filter: drop-shadow(0 10px 8px rgba(0, 0, 0, 0.04)) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.1)); }
+.drop-shadow-sm { filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.05)); }
+.text-white\/95 { color: rgba(255, 255, 255, 0.95); }
+.h-1 { height: 0.25rem; }
+.bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+.from-transparent { --tw-gradient-from: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, transparent); }
+.via-white\/30 { --tw-gradient-stops: var(--tw-gradient-from), rgba(255, 255, 255, 0.3), var(--tw-gradient-to, transparent); }
+.to-transparent { --tw-gradient-to: transparent; }
+.overflow-hidden { overflow: hidden; }
+
+/* Medium screen responsive classes */
+@media (min-width: 768px) {
+.md\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.md\\:text-4xl { font-size: 2.25rem; }
+.md\\:text-3xl { font-size: 1.875rem; }
+.md\\:p-8 { padding: 2rem; }
+.md\\:leading-8 { line-height: 2rem; }
+}
+";
+    }
+
+    /**
      * 캐시 클리어
      */
     public function clearCache() {
@@ -686,4 +922,5 @@ body {
         }
         return count($files);
     }
+
 }

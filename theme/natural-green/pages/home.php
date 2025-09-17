@@ -99,7 +99,7 @@
             // 오류 발생 시 기본 카드 표시
             for ($i = 0; $i < 3; $i++) {
                 ?>
-                <div class="bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden h-96">
+                <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
                   <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                     <div class="flex items-center justify-center h-full text-gray-400">
                       <i data-lucide="image" class="w-16 h-16"></i>
@@ -140,7 +140,7 @@
                 
                 foreach ($notices as $notice) {
                     ?>
-                    <li class="flex justify-between items-start py-1.5 border-b border-gray-100 last:border-b-0">
+                    <li class="flex justify-between items-start py-1.5 border-b border-primary-light/30 last:border-b-0">
                       <a href="/community/notice_view.php?wr_id=<?= $notice['id'] ?>" 
                          class="flex-1 text-gray-700 hover:text-forest-600 pr-4">
                         <?= htmlspecialchars($notice['title']) ?>
@@ -226,7 +226,7 @@
                     $imageUrl = '/theme/natural-green/assets/images/default-newsletter.jpg';
                 }
                 ?>
-                <a href="/community/newsletter_view.php?wr_id=<?= $post['id'] ?>" class="block bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden hover:shadow-lg transition-shadow h-96 cursor-pointer">
+                <a href="/community/newsletter_view.php?wr_id=<?= $post['id'] ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
                   <div class="relative overflow-hidden h-64 bg-gradient-to-br from-natural-100 to-natural-200">
                     <!-- 블러 배경 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
@@ -273,7 +273,7 @@
             // 오류 발생 시 기본 카드 표시
             for ($i = 0; $i < 3; $i++) {
                 ?>
-                <div class="bg-white rounded-lg shadow-md border <?= getThemeClass('border', 'border', '200') ?> overflow-hidden h-96">
+                <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
                   <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                     <div class="flex items-center justify-center h-full text-gray-400">
                       <i data-lucide="newspaper" class="w-16 h-16"></i>

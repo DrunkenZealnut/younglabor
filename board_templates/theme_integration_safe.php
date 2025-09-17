@@ -248,4 +248,62 @@ if (!function_exists('renderSafeBoardTheme')) {
         }
     }
 }
+
+// Board-specific getThemeClass function (fallback for board templates)
+if (!function_exists('getThemeClass')) {
+    function getThemeClass($type, $category, $shade = null) {
+        // Load the main theme loader if available
+        $themeLoaderPath = dirname(__DIR__) . '/includes/NaturalGreenThemeLoader.php';
+        if (file_exists($themeLoaderPath)) {
+            require_once $themeLoaderPath;
+            // If the function is now defined, use it
+            if (function_exists('getThemeClass')) {
+                return call_user_func('getThemeClass', $type, $category, $shade);
+            }
+        }
+        
+        // Fallback theme class mapping for board templates
+        $themeMapping = [
+            'text' => [
+                'primary' => [
+                    '600' => 'text-green-600',
+                    '900' => 'text-green-900'
+                ],
+                'foreground' => 'text-gray-900',
+                'muted-foreground' => 'text-gray-500',
+                'text' => [
+                    '400' => 'text-gray-400',
+                    '500' => 'text-gray-500',
+                    '600' => 'text-gray-600'
+                ]
+            ],
+            'bg' => [
+                'background' => [
+                    '50' => 'bg-gray-50',
+                    '100' => 'bg-gray-100'
+                ],
+                'warning' => [
+                    '50' => 'bg-yellow-50'
+                ],
+                'danger' => [
+                    '100' => 'bg-red-100'
+                ]
+            ],
+            'border' => [
+                'border' => [
+                    '200' => 'border-gray-200'
+                ]
+            ]
+        ];
+        
+        if (isset($themeMapping[$type][$category])) {
+            if (is_array($themeMapping[$type][$category]) && $shade !== null) {
+                return $themeMapping[$type][$category][$shade] ?? '';
+            }
+            return $themeMapping[$type][$category] ?? '';
+        }
+        
+        return '';
+    }
+}
 ?>
