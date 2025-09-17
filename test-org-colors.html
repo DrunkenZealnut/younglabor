@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>조직도 색상 테스트</title>
+    <link rel="stylesheet" href="css/theme.css">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            padding: 2rem;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        .test-card {
+            padding: 1.5rem;
+            margin: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 200px;
+            display: inline-block;
+            position: relative;
+            padding-top: 3rem;
+        }
+        .role-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .role-badge-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+        .test-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .color-info {
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            opacity: 0.7;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>조직도 직책별 배경색 테스트</h1>
+    
+    <h2>Light Mode</h2>
+    <div class="test-container">
+        <div class="test-card bg-org-chairman">
+            <div class="role-badge role-badge-primary">상임이사</div>
+            <h3>김은선</h3>
+            <p>(사)희망씨 나눔연대국장</p>
+            <div class="color-info">--org-chairman-bg</div>
+        </div>
+        
+        <div class="test-card bg-org-director">
+            <div class="role-badge role-badge-primary">이사</div>
+            <h3>공군자</h3>
+            <p>세계노동운동사연구회 이사</p>
+            <div class="color-info">--org-director-bg</div>
+        </div>
+        
+        <div class="test-card bg-org-auditor">
+            <div class="role-badge role-badge-primary">감사</div>
+            <h3>박미경</h3>
+            <p>전태일재단 기획실장</p>
+            <div class="color-info">--org-auditor-bg</div>
+        </div>
+    </div>
+
+    <h2>Dark Mode 테스트</h2>
+    <div class="dark">
+        <div class="test-container" style="background: var(--background); padding: 2rem; border-radius: 12px;">
+            <div class="test-card bg-org-chairman">
+                <div class="role-badge role-badge-primary">상임이사</div>
+                <h3>김은선</h3>
+                <p>(사)희망씨 나눔연대국장</p>
+                <div class="color-info">--org-chairman-bg (dark)</div>
+            </div>
+            
+            <div class="test-card bg-org-director">
+                <div class="role-badge role-badge-primary">이사</div>
+                <h3>공군자</h3>
+                <p>세계노동운동사연구회 이사</p>
+                <div class="color-info">--org-director-bg (dark)</div>
+            </div>
+            
+            <div class="test-card bg-org-auditor">
+                <div class="role-badge role-badge-primary">감사</div>
+                <h3>박미경</h3>
+                <p>전태일재단 기획실장</p>
+                <div class="color-info">--org-auditor-bg (dark)</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>색상 스펙 정보</h2>
+    <div style="background: white; padding: 2rem; border-radius: 8px; margin: 2rem 0; color: black;">
+        <h3>카드 배경색 (Light Mode):</h3>
+        <ul>
+            <li><strong>상임이사 (Chairman):</strong> oklch(0.932 0.025 135.62) - natural-200 기반</li>
+            <li><strong>이사 (Director):</strong> oklch(0.967 0.015 135.62) - natural-100 기반</li>
+            <li><strong>감사 (Auditor):</strong> oklch(0.892 0.109 120.75) - lime-200 기반</li>
+        </ul>
+        
+        <h3>카드 배경색 (Dark Mode):</h3>
+        <ul>
+            <li><strong>상임이사:</strong> oklch(0.269 0.015 135.62) - 어두운 natural 계열</li>
+            <li><strong>이사:</strong> oklch(0.205 0.01 135.62) - 더 어두운 natural 계열</li>
+            <li><strong>감사:</strong> oklch(0.309 0.069 120.75) - 어두운 lime 계열</li>
+        </ul>
+        
+        <h3>직책 배지 색상:</h3>
+        <ul>
+            <li><strong>배경색:</strong> var(--primary) - oklch(0.855 0.165 130.5) (메인 색상)</li>
+            <li><strong>글자색:</strong> var(--primary-foreground) - oklch(1 0 0) (흰색)</li>
+            <li><strong>모든 직책 동일</strong> - 상임이사, 이사, 감사 모두 메인 색상 사용</li>
+        </ul>
+    </div>
+</body>
+</html>

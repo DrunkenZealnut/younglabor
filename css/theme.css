@@ -130,6 +130,14 @@
   --nav-link-hover: var(--primary);
   --nav-link-active: var(--primary);
   --nav-border: var(--border);
+
+  /* 조직도 직책별 배경색 토큰 */
+  --org-chairman-bg: oklch(0.932 0.025 135.62);  /* natural-200 - 상임이사용 (메인색상보다 옅음) */
+  --org-chairman-fg: var(--forest-700);
+  --org-director-bg: oklch(0.967 0.015 135.62);  /* natural-100 - 이사용 (더 옅음) */
+  --org-director-fg: var(--forest-700);
+  --org-auditor-bg: oklch(0.892 0.109 120.75);   /* lime-200 - 감사용 (보조색상 계열) */
+  --org-auditor-fg: var(--forest-700);
 }
 
 .dark {
@@ -173,6 +181,14 @@
   --warning: #f59e0b;                  /* 경고는 동일 유지 */
   --error: #ef4444;                    /* 다크 모드에서 조금 더 밝은 적색 */
   --info: #3a7a4e;                     /* 다크 모드에서 forest-500 사용 */
+
+  /* 다크 모드 조직도 직책별 배경색 */
+  --org-chairman-bg: oklch(0.269 0.015 135.62);  /* 다크 모드 상임이사 배경 */
+  --org-chairman-fg: oklch(0.985 0 0);
+  --org-director-bg: oklch(0.205 0.01 135.62);   /* 다크 모드 이사 배경 */
+  --org-director-fg: oklch(0.985 0 0);
+  --org-auditor-bg: oklch(0.309 0.069 120.75);   /* 다크 모드 감사 배경 */
+  --org-auditor-fg: oklch(0.985 0 0);
 }
 
 @theme inline {
@@ -907,3 +923,25 @@ main { flex: 1 1 auto; }
 
 /* Additional border classes */
 .border-white\/30 { border-color: rgba(255, 255, 255, 0.3); }
+
+/* 조직도 직책별 배경색 클래스 */
+.bg-org-chairman {
+  background-color: var(--org-chairman-bg);
+  color: var(--org-chairman-fg);
+}
+
+.bg-org-director {
+  background-color: var(--org-director-bg);
+  color: var(--org-director-fg);
+}
+
+.bg-org-auditor {
+  background-color: var(--org-auditor-bg);
+  color: var(--org-auditor-fg);
+}
+
+/* 조직도 직책 배지용 메인 색상 클래스 */
+.role-badge-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}

@@ -131,76 +131,76 @@ include __DIR__ . '/../includes/header.php';
     <section class="mb-16" aria-labelledby="directors">
       <h2 id="directors" class="text-3xl font-bold <?= getThemeClass('text', 'foreground') ?> border-b-4 <?= getThemeClass('border', 'secondary', '500') ?> pb-2 mb-8 inline-block">이사</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">상임이사</div>
+        <div class="bg-org-chairman rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">상임이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">김은선</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> (사)희망씨 나눔연대국장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">공군자</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 세계노동운동사연구회 이사</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 서울노동광장 공동대표</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">김진억</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 민주노총 서울본부 본부장</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 희망연대노조 공동위원장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">김창수</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 우리동네노동권찾기 대표</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">김태진</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 경기북부노동공제회 이사</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 희망연대노조 공동위원장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">박재범</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 딜라이브지부 사무국장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">여민희</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 전국학습지노조 사무처장</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 재능교육지부 지부장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">윤진영</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 희망연대본부 전략조직실장</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 희망연대노조 공동위원장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">이선옥</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 사과농부</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 시민모임 즐거운교육상상 운영위원</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">이종삼</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 희망연대본부 대전지역사회연대위원회 부위원장</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 한마음지부 지부장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">최성근</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> SK브로드밴드비정규직지부 수석부지부장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">하상수</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 경기중부비정규직센터 대표</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 기아자동차노조 위원장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">이사</div>
+        <div class="bg-org-director rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">이사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">현정희</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'secondary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 평등사회교육원 이사</p>
           <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-landmark <?= getThemeClass('text', 'secondary', '400') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(전)</span> 공공운수노조 위원장</p>
@@ -212,13 +212,13 @@ include __DIR__ . '/../includes/header.php';
     <section class="mb-8" aria-labelledby="auditors">
       <h2 id="auditors" class="text-3xl font-bold <?= getThemeClass('text', 'foreground') ?> border-b-4 <?= getThemeClass('border', 'primary', '500') ?> pb-2 mb-8 inline-block">감사</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">감사</div>
+        <div class="bg-org-auditor rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">감사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">박미경</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'primary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 전태일재단 기획실장</p>
         </div>
-        <div class="<?= getThemeClass('bg', 'white') ?> rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
-          <div class="role-badge <?= getThemeClass('text', 'white') ?> <?= getThemeClass('bg', 'primary', '600') ?>">감사</div>
+        <div class="bg-org-auditor rounded-xl shadow-md p-6 relative pt-10 transform hover:-translate-y-1 transition-transform duration-300 border <?= getThemeClass('border', 'gray', '200') ?>">
+          <div class="role-badge role-badge-primary">감사</div>
           <h3 class="text-xl font-bold <?= getThemeClass('text', 'foreground') ?>">최진수</h3>
           <p class="mt-3 text-sm <?= getThemeClass('text', 'muted-foreground') ?>"><i class="fas fa-building <?= getThemeClass('text', 'primary', '500') ?> mr-2" aria-hidden="true"></i><span class="font-semibold">(현)</span> 민주노총 서울본부 노동법률지원센터 법규국장</p>
         </div>
