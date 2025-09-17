@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKEditor4 테스트 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .editor-container {
+            margin: 20px 0;
+        }
+        
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #005a87;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+        
+        .info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CKEditor4 오픈소스 버전 테스트</h1>
+        
+        <div class="info">
+            <strong>사용 버전:</strong> CKEditor 4.22.1 (오픈소스 라이센스)<br>
+            <strong>주의사항:</strong> 오픈소스 버전은 보안 업데이트가 중단되었습니다.
+        </div>
+        
+        <div class="editor-container">
+            <h3>에디터 영역</h3>
+            <textarea name="editor1" id="editor1">
+                <h2>CKEditor4 테스트</h2>
+                <p>이것은 <strong>CKEditor4</strong>의 기본 테스트 페이지입니다.</p>
+                <ul>
+                    <li>텍스트 편집</li>
+                    <li>이미지 삽입</li>
+                    <li>링크 추가</li>
+                    <li>표 생성</li>
+                </ul>
+                <p>다양한 기능을 테스트해보세요!</p>
+            </textarea>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="getData()">내용 가져오기</button>
+            <button onclick="setData()">샘플 내용 설정</button>
+            <button onclick="clearEditor()">내용 지우기</button>
+        </div>
+        
+        <div class="result">
+            <h4>에디터 내용 (HTML):</h4>
+            <div id="output"></div>
+        </div>
+    </div>
+
+    <!-- CKEditor4 오픈소스 버전 CDN -->
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    
+    <script>
+        // CKEditor4 초기화
+        CKEDITOR.replace('editor1', {
+            height: 300,
+            language: 'ko',
+            toolbar: [
+                { name: 'document', items: ['Source', '-', 'Save', 'NewPage', 'DocProps', 'Preview', 'Print', '-', 'Templates'] },
+                { name: 'clipboard', items: ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo'] },
+                { name: 'editing', items: ['Find', 'Replace', '-', 'SelectAll', '-', 'SpellChecker', 'Scayt'] },
+                '/',
+                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat'] },
+                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl'] },
+                { name: 'links', items: ['Link', 'Unlink', 'Anchor'] },
+                { name: 'insert', items: ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe'] },
+                '/',
+                { name: 'styles', items: ['Styles', 'Format', 'Font', 'FontSize'] },
+                { name: 'colors', items: ['TextColor', 'BGColor'] },
+                { name: 'tools', items: ['Maximize', 'ShowBlocks'] }
+            ]
+        });
+
+        // 에디터 내용 가져오기
+        function getData() {
+            const data = CKEDITOR.instances.editor1.getData();
+            document.getElementById('output').innerHTML = '<pre>' + escapeHtml(data) + '</pre>';
+        }
+
+        // 샘플 내용 설정
+        function setData() {
+            const sampleData = `
+                <h2>새로운 샘플 내용</h2>
+                <p>이것은 <em>동적으로 설정된</em> 내용입니다.</p>
+                <table border="1" style="width:100%">
+                    <tr>
+                        <th>기능</th>
+                        <th>상태</th>
+                    </tr>
+                    <tr>
+                        <td>텍스트 편집</td>
+                        <td>✓ 작동</td>
+                    </tr>
+                    <tr>
+                        <td>이미지 삽입</td>
+                        <td>✓ 작동</td>
+                    </tr>
+                </table>
+                <p><a href="https://ckeditor.com">CKEditor 공식 사이트</a></p>
+            `;
+            CKEDITOR.instances.editor1.setData(sampleData);
+        }
+
+        // 에디터 내용 지우기
+        function clearEditor() {
+            CKEDITOR.instances.editor1.setData('');
+            document.getElementById('output').innerHTML = '';
+        }
+
+        // HTML 이스케이프 함수
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // 에디터 준비 완료 시 초기 내용 표시
+        CKEDITOR.on('instanceReady', function(evt) {
+            console.log('CKEditor4가 준비되었습니다.');
+            getData(); // 초기 내용 표시
+        });
+    </script>
+</body>
+</html>

@@ -4,7 +4,18 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Natural Green 단일 테마 로드
+// CSS 모드 매니저 로드
+require_once __DIR__ . '/css-mode-manager.php';
+$cssMode = getCSSMode();
+
+// CSS 모드에 따른 분기 처리
+if ($cssMode->isOptimizedMode()) {
+    // 최적화된 헤더 로드
+    include __DIR__ . '/header-optimized.php';
+    return; // 여기서 종료
+}
+
+// Legacy 모드: 기존 Natural Green 테마 로드
 require_once __DIR__ . '/NaturalGreenThemeLoader.php';
 $theme = getNaturalGreenTheme();
 

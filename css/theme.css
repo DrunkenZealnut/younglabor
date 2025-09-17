@@ -216,15 +216,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
-}
+/* Base layer removed - causing conflicts with legacy mode */
 
 /**
  * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.

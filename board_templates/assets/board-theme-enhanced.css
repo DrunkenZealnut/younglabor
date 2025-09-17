@@ -95,6 +95,12 @@
     color: var(--theme-text-primary);
     transition: var(--theme-transition-base);
     font-size: var(--board-font-size, 16px); /* 게시판 전용 폰트 사이즈 */
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
 .board-surface:hover {
@@ -609,6 +615,17 @@
 
 .board-surface a.btn:hover {
     text-decoration: none !important;
+}
+
+/* =================== Board Template Container Fixes =================== */
+/* Note: Global container styles moved to optimized mode only to preserve legacy layout */
+
+/* Max-width container utilities */
+.max-w-4xl,
+.max-w-7xl {
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
 /* =================== 반응형 디자인 =================== */

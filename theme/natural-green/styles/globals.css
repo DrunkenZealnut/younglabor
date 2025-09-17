@@ -900,3 +900,53 @@ main { flex: 1 1 auto; }
   border-color: var(--info);
   color: var(--forest-700);
 }
+
+/* Bootstrap Container Restoration - Fixes Tailwind Reset Issues */
+/* This ensures Bootstrap container behavior is preserved when Tailwind CSS loads after Bootstrap */
+.container {
+  width: 100% !important;
+  padding-right: 15px !important;
+  padding-left: 15px !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  max-width: none !important;
+}
+
+@media (min-width: 576px) {
+  .container {
+    max-width: 540px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    max-width: 1320px !important;
+  }
+}
+
+/* Ensure proper overflow handling for legacy mode */
+body {
+  overflow-x: hidden !important;
+}
+
+#wrapper, #container_wr, #container {
+  overflow-x: hidden !important;
+}
