@@ -90,7 +90,7 @@ try {
 
     // 언론보도는 댓글 비활성화
     $config = [
-        'list_url' => '/community/press.php',
+        'list_url' => app_url('community/press.php'),
         'enable_comments' => false,
         'gnuboard_bo_table' => 'hopec_press',
     ];

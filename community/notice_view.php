@@ -96,7 +96,7 @@ $pageTitle = '공지사항 상세 | ' . app_name();
 include __DIR__ . '/../includes/header.php';
 
 $config = [
-    'list_url' => '/community/notices.php',
+    'list_url' => app_url('community/notices.php'),
     'enable_comments' => false,
     'gnuboard_bo_table' => 'hopec_notices',
 ];

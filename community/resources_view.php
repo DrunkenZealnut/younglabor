@@ -110,7 +110,7 @@ $pageTitle = '자료실 상세 | ' . app_name();
 include __DIR__ . '/../includes/header.php';
 
 $config = [
-    'list_url' => '/community/resources.php',
+    'list_url' => app_url('community/resources.php'),
     'enable_comments' => false,
     'gnuboard_bo_table' => 'hopec_resources',
 ];

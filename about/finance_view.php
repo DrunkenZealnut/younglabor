@@ -96,7 +96,7 @@ $pageTitle = '재정보고 상세 | ' . app_name();
 include __DIR__ . '/../includes/header.php';
 
 $config = [
-    'list_url' => '/about/finance.php',
+    'list_url' => app_url('about/finance.php'),
     'enable_comments' => false,
     'gnuboard_bo_table' => 'hopec_finance_reports',
 ];

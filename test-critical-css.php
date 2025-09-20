@@ -4,9 +4,8 @@
  * 수정된 CSS 크기와 내용 확인
  */
 
-// 필요한 파일들 로드
-require_once 'includes/critical-css-generator.php';
-require_once 'includes/css-mode-manager.php';
+// CSS Variables 시스템 로드
+require_once 'includes/css-vars-autoloader.php';
 
 $generator = new CriticalCSSGenerator();
 

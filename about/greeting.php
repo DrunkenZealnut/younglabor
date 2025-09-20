@@ -18,7 +18,7 @@ include __DIR__ . '/../includes/header.php';
     </header>
 
     <section class="relative rounded-2xl p-6 md:p-8 mb-8 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2" 
-             style="background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 80%, transparent) 50%, color-mix(in srgb, var(--primary) 60%, transparent) 100%); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);" 
+             style="background: linear-gradient(135deg, var(--primary) 0%, var(--lime-400) 50%, var(--lime-300) 100%); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);" 
              aria-labelledby="headline">
       <!-- 장식 요소 -->
       <div class="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 transform translate-x-16 -translate-y-16" style="background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);"></div>

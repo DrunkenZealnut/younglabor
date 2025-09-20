@@ -89,45 +89,65 @@ if (isset($board_routes[$board_id])) {
     }
 }
 
+// 헤더 포함
+include_once HOPEC_BASE_PATH . '/includes/header.php';
+
+echo '<main id="main" role="main" class="flex-1">' . "\n";
+
 // 기본 게시판 템플릿으로 라우팅 (board_templates 사용)
-$template_path = HOPEC_BASE_PATH . '/board_templates/list_all_boards.php';
+$template_path = HOPEC_BASE_PATH . '/board_templates/board_list.php';
 if (file_exists($template_path)) {
     // 게시판 정보를 전역 변수로 설정
     $currentBoard = $board;
     $currentBoardId = $board_id;
     
+    // 게시판 설정 구성
+    $config = [
+        'board_title' => $board['board_name'] ?? '게시판',
+        'board_description' => $board['board_description'] ?? '',
+        'show_write_button' => false,
+        'enable_search' => true,
+        'detail_url' => '/board_detail.php',
+        'list_url' => '?id=' . $board_id,
+        'posts_per_page' => 15,
+        'board_skin' => 'basic'
+    ];
+    
+    // 게시글 데이터 모의 생성 (실제 DB 연동 필요)
+    $posts = [];
+    $total_posts = 0;
+    $total_pages = 1;
+    $current_page = 1;
+    $search_type = 'all';
+    $search_keyword = '';
+    $board_skin = 'basic';
+    
     include $template_path;
 } else {
     // 최종 폴백 - 간단한 게시판 목록 표시
     ?>
-    <!DOCTYPE html>
-    <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <title><?= htmlspecialchars($board_name) ?> - 희망씨</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-header">
-                            <h1 class="h3 mb-0"><?= htmlspecialchars($board_name) ?></h1>
-                        </div>
-                        <div class="card-body">
-                            <p class="text-muted">게시판 ID: <?= $board_id ?></p>
-                            <p class="text-muted">게시판 코드: <?= htmlspecialchars($board_code) ?></p>
-                            <p>이 게시판은 현재 구현 중입니다.</p>
-                            <a href="/" class="btn btn-primary">홈으로 돌아가기</a>
-                        </div>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="h3 mb-0"><?= htmlspecialchars($board_name) ?></h1>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">게시판 ID: <?= $board_id ?></p>
+                        <p class="text-muted">게시판 코드: <?= htmlspecialchars($board_code) ?></p>
+                        <p>이 게시판은 현재 구현 중입니다.</p>
+                        <a href="/" class="btn btn-primary">홈으로 돌아가기</a>
                     </div>
                 </div>
             </div>
         </div>
-    </body>
-    </html>
+    </div>
     <?php
 }
+
+echo '</main>' . "\n";
+
+// 푸터 포함
+include_once HOPEC_BASE_PATH . '/includes/footer.php';
 ?>

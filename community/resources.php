@@ -91,11 +91,11 @@ $config = [
     'board_description' => '양식, 문서 등 자료를 제공합니다.',
     'show_write_button' => false,
     'enable_search' => true,
-    'detail_url' => '/community/resources_view.php',
-    'list_url' => '/community/resources.php',
+    'detail_url' => app_url('community/resources_view.php'),
+    'list_url' => app_url('community/resources.php'),
     'posts_per_page' => $per_page,
     'container_max_width_class' => 'max-w-7xl', // notices.php와 동일한 폭으로 설정
-    'author_col_class' => 'w-28 hidden sm:table-cell', // 작성자 컬럼 폭 설정
+    'author_col_class' => 'w-28', // 작성자 컬럼 폭 설정
 ];
 
 $pageTitle = '자료실 | ' . app_name();
@@ -104,9 +104,13 @@ include __DIR__ . '/../includes/header.php';
 $current_page = $page;
 $search_type = $search_type;
 $search_keyword = $search_keyword;
-include __DIR__ . '/../board_templates/board_list.php';
+?>
 
-include_once __DIR__ . '/../includes/footer.php';
+<main id="main" role="main" class="flex-1">
+<?php include __DIR__ . '/../board_templates/board_list.php'; ?>
+</main>
+
+<?php include_once __DIR__ . '/../includes/footer.php';
 ?>
 
 

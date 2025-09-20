@@ -11,6 +11,7 @@ class CSSModeManager {
     
     const MODE_LEGACY = 'legacy';      // 기존 Bootstrap + Tailwind
     const MODE_OPTIMIZED = 'optimized'; // 최적화된 통합 시스템
+    const MODE_CSS_VARS = 'css-vars';  // CSS 변수 기반 테마 시스템
     const MODE_DEBUG = 'debug';        // 개발자 디버그 모드
     
     private $currentMode;
@@ -18,7 +19,7 @@ class CSSModeManager {
     
     public function __construct() {
         $this->config = [
-            'default_mode' => self::MODE_LEGACY,  // 안전한 기본값으로 복구
+            'default_mode' => self::MODE_LEGACY,  // Legacy 모드를 기본값으로 설정
             'cookie_name' => 'hopec_css_mode',
             'cookie_lifetime' => 86400 * 7,      // 7일
             'debug_enabled' => defined('HOPEC_DEBUG') && HOPEC_DEBUG,
@@ -66,7 +67,7 @@ class CSSModeManager {
      * 모드 유효성 검증
      */
     private function isValidMode($mode) {
-        $validModes = [self::MODE_LEGACY, self::MODE_OPTIMIZED, self::MODE_DEBUG];
+        $validModes = [self::MODE_LEGACY, self::MODE_OPTIMIZED, self::MODE_CSS_VARS, self::MODE_DEBUG];
         return in_array($mode, $validModes);
     }
     
@@ -106,6 +107,13 @@ class CSSModeManager {
      */
     public function isLegacyMode() {
         return $this->currentMode === self::MODE_LEGACY;
+    }
+    
+    /**
+     * CSS 변수 모드 여부 확인
+     */
+    public function isCSSVarsMode() {
+        return $this->currentMode === self::MODE_CSS_VARS;
     }
     
     /**
@@ -165,10 +173,12 @@ class CSSModeManager {
             'current_mode' => $this->currentMode,
             'is_optimized' => $this->isOptimizedMode(),
             'is_legacy' => $this->isLegacyMode(),
+            'is_css_vars' => $this->isCSSVarsMode(),
             'is_debug' => $this->isDebugMode(),
             'switch_urls' => [
                 'legacy' => $this->getSwitchUrl(self::MODE_LEGACY),
                 'optimized' => $this->getSwitchUrl(self::MODE_OPTIMIZED),
+                'css-vars' => $this->getSwitchUrl(self::MODE_CSS_VARS),
                 'debug' => $this->getSwitchUrl(self::MODE_DEBUG)
             ],
             'emergency_url' => $this->getEmergencyUrl()
@@ -190,6 +200,7 @@ class CSSModeManager {
         echo "<strong>CSS Mode:</strong> {$info['current_mode']}<br>\n";
         echo "<a href=\"{$info['switch_urls']['legacy']}\" style=\"color: #ff6b6b;\">Legacy</a> | ";
         echo "<a href=\"{$info['switch_urls']['optimized']}\" style=\"color: #51cf66;\">Optimized</a> | ";
+        echo "<a href=\"{$info['switch_urls']['css-vars']}\" style=\"color: #84cc16;\">CSS-Vars</a> | ";
         echo "<a href=\"{$info['switch_urls']['debug']}\" style=\"color: #74c0fc;\">Debug</a><br>";
         echo "<small><a href=\"{$info['emergency_url']}\" style=\"color: #ffa502;\">Emergency Reset</a></small>\n";
         echo "</div>\n";
@@ -261,5 +272,11 @@ if (!function_exists('isOptimizedCSS')) {
 if (!function_exists('isLegacyCSS')) {
     function isLegacyCSS() {
         return getCSSMode()->isLegacyMode();
+    }
+}
+
+if (!function_exists('isCSSVarsMode')) {
+    function isCSSVarsMode() {
+        return getCSSMode()->isCSSVarsMode();
     }
 }

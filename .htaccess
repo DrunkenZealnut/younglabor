@@ -1,50 +1,68 @@
-# 개발환경용 htaccess - 보안 제한 완화
+# 개발환경용 htaccess - HOPEC 사이트
 RewriteEngine On
+RewriteBase /hopec/
 
-# 게시판 라우팅: /board/list/{id}/ -> /board.php?id={id}
+# 문자 인코딩 설정 (한글 깨짐 방지)
+AddDefaultCharset UTF-8
+
+# DirectorySlash 자동 리다이렉트 비활성화 (개발환경)
+DirectorySlash Off
+
+# 게시판 라우팅: board/list/{id}/ -> board.php?id={id}
 RewriteRule ^board/list/([0-9]+)/?$ board.php?id=$1 [L,QSA]
 
-# 모든 PHP 파일 접근 허용
+# 메인 섹션 라우팅
+RewriteRule ^about/?$ about/about.php [L]
+RewriteRule ^programs/?$ programs/domestic.php [L]
+RewriteRule ^community/?$ community/notice_view.php [L]
+RewriteRule ^donate/?$ donate/one-time.php [L]
+
+# 모든 PHP 파일 직접 접근 허용
 RewriteRule \.php$ - [L]
 
-# 정적 파일 허용
+# 정적 파일 허용 (CSS, JS, 이미지, 폰트)
 RewriteRule .+\.(css|js|png|jpe?g|gif|webp|svg|ico|eot|ttf|woff2?)$ - [L,NC]
+
+# 실제 파일이나 디렉토리가 아닌 모든 요청을 index.php로 라우팅
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
 
 # 디렉터리 브라우징 비활성화 (보안)
 Options -Indexes
 
-# 개발용 기본 보안 헤더만 적용
+# 개발환경용 기본 보안 헤더
 <IfModule mod_headers.c>
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-Content-Type-Options "nosniff"
 </IfModule>
 
-# 성능 최적화: 브라우저 캐시 설정
+# 브라우저 캐시 설정 (개발환경용 - 짧은 캐시)
 <IfModule mod_expires.c>
     ExpiresActive On
     
-    # CSS 및 JS 파일: 1년 캐시
-    ExpiresByType text/css "access plus 1 year"
-    ExpiresByType application/javascript "access plus 1 year"
-    ExpiresByType application/x-javascript "access plus 1 year"
-    ExpiresByType text/javascript "access plus 1 year"
+    # CSS 및 JS 파일: 1시간 캐시 (개발환경)
+    ExpiresByType text/css "access plus 1 hour"
+    ExpiresByType application/javascript "access plus 1 hour"
+    ExpiresByType application/x-javascript "access plus 1 hour"
+    ExpiresByType text/javascript "access plus 1 hour"
     
-    # 이미지 파일: 6개월 캐시
-    ExpiresByType image/png "access plus 6 months"
-    ExpiresByType image/jpg "access plus 6 months" 
-    ExpiresByType image/jpeg "access plus 6 months"
-    ExpiresByType image/gif "access plus 6 months"
-    ExpiresByType image/webp "access plus 6 months"
-    ExpiresByType image/svg+xml "access plus 6 months"
+    # 이미지 파일: 1일 캐시
+    ExpiresByType image/png "access plus 1 day"
+    ExpiresByType image/jpg "access plus 1 day" 
+    ExpiresByType image/jpeg "access plus 1 day"
+    ExpiresByType image/gif "access plus 1 day"
+    ExpiresByType image/webp "access plus 1 day"
+    ExpiresByType image/svg+xml "access plus 1 day"
     
-    # 폰트 파일: 1년 캐시
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType font/eot "access plus 1 year"
+    # 폰트 파일: 1주일 캐시
+    ExpiresByType font/woff "access plus 1 week"
+    ExpiresByType font/woff2 "access plus 1 week"
+    ExpiresByType font/ttf "access plus 1 week"
+    ExpiresByType font/eot "access plus 1 week"
     
-    # HTML 파일: 1시간 캐시 (동적 콘텐츠)
-    ExpiresByType text/html "access plus 1 hour"
+    # HTML/PHP 파일: 캐시 안함 (개발환경)
+    ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
 
 # GZIP 압축 활성화
@@ -63,36 +81,4 @@ Options -Indexes
     # 이미 압축된 파일은 제외
     SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|zip|gz|bz2)$ no-gzip dont-vary
     SetEnvIfNoCase Request_URI \.(?:exe|t?gz|zip|bz2|sit|rar)$ no-gzip dont-vary
-</IfModule>
-
-# Cache-Control 헤더 최적화
-<IfModule mod_headers.c>
-    # CSS, JS 파일: 강력한 캐시
-    <FilesMatch "\.(css|js)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
-    </FilesMatch>
-    
-    # 이미지 파일: 중간 캐시
-    <FilesMatch "\.(png|jpg|jpeg|gif|webp|svg|ico)$">
-        Header set Cache-Control "public, max-age=15552000"
-    </FilesMatch>
-    
-    # 폰트 파일: 강력한 캐시
-    <FilesMatch "\.(woff|woff2|ttf|eot)$">
-        Header set Cache-Control "public, max-age=31536000, immutable"
-        Header set Access-Control-Allow-Origin "*"
-    </FilesMatch>
-    
-    # HTML 파일: 짧은 캐시 (개발용)
-    <FilesMatch "\.php$">
-        Header set Cache-Control "public, max-age=3600, must-revalidate"
-    </FilesMatch>
-</IfModule>
-
-# ETag 최적화
-FileETag MTime Size
-
-# 성능을 위한 Keep-Alive 설정 권장
-<IfModule mod_headers.c>
-    Header always set Connection keep-alive
 </IfModule>

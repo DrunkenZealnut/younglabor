@@ -10,7 +10,7 @@ require_once __DIR__ . '/../bootstrap/app.php';
 // 게시글 ID 검증
 $wr_id = (int)($_GET['wr_id'] ?? 0);
 if ($wr_id <= 0) {
-    header('Location: /community/gallery.php');
+    header('Location: ' . app_url('community/gallery.php'));
     exit;
 }
 
@@ -22,7 +22,7 @@ try {
     );
     
     if (!$gallery_item) {
-        header('Location: /community/gallery.php');
+        header('Location: ' . app_url('community/gallery.php'));
         exit;
     }
     
@@ -74,7 +74,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
         <li><a href="/" class="hover:text-forest-600">홈</a></li>
         <li class="before:content-['>'] before:mx-2">커뮤니티</li>
         <li class="before:content-['>'] before:mx-2">
-          <a href="/community/gallery.php" class="hover:text-forest-600">활동 갤러리</a>
+          <a href="<?= app_url('community/gallery.php') ?>" class="hover:text-forest-600">활동 갤러리</a>
         </li>
         <li class="before:content-['>'] before:mx-2 text-forest-600 font-medium">상세보기</li>
       </ol>
@@ -197,7 +197,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
       
       <!-- 버튼 그룹 -->
       <div class="flex items-center space-x-3">
-        <a href="/community/gallery.php" 
+        <a href="<?= app_url('community/gallery.php') ?>" 
            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
           <i data-lucide="grid-3x3" class="w-4 h-4 mr-2"></i>갤러리
         </a>

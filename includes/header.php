@@ -15,6 +15,37 @@ if ($cssMode->isOptimizedMode()) {
     return; // 여기서 종료
 }
 
+if ($cssMode->isCSSVarsMode()) {
+    // CSS 변수 모드 헤더 로드
+    require_once __DIR__ . '/css-optimization-config.php';
+    renderOptimizedCSS(
+        isset($pageTitle) ? $pageTitle : '희망연대노동조합',
+        isset($pageDescription) ? $pageDescription : '노동자의 권익을 위한 희망연대노동조합',
+        isset($pageType) ? $pageType : 'home'
+    );
+    
+    // 네비게이션 포함
+    $basePath = defined('HOPEC_BASE_PATH') ? HOPEC_BASE_PATH : dirname(__DIR__);
+    $naturalGreenNavigation = $basePath . '/theme/natural-green/includes/navigation.php';
+    if (file_exists($naturalGreenNavigation)) {
+        include $naturalGreenNavigation;
+    } else {
+        // Fallback: 기본 네비게이션
+        echo '<nav class="navbar navbar-expand-lg" style="background-color: var(--primary);">
+                <div class="container">
+                    <a class="navbar-brand text-white" href="/">희망씨</a>
+                    <div class="navbar-nav">
+                        <a class="nav-link text-white" href="/about/about.php">소개</a>
+                        <a class="nav-link text-white" href="/community/gallery.php">갤러리</a>
+                        <a class="nav-link text-white" href="/community/newsletter.php">소식지</a>
+                    </div>
+                </div>
+              </nav>';
+    }
+    echo '<div id="wrapper" class="d-flex flex-column flex-1"><div id="container_wr" class="flex-1"><div id="container">';
+    return; // 여기서 종료
+}
+
 // Legacy 모드 성능 최적화 활성화 체크
 $legacyOptimized = isset($_GET['legacy_optimized']) || 
                   (isset($_COOKIE['legacy_optimized']) && $_COOKIE['legacy_optimized'] === 'true') ||

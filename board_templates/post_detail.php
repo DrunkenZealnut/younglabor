@@ -221,10 +221,11 @@ echo '</style>' . "\n";
                         <?php 
                         // 다운로드 URL: 각 상세 페이지에서 설정한 download_url 우선
                         // 없으면 템플릿 기본 핸들러 사용(board_templates/file_download.php) - bo_table 제거됨
-                        $download_url = $attachment['download_url'] ?? (
-                            '/board_templates/file_download.php?post_id=' . (int)$post['post_id'] .
-                            '&attachment_id=' . (int)($attachment['bf_no'] ?? $attachment['attachment_id'] ?? 0)
-                        );
+                        $download_url = $attachment['download_url'] ?? 
+                            board_file_download_url(
+                                (int)$post['post_id'],
+                                (int)($attachment['bf_no'] ?? $attachment['attachment_id'] ?? 0)
+                            );
                         ?>
                         <a href="<?= htmlspecialchars($download_url) ?>"
                            class="btn-outline px-3 py-1.5 text-sm flex items-center gap-1" aria-label="<?= htmlspecialchars(($attachment['original_name'] ?? '파일') . ' 다운로드') ?>">

@@ -5,6 +5,28 @@
  * 그누보드 의존성 제거 및 모던 PHP 아키텍처 적용
  */
 
+// 간단한 라우팅 처리 (board/list/{id} URL)
+$request_uri = $_SERVER['REQUEST_URI'] ?? '';
+$parsed_url = parse_url($request_uri);
+$path = $parsed_url['path'] ?? '';
+
+// /hopec/ 접두사 제거 (로컬 환경)
+if (strpos($path, '/hopec/') === 0) {
+    $path = substr($path, 6); // "/hopec/" 제거
+}
+
+// board/list/{id} 패턴 매칭
+if (preg_match('/^board\/list\/(\d+)\/?$/', $path, $matches)) {
+    $board_id = (int)$matches[1];
+    $_GET['id'] = $board_id; // board.php에서 사용할 수 있도록 설정
+    
+    // board.php로 라우팅
+    if (file_exists(__DIR__ . '/board.php')) {
+        include __DIR__ . '/board.php';
+        exit;
+    }
+}
+
 // 모던 부트스트랩 시스템 로드
 require_once __DIR__ . '/bootstrap/app.php';
 
@@ -66,7 +88,7 @@ if (file_exists($themeHome)) {
                                     echo '<ul class="notice-list">';
                                     foreach ($notices as $notice) {
                                         echo '<li>';
-                                        echo '<a href="/community/notice_view.php?wr_id=' . $notice['id'] . '">';
+                                        echo '<a href="' . app_url('community/notice_view.php?wr_id=' . $notice['id']) . '">';
                                         echo h(mb_substr($notice['title'], 0, 30));
                                         echo '</a>';
                                         echo '<span class="date">' . date('Y.m.d', strtotime($notice['created_at'])) . '</span>';

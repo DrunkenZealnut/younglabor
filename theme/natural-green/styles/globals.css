@@ -1,6 +1,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-size-base: 14px;
   --font-size: 14px;
   --background: #f4f8f3;
   --foreground: oklch(0.145 0 0);
@@ -18,6 +19,8 @@
   --accent-foreground: oklch(0.722 0.193 120.75);  /* #84cc16 - lime-500와 동일 */
   --destructive: oklch(0.488 0.240 25.33);  /* #d4183d */
   --destructive-foreground: oklch(1 0 0);  /* #ffffff */
+  --warning: oklch(0.779 0.131 76.97);      /* #fbbf24 - amber-400 */
+  --error: oklch(0.567 0.227 25.33);        /* #ef4444 - red-500 */
   --border: rgba(132, 204, 22, 0.15);
   --input: transparent;
   --input-background: #f4f8f3;
@@ -53,6 +56,33 @@
   --lime-400: oklch(0.782 0.190 120.75);    /* #a3e635 */
   --lime-500: oklch(0.722 0.193 120.75);    /* #84cc16 */
   --lime-600: oklch(0.582 0.155 120.75);    /* #65a30d */
+  
+  /* 그레이 색상 시스템 */
+  --white: oklch(1 0 0);                     /* #ffffff */
+  --gray-50: oklch(0.985 0 0);               /* #f9fafb */
+  --gray-100: oklch(0.972 0 0);              /* #f3f4f6 */
+  --gray-400: oklch(0.839 0.006 286.31);     /* #d1d5db */
+  --gray-500: oklch(0.693 0.004 286.31);     /* #9ca3af */
+  --gray-600: oklch(0.546 0.009 251.14);     /* #6b7280 */
+  --gray-700: oklch(0.408 0.015 264.53);     /* #374151 */
+  --gray-900: oklch(0.165 0.021 264.53);     /* #111827 */
+  
+  /* 상태별 색상 */
+  --red-50: oklch(0.971 0.013 17.38);        /* #fef2f2 */
+  
+  /* 그림자 시스템 */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  
+  /* 폰트 크기 시스템 (14px 기준) */
+  --text-xs: 0.75rem;    /* 10.5px */
+  --text-sm: 0.875rem;   /* 12.25px */
+  --text-base: 1rem;     /* 14px */
+  --text-lg: 1.125rem;   /* 15.75px */
+  --text-xl: 1.25rem;    /* 17.5px */
+  --text-2xl: 1.5rem;    /* 21px */
+  --text-3xl: 1.875rem;  /* 26.25px */
   
   /* 브랜드 그라디언트 색상 정의 - OKLCH 표준화 */
   --brand-gradient-primary: oklch(0.855 0.165 130.5);   /* #85E546 - 밝은 라임 그린 */

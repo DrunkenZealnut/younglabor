@@ -7,7 +7,7 @@
 // 데이터베이스 설정 (직접 연결)
 define('G5_MYSQL_HOST', '127.0.0.1');
 define('G5_MYSQL_USER', 'hopec');
-define('G5_MYSQL_PASSWORD', 'hopec2024');
+define('G5_MYSQL_PASSWORD', 'hopec2!@');
 define('G5_MYSQL_DB', 'hopec');
 
 // 데이터 경로 설정
@@ -71,7 +71,7 @@ if (!isset($_SESSION['db_admin_logged']) || $_SESSION['db_admin_logged'] !== tru
             <h2>🛠️ 데이터베이스 관리 도구</h2>
             <div class="info">
                 <strong>희망씨 웹사이트 데이터베이스 관리</strong><br>
-                안전한 백업 및 복원을 위한 관리자 도구입니다.
+                안전한 백업을 위한 관리자 도구입니다.
             </div>
             <div class="password_hint">
                 <strong>💡 관리자 비밀번호:</strong> hopec2024!
@@ -186,7 +186,7 @@ $page_title = '데이터베이스 관리';
     <div class="local_desc01">
         <p>
             <strong>희망씨 웹사이트 데이터베이스 관리 도구</strong><br>
-            PHP 버전 업데이트 전 안전한 데이터베이스 백업 및 복원을 위한 도구입니다.
+            PHP 버전 업데이트 전 안전한 데이터베이스 백업을 위한 도구입니다.
         </p>
     </div>
 
@@ -197,13 +197,6 @@ $page_title = '데이터베이스 관리';
             <h3>데이터베이스 백업</h3>
             <p>전체 데이터베이스를 안전하게 백업합니다.<br>백업 파일은 자동으로 다운로드됩니다.</p>
             <a href="./db_backup.php" class="btn btn_primary">백업 시작</a>
-        </div>
-        
-        <div class="card restore_card">
-            <div class="card_icon">🔄</div>
-            <h3>데이터베이스 복원</h3>
-            <p>백업된 SQL 파일로 데이터베이스를 복원합니다.<br>⚠️ 기존 데이터가 덮어씌워질 수 있습니다.</p>
-            <a href="./db_restore.php" class="btn btn_danger">복원 하기</a>
         </div>
     </div>
 
@@ -284,9 +277,6 @@ $page_title = '데이터베이스 관리';
                 <?php endforeach; ?>
             </tbody>
         </table>
-        <div class="table_footer">
-            <a href="./db_restore.php">전체 백업 파일 보기 →</a>
-        </div>
         <?php else: ?>
         <p class="empty_list">백업된 파일이 없습니다. 먼저 백업을 수행해주세요.</p>
         <?php endif; ?>
@@ -302,14 +292,6 @@ $page_title = '데이터베이스 관리';
                     <li>사이트 이용이 적은 시간대 선택</li>
                     <li>충분한 디스크 공간 확보</li>
                     <li>백업 중 사이트 접근 제한</li>
-                </ul>
-            </div>
-            <div class="guide_item">
-                <strong>복원 전 필수사항</strong>
-                <ul>
-                    <li>현재 데이터베이스 반드시 백업</li>
-                    <li>테스트 환경에서 복원 테스트</li>
-                    <li>복원 중 사이트 완전 차단</li>
                 </ul>
             </div>
             <div class="guide_item">

@@ -1,3 +1,7 @@
+/* 
+ * Natural Green Theme CSS - Updated: 2025-09-19 17:50:00
+ * Version: 3.3.0 - Critical CSS Compatible (removed !important)
+ */
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -945,3 +949,185 @@ main { flex: 1 1 auto; }
   background-color: var(--primary);
   color: var(--primary-foreground);
 }
+
+/* ===== 유틸리티 클래스 - 네비게이션 및 테마 지원 ===== */
+
+/* Forest 색상 유틸리티 클래스 - Critical CSS 호환 */
+.text-forest-600 {
+  color: var(--forest-600);
+}
+
+.text-forest-700 {
+  color: var(--forest-700);
+}
+
+.text-forest-500 {
+  color: var(--forest-500);
+}
+
+/* Lime 색상 유틸리티 클래스 - Critical CSS 호환 */
+.text-lime-600 {
+  color: var(--lime-600);
+}
+
+.hover\:text-lime-600:hover {
+  color: var(--lime-600);
+}
+
+.text-lime-500 {
+  color: var(--lime-500);
+}
+
+/* Natural 배경 색상 유틸리티 클래스 - Critical CSS 호환 */
+.bg-natural-50 {
+  background-color: var(--natural-50);
+}
+
+.bg-natural-100 {
+  background-color: var(--natural-100);
+}
+
+.bg-natural-200 {
+  background-color: var(--natural-200);
+}
+
+/* Border 색상 유틸리티 클래스 - Critical CSS 호환 */
+.border-lime-200 {
+  border-color: var(--lime-200);
+}
+
+.border-primary-light {
+  border-color: var(--lime-400);
+}
+
+.hover\:border-primary:hover {
+  border-color: var(--primary);
+}
+
+/* 기타 유틸리티 클래스 - globals.css에 정의된 것들과 중복 제거 */
+.hover\:bg-lime-50:hover {
+  background-color: var(--natural-50);
+}
+
+/* text-title과 gradient-brand는 globals.css에 이미 정의되어 있음 */
+
+/* 드롭다운 메뉴 z-index 수정 - Critical CSS 호환 */
+.dropdown-menu {
+  z-index: 1050;
+  background-color: white;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.dropdown-menu.show {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* 네비게이션 호버 효과 - Critical CSS 호환 */
+.nav-item.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+  display: block;
+}
+
+/* 모바일 메뉴 z-index - Critical CSS 호환 */
+#mobileMenu {
+  z-index: 1060;
+}
+
+/* hover-lift 효과는 globals.css에 이미 정의되어 있음 */
+
+/* 헤더 border 색상 Bootstrap 오버라이드 - Critical CSS 호환 */
+header.border-bottom {
+  border-bottom-color: var(--border);
+}
+
+/* Footer sticky 문제 해결 - main 컨텐츠 영역 flex 성장 설정 */
+#wrapper,
+.page-content,
+main,
+.main-content {
+  flex: 1;
+}
+
+/* Bootstrap flexbox body에서 main 영역이 남은 공간을 차지하도록 설정 */
+body.d-flex.flex-column > *:not(header):not(footer):not([role="contentinfo"]) {
+  flex: 1;
+}
+
+/* 게시판 페이지 min-height 문제 해결 - body가 컨텐츠 높이에 맞게 늘어나도록 */
+body.min-vh-100 {
+  min-height: calc(100vh + 200px);
+}
+
+/*
+ * About Page Legacy CSS Classes
+ * 기존 about.php 하드코딩된 HTML을 위한 스타일 정의
+ * Created: 2025-09-19
+ */
+
+/* 섹션 헤더 스타일 */
+.s1hd {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--forest-700);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary);
+}
+
+/* 컨텐츠 박스 컨테이너 */
+.con_box {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+    .con_box {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* 정의 목록 스타일 */
+.con_box dl {
+    background-color: white;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.con_box dl:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+/* 정의 제목 스타일 */
+.con_box dt {
+    display: flex;
+    align-items: start;
+    gap: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--forest-700);
+    margin-bottom: 0.5rem;
+}
+
+/* 정의 설명 스타일 */
+.con_box dd {
+    color: var(--gray-700);
+    line-height: 1.75;
+    margin: 0;
+    padding-left: 2.25rem;
+}
+
+/* 번호 배지 관련 CSS는 더 이상 사용되지 않음 - 모던 PHP 코드에서 테마 함수 사용 */

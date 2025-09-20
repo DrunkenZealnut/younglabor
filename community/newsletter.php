@@ -157,7 +157,7 @@ try {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php foreach ($newsletter_posts as $index => $post): ?>
         <article class="bg-white rounded-lg shadow-sm border border-primary-light hover:border-primary overflow-hidden hover:shadow-md transition-all duration-300" data-post-id="<?= $post['wr_id'] ?>" data-index="<?= $index ?>">
-          <a href="/community/newsletter_view.php?wr_id=<?= $post['wr_id'] ?>" class="block">
+          <a href="<?= app_url('community/newsletter_view.php?wr_id=' . $post['wr_id']) ?>" class="block">
             <!-- 이미지 (높이 증가 및 블러 배경 적용) -->
             <div class="relative h-56 bg-gray-100 overflow-hidden">
               <!-- 블러 배경 이미지 -->

@@ -83,18 +83,22 @@ $config = [
     'board_description' => '희망씨의 새로운 소식과 중요한 공지사항을 확인하세요.',
     'show_write_button' => false,
     'enable_search' => true,
-    'detail_url' => '/community/notice_view.php',
-    'list_url' => '/community/notices.php',
+    'detail_url' => app_url('community/notice_view.php'),
+    'list_url' => app_url('community/notices.php'),
     'posts_per_page' => $per_page,
     'container_max_width_class' => 'max-w-7xl', // 게시판 폭을 넓게 설정
-    'author_col_class' => 'w-28 hidden sm:table-cell', // 작성자 컬럼 폭 설정
+    'author_col_class' => 'w-28', // 작성자 컬럼 폭 설정
 ];
 
 $pageTitle = '공지사항 | ' . app_name();
 include __DIR__ . '/../includes/header.php';
 
 $current_page = $page;
-include __DIR__ . '/../board_templates/board_list.php';
+?>
 
-include_once __DIR__ . '/../includes/footer.php';
+<main id="main" role="main" class="flex-1" style="padding-bottom: 100px;">
+<?php include __DIR__ . '/../board_templates/board_list.php'; ?>
+</main>
+
+<?php include_once __DIR__ . '/../includes/footer.php';
 ?>

@@ -94,8 +94,8 @@ if (!function_exists('extract_first_image_src')) {
         'board_description' => '네팔 나눔연대 여행 소식을 사진과 함께 전합니다.',
         'show_write_button' => false,
         'enable_search' => true,
-        'detail_url' => '/community/nepal_view.php',
-        'list_url' => '/community/nepal.php',
+        'detail_url' => app_url('community/nepal_view.php'),
+        'list_url' => app_url('community/nepal.php'),
         'posts_per_page' => $per_page,
         'view_mode' => 'card',
         'grid_cols_class' => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
@@ -117,9 +117,13 @@ include __DIR__ . '/../includes/header.php';
 $current_page = $page;
 $search_type = $search_type;
 $search_keyword = $search_keyword;
-include __DIR__ . '/../board_templates/board_list.php';
+?>
 
-include_once __DIR__ . '/../includes/footer.php';
+<main id="main" role="main" class="flex-1">
+<?php include __DIR__ . '/../board_templates/board_list.php'; ?>
+</main>
+
+<?php include_once __DIR__ . '/../includes/footer.php';
 ?>
 
 

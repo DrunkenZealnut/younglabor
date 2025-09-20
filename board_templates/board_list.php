@@ -99,7 +99,7 @@ if (function_exists('renderSafeBoardTheme')) {
 }
 ?>
 
-<div class="board-surface bg-white rounded-lg border border-primary-light hover:border-primary shadow-sm <?= htmlspecialchars($containerMaxWidthClass) ?> mx-auto my-8 transition-all duration-300">
+<div class="board-surface bg-white rounded-lg border border-primary-light hover:border-primary shadow-sm <?= htmlspecialchars($containerMaxWidthClass) ?> mx-auto mt-8 mb-8 transition-all duration-300">
     <!-- 게시판 헤더 -->
     <div class="px-6 py-4 border-b border-primary-light board-header-border">
         <div class="flex justify-between items-center flex-wrap gap-4">
@@ -260,8 +260,8 @@ if (function_exists('renderSafeBoardTheme')) {
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider" style="width: 74px;">번호</th>
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider">제목</th>
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider <?= htmlspecialchars($authorColClass) ?>">작성자</th>
-                        <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider w-32 hidden md:table-cell">작성일</th>
-                        <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider hidden sm:table-cell" style="width: 74px;">조회</th>
+                        <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider w-32">작성일</th>
+                        <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider" style="width: 74px;">조회</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y border-primary-light">
@@ -305,12 +305,12 @@ if (function_exists('renderSafeBoardTheme')) {
                         </td>
                         
                         <!-- 작성일 (태블릿 이상) -->
-                        <td class="px-4 py-3 text-sm <?= getThemeClass('text', 'text', '500') ?> hidden md:table-cell text-center">
+                        <td class="px-4 py-3 text-sm <?= getThemeClass('text', 'text', '500') ?> text-center">
                             <?= date('Y-m-d', strtotime($post['created_at'])) ?>
                         </td>
                         
                         <!-- 조회수 (데스크톱만) -->
-                        <td class="px-4 py-3 text-sm <?= getThemeClass('text', 'text', '500') ?> hidden sm:table-cell text-center" style="width: 74px;">
+                        <td class="px-4 py-3 text-sm <?= getThemeClass('text', 'text', '500') ?> text-center" style="width: 74px;">
                             <?= number_format($post['view_count']) ?>
                         </td>
                     </tr>
@@ -555,6 +555,7 @@ if (typeof lucide !== 'undefined') {
 .board-surface .text-left {
     text-align: left !important;
 }
+
 </style>
 
 <script>

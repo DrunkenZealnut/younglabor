@@ -9,6 +9,14 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '소통 및 회원사업 | ' . app_name();
 $currentSlug = 'programs/community';
 
+// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
+require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
+$useCSSVars = detectCSSVarsMode();
+
+if ($useCSSVars && !isset($styleManager)) {
+    $styleManager = getCSSVariableManager();
+}
+
 $subject = '소통 및 회원사업';
 $rawHtml = <<<'HTML'
 <div class="g02_list_wr">
@@ -53,7 +61,7 @@ HTML;
 // 슬라이드 이미지: programs/img 폴더의 B14_*.png 파일을 자동 수집해 사용
 $imgSrcs = [];
 $imgDir = __DIR__ . '/img';
-$imgUrlBase = '/programs/img';
+$imgUrlBase = env('BASE_PATH', '') . '/programs/img';
 if (is_dir($imgDir)) {
   $found = glob($imgDir . '/B14_*.png');
   if ($found !== false && !empty($found)) {
@@ -73,7 +81,11 @@ include_once __DIR__ . '/../includes/header.php';
   <article class="max-w-5xl mx-auto px-4 py-10">
     <header class="mb-8">
       <p class="text-sm text-gray-500">Programs</p>
-      <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">소통 및 회원사업</h1>
+      <?php if ($useCSSVars): ?>
+        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">소통 및 회원사업</h1>
+      <?php else: ?>
+        <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">소통 및 회원사업</h1>
+      <?php endif; ?>
       <p class="text-gray-600 mt-2">함께 배우고 서로 돌보는 회원 공동체</p>
     </header>
 
@@ -99,17 +111,22 @@ include_once __DIR__ . '/../includes/header.php';
       </style>
       
       <script>
-        let communitySlideIndex = 0;
-        const communitySlides = document.querySelectorAll('.community-slider-item');
-        
-        function changeCommunitySlide(direction) {
-          communitySlides[communitySlideIndex].style.display = 'none';
-          communitySlideIndex = (communitySlideIndex + direction + communitySlides.length) % communitySlides.length;
-          communitySlides[communitySlideIndex].style.display = 'block';
-        }
-        
-        // 자동 슬라이드
-        setInterval(() => changeCommunitySlide(1), 5000);
+        (function() {
+          let communitySlideIndex = 0;
+          const communitySlides = document.querySelectorAll('.community-slider-item');
+          
+          function changeCommunitySlide(direction) {
+            communitySlides[communitySlideIndex].style.display = 'none';
+            communitySlideIndex = (communitySlideIndex + direction + communitySlides.length) % communitySlides.length;
+            communitySlides[communitySlideIndex].style.display = 'block';
+          }
+          
+          // 전역 함수로 등록
+          window.changeCommunitySlide = changeCommunitySlide;
+          
+          // 자동 슬라이드
+          setInterval(() => changeCommunitySlide(1), 5000);
+        })();
       </script>
     </section>
     <?php endif; ?>
@@ -155,7 +172,11 @@ include_once __DIR__ . '/../includes/header.php';
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <?php foreach ($sections as $sec): ?>
           <section class="bg-white rounded-2xl border border-primary-light hover:border-primary shadow-sm p-6 md:p-8 h-full max-w-full transition-all duration-300">
-            <h2 class="text-xl font-semibold <?= getThemeClass('text', 'primary', '700') ?> mb-2"><?= h($sec['title']) ?></h2>
+            <?php if ($useCSSVars): ?>
+              <h2 class="text-xl font-semibold mb-2" style="<?= $styleManager->getStyleString(['color' => 'forest-700']) ?>"><?= h($sec['title']) ?></h2>
+            <?php else: ?>
+              <h2 class="text-xl font-semibold <?= getThemeClass('text', 'primary', '700') ?> mb-2"><?= h($sec['title']) ?></h2>
+            <?php endif; ?>
             <?php if (!empty($sec['desc'])): ?>
               <p class="text-gray-700 leading-7 mb-3"><?= h($sec['desc']) ?></p>
             <?php endif; ?>

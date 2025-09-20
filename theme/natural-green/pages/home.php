@@ -21,12 +21,12 @@
   <section class="py-12 bg-white" style="background: #ffffff !important;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
-        <a href="/community/gallery.php" class="hover:text-lime-600 transition-colors cursor-pointer no-underline">최근 활동 보기</a>
+        <a href="<?= app_url('community/gallery.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer no-underline">최근 활동 보기</a>
       </h2>
       <p class="text-center text-gray-600 mb-8">현장의 따끈한 이야기들을 카드로 확인하세요</p>
       
       <div class="flex justify-end mb-4">
-        <a href="/community/gallery.php" class="text-forest-600 hover:text-lime-600">
+        <a href="<?= app_url('community/gallery.php') ?>" class="text-forest-600 hover:text-lime-600">
           더 보기 <i data-lucide="arrow-right" class="inline w-4 h-4"></i>
         </a>
       </div>
@@ -47,23 +47,23 @@
                     $imageUrl = fix_image_url($matches[1]);
                 }
                 
-                // 기본 이미지 설정
-                if (empty($imageUrl)) {
-                    $imageUrl = '/theme/natural-green/assets/images/default-gallery.jpg';
-                }
+                // 기본 이미지 설정 (임시 주석처리 - 무한루프 방지)
+                // if (empty($imageUrl)) {
+                //     $imageUrl = '/theme/natural-green/assets/images/default-gallery.jpg';
+                // }
                 ?>
-                <a href="/community/gallery_view.php?wr_id=<?= $post['id'] ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
+                <a href="<?= app_url('community/gallery_view.php?wr_id=' . $post['id']) ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
                   <div class="relative overflow-hidden h-64 bg-gradient-to-br from-natural-100 to-natural-200">
                     <!-- 블러 배경 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
                          alt="" 
-                         class="absolute inset-0 w-full h-full object-cover filter blur-md scale-110 opacity-60"
-                         onerror="this.src='/theme/natural-green/assets/images/default-gallery.jpg'">
+                         class="absolute inset-0 w-full h-full object-cover filter blur-md scale-110 opacity-60">
+                         <!-- onerror="this.src='/theme/natural-green/assets/images/default-gallery.jpg'" -->
                     <!-- 메인 이미지 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
                          alt="<?= htmlspecialchars($post['title']) ?>" 
-                         class="absolute inset-0 w-full h-full object-contain"
-                         onerror="this.src='/theme/natural-green/assets/images/default-gallery.jpg'">
+                         class="absolute inset-0 w-full h-full object-contain">
+                         <!-- onerror="this.src='/theme/natural-green/assets/images/default-gallery.jpg'" -->
                   </div>
                   <div class="p-4 h-32 flex flex-col justify-between">
                     <h3 class="font-semibold text-title mb-2 text-base leading-tight">
@@ -126,7 +126,7 @@
         <div class="bg-white rounded-lg shadow-md border border-primary-light hover:border-primary p-6 transition-all duration-300">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-2xl font-bold text-forest-700">공지사항</h3>
-            <a href="/community/notices.php" class="text-sm text-forest-600 hover:text-lime-600 font-medium">
+            <a href="<?= app_url('community/notices.php') ?>" class="text-sm text-forest-600 hover:text-lime-600 font-medium">
               더보기 <i data-lucide="plus" class="inline w-4 h-4"></i>
             </a>
           </div>
@@ -141,7 +141,7 @@
                 foreach ($notices as $notice) {
                     ?>
                     <li class="flex justify-between items-start py-1.5 border-b border-primary-light/30 last:border-b-0">
-                      <a href="/community/notice_view.php?wr_id=<?= $notice['id'] ?>" 
+                      <a href="<?= app_url('community/notice_view.php?wr_id=' . $notice['id']) ?>" 
                          class="flex-1 text-gray-700 hover:text-forest-600 pr-4">
                         <?= htmlspecialchars($notice['title']) ?>
                       </a>
@@ -171,11 +171,11 @@
           </p>
           
           <div class="space-y-3">
-            <a href="/donate/monthly.php" 
+            <a href="<?= app_url('donate/monthly.php') ?>" 
                class="block bg-white text-forest-700 rounded-lg px-4 py-3 text-center font-semibold hover:bg-natural-100 transition">
               정기후원 참여하기
             </a>
-            <a href="/donate/one-time.php" 
+            <a href="<?= app_url('donate/one-time.php') ?>" 
                class="block bg-white/20 text-white rounded-lg px-4 py-3 text-center font-semibold hover:bg-white/30 transition">
               일시후원 참여하기
             </a>
@@ -195,12 +195,12 @@
   <section class="py-12 bg-natural-50" style="background: #f8fffe !important;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
-        <a href="/community/newsletter.php" class="hover:text-lime-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-lime-600 hover:underline-offset-4">희망씨 소식지</a>
+        <a href="<?= app_url('community/newsletter.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-lime-600 hover:underline-offset-4">희망씨 소식지</a>
       </h2>
       <p class="text-center text-gray-600 mb-8">희망씨의 다양한 활동과 소식을 전해드립니다</p>
       
       <div class="flex justify-end mb-4">
-        <a href="/community/newsletter.php" class="text-forest-600 hover:text-lime-600">
+        <a href="<?= app_url('community/newsletter.php') ?>" class="text-forest-600 hover:text-lime-600">
           더 보기 <i data-lucide="arrow-right" class="inline w-4 h-4"></i>
         </a>
       </div>
@@ -221,23 +221,23 @@
                     $imageUrl = fix_image_url($matches[1]);
                 }
                 
-                // 기본 이미지 설정
-                if (empty($imageUrl)) {
-                    $imageUrl = '/theme/natural-green/assets/images/default-newsletter.jpg';
-                }
+                // 기본 이미지 설정 (임시 주석처리 - 무한루프 방지)
+                // if (empty($imageUrl)) {
+                //     $imageUrl = '/theme/natural-green/assets/images/default-newsletter.jpg';
+                // }
                 ?>
-                <a href="/community/newsletter_view.php?wr_id=<?= $post['id'] ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
+                <a href="<?= app_url('community/newsletter_view.php?wr_id=' . $post['id']) ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
                   <div class="relative overflow-hidden h-64 bg-gradient-to-br from-natural-100 to-natural-200">
                     <!-- 블러 배경 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
                          alt="" 
-                         class="absolute inset-0 w-full h-full object-cover filter blur-md scale-110 opacity-60"
-                         onerror="this.src='/theme/natural-green/assets/images/default-newsletter.jpg'">
+                         class="absolute inset-0 w-full h-full object-cover filter blur-md scale-110 opacity-60">
+                         <!-- onerror="this.src='/theme/natural-green/assets/images/default-newsletter.jpg'" -->
                     <!-- 메인 이미지 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
                          alt="<?= htmlspecialchars($post['title']) ?>" 
-                         class="absolute inset-0 w-full h-full object-contain"
-                         onerror="this.src='/theme/natural-green/assets/images/default-newsletter.jpg'">
+                         class="absolute inset-0 w-full h-full object-contain">
+                         <!-- onerror="this.src='/theme/natural-green/assets/images/default-newsletter.jpg'" -->
                   </div>
                   <div class="p-4 h-32 flex flex-col justify-between">
                     <h3 class="font-semibold text-title mb-2 text-base leading-tight hover:text-lime-600 transition-colors">

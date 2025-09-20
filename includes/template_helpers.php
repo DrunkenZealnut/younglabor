@@ -480,35 +480,90 @@ if (!function_exists('process_content')) {
     }
 }
 
+if (!function_exists('board_file_download_url')) {
+    /**
+     * 게시판 첨부파일 다운로드 URL 생성
+     */
+    function board_file_download_url($post_id, $attachment_id) {
+        return app_url('board_templates/file_download.php?post_id=' . (int)$post_id . '&attachment_id=' . (int)$attachment_id);
+    }
+}
+
 if (!function_exists('getThemeClass')) {
     /**
      * 테마 CSS 클래스 생성 (Natural Green 테마용)
      */
-    function getThemeClass($type, $base = '', $variant = '') {
-        // Natural Green 테마의 기본 클래스들
-        $classes = [
-            'border' => [
-                '200' => 'border-gray-200',
-                '300' => 'border-gray-300',
-                'primary' => 'border-lime-500',
+    function getThemeClass($type, $category, $shade = null) {
+        // NaturalGreenThemeLoader와 동일한 매핑 사용
+        $themeMapping = [
+            'text' => [
+                'primary' => [
+                    '500' => 'text-lime-500',
+                    '600' => 'text-lime-600', 
+                    '700' => 'text-forest-700',
+                    '800' => 'text-forest-700',
+                    '900' => 'text-forest-700'
+                ],
+                'secondary' => [
+                    '400' => 'text-lime-400',
+                    '500' => 'text-lime-500',
+                    '600' => 'text-lime-600'
+                ],
+                'foreground' => 'text-forest-700',
+                'muted-foreground' => 'text-gray-500',
+                'white' => 'text-white'
             ],
             'bg' => [
-                'primary' => 'bg-lime-500',
-                'secondary' => 'bg-green-500',
-                'natural' => 'bg-natural-50',
+                'primary' => [
+                    '100' => 'bg-natural-100',
+                    '200' => 'bg-natural-200',
+                    '300' => 'bg-lime-200',
+                    '500' => 'bg-lime-500',
+                    '600' => 'bg-lime-600'
+                ],
+                'secondary' => [
+                    '100' => 'bg-natural-100',
+                    '500' => 'bg-lime-500'
+                ],
+                'background' => [
+                    '50' => 'bg-natural-50',
+                    '100' => 'bg-natural-100'
+                ],
+                'gray' => [
+                    '50' => 'bg-natural-50',
+                    '200' => 'bg-natural-200'
+                ],
+                'white' => 'bg-white',
+                'warning' => [
+                    '50' => 'bg-warning-muted'
+                ],
+                'danger' => [
+                    '100' => 'bg-error-muted'
+                ]
             ],
-            'text' => [
-                'primary' => 'text-lime-600',
-                'secondary' => 'text-green-600',
-                'forest' => 'text-forest-700',
+            'border' => [
+                'primary' => [
+                    '500' => 'border-lime-500'
+                ],
+                'secondary' => [
+                    '500' => 'border-lime-500'
+                ],
+                'border' => [
+                    '200' => 'border-lime-200'
+                ],
+                'gray' => [
+                    '200' => 'border-lime-200'
+                ]
             ]
         ];
         
-        if (isset($classes[$type][$variant])) {
-            return $classes[$type][$variant];
+        if (isset($themeMapping[$type][$category])) {
+            if (is_array($themeMapping[$type][$category]) && $shade !== null) {
+                return $themeMapping[$type][$category][$shade] ?? '';
+            }
+            return $themeMapping[$type][$category] ?? '';
         }
         
-        // 기본값 반환
-        return $base . ($variant ? '-' . $variant : '');
+        return '';
     }
 }

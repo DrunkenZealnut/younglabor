@@ -64,7 +64,7 @@ try {
     ];
 
     $config = [
-        'list_url' => '/community/nepal.php',
+        'list_url' => app_url('community/nepal.php'),
         'enable_comments' => true,
         // GNUBOARD 원댓글 폴백 소스 지정 (wr_parent=post_id)
         'gnuboard_bo_table' => 'nepal',

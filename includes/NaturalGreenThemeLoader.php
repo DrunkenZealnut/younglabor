@@ -24,7 +24,7 @@ class NaturalGreenThemeLoader {
         
         // CSS 경로 설정
         $this->cssPath = __DIR__ . '/../css/theme.css';
-        $this->cssUrl = '/css/theme.css';
+        $this->cssUrl = function_exists('app_url') ? app_url('css/theme.css') : '/css/theme.css';
     }
     
     /**
@@ -37,7 +37,7 @@ class NaturalGreenThemeLoader {
         }
         
         $version = filemtime($this->cssPath);
-        $cssUrl = $this->cssUrl . '?v=' . $version;
+        $cssUrl = $this->cssUrl . '?v=' . $version . '&cb=' . time();
         
         echo "<!-- Natural Green Theme v{$this->themeConfig['version']} -->\n";
         echo "<link rel=\"stylesheet\" href=\"{$cssUrl}\" id=\"natural-green-theme\">\n";

@@ -9,6 +9,14 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '연혁 | ' . app_name();
 $currentSlug = 'about/history';
 
+// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
+require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
+$useCSSVars = detectCSSVarsMode();
+
+if ($useCSSVars && !isset($styleManager)) {
+    $styleManager = getCSSVariableManager();
+}
+
 try {
     // 연혁 데이터 조회
     $sql = "
@@ -66,7 +74,11 @@ include_once __DIR__ . '/../includes/header.php';
   <article class="max-w-5xl mx-auto px-4 py-10">
     <header class="mb-8">
       <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>">About</p>
-      <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">연혁</h1>
+      <?php if ($useCSSVars): ?>
+        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">연혁</h1>
+      <?php else: ?>
+        <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">연혁</h1>
+      <?php endif; ?>
     </header>
 
     <?php if (empty($grouped_by_year)): ?>

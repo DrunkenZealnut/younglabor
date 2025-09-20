@@ -76,8 +76,8 @@ $config = [
     'board_description' => '투명하고 건전한 재정 운영을 위해 정기적으로 재정 현황을 공개합니다.',
     'show_write_button' => false,
     'enable_search' => true,
-    'detail_url' => '/about/finance_view.php',
-    'list_url' => '/about/finance.php',
+    'detail_url' => app_url('about/finance_view.php'),
+    'list_url' => app_url('about/finance.php'),
     'posts_per_page' => $per_page,
     'container_max_width_class' => 'max-w-7xl', // notices.php와 동일한 폭으로 설정
     'author_col_class' => 'w-28 hidden sm:table-cell', // 작성자 컬럼 폭 설정
@@ -87,7 +87,11 @@ $pageTitle = '재정보고 | ' . app_name();
 include __DIR__ . '/../includes/header.php';
 
 $current_page = $page;
-include __DIR__ . '/../board_templates/board_list.php';
+?>
 
-include_once __DIR__ . '/../includes/footer.php';
+<main id="main" role="main" class="flex-1">
+<?php include __DIR__ . '/../board_templates/board_list.php'; ?>
+</main>
+
+<?php include_once __DIR__ . '/../includes/footer.php';
 ?>

@@ -10,7 +10,7 @@ require_once __DIR__ . '/../bootstrap/app.php';
 // 게시글 ID 검증
 $wr_id = (int)($_GET['wr_id'] ?? 0);
 if ($wr_id <= 0) {
-    header('Location: /community/newsletter.php');
+    header('Location: ' . app_url('community/newsletter.php'));
     exit;
 }
 
@@ -22,7 +22,7 @@ try {
     );
     
     if (!$newsletter_item) {
-        header('Location: /community/newsletter.php');
+        header('Location: ' . app_url('community/newsletter.php'));
         exit;
     }
     
@@ -74,7 +74,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $newsletter_item['wr_c
         <li><a href="/" class="hover:text-forest-600">홈</a></li>
         <li class="before:content-['>'] before:mx-2">커뮤니티</li>
         <li class="before:content-['>'] before:mx-2">
-          <a href="/community/newsletter.php" class="hover:text-forest-600">소식지</a>
+          <a href="<?= app_url('community/newsletter.php') ?>" class="hover:text-forest-600">소식지</a>
         </li>
         <li class="before:content-['>'] before:mx-2 text-forest-600 font-medium">상세보기</li>
       </ol>
@@ -197,7 +197,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $newsletter_item['wr_c
       
       <!-- 버튼 그룹 -->
       <div class="flex items-center space-x-3">
-        <a href="/community/newsletter.php" 
+        <a href="<?= app_url('community/newsletter.php') ?>" 
            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
           <i data-lucide="list" class="w-4 h-4 mr-2"></i>목록
         </a>

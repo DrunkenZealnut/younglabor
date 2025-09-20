@@ -82,7 +82,7 @@ include __DIR__ . '/../includes/header.php';
 
     <?php if ($introHeading || $introParagraph): ?>
     <section class="relative rounded-2xl p-6 md:p-8 mb-10 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:-translate-y-2" 
-             style="background: linear-gradient(135deg, var(--primary) 0%, color-mix(in srgb, var(--primary) 80%, transparent) 50%, color-mix(in srgb, var(--primary) 60%, transparent) 100%); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);" 
+             style="background: linear-gradient(135deg, var(--primary) 0%, var(--lime-400) 50%, var(--lime-300) 100%); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);" 
              aria-labelledby="intro-title">
       <!-- 장식 요소 -->
       <div class="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10 transform translate-x-16 -translate-y-16" style="background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);"></div>
@@ -117,21 +117,45 @@ include __DIR__ . '/../includes/header.php';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="initial-hidden fade-in-up animation-delay-200 bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-lg p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
             <div class="flex justify-center items-center gap-4 mb-6">
-              <svg class="w-10 h-10 <?= getThemeClass('text', 'primary', '600') ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <?php 
+              require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
+              $useCSSVars = detectCSSVarsMode();
+              
+              if ($useCSSVars && !isset($styleManager)): 
+                $styleManager = getCSSVariableManager();
+              endif;
+              ?>
+              <?php if ($useCSSVars): ?>
+                <svg class="w-10 h-10" style="<?= $styleManager->getStyleString(['color' => 'forest-700']) ?>;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <?php else: ?>
+                <svg class="w-10 h-10 <?= getThemeClass('text', 'foreground') ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <?php endif; ?>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 15.91a4.5 4.5 0 1 1-6.364-6.364 4.5 4.5 0 0 1 6.364 6.364Z" />
               </svg>
-              <h3 class="text-3xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">미션</h3>
+              <?php if ($useCSSVars): ?>
+                <h3 class="text-3xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'secondary-foreground']) ?>;">미션</h3>
+              <?php else: ?>
+                <h3 class="text-3xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">미션</h3>
+              <?php endif; ?>
             </div>
             <p class="text-lg text-gray-600 leading-relaxed">희망씨는 아동청소년이 차별받지 않는 세상을 위해 노동자와 함께 합니다.</p>
           </div>
 
           <div class="initial-hidden fade-in-up animation-delay-400 bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-lg p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
             <div class="flex justify-center items-center gap-4 mb-6">
-              <svg class="w-10 h-10 <?= getThemeClass('text', 'secondary', '600') ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <?php if ($useCSSVars): ?>
+                <svg class="w-10 h-10" style="<?= $styleManager->getStyleString(['color' => 'forest-700']) ?>;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <?php else: ?>
+                <svg class="w-10 h-10 <?= getThemeClass('text', 'foreground') ?>" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+              <?php endif; ?>
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 01-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 013.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 013.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 01-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.543L16.5 21.75l-.398-1.207a3.375 3.375 0 00-2.455-2.456L12.75 18l1.207-.398a3.375 3.375 0 002.455-2.456L16.5 14.25l.398 1.207a3.375 3.375 0 002.456 2.456L20.25 18l-1.207.398a3.375 3.375 0 00-2.456 2.456z" />
               </svg>
-              <h3 class="text-3xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">비전</h3>
+              <?php if ($useCSSVars): ?>
+                <h3 class="text-3xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'secondary-foreground']) ?>;">비전</h3>
+              <?php else: ?>
+                <h3 class="text-3xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">비전</h3>
+              <?php endif; ?>
             </div>
             <p class="text-lg text-gray-600 leading-relaxed">구분과 격차가 없는 더불어 사는 세상을 꿈꿉니다.</p>
           </div>
@@ -146,9 +170,30 @@ include __DIR__ . '/../includes/header.php';
         <?php foreach ($principles as $index => $p): ?>
           <div class="bg-white rounded-xl border <?= getThemeClass('border', 'border', '200') ?> p-6 hover-lift" role="listitem">
             <div class="flex items-start gap-3">
-              <div class="shrink-0 w-10 h-10 rounded-full <?= getThemeClass('bg', 'secondary', '100') ?> <?= getThemeClass('text', 'primary', '700') ?> flex items-center justify-center font-bold"><?php echo $index+1; ?></div>
+              <?php 
+              // CSS 변수 모드 체크 (통합된 헬퍼 함수 사용)
+              $useCSSVars = detectCSSVarsMode();
+              
+              if ($useCSSVars): 
+                // CSS 변수 모드: 인라인 스타일 사용 (이미 로드됨)
+                if (!isset($styleManager)) {
+                  $styleManager = getCSSVariableManager();
+                }
+              ?>
+                <div class="shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold hover:scale-105 transition-all duration-200"
+                     style="<?= $styleManager->getStyleString(['background-color' => 'secondary-foreground', 'color' => 'primary-foreground']) ?>;"><?php echo $index+1; ?></div>
+              <?php else: ?>
+                <!-- 기존 방식: getThemeClass 사용 (완전 보존) -->
+                <div class="shrink-0 w-10 h-10 rounded-full <?= getThemeClass('bg', 'primary', '500') ?> <?= getThemeClass('text', 'white') ?> flex items-center justify-center font-bold hover:scale-105 transition-all duration-200"><?php echo $index+1; ?></div>
+              <?php endif; ?>
               <div>
-                <h3 class="text-lg font-semibold <?= getThemeClass('text', 'primary', '600') ?> mb-1"><?php echo htmlspecialchars($p['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                <?php if ($useCSSVars): ?>
+                  <!-- CSS 변수 모드: 텍스트 색상도 CSS 변수 사용 -->
+                  <h3 class="text-lg font-semibold mb-1" style="<?= $styleManager->getStyleString(['color' => 'secondary-foreground']) ?>;"><?php echo htmlspecialchars($p['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                <?php else: ?>
+                  <!-- 기존 방식 -->
+                  <h3 class="text-lg font-semibold <?= getThemeClass('text', 'primary', '600') ?> mb-1"><?php echo htmlspecialchars($p['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                <?php endif; ?>
                 <p class="text-gray-700 leading-7"><?php echo htmlspecialchars($p['desc'], ENT_QUOTES, 'UTF-8'); ?></p>
               </div>
             </div>

@@ -7,12 +7,61 @@ if (!defined('HOPEC_BASE_PATH')) {
     define('HOPEC_BASE_PATH', dirname(__DIR__, 3));
 }
 
-// 필수 함수들이 없으면 기본값 정의
+// 환경변수 로드
+$envPath = HOPEC_BASE_PATH . '/bootstrap/env.php';
+if (file_exists($envPath)) {
+    require_once $envPath;
+    // .env 파일 로드 시도
+    try {
+        load_env(HOPEC_BASE_PATH . '/.env');
+    } catch (Exception $e) {
+        // .env 파일이 없어도 계속 진행
+    }
+}
+
+// 간단한 env 함수 (없는 경우만)
+if (!function_exists('env')) {
+    function env($key, $default = null) {
+        $value = getenv($key);
+        if ($value === false) {
+            // $_ENV에서도 확인
+            $value = $_ENV[$key] ?? $default;
+        }
+        return $value;
+    }
+}
+
+// 환경변수 기반 URL 생성 함수
 if (!function_exists('app_url')) {
     function app_url($path = '') {
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $baseUrl = $protocol . $host;
+        // 환경변수 로드 (env 함수가 없으면 직접 처리)
+        $appUrl = env('APP_URL');
+        $basePath = env('BASE_PATH', '');
+        $appEnv = env('APP_ENV', 'production');
+        
+        // env 함수가 없는 경우 fallback
+        if (!$appUrl) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            
+            // 로컬 환경 감지 (localhost, .local 도메인)
+            $isLocal = strpos($host, 'localhost') !== false || 
+                      strpos($host, '.local') !== false || 
+                      strpos($host, '127.0.0.1') !== false ||
+                      $appEnv === 'local';
+            
+            if ($isLocal) {
+                // 로컬 환경: BASE_PATH 사용
+                $basePath = $basePath ?: '/hopec';
+                $baseUrl = $protocol . $host . $basePath;
+            } else {
+                // 프로덕션 환경: 루트 기준
+                $baseUrl = $protocol . $host;
+            }
+        } else {
+            $baseUrl = rtrim($appUrl, '/');
+        }
+        
         return $path ? $baseUrl . '/' . ltrim($path, '/') : $baseUrl;
     }
 }
@@ -126,31 +175,31 @@ try {
     ];
 }
 
-// 링크 매핑 정의 (기존과 동일)
+// 링크 매핑 정의 - app_url() 함수 사용으로 환경별 자동 처리
 $introBoardLinks = [
-  '희망씨는' => '/about/about.php',
-  '인사말' => '/about/greeting.php',
-  '연혁' => '/about/history.php',
-  '조직도' => '/about/org.php',
-  '재정현황' => '/about/finance.php',
-  '오시는길' => '/about/location.php'
+  '희망씨는' => app_url('about/about.php'),
+  '인사말' => app_url('about/greeting.php'),
+  '연혁' => app_url('about/history.php'),
+  '조직도' => app_url('about/org.php'),
+  '재정현황' => app_url('about/finance_view.php'), // 실제 파일명으로 수정
+  '오시는길' => app_url('about/location.php')
 ];
 
 $programLinks = [
-  '국내사업' => '/programs/domestic.php',
-  '해외사업' => '/programs/overseas.php',
-  '노동권익' => '/programs/labor-rights.php',
-  '지역사회' => '/programs/community.php',
-  '자원봉사' => '/programs/volunteer.php'
+  '국내사업' => app_url('programs/domestic.php'),
+  '해외사업' => app_url('programs/overseas.php'),
+  '노동권익' => app_url('programs/labor-rights.php'),
+  '지역사회' => app_url('programs/community.php'),
+  '자원봉사' => app_url('programs/volunteer.php')
 ];
 
 $communityLinks = [
-  '공지사항' => '/community/notices.php',
-  '갤러리' => '/community/gallery.php',
-  '소식지' => '/community/newsletter.php',
-  '언론보도' => '/community/press.php',
-  '네팔소식' => '/community/nepal.php',
-  '자료실' => '/community/resources.php'
+  '공지사항' => app_url('community/notices.php'),
+  '갤러리' => app_url('community/gallery.php'),
+  '소식지' => app_url('community/newsletter.php'),
+  '언론보도' => app_url('community/press.php'),
+  '네팔소식' => app_url('community/nepal.php'),
+  '자료실' => app_url('community/resources.php')
 ];
 ?>
 
@@ -191,10 +240,20 @@ $communityLinks = [
                   $boardId = is_array($item) && isset($item['board_id']) ? $item['board_id'] : null;
                   
                   if ($boardId) {
-                    $href = '/board/list/' . $boardId . '/';
+                    // 게시판 ID를 실제 목록 페이지로 매핑
+                    $board_routes = [
+                        1 => 'about/finance.php',           // 재정보고 목록
+                        2 => 'community/notices.php',       // 공지사항 목록
+                        3 => 'community/press.php',         // 언론보도 목록
+                        4 => 'community/newsletter.php',    // 소식지 목록
+                        5 => 'community/gallery.php',       // 갤러리 목록
+                        6 => 'community/resources.php',     // 자료실 목록
+                        7 => 'community/nepal.php',         // 네팔나눔연대여행 목록
+                    ];
+                    $href = isset($board_routes[$boardId]) ? app_url($board_routes[$boardId]) : app_url('community/notice_view.php');
                   } else if ($itemSlug) {
                     $parentSlug = $menu['slug'];
-                    $href = '/' . $parentSlug . '/' . $itemSlug . '.php';
+                    $href = app_url($parentSlug . '/' . $itemSlug . '.php');
                   } else {
                     if (isset($introBoardLinks[$itemTitle])) {
                       $href = $introBoardLinks[$itemTitle];
@@ -203,7 +262,7 @@ $communityLinks = [
                     } else if (isset($communityLinks[$itemTitle])) {
                       $href = $communityLinks[$itemTitle];
                     } else {
-                      $href = '/theme/natural-green/index.php?page=' . urlencode($itemTitle);
+                      $href = app_url('theme/natural-green/index.php?page=' . urlencode($itemTitle));
                     }
                   }
                 ?>
@@ -261,10 +320,20 @@ $communityLinks = [
               $boardId = is_array($item) && isset($item['board_id']) ? $item['board_id'] : null;
               
               if ($boardId) {
-                $href = '/board/list/' . $boardId . '/';
+                // 게시판 ID를 실제 목록 페이지로 매핑 (모바일)
+                $board_routes = [
+                    1 => 'about/finance.php',           // 재정보고 목록
+                    2 => 'community/notices.php',       // 공지사항 목록
+                    3 => 'community/press.php',         // 언론보도 목록
+                    4 => 'community/newsletter.php',    // 소식지 목록
+                    5 => 'community/gallery.php',       // 갤러리 목록
+                    6 => 'community/resources.php',     // 자료실 목록
+                    7 => 'community/nepal.php',         // 네팔나눔연대여행 목록
+                ];
+                $href = isset($board_routes[$boardId]) ? app_url($board_routes[$boardId]) : app_url('community/notice_view.php');
               } else if ($itemSlug) {
                 $parentSlug = $menu['slug'];
-                $href = '/' . $parentSlug . '/' . $itemSlug . '.php';
+                $href = app_url($parentSlug . '/' . $itemSlug . '.php');
               } else {
                 if (isset($introBoardLinks[$itemTitle])) {
                   $href = $introBoardLinks[$itemTitle];
@@ -273,7 +342,7 @@ $communityLinks = [
                 } else if (isset($communityLinks[$itemTitle])) {
                   $href = $communityLinks[$itemTitle];
                 } else {
-                  $href = '/theme/natural-green/index.php?page=' . urlencode($itemTitle);
+                  $href = app_url('theme/natural-green/index.php?page=' . urlencode($itemTitle));
                 }
               }
             ?>
@@ -333,26 +402,7 @@ $communityLinks = [
     pointer-events: auto !important;
 }
 
-/* 텍스트 색상 변수 */
-.text-forest-600 {
-    color: #16a34a !important;
-}
-
-.text-lime-600 {
-    color: #65a30d !important;
-}
-
-.hover\:text-lime-600:hover {
-    color: #65a30d !important;
-}
-
-.hover\:bg-lime-50:hover {
-    background-color: rgba(248, 250, 252, 0.9) !important; /* 매우 연한 그레이-그린 */
-}
-
-.border-lime-200 {
-    border-color: #d9f99d !important;
-}
+/* Navigation specific overrides - moved to theme.css */
 </style>
 
 <script>

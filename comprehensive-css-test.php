@@ -4,9 +4,8 @@
  * 모든 페이지의 레이아웃과 스타일 문제 검증
  */
 
-// 필요한 파일들 로드
-require_once 'includes/critical-css-generator.php';
-require_once 'includes/css-mode-manager.php';
+// CSS Variables 시스템 로드
+require_once 'includes/css-vars-autoloader.php';
 
 $generator = new CriticalCSSGenerator();
 $cssMode = getCSSMode();
