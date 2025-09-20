@@ -212,10 +212,7 @@ function deleteAttachment($file_id, $pdo) {
         
         if ($file_info) {
             // 물리적 파일 삭제
-            // 업로드 경로 직접 계산
-            $base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
-            $env_upload_path = env('UPLOAD_PATH');
-            $upload_path = rtrim($base_path, '/') . '/' . ltrim($env_upload_path, '/');
+            $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
             $filename = $file_info['bf_file'];
             $board_type = $file_info['board_type'];
             

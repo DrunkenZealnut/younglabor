@@ -25,10 +25,7 @@ try {
     }
     
     // 파일 경로 구성 (기존 + 새로운 날짜 기반 구조 모두 지원)
-    // 업로드 경로 직접 계산
-    $base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
-    $env_upload_path = env('UPLOAD_PATH');
-    $upload_path = rtrim($base_path, '/') . '/' . ltrim($env_upload_path, '/');
+    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
     
     $board_type = $file_info['board_type'];
     $filename = $file_info['bf_file'];

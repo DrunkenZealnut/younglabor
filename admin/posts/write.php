@@ -165,10 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  */
 function processAttachments($post_id, $board_type, $files, $pdo) {
     $upload_count = 0;
-    // 업로드 경로 직접 계산
-    $base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
-    $env_upload_path = env('UPLOAD_PATH');
-    $upload_path = rtrim($base_path, '/') . '/' . ltrim($env_upload_path, '/');
+    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
     $allowed_types = explode(',', env('ALLOWED_DOCUMENT_TYPES', 'pdf,doc,docx,hwp,hwpx,xls,xlsx'));
     $allowed_images = explode(',', env('ALLOWED_IMAGE_TYPES', 'jpg,jpeg,png,gif,webp'));
     $max_size = (int)env('UPLOAD_MAX_SIZE', 5242880); // 5MB
@@ -678,19 +675,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // 현재 선택된 게시판 정보 가져오기 (새로운 board_type 방식)
         const selectedBoardId = document.getElementById('board_id').value;
         const boardTypes = <?php echo json_encode($board_types); ?>;
-        
-        // 디버깅: 선택된 게시판 정보 확인
-        console.log('Selected Board ID:', selectedBoardId);
-        console.log('Board Types:', boardTypes);
-        
-        // 게시판이 선택되지 않은 경우 경고
-        if (!selectedBoardId || selectedBoardId == '') {
-            alert('이미지를 업로드하기 전에 먼저 게시판을 선택해주세요.');
-            return;
-        }
-        
         const selectedBoardType = selectedBoardId > 0 && boardTypes[selectedBoardId] ? boardTypes[selectedBoardId].board_type : 'general';
-        console.log('Selected Board Type:', selectedBoardType);
         
         var formData = new FormData();
         formData.append('image', file);  // 'file'에서 'image'로 수정 (upload_image.php에서 $_FILES['image'] 사용)
@@ -710,20 +695,14 @@ document.addEventListener('DOMContentLoaded', function() {
             success: function(response) {
                 loadingToast.remove();
                 try {
-                    console.log('Raw response:', response);
                     var data = typeof response === 'string' ? JSON.parse(response) : response;
-                    console.log('Upload response:', data);
-                    
                     if (data && data.success && data.url) {
-                        console.log('Inserting image with URL:', data.url);
                         $('#content').summernote('insertImage', data.url);
                     } else {
-                        console.error('Upload failed:', data);
-                        alert('이미지 업로드 실패: ' + (data.message || data.error || '알 수 없는 오류'));
+                        alert('이미지 업로드 실패: ' + (data.error || '알 수 없는 오류'));
                     }
                 } catch (e) {
                     console.error('Response parsing error:', e);
-                    console.error('Raw response that failed to parse:', response);
                     alert('이미지 업로드 응답 처리 중 오류가 발생했습니다.');
                 }
             },
