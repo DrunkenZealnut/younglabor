@@ -19,14 +19,25 @@ $response = [
     'request_log' => $request_log
 ];
 
-// .env에서 업로드 디렉토리 설정 가져오기
-$upload_base_path = env('UPLOAD_PATH', 'data/file');
-$bt_upload_path = env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file');
+// 업로드 경로 직접 계산 (get_upload_path 함수 대체)
+$physical_base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
+$upload_path = env('UPLOAD_PATH');
+$upload_base_path = rtrim($physical_base_path, '/') . '/' . ltrim($upload_path, '/');
+
+// 업로드 URL 직접 계산 (get_upload_url 함수 대체)
+// APP_URL을 사용해서 절대 URL 생성
+$app_url = env('APP_URL');
+$upload_url = env('UPLOAD_URL');
+$upload_url_base = rtrim($app_url, '/') . '/' . ltrim($upload_url, '/');
 
 // 게시판 정보 추출 (POST 데이터에서)
 $board_table = isset($_POST['board_table']) ? $_POST['board_table'] : 'general';
 
-// board_type을 폴더명으로 사용 (write.php의 새로운 방식과 일치)
+// 디버깅: 실제 전송된 board_table 값 로깅
+error_log("DEBUG: board_table = " . $board_table);
+error_log("DEBUG: POST data = " . print_r($_POST, true));
+
+// board_type을 폴더명으로 사용 (write.php와 일치)
 $board_type_mapping = [
     'finance_reports' => 'finance_reports',
     'notices' => 'notices', 
@@ -37,16 +48,17 @@ $board_type_mapping = [
     'nepal_travel' => 'nepal_travel'
 ];
 
-$board_folder = isset($board_type_mapping[$board_table]) ? $board_type_mapping[$board_table] : 'general';
+$board_folder = isset($board_type_mapping[$board_table]) ? $board_type_mapping[$board_table] : $board_table;
 
-// 연도/월 폴더 구조 생성
-$date = new DateTime();
-$year = $date->format('Y');
-$month = $date->format('m');
+// 디버깅: 매핑 결과 로깅
+error_log("DEBUG: board_table = " . $board_table . ", board_folder = " . $board_folder);
 
-// 절대 경로 사용 (BT_UPLOAD_PATH 기반) - 게시판별 폴더 추가
-$upload_dir = rtrim($bt_upload_path, '/') . "/posts/$board_folder/$year/$month/";
-$relative_upload_path = "data/file/posts/$board_folder/$year/$month/";
+// 날짜 기반 폴더 생성 (년도+월 형식, 예: 2509)
+$date_folder = date('ym'); // 현재 년도 2자리 + 월 2자리
+
+// write.php와 동일한 폴더 구조: UPLOAD_PATH/board_type/ym/
+$upload_dir = rtrim($upload_base_path, '/') . "/$board_folder/$date_folder/";
+$relative_upload_path = "$board_folder/$date_folder/";
 
 // 디버깅 메시지 초기화
 $debug_info = '';
@@ -153,10 +165,16 @@ if (!in_array($type, $allowed_types)) {
         $debug_info .= "파일 업로드 성공\n";
         $response['success'] = true;
         
-        // 업로드 성공 시 .env 설정 기반으로 URL 생성
-        $bt_upload_url = env('BT_UPLOAD_URL', '/data/file');
-        $url_path = rtrim($bt_upload_url, '/') . "/posts/$board_folder/$year/$month/" . $new_filename;
+        // 업로드 성공 시 통일된 URL 생성 (새로운 날짜 구조)
+        $url_path = rtrim($upload_url_base, '/') . "/$board_folder/$date_folder/" . $new_filename;
         $response['url'] = $url_path;
+        
+        // 디버깅: URL 생성 과정 로그
+        $debug_info .= "URL 생성 과정:\n";
+        $debug_info .= "- upload_url_base: {$upload_url_base}\n";
+        $debug_info .= "- board_folder: {$board_folder}\n";
+        $debug_info .= "- date_folder: {$date_folder}\n";
+        $debug_info .= "- final URL: {$url_path}\n";
         
         // 다양한 URL 형식 제공
         $response['urls'] = [
@@ -168,6 +186,13 @@ if (!in_array($type, $allowed_types)) {
         
         $response['absolute_path'] = realpath($target_file);          // 디버깅용 절대 경로
         $response['message'] = '이미지가 성공적으로 업로드되었습니다.';
+        $response['debug_info'] = [
+            'board_table' => $board_table,
+            'board_folder' => $board_folder,
+            'date_folder' => $date_folder,
+            'upload_dir' => $upload_dir,
+            'relative_path' => $relative_upload_path . $new_filename
+        ];
     } else {
         $debug_info .= "파일 업로드 실패\n";
         $response['message'] = '이미지 업로드 중 오류가 발생했습니다.';
@@ -177,7 +202,8 @@ if (!in_array($type, $allowed_types)) {
 // 디버그 정보 추가
 $response['debug'] = $debug_info;
 
-// JSON 응답 전송
+// JSON 응답 전송 (출력 버퍼 정리)
+if (ob_get_length()) ob_clean();
 send_json_response($response);
 
 /**

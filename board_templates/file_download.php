@@ -88,7 +88,7 @@ $filePath = $baseDir . '/' . $post_board_type . '/' . $storedName;
 
 // 파일이 없으다면 다른 board_type 디렉토리에서 찾기
 if (!is_file($filePath) || !file_exists($filePath)) {
-    $searchDirs = ['finance_reports', 'resources', 'notices', 'newsletters', 'gallery', 'nepal_travel'];
+    $searchDirs = ['finance_reports', 'resources', 'notices', 'newsletter', 'gallery', 'nepal_travel'];
     $found = false;
     
     foreach ($searchDirs as $dir) {

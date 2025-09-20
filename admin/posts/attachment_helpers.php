@@ -205,15 +205,41 @@ function generateSafeFilename($original_name) {
  */
 function deleteAttachment($file_id, $pdo) {
     try {
-        // 파일 정보 조회
-        $stmt = $pdo->prepare("SELECT bf_file FROM hopec_post_files WHERE bf_no = ?");
+        // 파일 정보 조회 (board_type도 함께 가져오기)
+        $stmt = $pdo->prepare("SELECT bf_file, board_type FROM hopec_post_files WHERE bf_no = ?");
         $stmt->execute([$file_id]);
         $file_info = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($file_info) {
             // 물리적 파일 삭제
-            $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
-            $file_path = $upload_path . '/' . $file_info['bf_file'];
+            // 업로드 경로 직접 계산
+            $base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
+            $env_upload_path = env('UPLOAD_PATH');
+            $upload_path = rtrim($base_path, '/') . '/' . ltrim($env_upload_path, '/');
+            $filename = $file_info['bf_file'];
+            $board_type = $file_info['board_type'];
+            
+            // board_type에 따른 폴더명 매핑
+            $folder_mapping = [
+                'finance_reports' => 'finance_reports',
+                'notices' => 'notices', 
+                'press' => 'press',
+                'newsletter' => 'newsletter',
+                'gallery' => 'gallery',
+                'resources' => 'resources',
+                'nepal_travel' => 'nepal_travel'
+            ];
+            
+            $folder_name = $folder_mapping[$board_type] ?? $board_type;
+            
+            // 새로운 구조 확인: bf_file에 경로가 포함되어 있는지 확인
+            if (strpos($filename, '/') !== false) {
+                // 새로운 구조: board_type/날짜/파일명이 bf_file에 저장됨
+                $file_path = $upload_path . '/' . $filename;
+            } else {
+                // 기존 구조: board_type/파일명
+                $file_path = $upload_path . '/' . $folder_name . '/' . $filename;
+            }
             
             if (file_exists($file_path)) {
                 unlink($file_path);

@@ -39,6 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = $_POST['content'] ?? '';
     $author = trim($_POST['author']);
     
+    // 새로 추가된 필드들
+    $password = trim($_POST['password'] ?? '');
+    $options = $_POST['options'] ?? [];
+    
     // 기본적인 XSS 방지
     $content = preg_replace('/<script[^>]*?>.*?<\/script>/is', '', $content);
     $content = preg_replace('/javascript:/i', '', $content);
@@ -59,6 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "작성자를 입력해주세요.";
     }
     
+    // 비밀번호 유효성 검사 (입력된 경우)
+    if (!empty($password) && strlen($password) < 4) {
+        $errors[] = "비밀번호는 4자 이상이어야 합니다.";
+    }
+    
     // 오류가 없으면 게시글 저장
     if (empty($errors)) {
         try {
@@ -68,6 +77,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 선택된 게시판의 board_type 가져오기
             $selected_board = $boards[$board_id - 1];
             $board_type = $selected_board['board_type'];
+            
+            // 비밀번호 해싱 (입력된 경우)
+            $hashed_password = '';
+            if (!empty($password)) {
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            }
+            
+            // 옵션 배열을 SET 형식으로 변환
+            $option_string = '';
+            if (!empty($options)) {
+                $valid_options = ['html1', 'html2', 'secret', 'mail', 'notice'];
+                $filtered_options = array_intersect($options, $valid_options);
+                $option_string = implode(',', $filtered_options);
+            }
             
             // hopec_posts 테이블에 board_type으로 데이터 삽입
             $sql = "INSERT INTO hopec_posts (
@@ -80,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ) VALUES (
                 ?, ?, ?, ?, NOW(), ?, 
                 0, '', 0, 0, 0, '', 
-                '', '', '', '', 0, 0, 
-                0, 0, 0, '', '', '', '', 
+                '', ?, '', '', 0, 0, 
+                0, 0, 0, '', ?, '', '', 
                 0, '', '', '', 
                 '', '', '', '', '', '', '', '', '', ''
             )";
@@ -92,7 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $title, 
                 $content, 
                 $author, 
-                $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'
+                $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                $option_string,
+                $hashed_password
             ]);
             
             if ($result) {
@@ -136,29 +161,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 /**
- * 첨부파일 처리 함수 (기존 .env 경로 기반)
+ * 첨부파일 처리 함수 (개선된 .env 경로 + board_type + 날짜 기반)
  */
 function processAttachments($post_id, $board_type, $files, $pdo) {
     $upload_count = 0;
-    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
+    // 업로드 경로 직접 계산
+    $base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
+    $env_upload_path = env('UPLOAD_PATH');
+    $upload_path = rtrim($base_path, '/') . '/' . ltrim($env_upload_path, '/');
     $allowed_types = explode(',', env('ALLOWED_DOCUMENT_TYPES', 'pdf,doc,docx,hwp,hwpx,xls,xlsx'));
     $allowed_images = explode(',', env('ALLOWED_IMAGE_TYPES', 'jpg,jpeg,png,gif,webp'));
     $max_size = (int)env('UPLOAD_MAX_SIZE', 5242880); // 5MB
     
-    // 기존 파일 시스템 구조에 맞게 폴더 설정
+    // board_type별 폴더 매핑
     $folder_mapping = [
         'finance_reports' => 'finance_reports',
         'notices' => 'notices', 
         'press' => 'press',
-        'newsletter' => 'newsletters',
+        'newsletter' => 'newsletter',
         'gallery' => 'gallery',
         'resources' => 'resources',
         'nepal_travel' => 'nepal_travel'
     ];
     
-    $folder_name = $folder_mapping[$board_type] ?? $board_type;
-    $upload_dir = "{$upload_path}/{$folder_name}/";
+    // 날짜 기반 폴더 생성 (년도+월 형식, 예: 2509)
+    $date_folder = date('ym'); // 현재 년도 2자리 + 월 2자리
     
+    $folder_name = $folder_mapping[$board_type] ?? $board_type;
+    $upload_dir = "{$upload_path}/{$folder_name}/{$date_folder}/";
+    
+    // 디렉토리 생성 (재귀적으로 생성)
     if (!is_dir($upload_dir)) {
         if (!mkdir($upload_dir, 0755, true)) {
             throw new Exception("업로드 디렉토리 생성 실패: {$upload_dir}");
@@ -196,15 +228,17 @@ function processAttachments($post_id, $board_type, $files, $pdo) {
         $file_size = $files['size'][$i];
         $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
         
-        // 안전한 파일명 생성
+        // 안전한 파일명 생성 (타임스탬프 포함)
         $new_filename = generateSafeFilename($original_name);
         $file_path = $upload_dir . $new_filename;
+        
+        // 상대 경로 계산 (board_type/날짜/파일명)
+        $relative_path = "{$folder_name}/{$date_folder}/{$new_filename}";
         
         // 파일 이동
         if (move_uploaded_file($tmp_name, $file_path)) {
             // 파일 정보 DB 저장
             $bf_type = in_array($ext, $allowed_images) ? 1 : 0; // 이미지면 1, 일반파일이면 0
-            // 기존 시스템과 호환되도록 파일명만 저장
             
             // 이미지 크기 정보
             $width = 0; $height = 0;
@@ -223,7 +257,7 @@ function processAttachments($post_id, $board_type, $files, $pdo) {
             
             $file_stmt = $pdo->prepare($file_sql);
             $file_result = $file_stmt->execute([
-                $post_id, $board_type, $original_name, $new_filename, 
+                $post_id, $board_type, $original_name, $relative_path, 
                 '', $file_size, $width, $height, $bf_type, 0
             ]);
             
@@ -235,6 +269,9 @@ function processAttachments($post_id, $board_type, $files, $pdo) {
     
     return $upload_count;
 }
+
+// BASE_PATH 환경 변수 가져오기 (bootstrap.php에서 제공하는 함수 사용)
+$base_path = get_base_path();
 
 // 페이지 제목 설정
 $page_title = '새 게시글 작성';
@@ -263,18 +300,18 @@ $page_title = '새 게시글 작성';
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
+    <a href="<?= $base_path ?>/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
   </div>
-  <a href="/admin/index.php">📊 대시보드</a>
-  <a href="/admin/posts/list.php" class="active">📝 게시글 관리</a>
-  <a href="/admin/boards/list.php">📋 게시판 관리</a>
-  <a href="/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="/admin/events/list.php">📅 행사 관리</a>
-  <a href="/admin/files/list.php">📎 자료실 관리</a>
-  <a href="/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= $base_path ?>/admin/index.php">📊 대시보드</a>
+  <a href="<?= $base_path ?>/admin/posts/list.php" class="active">📝 게시글 관리</a>
+  <a href="<?= $base_path ?>/admin/boards/list.php">📋 게시판 관리</a>
+  <a href="<?= $base_path ?>/admin/menu/list.php">🧭 메뉴 관리</a>
+  <a href="<?= $base_path ?>/admin/inquiries/list.php">📬 문의 관리</a>
+  <a href="<?= $base_path ?>/admin/events/list.php">📅 행사 관리</a>
+  <a href="<?= $base_path ?>/admin/files/list.php">📎 자료실 관리</a>
+  <a href="<?= $base_path ?>/admin/settings/site_settings.php">🎨 디자인 설정</a>
+  <a href="<?= $base_path ?>/admin/system/performance.php">⚡ 성능 모니터링</a>
+  <a href="<?= $base_path ?>/admin/logout.php">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -303,7 +340,7 @@ $page_title = '새 게시글 작성';
     <div class="d-flex justify-content-between align-items-center mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/admin/index.php">관리자</a></li>
+                <li class="breadcrumb-item"><a href="<?= $base_path ?>/admin/index.php">관리자</a></li>
                 <li class="breadcrumb-item"><a href="list.php">게시글 관리</a></li>
                 <li class="breadcrumb-item active">새 게시글 작성</li>
             </ol>
@@ -354,6 +391,57 @@ $page_title = '새 게시글 작성';
                 <div class="mb-3">
                     <label for="content" class="form-label">내용</label>
                     <textarea class="form-control" id="content" name="content" rows="15"><?= htmlspecialchars($_POST['content'] ?? '') ?></textarea>
+                </div>
+
+                <!-- 게시글 옵션 섹션 -->
+                <div class="mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-gear"></i> 게시글 옵션
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="password" class="form-label">비밀번호 보호</label>
+                                    <input type="password" class="form-control" id="password" name="password" 
+                                           placeholder="게시글을 보호할 비밀번호 (선택사항)">
+                                    <small class="text-muted">입력시 비밀번호가 필요한 보호글이 됩니다.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">게시글 설정</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="option_html1" name="options[]" value="html1" checked>
+                                        <label class="form-check-label" for="option_html1">
+                                            <i class="bi bi-code-slash"></i> HTML 사용
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="option_secret" name="options[]" value="secret"
+                                               <?= (isset($_POST['options']) && in_array('secret', $_POST['options'])) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="option_secret">
+                                            <i class="bi bi-lock-fill"></i> 비밀글
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="option_mail" name="options[]" value="mail"
+                                               <?= (isset($_POST['options']) && in_array('mail', $_POST['options'])) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="option_mail">
+                                            <i class="bi bi-envelope"></i> 메일 수신
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="option_notice" name="options[]" value="notice"
+                                               <?= (isset($_POST['options']) && in_array('notice', $_POST['options'])) ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="option_notice">
+                                            <i class="bi bi-megaphone-fill text-warning"></i> 공지사항
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 첨부파일 섹션 -->
@@ -519,7 +607,8 @@ $page_title = '새 게시글 작성';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // CSRF 토큰 설정
+    // 기본 설정
+    const basePath = '<?= $base_path ?>';
     const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
     
     // Summernote 초기화
@@ -589,7 +678,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // 현재 선택된 게시판 정보 가져오기 (새로운 board_type 방식)
         const selectedBoardId = document.getElementById('board_id').value;
         const boardTypes = <?php echo json_encode($board_types); ?>;
+        
+        // 디버깅: 선택된 게시판 정보 확인
+        console.log('Selected Board ID:', selectedBoardId);
+        console.log('Board Types:', boardTypes);
+        
+        // 게시판이 선택되지 않은 경우 경고
+        if (!selectedBoardId || selectedBoardId == '') {
+            alert('이미지를 업로드하기 전에 먼저 게시판을 선택해주세요.');
+            return;
+        }
+        
         const selectedBoardType = selectedBoardId > 0 && boardTypes[selectedBoardId] ? boardTypes[selectedBoardId].board_type : 'general';
+        console.log('Selected Board Type:', selectedBoardType);
         
         var formData = new FormData();
         formData.append('image', file);  // 'file'에서 'image'로 수정 (upload_image.php에서 $_FILES['image'] 사용)
@@ -601,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function() {
         $('body').append(loadingToast);
         
         $.ajax({
-            url: '/admin/posts/upload_image.php',
+            url: basePath + '/admin/posts/upload_image.php',
             method: 'POST',
             data: formData,
             processData: false,
@@ -609,14 +710,20 @@ document.addEventListener('DOMContentLoaded', function() {
             success: function(response) {
                 loadingToast.remove();
                 try {
+                    console.log('Raw response:', response);
                     var data = typeof response === 'string' ? JSON.parse(response) : response;
+                    console.log('Upload response:', data);
+                    
                     if (data && data.success && data.url) {
+                        console.log('Inserting image with URL:', data.url);
                         $('#content').summernote('insertImage', data.url);
                     } else {
-                        alert('이미지 업로드 실패: ' + (data.error || '알 수 없는 오류'));
+                        console.error('Upload failed:', data);
+                        alert('이미지 업로드 실패: ' + (data.message || data.error || '알 수 없는 오류'));
                     }
                 } catch (e) {
                     console.error('Response parsing error:', e);
+                    console.error('Raw response that failed to parse:', response);
                     alert('이미지 업로드 응답 처리 중 오류가 발생했습니다.');
                 }
             },
@@ -646,6 +753,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const author = $('input[name="author"]').val().trim();
         if (!author) {
             alert('작성자를 입력해주세요.');
+            e.preventDefault();
+            return false;
+        }
+        
+        // 비밀번호 길이 검증 (입력된 경우)
+        const password = $('input[name="password"]').val();
+        if (password && password.length < 4) {
+            alert('비밀번호는 4자 이상이어야 합니다.');
             e.preventDefault();
             return false;
         }

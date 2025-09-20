@@ -24,10 +24,12 @@ try {
         die('파일을 찾을 수 없습니다.');
     }
     
-    // 파일 경로 구성 (기존 파일 시스템 구조에 맞게)
-    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
+    // 파일 경로 구성 (기존 + 새로운 날짜 기반 구조 모두 지원)
+    // 업로드 경로 직접 계산
+    $base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
+    $env_upload_path = env('UPLOAD_PATH');
+    $upload_path = rtrim($base_path, '/') . '/' . ltrim($env_upload_path, '/');
     
-    // 기존 파일 시스템: board_type별 폴더 구조
     $board_type = $file_info['board_type'];
     $filename = $file_info['bf_file'];
     
@@ -36,14 +38,22 @@ try {
         'finance_reports' => 'finance_reports',
         'notices' => 'notices', 
         'press' => 'press',
-        'newsletter' => 'newsletters',
+        'newsletter' => 'newsletter',
         'gallery' => 'gallery',
         'resources' => 'resources',
         'nepal_travel' => 'nepal_travel'
     ];
     
     $folder_name = $folder_mapping[$board_type] ?? $board_type;
-    $file_path = $upload_path . '/' . $folder_name . '/' . $filename;
+    
+    // 새로운 구조 확인: bf_file에 경로가 포함되어 있는지 확인
+    if (strpos($filename, '/') !== false) {
+        // 새로운 구조: board_type/날짜/파일명이 bf_file에 저장됨
+        $file_path = $upload_path . '/' . $filename;
+    } else {
+        // 기존 구조: board_type/파일명
+        $file_path = $upload_path . '/' . $folder_name . '/' . $filename;
+    }
     
     // 파일 존재 확인
     if (!file_exists($file_path) || !is_readable($file_path)) {

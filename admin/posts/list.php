@@ -131,6 +131,9 @@ if (isset($_GET['delete']) && isset($_GET['id']) && isset($_GET['board_type'])) 
 
 // 페이지 제목 설정
 $page_title = '게시글 관리';
+
+// BASE_PATH 환경 변수 가져오기
+$base_path = get_base_path();
 ?>
 
 <!DOCTYPE html>
@@ -158,18 +161,18 @@ $page_title = '게시글 관리';
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
+    <a href="<?= $base_path ?>/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
   </div>
-  <a href="/admin/index.php">📊 대시보드</a>
-  <a href="/admin/posts/list.php" class="active">📝 게시글 관리</a>
-  <a href="/admin/boards/list.php">📋 게시판 관리</a>
-  <a href="/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="/admin/events/list.php">📅 행사 관리</a>
-  <a href="/admin/files/list.php">📎 자료실 관리</a>
-  <a href="/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= $base_path ?>/admin/index.php">📊 대시보드</a>
+  <a href="<?= $base_path ?>/admin/posts/list.php" class="active">📝 게시글 관리</a>
+  <a href="<?= $base_path ?>/admin/boards/list.php">📋 게시판 관리</a>
+  <a href="<?= $base_path ?>/admin/menu/list.php">🧭 메뉴 관리</a>
+  <a href="<?= $base_path ?>/admin/inquiries/list.php">📬 문의 관리</a>
+  <a href="<?= $base_path ?>/admin/events/list.php">📅 행사 관리</a>
+  <a href="<?= $base_path ?>/admin/files/list.php">📎 자료실 관리</a>
+  <a href="<?= $base_path ?>/admin/settings/site_settings.php">🎨 디자인 설정</a>
+  <a href="<?= $base_path ?>/admin/system/performance.php">⚡ 성능 모니터링</a>
+  <a href="<?= $base_path ?>/admin/logout.php">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->

@@ -21,6 +21,27 @@ if (!defined('HOPEC_BASE_PATH')) {
     define('HOPEC_BASE_PATH', dirname(__DIR__));
 }
 
+// 업로드 경로 헬퍼 함수
+if (!function_exists('get_upload_path')) {
+    /**
+     * 물리적 업로드 경로 반환 (BASE_PATH와 UPLOAD_PATH 조합)
+     */
+    function get_upload_path() {
+        $base_path = rtrim(HOPEC_BASE_PATH, '/');
+        $upload_path = env('UPLOAD_PATH', 'data/file');
+        return $base_path . '/' . ltrim($upload_path, '/');
+    }
+}
+
+if (!function_exists('get_upload_url')) {
+    /**
+     * 웹 접근 업로드 URL 반환 (상대 경로)
+     */
+    function get_upload_url() {
+        return '/' . ltrim(env('UPLOAD_URL', 'data/file'), '/');
+    }
+}
+
 if (!defined('HOPEC_START_TIME')) {
     define('HOPEC_START_TIME', microtime(true));
 }

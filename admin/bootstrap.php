@@ -77,6 +77,9 @@ require_once __DIR__ . '/auth.php';
 // 데이터베이스 연결
 require_once __DIR__ . '/db.php';
 
+// 환경 변수 로더
+require_once __DIR__ . '/env_loader.php';
+
 // 템플릿 시스템 로드
 require_once __DIR__ . '/templates_bridge.php';
 
@@ -345,4 +348,28 @@ if (!function_exists('t_escape')) {
 
 // Admin 전용 템플릿 함수들 (templates_bridge.php에서 TemplateHelper 클래스 제공)
 // t_render_layout과 t_render_component 함수는 templates_bridge.php에서 제공됨
+
+// URL 생성 헬퍼 함수들
+if (!function_exists('admin_url')) {
+    /**
+     * 관리자 URL 생성 함수
+     * @param string $path 관리자 경로 (예: 'posts/list.php')
+     * @return string 완전한 관리자 URL
+     */
+    function admin_url($path = '') {
+        $base_path = env('BASE_PATH', '/hopec');
+        $path = ltrim($path, '/');
+        return $base_path . '/admin/' . $path;
+    }
+}
+
+if (!function_exists('get_base_path')) {
+    /**
+     * BASE_PATH 환경 변수 가져오기
+     * @return string BASE_PATH 값
+     */
+    function get_base_path() {
+        return env('BASE_PATH', '/hopec');
+    }
+}
 ?>
