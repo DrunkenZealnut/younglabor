@@ -13,10 +13,21 @@ desktop.ini
 # 환경 설정 파일 (보안상 중요!)
 # ========================================
 .env
+.env.*
+!.env.example
 .env.local
 .env.production
 .env.staging
-.env.example
+.env.development
+.env.testing
+
+# 서브 폴더의 환경 설정 파일들
+admin/.env
+admin/.env.*
+!admin/.env.example
+board_templates/.env
+board_templates/.env.*
+!board_templates/.env.example
 
 # ========================================
 # 데이터베이스 파일
@@ -77,6 +88,98 @@ uploads/*
 # 하지만 기본 이미지나 샘플은 포함할 수 있음
 !uploads/default/
 !uploads/samples/
+
+# ========================================
+# Data 폴더 무시 (대용량 파일 및 민감한 데이터)
+# ========================================
+data/
+!data/.gitkeep
+!data/README.md
+
+# ========================================
+# 데이터베이스 관련 파일들
+# ========================================
+# SQL 백업 파일들
+hopec_backup_*.sql
+*_backup_*.sql
+backup_hopec_*.sql
+
+# 데이터베이스 덤프 파일들
+*.dump
+*.dmp
+database_dump_*
+
+# MySQL 로그 파일들
+mysql-bin.*
+mysql-slow.log
+*.err
+
+# ========================================
+# 개발 및 테스트 파일들
+# ========================================
+# 테스트 파일들
+test.php
+test-*.php
+*-test.php
+debug.php
+debug-*.php
+
+# CSS/테마 테스트 파일들
+comprehensive-css-test.php
+simple-css-test.php
+test-critical-css.php
+test-layout-fix.php
+test-optimized-*.php
+theme-test*.php
+comprehensive_theme_diagnosis.php
+
+# ========================================
+# 관리자/설정 관련 임시 파일들
+# ========================================
+# 관리자 설정 백업
+admin/config/*.backup
+admin/settings/*.backup
+
+# 팝업 관련 임시 파일
+popup-debug.php
+
+# ========================================
+# 빌드 및 최적화 관련
+# ========================================
+# CSS 최적화 관련
+regenerate_*.php
+clear-css-cache.php
+force_cache_clear.php
+css-optimization-demo.php
+
+# 테마 관련 임시 파일
+generate_unified_theme.php
+fix_*_theme_*.php
+update_theme_*.php
+verify_*.php
+
+# ========================================
+# 설치 및 설정 관련
+# ========================================
+# 설치 관련 임시 파일
+template-setup*.php
+setup_*.php
+direct_db_setup.php
+manual_installation_guide.md
+
+# 데이터베이스 관리 파일들
+db_manager.php
+*_table_*.php
+
+# ========================================
+# 언어/지역 관련 임시 파일
+# ========================================
+korean-labor-day-history.html
+
+# ========================================
+# 에디터 관련
+# ========================================
+ckeditor4-test.html
 
 # ========================================
 # 백업 파일 및 폴더
