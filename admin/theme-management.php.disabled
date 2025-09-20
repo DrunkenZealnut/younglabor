@@ -3,7 +3,9 @@
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 // DB 연결 및 서비스 로드
-require_once 'db.php';
+// 테마 관리 페이지에서는 테마 시스템 로드 제한
+$_DISABLE_THEME_LOADING = true;
+require_once 'bootstrap.php';
 require_once 'services/GlobalThemeIntegration.php';
 
 $themeIntegration = new GlobalThemeIntegration($pdo);
@@ -83,9 +85,33 @@ $activeTheme = $themeIntegration->getActiveTheme();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>테마 관리 - HOPEC 관리자</title>
+    <link rel="icon" href="data:,">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* CSS 격리 및 강제 적용 */
+        html, body { 
+            min-height: 100vh !important; 
+            display: flex !important; 
+            font-family: 'Segoe UI', sans-serif !important; 
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow-x: hidden !important;
+        }
+        body * { box-sizing: border-box !important; }
+        
+        /* 다른 페이지 스타일 무효화 */
+        .container-fluid { display: none !important; }
+        .row { display: none !important; }
+        .col-md-2, .col-md-10 { display: none !important; }
+        .sidebar { width: 220px; background-color: #343a40; color: white; min-height: 100vh; }
+        .sidebar a { color: white; padding: 12px 16px; display: block; text-decoration: none; transition: background-color 0.2s; }
+        .sidebar a:hover { background-color: #495057; }
+        .sidebar a.active { background-color: #0d6efd; }
+        .main-content { flex-grow: 1; padding: 30px; background-color: #f8f9fa; }
+        .sidebar .logo { font-weight: bold; font-size: 1.3rem; padding: 16px; border-bottom: 1px solid #495057; }
+        .table th { border-top: none; }
+        
         .theme-card {
             border: 2px solid transparent;
             transition: all 0.3s ease;
@@ -144,39 +170,28 @@ $activeTheme = $themeIntegration->getActiveTheme();
         }
     </style>
 </head>
-<body class="bg-light">
-    <!-- 네비게이션 -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-cogs"></i> HOPEC 관리자
-            </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="../">사이트 보기</a>
-                <a class="nav-link" href="settings/site_settings.php">사이트 설정</a>
-                <a class="nav-link" href="logout.php">로그아웃</a>
-            </div>
-        </div>
-    </nav>
+<body>
 
-    <div class="container-fluid mt-4">
-        <div class="row">
-            <!-- 사이드바 -->
-            <div class="col-md-2">
-                <div class="card">
-                    <div class="card-body">
-                        <h6 class="card-title">테마 관리</h6>
-                        <nav class="nav flex-column">
-                            <a class="nav-link active" href="#themes">테마 목록</a>
-                            <a class="nav-link" href="#add-theme">새 테마 추가</a>
-                            <a class="nav-link" href="#backup">백업 & 복원</a>
-                        </nav>
-                    </div>
-                </div>
-            </div>
+<!-- 사이드바 -->
+<div class="sidebar">
+  <div class="logo">
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none">희망씨 관리자</a>
+  </div>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php') ?>">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('theme-management.php') ?>" class="active">🎭 통합 테마 관리</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
+</div>
 
-            <!-- 메인 콘텐츠 -->
-            <div class="col-md-10">
+<!-- 메인 콘텐츠 -->
+<div class="main-content">
                 <!-- 페이지 헤더 -->
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1><i class="fas fa-palette"></i> 테마 관리 시스템</h1>
@@ -483,6 +498,43 @@ $activeTheme = $themeIntegration->getActiveTheme();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // 강력한 레이아웃 보호
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const html = document.documentElement;
+            
+            // 핵심 스타일 강제 적용
+            function enforceLayout() {
+                body.style.cssText = 'display: flex !important; min-height: 100vh !important; margin: 0 !important; padding: 0 !important; font-family: "Segoe UI", sans-serif !important; overflow-x: hidden !important;';
+                html.style.cssText = 'margin: 0 !important; padding: 0 !important;';
+                
+                // Bootstrap 그리드 요소들 숨기기
+                const hideElements = document.querySelectorAll('.container-fluid, .row, .col-md-2, .col-md-10');
+                hideElements.forEach(el => {
+                    el.style.display = 'none !important';
+                });
+            }
+            
+            // 즉시 적용
+            enforceLayout();
+            
+            // 주기적으로 확인 및 복원 (더 강력함)
+            setInterval(enforceLayout, 100);
+            
+            // MutationObserver로 실시간 감지
+            const observer = new MutationObserver(enforceLayout);
+            observer.observe(body, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                attributeFilter: ['style', 'class']
+            });
+            observer.observe(html, {
+                attributes: true,
+                attributeFilter: ['style', 'class']
+            });
+        });
+        
         function confirmDelete(themeName) {
             document.getElementById('deleteThemeName').value = themeName;
             new bootstrap.Modal(document.getElementById('deleteModal')).show();
@@ -545,5 +597,8 @@ $activeTheme = $themeIntegration->getActiveTheme();
             }, 5000);
         });
     </script>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

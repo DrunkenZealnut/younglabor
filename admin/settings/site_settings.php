@@ -2,25 +2,45 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
 
-// DB 연결
-require_once '../db.php';
+// Bootstrap 및 DB 연결
+require_once '../bootstrap.php';
 
-// ThemeManager 서비스 로드
-require_once '../services/ThemeManager.php';
+// bootstrap.php에서 $app_name과 $admin_title 전역 변수를 제공합니다
 
-// ThemeService 로드 (CSS 재생성용)
-require_once '../mvc/services/ThemeService.php';
+// 테마 관리 서비스들이 제거되었습니다
+// 임시 더미 클래스들
+class ThemeManager {
+    public function __construct($pdo) {}
+    public function clearAllCache() { return true; }
+    public function setActiveTheme($theme) { return true; }
+    public function updateThemeConfigOverride($overrides) { return true; }
+    public function saveDynamicCSS() { return true; }
+    public function registerNewTheme($file, $name) { return $name; }
+    public function deleteTheme($theme) { return true; }
+    public function getAvailableThemes() { return ['natural-green']; }
+    public function getActiveTheme() { return 'natural-green'; }
+    public function getMergedThemeConfig($theme = null) { return ['primary' => '#0d6efd']; }
+    public function getThemeConfigOverride() { return []; }
+    public function validateThemeStructure($theme) { return ['valid' => true]; }
+    public function getThemesDir() { return '/themes'; }
+    public function getThemePreviewUrl($theme) { return '#'; }
+}
 
-// GlobalThemeIntegration 서비스 로드
-require_once '../services/GlobalThemeIntegration.php';
+class ThemeService {
+    public function __construct($pdo) {}
+    public function generateThemeCSS() { return true; }
+}
 
-// ThemeManager 초기화
+class GlobalThemeIntegration {
+    public function __construct($pdo) {}
+    public function setActiveTheme($theme) { return true; }
+    public function getAllThemes() { return ['natural-green']; }
+    public function getActiveTheme() { return 'natural-green'; }
+}
+
+// 더미 객체 초기화
 $themeManager = new ThemeManager($pdo);
-
-// ThemeService 초기화
 $themeService = new ThemeService($pdo);
-
-// GlobalThemeIntegration 초기화
 $globalThemeIntegration = new GlobalThemeIntegration($pdo);
 
 // 테이블이 없는 경우 생성
@@ -79,8 +99,6 @@ try {
     ['kakaotalk_url', '', 'social'],
     
     // 테마 관리 설정
-    ['active_theme', 'natural-green', 'theme_management'],
-    ['theme_config_override', '{}', 'theme_management'],
     
   ];
   
@@ -232,7 +250,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     
-    // 통합 테마 관리 설정 저장 (Bootstrap 색상 + 테마 오버라이드)
     //각 색상의 역할
 
   //1. 주 색상 (Primary - #BE2558):
@@ -285,7 +302,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           
           if ($currentTheme === false) {
             // active_theme 레코드가 없으면 삽입
-            $insertStmt = $pdo->prepare("INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES ('active_theme', ?, 'theme_management')");
             $insertStmt->execute([$selectedTheme]);
           } else {
             // active_theme 레코드가 있으면 업데이트
@@ -511,7 +527,7 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>디자인 설정 - 관리자</title>
+  <title>디자인 설정 - <?= htmlspecialchars($admin_title) ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -530,29 +546,42 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
     }
     .sidebar {
       width: 220px;
+      min-width: 220px;
+      max-width: 220px;
+      flex-shrink: 0;
       background-color: #343a40;
       color: white;
       min-height: 100vh;
+      overflow-x: hidden;
     }
     .sidebar a {
       color: white;
       padding: 12px 16px;
       display: block;
       text-decoration: none;
+      transition: background-color 0.2s;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
     .sidebar a:hover {
       background-color: #495057;
     }
     .main-content {
       flex-grow: 1;
+      flex-basis: 0;
       padding: 30px;
       background-color: #f8f9fa;
+      min-width: 0;
     }
     .sidebar .logo {
       font-weight: bold;
       font-size: 1.3rem;
       padding: 16px;
       border-bottom: 1px solid #495057;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
     .nav-tabs .nav-link {
       border: none;
@@ -663,18 +692,19 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
 
 <!-- 사이드바 -->
 <div class="sidebar">
-  <div class="logo">희망씨 관리자</div>
-  <a href="../index.php">📊 대시보드</a>
-  <a href="../posts/list.php">📝 게시글 관리</a>
-  <a href="../boards/list.php">📋 게시판 관리</a>
-  <a href="../menu/list.php">🧭 메뉴 관리</a>
-  <a href="../inquiries/list.php">📬 문의 관리</a>
-  <a href="../events/list.php">📅 행사 관리</a>
-  <a href="../files/list.php">📂 자료실</a>
-  <a href="site_settings.php" class="active bg-primary">🎨 디자인 설정</a>
-  <a href="../theme-management.php">🎭 통합 테마 관리</a>
-  <a href="../system/performance.php">⚡ 성능 모니터링</a>
-  <a href="../logout.php">🚪 로그아웃</a>
+  <div class="logo">
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
+  </div>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php') ?>">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>" class="active">🎨 디자인 설정</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 
 <!-- 본문 -->
@@ -1100,10 +1130,6 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
             <small class="text-muted">• 테마 실시간 미리보기 • 글로벌 테마 지원 • CSS 파일 업로드 • 테마 백업/복원</small>
           </div>
           <div class="ms-3">
-            <a href="../theme-management.php" class="btn btn-primary">
-              <i class="fas fa-palette"></i> 통합 테마 관리
-            </a>
-            <a href="/simple_theme_test.php" target="_blank" class="btn btn-outline-info">
               <i class="fas fa-eye"></i> 테마 테스트
             </a>
           </div>

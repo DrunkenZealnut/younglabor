@@ -54,17 +54,17 @@ $show_navbar = isset($show_navbar) ? $show_navbar : true;
 <!-- 상단 네비게이션 -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="<?= t_url('index.php') ?>">희망씨 관리자</a>
+    <a class="navbar-brand" href="<?= t_url('index.php') ?>"><?= htmlspecialchars($admin_title) ?></a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" href="<?= t_url('posts/list.php') ?>">게시글</a>
+          <a class="nav-link" href="<?= t_url('posts/list.php">게시글</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<?= t_url('inquiries/list.php') ?>">문의</a>
+          <a class="nav-link" href="<?= t_url('inquiries/list.php">문의</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="<?= t_url('events/list.php') ?>">행사</a>
+          <a class="nav-link" href="<?= t_url('events/list.php">행사</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="<?= t_url('settings/site_settings.php') ?>">디자인설정</a>

@@ -36,7 +36,7 @@ $event_data = $event ?? [
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="/admin/events">이벤트 관리</a>
+                        <a href="<?= admin_url('events">이벤트 관리</a>
                     </li>
                     <li class="breadcrumb-item active"><?= $page_title ?></li>
                 </ol>
@@ -44,7 +44,7 @@ $event_data = $event ?? [
             <h1 class="h3 mb-0"><?= $page_title ?></h1>
         </div>
         <div>
-            <a href="/admin/events" class="btn btn-outline-secondary">
+            <a href="<?= admin_url('events" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> 목록으로
             </a>
         </div>

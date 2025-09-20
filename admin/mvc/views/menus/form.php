@@ -38,7 +38,7 @@ if (!empty($menu_data['parent_id'])) {
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="/admin/menus">메뉴 관리</a>
+                        <a href="<?= admin_url('menus">메뉴 관리</a>
                     </li>
                     <li class="breadcrumb-item active"><?= $page_title ?></li>
                 </ol>
@@ -52,7 +52,7 @@ if (!empty($menu_data['parent_id'])) {
             <?php endif; ?>
         </div>
         <div>
-            <a href="/admin/menus" class="btn btn-outline-secondary">
+            <a href="<?= admin_url('menus" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> 목록으로
             </a>
         </div>
@@ -271,7 +271,7 @@ if (!empty($menu_data['parent_id'])) {
                             <i class="bi bi-check-lg"></i> <?= $submit_text ?>
                         </button>
                         <?php if ($is_edit): ?>
-                        <a href="/admin/menus/view/<?= $menu['id'] ?>" class="btn btn-outline-info">
+                        <a href="<?= admin_url('menus/view/<?= $menu['id'] ?>" class="btn btn-outline-info">
                             <i class="bi bi-eye"></i> 미리보기
                         </a>
                         <?php endif; ?>

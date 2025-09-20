@@ -43,7 +43,7 @@ try {
     $list_params[':offset'] = $offset;
     
     $rows = DatabaseManager::select(
-        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_file FROM hopec_posts WHERE ' . $where_sql . ' ORDER BY wr_datetime DESC LIMIT :limit OFFSET :offset',
+        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_file, wr_is_notice FROM hopec_posts WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT :limit OFFSET :offset',
         $list_params
     );
 } catch (Exception $e) {
@@ -74,7 +74,7 @@ foreach ($rows as $r) {
         'created_at' => (string)$r['wr_datetime'],
         'view_count' => (int)$r['wr_hit'],
         'attachment_count' => (int)($attachmentCounts[$wr_id] ?? 0),
-        'is_notice' => 0,
+        'is_notice' => (int)($r['wr_is_notice'] ?? 0),
     ];
 }
 

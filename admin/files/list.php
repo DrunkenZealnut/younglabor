@@ -152,18 +152,18 @@ function get_file_icon($file_type) {
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
   </div>
-  <a href="/admin/index.php">📊 대시보드</a>
-  <a href="/admin/posts/list.php">📝 게시글 관리</a>
-  <a href="/admin/boards/list.php">📋 게시판 관리</a>
-  <a href="/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="/admin/events/list.php">📅 행사 관리</a>
-  <a href="/admin/files/list.php" class="active">📎 자료실 관리</a>
-  <a href="/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php') ?>">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>" class="active">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->

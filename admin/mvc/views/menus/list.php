@@ -44,7 +44,7 @@ function renderMenuTree($menus, $level = 0) {
             <td class="text-center">' . $status_badge . '</td>
             <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
-                    <a href="/admin/menus/edit/' . $menu['id'] . '" class="btn btn-outline-warning" title="수정">
+                    <a href="<?= admin_url('menus/edit/' . $menu['id'] . '" class="btn btn-outline-warning" title="수정">
                         <i class="bi bi-pencil"></i>
                     </a>
                     <button type="button" class="btn btn-outline-info" onclick="addSubmenu(' . $menu['id'] . ')" title="하위메뉴 추가">
@@ -86,7 +86,7 @@ function renderMenuTree($menus, $level = 0) {
                     <i class="bi bi-x-circle"></i> 전체 비활성화
                 </button>
             </div>
-            <a href="/admin/menus/create" class="btn btn-primary">
+            <a href="<?= admin_url('menus/create" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> 메뉴 추가
             </a>
         </div>
@@ -132,7 +132,7 @@ function renderMenuTree($menus, $level = 0) {
                     <i class="bi bi-list-ul display-1 text-muted"></i>
                     <h5 class="text-muted mt-3">등록된 메뉴가 없습니다</h5>
                     <p class="text-muted">새로운 메뉴를 추가해보세요.</p>
-                    <a href="/admin/menus/create" class="btn btn-primary">
+                    <a href="<?= admin_url('menus/create" class="btn btn-primary">
                         <i class="bi bi-plus"></i> 메뉴 추가
                     </a>
                 </div>
@@ -286,7 +286,7 @@ function renderMenuTreeHtml(menus, level = 0) {
             <td class="text-center">${statusBadge}</td>
             <td class="text-center">
                 <div class="btn-group btn-group-sm" role="group">
-                    <a href="/admin/menus/edit/${menu.id}" class="btn btn-outline-warning" title="수정">
+                    <a href="<?= admin_url('menus/edit/${menu.id}" class="btn btn-outline-warning" title="수정">
                         <i class="bi bi-pencil"></i>
                     </a>
                     <button type="button" class="btn btn-outline-info" onclick="addSubmenu(${menu.id})" title="하위메뉴 추가">

@@ -14,7 +14,7 @@ if (!defined('ADMIN_FRAMEWORK_PATH')) {
 // 희망씨 프로젝트 설정
 if (!AdminFramework::config('initialized')) {
     $hopecConfig = [
-        'project_name' => '희망씨 관리자',
+        'project_name' => '<?= htmlspecialchars($admin_title) ?>',
         'base_url' => 'http://hopec.local:8012/admin',
         'theme' => 'hopec',
         'language' => 'ko',

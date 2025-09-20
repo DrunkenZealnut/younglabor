@@ -14,7 +14,7 @@ if (function_exists('is_debug') && is_debug()) {
     error_log('DEBUG resources_view.php - Query String: ' . ($_SERVER['QUERY_STRING'] ?? 'NONE'));
 }
 
-$postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$postId = isset($_GET['wr_id']) ? (int)$_GET['wr_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
 if ($postId <= 0) {
     $message = '잘못된 요청입니다.' . (function_exists('is_debug') && is_debug() ? ' (받은 ID: ' . ($_GET['id'] ?? 'NONE') . ')' : '');
     $pageTitle = '자료실 | ' . app_name();

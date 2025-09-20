@@ -19,24 +19,24 @@ try {
     $stmt->execute();
     $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // 각 게시판별 게시글 수 조회 (실제 게시판 데이터 테이블들)
-    $table_mapping = [
-        '재정보고' => 'hopec_finance_reports',
-        '공지사항' => 'hopec_notices', 
-        '언론보도' => 'hopec_press',
-        '소식지' => 'hopec_newsletter',
-        '갤러리' => 'hopec_gallery',
-        '자료실' => 'hopec_resources',
-        '네팔나눔연대여행' => 'hopec_nepal_travel'
+    // board_type별 게시글 수 조회 (hopec_posts 테이블에서)
+    $board_type_mapping = [
+        '재정보고' => 'finance_reports',
+        '공지사항' => 'notices', 
+        '언론보도' => 'press',
+        '소식지' => 'newsletter',
+        '갤러리' => 'gallery',
+        '자료실' => 'resources',
+        '네팔나눔연대여행' => 'nepal_travel'
     ];
     
     foreach ($boards as &$board) {
-        $table_name = $table_mapping[$board['board_name']] ?? null;
-        if ($table_name) {
+        $board_type = $board_type_mapping[$board['board_name']] ?? $board['board_type'] ?? null;
+        if ($board_type) {
             try {
-                $count_query = "SELECT COUNT(*) as post_count FROM $table_name";
+                $count_query = "SELECT COUNT(*) as post_count FROM hopec_posts WHERE board_type = ?";
                 $stmt = $pdo->prepare($count_query);
-                $stmt->execute();
+                $stmt->execute([$board_type]);
                 $count_result = $stmt->fetch(PDO::FETCH_ASSOC);
                 $board['post_count'] = $count_result['post_count'] ?? 0;
             } catch (PDOException $e) {
@@ -211,7 +211,7 @@ ob_start();
                                 </td>
                                 <td>
                                     <?php 
-                                    $displayCode = $board['board_code'];
+                                    $displayCode = $board['board_type'] ?? $board['board_code'] ?? 'N/A';
                                     if (strpos($displayCode, 'board_') === 0) {
                                         $displayCode = substr($displayCode, 6);
                                     }
@@ -242,7 +242,7 @@ ob_start();
                                 </td>
                                 <td><?= $board['sort_order'] ?? 0 ?></td>
                                 <td>
-                                    <?php if ($board['allow_attachments']): ?>
+                                    <?php if (isset($board['allow_attachments']) && $board['allow_attachments']): ?>
                                         <span class="badge bg-success">허용</span>
                                     <?php else: ?>
                                         <span class="badge bg-secondary">비허용</span>
@@ -307,18 +307,18 @@ $page_title = '게시판 관리';
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
   </div>
-  <a href="/admin/index.php">📊 대시보드</a>
-  <a href="/admin/posts/list.php">📝 게시글 관리</a>
-  <a href="/admin/boards/list.php" class="active">📋 게시판 관리</a>
-  <a href="/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="/admin/events/list.php">📅 행사 관리</a>
-  <a href="/admin/files/list.php">📎 자료실 관리</a>
-  <a href="/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php') ?>">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>" class="active">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->

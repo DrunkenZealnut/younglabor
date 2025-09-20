@@ -79,10 +79,10 @@ try {
     $limit_safe = (int)$per_page; // 정확한 개수만 조회
     
     // 단순하고 직접적인 쿼리 (중복이 없다는 것을 확인했으므로)
-    $list_sql = "SELECT wr_id, wr_subject, wr_content, wr_name, wr_datetime, wr_hit
+    $list_sql = "SELECT wr_id, wr_subject, wr_content, wr_name, wr_datetime, wr_hit, wr_is_notice
                  FROM hopec_posts 
                  WHERE board_type = 'newsletter' AND $base_where
-                 ORDER BY wr_datetime DESC
+                 ORDER BY wr_is_notice DESC, wr_datetime DESC
                  LIMIT $limit_safe OFFSET $offset_safe";
     
     $newsletter_posts = DatabaseManager::select($list_sql, $final_params);

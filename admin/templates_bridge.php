@@ -14,7 +14,7 @@ if (file_exists($framework_path)) {
     
     // 현재 프로젝트 설정
     $project_config = [
-        'project_name' => '희망씨 관리자',
+        'project_name' => '<?= htmlspecialchars($admin_title) ?>',
         'theme' => 'hopec',
         'lang' => 'ko',
         'template_path' => __DIR__ . '/templates_project',  // 프로젝트 전용 템플릿
@@ -102,7 +102,13 @@ class TemplateHelper
      */
     public static function url($path = '', $params = [])
     {
-        $base_url = rtrim('/admin', '/');
+        // BASE_PATH를 사용하여 올바른 admin URL 생성
+        $base_path = getenv('BASE_PATH');
+        if ($base_path === false) {
+            $base_path = $_ENV['BASE_PATH'] ?? '/hopec';
+        }
+        
+        $base_url = rtrim($base_path . '/admin', '/');
         $url = $base_url . '/' . ltrim($path, '/');
         
         if (!empty($params)) {

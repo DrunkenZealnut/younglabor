@@ -84,10 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             }
             
-            // 옵션 배열을 SET 형식으로 변환
+            // 공지사항 옵션 별도 처리
+            $is_notice = in_array('notice', $options) ? 1 : 0;
+            
+            // 공지사항을 제외한 나머지 옵션 처리
             $option_string = '';
             if (!empty($options)) {
-                $valid_options = ['html1', 'html2', 'secret', 'mail', 'notice'];
+                $valid_options = ['html1', 'html2', 'secret', 'mail']; // notice 제외
                 $filtered_options = array_intersect($options, $valid_options);
                 $option_string = implode(',', $filtered_options);
             }
@@ -99,14 +102,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ca_name, wr_option, wr_link1, wr_link2, wr_link1_hit, wr_link2_hit, 
                 wr_hit, wr_good, wr_nogood, mb_id, wr_password, wr_email, wr_homepage, 
                 wr_file, wr_last, wr_facebook_user, wr_twitter_user, 
-                wr_1, wr_2, wr_3, wr_4, wr_5, wr_6, wr_7, wr_8, wr_9, wr_10
+                wr_is_notice, wr_2, wr_3, wr_4, wr_5, wr_6, wr_7, wr_8, wr_9, wr_10
             ) VALUES (
                 ?, ?, ?, ?, NOW(), ?, 
                 0, '', 0, 0, 0, '', 
                 '', ?, '', '', 0, 0, 
                 0, 0, 0, '', ?, '', '', 
                 0, '', '', '', 
-                '', '', '', '', '', '', '', '', '', ''
+                ?, '', '', '', '', '', '', '', '', ''
             )";
             
             $stmt = $pdo->prepare($sql);
@@ -117,7 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $author, 
                 $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
                 $option_string,
-                $hashed_password
+                $hashed_password,
+                $is_notice
             ]);
             
             if ($result) {
@@ -278,7 +282,7 @@ $page_title = '새 게시글 작성';
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title><?= htmlspecialchars($page_title) ?> - 희망씨 관리자</title>
+  <title><?= htmlspecialchars($page_title) ?> - <?= htmlspecialchars($admin_title) ?></title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -297,18 +301,18 @@ $page_title = '새 게시글 작성';
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="<?= $base_path ?>/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
   </div>
-  <a href="<?= $base_path ?>/admin/index.php">📊 대시보드</a>
-  <a href="<?= $base_path ?>/admin/posts/list.php" class="active">📝 게시글 관리</a>
-  <a href="<?= $base_path ?>/admin/boards/list.php">📋 게시판 관리</a>
-  <a href="<?= $base_path ?>/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="<?= $base_path ?>/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="<?= $base_path ?>/admin/events/list.php">📅 행사 관리</a>
-  <a href="<?= $base_path ?>/admin/files/list.php">📎 자료실 관리</a>
-  <a href="<?= $base_path ?>/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="<?= $base_path ?>/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="<?= $base_path ?>/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php') ?>" class="active">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -337,7 +341,7 @@ $page_title = '새 게시글 작성';
     <div class="d-flex justify-content-between align-items-center mb-4">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="<?= $base_path ?>/admin/index.php">관리자</a></li>
+                <li class="breadcrumb-item"><a href="<?= admin_url('index.php') ?>">관리자</a></li>
                 <li class="breadcrumb-item"><a href="list.php">게시글 관리</a></li>
                 <li class="breadcrumb-item active">새 게시글 작성</li>
             </ol>
@@ -605,7 +609,7 @@ $page_title = '새 게시글 작성';
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // 기본 설정
-    const basePath = '<?= $base_path ?>';
+    const basePath = '<?= get_base_path() ?>';
     const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
     
     // Summernote 초기화
@@ -687,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function() {
         $('body').append(loadingToast);
         
         $.ajax({
-            url: basePath + '/admin/posts/upload_image.php',
+            url: '<?= admin_url('posts/upload_image.php') ?>',
             method: 'POST',
             data: formData,
             processData: false,

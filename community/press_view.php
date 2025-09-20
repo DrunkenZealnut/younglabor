@@ -15,7 +15,7 @@ try {
     }
     
     // 파라미터 검증
-    $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $postId = isset($_GET['wr_id']) ? (int)$_GET['wr_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     if ($postId <= 0) {
         $message = '잘못된 요청입니다.' . (function_exists('is_debug') && is_debug() ? ' (받은 ID: ' . ($_GET['id'] ?? 'NONE') . ')' : '');
         $pageTitle = '언론보도 | ' . app_name();

@@ -96,7 +96,7 @@ if (isset($_GET['debug_menu'])) {
 <div class="sidebar">
   <div class="logo">
     <a href="<?= t_url('index.php') ?>" class="text-white text-decoration-none">
-      희망씨 관리자
+      <?= htmlspecialchars($admin_title) ?>
     </a>
   </div>
   
@@ -117,22 +117,22 @@ if (isset($_GET['debug_menu'])) {
   <a href="<?= t_url('index.php') ?>" <?= is_menu_active('index') ? 'class="active"' : '' ?>>
     📊 대시보드
   </a>
-  <a href="<?= t_url('posts/list.php') ?>" <?= is_menu_active('posts') ? 'class="active"' : '' ?>>
+  <a href="<?= t_url('posts/list.php" <?= is_menu_active('posts') ? 'class="active"' : '' ?>>
     📝 게시글 관리
   </a>
-  <a href="<?= t_url('boards/list.php') ?>" <?= is_menu_active('boards') ? 'class="active"' : '' ?>>
+  <a href="<?= t_url('boards/list.php" <?= is_menu_active('boards') ? 'class="active"' : '' ?>>
     📋 게시판 관리
   </a>
-  <a href="<?= t_url('menu/list.php') ?>" <?= is_menu_active('menu') ? 'class="active"' : '' ?>>
+  <a href="<?= t_url('menu/list.php" <?= is_menu_active('menu') ? 'class="active"' : '' ?>>
     🧭 메뉴 관리
   </a>
-  <a href="<?= t_url('inquiries/list.php') ?>" <?= is_menu_active('inquiries') ? 'class="active"' : '' ?>>
+  <a href="<?= t_url('inquiries/list.php" <?= is_menu_active('inquiries') ? 'class="active"' : '' ?>>
     📬 문의 관리
   </a>
-  <a href="<?= t_url('events/list.php') ?>" <?= is_menu_active('events') ? 'class="active"' : '' ?>>
+  <a href="<?= t_url('events/list.php" <?= is_menu_active('events') ? 'class="active"' : '' ?>>
     📅 행사 관리
   </a>
-  <a href="<?= t_url('files/list.php') ?>" <?= is_menu_active('files') ? 'class="active"' : '' ?>>
+  <a href="<?= t_url('files/list.php" <?= is_menu_active('files') ? 'class="active"' : '' ?>>
     📎 자료실 관리
   </a>
   <a href="<?= t_url('settings/site_settings.php') ?>" <?= is_menu_active('settings', 'site_settings.php') ? 'class="active"' : '' ?>>

@@ -38,7 +38,7 @@
                         
                         <!-- 액션 버튼들 -->
                         <div class="d-flex justify-content-center gap-3 flex-wrap">
-                            <a href="/admin/mvc/" class="btn btn-primary btn-lg px-4">
+                            <a href="<?= admin_url('mvc/" class="btn btn-primary btn-lg px-4">
                                 <i class="bi bi-house"></i> 관리자 홈으로
                             </a>
                             <button onclick="history.back()" class="btn btn-outline-secondary btn-lg px-4">
@@ -50,16 +50,16 @@
                         <div class="mt-4 pt-3 border-top">
                             <p class="text-muted small mb-2">자주 찾는 관리 메뉴:</p>
                             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                <a href="/admin/mvc/posts" class="text-decoration-none small">
+                                <a href="<?= admin_url('mvc/posts" class="text-decoration-none small">
                                     <i class="bi bi-file-text"></i> 게시물 관리
                                 </a>
-                                <a href="/admin/mvc/events" class="text-decoration-none small">
+                                <a href="<?= admin_url('mvc/events" class="text-decoration-none small">
                                     <i class="bi bi-calendar-event"></i> 이벤트 관리
                                 </a>
-                                <a href="/admin/mvc/inquiries" class="text-decoration-none small">
+                                <a href="<?= admin_url('mvc/inquiries" class="text-decoration-none small">
                                     <i class="bi bi-envelope"></i> 문의 관리
                                 </a>
-                                <a href="/admin/mvc/menus" class="text-decoration-none small">
+                                <a href="<?= admin_url('mvc/menus" class="text-decoration-none small">
                                     <i class="bi bi-list"></i> 메뉴 관리
                                 </a>
                             </div>

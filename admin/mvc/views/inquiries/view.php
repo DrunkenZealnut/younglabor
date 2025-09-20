@@ -37,7 +37,7 @@ $inquiry_data = $inquiry;
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="/admin/inquiries">문의 관리</a>
+                        <a href="<?= admin_url('inquiries">문의 관리</a>
                     </li>
                     <li class="breadcrumb-item active">문의 상세</li>
                 </ol>
@@ -45,7 +45,7 @@ $inquiry_data = $inquiry;
             <h1 class="h3 mb-0">문의 상세 - #<?= $inquiry_data['id'] ?></h1>
         </div>
         <div>
-            <a href="/admin/inquiries" class="btn btn-outline-secondary">
+            <a href="<?= admin_url('inquiries" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> 목록으로
             </a>
         </div>

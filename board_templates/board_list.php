@@ -266,11 +266,11 @@ if (function_exists('renderSafeBoardTheme')) {
                 </thead>
                 <tbody class="bg-white divide-y border-primary-light">
                     <?php foreach ($posts as $index => $post): ?>
-                    <tr class="hover:<?= getThemeClass('bg', 'background', '50') ?> transition-colors <?= $post['is_notice'] ? getThemeClass('bg', 'warning', '50') : '' ?>">
+                    <tr class="hover:<?= getThemeClass('bg', 'background', '50') ?> transition-colors" style="<?= $post['is_notice'] ? 'background-color: var(--primary);' : '' ?>">
                         <!-- 번호 -->
                         <td class="px-4 py-3 text-sm <?= getThemeClass('text', 'primary', '900') ?> text-center" style="width: 74px;">
                             <?php if ($post['is_notice']): ?>
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium <?= getThemeClass('bg', 'danger', '100') ?> <?= getThemeClass('text', 'danger', '800') ?>">
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium <?= getThemeClass('bg', 'primary', '100') ?> <?= getThemeClass('text', 'primary', '800') ?>">
                                     공지
                                 </span>
                             <?php else: ?>

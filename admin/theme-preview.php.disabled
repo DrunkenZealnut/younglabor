@@ -43,7 +43,7 @@ if ($originalTheme) {
                     <button onclick="window.close()" class="btn btn-outline-light btn-sm">
                         <i class="fas fa-times"></i> 닫기
                     </button>
-                    <a href="/admin/theme-management.php" class="btn btn-light btn-sm">
+                    <a href="<?= admin_url('theme-management.php') ?>" class="btn btn-light btn-sm">
                         <i class="fas fa-cogs"></i> 테마 관리
                     </a>
                 </div>

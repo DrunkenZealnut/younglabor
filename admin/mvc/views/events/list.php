@@ -87,11 +87,11 @@ $columns = [
 
 // 액션 버튼 함수
 $actions = function($row) {
-    $buttons = '<a href="/admin/events/view/' . $row['id'] . '" class="btn btn-sm btn-outline-primary" title="상세보기">
+    $buttons = '<a href="<?= admin_url('events/view/' . $row['id'] . '" class="btn btn-sm btn-outline-primary" title="상세보기">
         <i class="bi bi-eye"></i>
     </a>';
     
-    $buttons .= ' <a href="/admin/events/edit/' . $row['id'] . '" class="btn btn-sm btn-outline-warning" title="수정">
+    $buttons .= ' <a href="<?= admin_url('events/edit/' . $row['id'] . '" class="btn btn-sm btn-outline-warning" title="수정">
         <i class="bi bi-pencil"></i>
     </a>';
     
@@ -133,10 +133,10 @@ $bulk_actions = [
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0">이벤트 관리</h1>
         <div>
-            <a href="/admin/events/export?<?= http_build_query($filters ?? []) ?>" class="btn btn-outline-success me-2">
+            <a href="<?= admin_url('events/export?<?= http_build_query($filters ?? []) ?>" class="btn btn-outline-success me-2">
                 <i class="bi bi-download"></i> 엑셀 다운로드
             </a>
-            <a href="/admin/events/create" class="btn btn-primary">
+            <a href="<?= admin_url('events/create" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> 이벤트 등록
             </a>
         </div>
@@ -193,7 +193,7 @@ $bulk_actions = [
                             <i class="bi bi-search"></i> 검색
                         </button>
                         <?php if (!empty(array_filter($filters ?? []))): ?>
-                        <a href="/admin/events" class="btn btn-outline-secondary">
+                        <a href="<?= admin_url('events" class="btn btn-outline-secondary">
                             <i class="bi bi-x"></i> 초기화
                         </a>
                         <?php endif; ?>

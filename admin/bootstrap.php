@@ -357,7 +357,12 @@ if (!function_exists('admin_url')) {
      * @return string 완전한 관리자 URL
      */
     function admin_url($path = '') {
-        $base_path = env('BASE_PATH', '/hopec');
+        // 더 안전한 방법으로 BASE_PATH 가져오기
+        $base_path = getenv('BASE_PATH');
+        if ($base_path === false) {
+            $base_path = $_ENV['BASE_PATH'] ?? '/hopec';
+        }
+        
         $path = ltrim($path, '/');
         return $base_path . '/admin/' . $path;
     }
@@ -369,7 +374,30 @@ if (!function_exists('get_base_path')) {
      * @return string BASE_PATH 값
      */
     function get_base_path() {
-        return env('BASE_PATH', '/hopec');
+        // 더 안전한 방법으로 BASE_PATH 가져오기
+        $base_path = getenv('BASE_PATH');
+        if ($base_path === false) {
+            $base_path = $_ENV['BASE_PATH'] ?? '/hopec';
+        }
+        return $base_path;
     }
 }
+
+if (!function_exists('get_app_name')) {
+    /**
+     * APP_NAME 환경 변수 가져오기
+     * @return string APP_NAME 값
+     */
+    function get_app_name() {
+        $app_name = getenv('APP_NAME');
+        if ($app_name === false) {
+            $app_name = $_ENV['APP_NAME'] ?? '희망씨';
+        }
+        return $app_name;
+    }
+}
+
+// 전역 변수로 앱 이름과 관리자 제목 설정
+$app_name = get_app_name();
+$admin_title = $app_name . ' 관리자';
 ?>

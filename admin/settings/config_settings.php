@@ -9,7 +9,7 @@ require_once __DIR__ . '/../templates_bridge.php';
 
 // 관리자 권한 확인
 if (!isset($_SESSION['admin_id'])) {
-    header('Location: /admin/login.php');
+    header('Location: ' . admin_url('login.php'));
     exit;
 }
 
@@ -275,7 +275,7 @@ include __DIR__ . '/../templates/layouts/header.php';
                                     <i class="fas fa-plug"></i> 연결 테스트
                                 </button>
                             <?php endif; ?>
-                            <a href="/admin/" class="btn btn-outline-secondary">
+                            <a href="<?= admin_url('" class="btn btn-outline-secondary">
                                 <i class="fas fa-times"></i> 취소
                             </a>
                         </div>

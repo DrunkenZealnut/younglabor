@@ -5,7 +5,7 @@ require_once __DIR__ . '/../bootstrap/app.php';
 // 데이터베이스 연결은 bootstrap에서 자동 처리됨
 
 try {
-    $postId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $postId = isset($_GET['wr_id']) ? (int)$_GET['wr_id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
     if ($postId <= 0) {
         $message = '잘못된 요청입니다.';
         $pageTitle = '네팔나눔연대여행 | ' . app_name();

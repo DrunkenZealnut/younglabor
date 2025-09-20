@@ -43,14 +43,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = $_POST['content'] ?? '';
     $author = trim($_POST['author'] ?? '');
     
+    // 공지사항 옵션 처리
+    $is_notice = isset($_POST['is_notice']) ? 1 : 0;
+    
     if (!empty($title)) {
         try {
             $sql = "UPDATE hopec_posts SET 
-                    wr_subject = ?, wr_content = ?, wr_name = ?
+                    wr_subject = ?, wr_content = ?, wr_name = ?, wr_is_notice = ?
                     WHERE wr_id = ? AND board_type = ?";
             
             $stmt = $pdo->prepare($sql);
-            $stmt->execute([$title, $content, $author, $post_id, $board_type]);
+            $stmt->execute([$title, $content, $author, $is_notice, $post_id, $board_type]);
             
             $_SESSION['success_message'] = '게시글이 성공적으로 수정되었습니다.';
             header("Location: view.php?id=" . $post_id . "&board_type=" . urlencode($board_type));
@@ -73,7 +76,8 @@ try {
                 wr_name as author,
                 wr_hit as hit_count,
                 wr_datetime as created_at,
-                wr_ip as ip_address
+                wr_ip as ip_address,
+                wr_is_notice as is_notice
             FROM hopec_posts 
             WHERE wr_id = ? AND board_type = ?";
     
@@ -132,20 +136,20 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
 <body>
 
 <!-- 사이드바 -->
-<div class="sidebar">희망씨
+<div class="sidebar">
   <div class="logo">
-    <a href="/admin/index.php" class="text-white text-decoration-none">우동615 관리자</a>
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none">우동615 관리자</a>
   </div>
-  <a href="/admin/index.php">📊 대시보드</a>
-  <a href="/admin/posts/list.php" class="active">📝 게시글 관리</a>
-  <a href="/admin/boards/list.php">📋 게시판 관리</a>
-  <a href="/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="/admin/events/list.php">📅 행사 관리</a>
-  <a href="/admin/files/list.php">📎 자료실 관리</a>
-  <a href="/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php" class="active">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -184,7 +188,7 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/admin/index.php">관리자</a></li>
+                    <li class="breadcrumb-item"><a href="<?= admin_url('index.php') ?>">관리자</a></li>
                     <li class="breadcrumb-item"><a href="list.php">게시글 관리</a></li>
                     <li class="breadcrumb-item active">게시글 수정</li>
                 </ol>
@@ -228,6 +232,19 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
                         </div>
                     </div>
 
+                    <!-- 공지사항 옵션 (공지사항 게시판이 아닐 때만 표시) -->
+                    <?php if ($board_type !== 'notices'): ?>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="is_notice" name="is_notice" 
+                                   <?= !empty($post['is_notice']) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="is_notice">
+                                <i class="bi bi-pin-angle"></i> 상단고정 (공지사항)
+                                <small class="text-muted d-block">체크하면 게시판 상단에 고정됩니다.</small>
+                            </label>
+                        </div>
+                    </div>
+                    <?php endif; ?>
 
                     <div class="mb-3">
                         <label for="content" class="form-label">내용</label>

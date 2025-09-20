@@ -55,7 +55,7 @@ try {
         }
     }
     
-    // 최신 등록일시순으로 정렬
+    // 최신 등록일시순으로 정렬 (공지사항 상단 고정)
     $sql = "SELECT DISTINCT
                 wr_id as id,
                 board_type,
@@ -64,10 +64,12 @@ try {
                 wr_name as author,
                 wr_hit as hit_count,
                 wr_datetime as created_at,
-                0 as is_notice
+                wr_is_notice as is_notice
             FROM hopec_posts 
             {$where_clause}
-            ORDER BY wr_datetime DESC, wr_id DESC 
+            ORDER BY 
+                wr_is_notice DESC,
+                wr_datetime DESC, wr_id DESC 
             LIMIT {$offset}, {$records_per_page}";
     
     // 게시글 조회
@@ -161,18 +163,18 @@ $base_path = get_base_path();
 <!-- 사이드바 -->
 <div class="sidebar">
   <div class="logo">
-    <a href="<?= $base_path ?>/admin/index.php" class="text-white text-decoration-none">희망씨 관리자</a>
+    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
   </div>
-  <a href="<?= $base_path ?>/admin/index.php">📊 대시보드</a>
-  <a href="<?= $base_path ?>/admin/posts/list.php" class="active">📝 게시글 관리</a>
-  <a href="<?= $base_path ?>/admin/boards/list.php">📋 게시판 관리</a>
-  <a href="<?= $base_path ?>/admin/menu/list.php">🧭 메뉴 관리</a>
-  <a href="<?= $base_path ?>/admin/inquiries/list.php">📬 문의 관리</a>
-  <a href="<?= $base_path ?>/admin/events/list.php">📅 행사 관리</a>
-  <a href="<?= $base_path ?>/admin/files/list.php">📎 자료실 관리</a>
-  <a href="<?= $base_path ?>/admin/settings/site_settings.php">🎨 디자인 설정</a>
-  <a href="<?= $base_path ?>/admin/system/performance.php">⚡ 성능 모니터링</a>
-  <a href="<?= $base_path ?>/admin/logout.php">🚪 로그아웃</a>
+  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
+  <a href="<?= admin_url('posts/list.php') ?>" class="active">📝 게시글 관리</a>
+  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
+  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
+  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
+  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
+  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
+  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 
 <!-- 메인 컨텐츠 -->
@@ -183,23 +185,6 @@ $base_path = get_base_path();
             <a href="write.php" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> 새 게시글 작성
             </a>
-            <?php
-            // 고아 파일 존재 여부 확인
-            try {
-                $orphan_check = $pdo->query("SELECT COUNT(*) FROM hopec_post_files pf LEFT JOIN hopec_posts p ON pf.wr_id = p.wr_parent AND pf.board_type = p.board_type WHERE p.wr_id IS NULL")->fetchColumn();
-                if ($orphan_check > 0): ?>
-                    <a href="orphaned_files.php" class="btn btn-outline-warning ms-2">
-                        <i class="bi bi-file-earmark-x"></i> 고아 파일 관리 
-                        <span class="badge bg-warning text-dark"><?= $orphan_check ?></span>
-                    </a>
-                <?php endif;
-            } catch (PDOException $e) {
-                // 오류 시 버튼 표시
-                ?>
-                <a href="orphaned_files.php" class="btn btn-outline-secondary ms-2">
-                    <i class="bi bi-file-earmark-x"></i> 파일 관리
-                </a>
-            <?php } ?>
         </div>
     </div>
 

@@ -128,7 +128,7 @@ $created = isset($_GET['created']) && $_GET['created'] == 1;
 
 <!-- 사이드바 -->
 <div class="sidebar">
-  <div class="logo">희망씨 관리자</div>
+  <div class="logo"><?= htmlspecialchars($admin_title) ?></div>
   <a href="../index.php">📊 대시보드</a>
   <a href="../posts/list.php">📝 게시글 관리</a>
   <a href="../boards/list.php">📋 게시판 관리</a>

@@ -106,12 +106,12 @@ $columns = [
 
 // 액션 버튼 함수
 $actions = function($row) {
-    $buttons = '<a href="/admin/inquiries/view/' . $row['id'] . '" class="btn btn-sm btn-outline-primary" title="상세보기">
+    $buttons = '<a href="<?= admin_url('inquiries/view/' . $row['id'] . '" class="btn btn-sm btn-outline-primary" title="상세보기">
         <i class="bi bi-eye"></i>
     </a>';
     
     if ($row['status'] !== '완료') {
-        $buttons .= ' <a href="/admin/inquiries/view/' . $row['id'] . '#response-form" class="btn btn-sm btn-outline-success" title="답변하기">
+        $buttons .= ' <a href="<?= admin_url('inquiries/view/' . $row['id'] . '#response-form" class="btn btn-sm btn-outline-success" title="답변하기">
             <i class="bi bi-reply"></i>
         </a>';
     }
@@ -136,7 +136,7 @@ $bulk_actions = [
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0">문의 관리</h1>
         <div>
-            <a href="/admin/inquiries/export?<?= http_build_query($filters) ?>" class="btn btn-outline-success">
+            <a href="<?= admin_url('inquiries/export?<?= http_build_query($filters) ?>" class="btn btn-outline-success">
                 <i class="bi bi-download"></i> 엑셀 다운로드
             </a>
         </div>
@@ -170,7 +170,7 @@ $bulk_actions = [
                             <i class="bi bi-search"></i> 검색
                         </button>
                         <?php if (!empty(array_filter($filters))): ?>
-                        <a href="/admin/inquiries" class="btn btn-outline-secondary">
+                        <a href="<?= admin_url('inquiries" class="btn btn-outline-secondary">
                             <i class="bi bi-x"></i> 초기화
                         </a>
                         <?php endif; ?>
