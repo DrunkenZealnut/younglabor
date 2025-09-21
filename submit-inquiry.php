@@ -8,6 +8,148 @@ ini_set('html_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
 
+/**
+ * Gmail SMTP를 사용한 이메일 발송
+ */
+function sendEmailWithSMTP($to, $subject, $body, $from_email, $from_name, $reply_to = null) {
+    // 환경 설정 로드
+    if (file_exists(__DIR__ . '/admin/env_loader.php')) {
+        require_once __DIR__ . '/admin/env_loader.php';
+        loadEnv();
+    }
+    
+    $smtp_host = env('MAIL_SMTP_HOST', 'smtp.gmail.com');
+    $smtp_port = env('MAIL_SMTP_PORT', '587');
+    $smtp_username = env('MAIL_SMTP_USERNAME', '');
+    $smtp_password = env('MAIL_SMTP_PASSWORD', '');
+    
+    // SMTP 설정이 없으면 기본 mail() 함수 사용
+    if (empty($smtp_host) || empty($smtp_username) || empty($smtp_password)) {
+        $headers = "From: {$from_name} <{$from_email}>\r\n";
+        if ($reply_to) {
+            $headers .= "Reply-To: {$reply_to}\r\n";
+        }
+        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        return mail($to, $subject, $body, $headers);
+    }
+    
+    // Socket 기반 SMTP 발송
+    try {
+        $socket = fsockopen($smtp_host, $smtp_port, $errno, $errstr, 30);
+        if (!$socket) {
+            throw new Exception("SMTP 연결 실패: {$errstr}");
+        }
+        
+        // SMTP 응답 읽기
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '220') {
+            throw new Exception("SMTP 서버 응답 오류: {$response}");
+        }
+        
+        // EHLO 명령
+        fputs($socket, "EHLO localhost\r\n");
+        $response = fgets($socket, 515);
+        
+        // STARTTLS (포트 587 사용시)
+        if ($smtp_port == 587) {
+            fputs($socket, "STARTTLS\r\n");
+            $response = fgets($socket, 515);
+            
+            if (substr($response, 0, 3) != '220') {
+                throw new Exception("STARTTLS 실패: {$response}");
+            }
+            
+            // TLS 암호화 활성화
+            if (!stream_socket_enable_crypto($socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT)) {
+                throw new Exception("TLS 암호화 활성화 실패");
+            }
+            
+            // TLS 후 다시 EHLO
+            fputs($socket, "EHLO localhost\r\n");
+            $response = fgets($socket, 515);
+        }
+        
+        // AUTH LOGIN
+        fputs($socket, "AUTH LOGIN\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '334') {
+            throw new Exception("AUTH LOGIN 실패: {$response}");
+        }
+        
+        // 사용자명 전송
+        fputs($socket, base64_encode($smtp_username) . "\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '334') {
+            throw new Exception("사용자명 인증 실패: {$response}");
+        }
+        
+        // 비밀번호 전송
+        fputs($socket, base64_encode($smtp_password) . "\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '235') {
+            throw new Exception("비밀번호 인증 실패: {$response}");
+        }
+        
+        // 발신자 설정
+        fputs($socket, "MAIL FROM: <{$from_email}>\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '250') {
+            throw new Exception("MAIL FROM 실패: {$response}");
+        }
+        
+        // 수신자 설정
+        fputs($socket, "RCPT TO: <{$to}>\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '250') {
+            throw new Exception("RCPT TO 실패: {$response}");
+        }
+        
+        // 데이터 전송 시작
+        fputs($socket, "DATA\r\n");
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '354') {
+            throw new Exception("DATA 명령 실패: {$response}");
+        }
+        
+        // 이메일 헤더 및 본문
+        $email_content = "From: {$from_name} <{$from_email}>\r\n";
+        $email_content .= "To: {$to}\r\n";
+        if ($reply_to) {
+            $email_content .= "Reply-To: {$reply_to}\r\n";
+        }
+        $email_content .= "Subject: =?UTF-8?B?" . base64_encode($subject) . "?=\r\n";
+        $email_content .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $email_content .= "Content-Transfer-Encoding: 8bit\r\n";
+        $email_content .= "\r\n";
+        $email_content .= $body;
+        $email_content .= "\r\n.\r\n";
+        
+        // 이메일 내용 전송
+        fputs($socket, $email_content);
+        $response = fgets($socket, 515);
+        if (substr($response, 0, 3) != '250') {
+            throw new Exception("이메일 전송 실패: {$response}");
+        }
+        
+        // 연결 종료
+        fputs($socket, "QUIT\r\n");
+        fclose($socket);
+        
+        return true;
+        
+    } catch (Exception $e) {
+        error_log("SMTP 발송 실패: " . $e->getMessage());
+        
+        // SMTP 실패시 기본 mail() 함수로 대체
+        $headers = "From: {$from_name} <{$from_email}>\r\n";
+        if ($reply_to) {
+            $headers .= "Reply-To: {$reply_to}\r\n";
+        }
+        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        return mail($to, $subject, $body, $headers);
+    }
+}
+
 // POST 메서드만 허용
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -136,15 +278,11 @@ try {
 ==============================================
 ";
             
-            // 이메일 헤더 설정
-            $headers = "From: 희망씨 웹사이트 <noreply@hopec.co.kr>\r\n";
-            $headers .= "Reply-To: {$email}\r\n";
-            $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-            $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
-            $headers .= "X-Priority: 1\r\n"; // 높은 우선순위
+            // SMTP 이메일 발송 시도
+            $from_email = env('MAIL_FROM_EMAIL', env('MAIL_SMTP_USERNAME', 'noreply@hopec.co.kr'));
+            $from_name = env('MAIL_FROM_NAME', '희망씨 웹사이트');
             
-            // 이메일 발송 시도
-            $mail_result = mail($admin_email, $mail_subject, $mail_body, $headers);
+            $mail_result = sendEmailWithSMTP($admin_email, $mail_subject, $mail_body, $from_email, $from_name, $email);
             
             // 발송 결과 로그 기록
             $log_dir = __DIR__ . '/logs';
@@ -154,9 +292,9 @@ try {
             
             $log_message = "[" . date('Y-m-d H:i:s') . "] ";
             if ($mail_result) {
-                $log_message .= "SUCCESS: 이메일 발송 성공 - 문의 ID: {$inquiry_id}, 받는사람: {$admin_email}\n";
+                $log_message .= "SMTP SUCCESS: 이메일 발송 성공 - 문의 ID: {$inquiry_id}, 받는사람: {$admin_email}, 발송자: {$from_email}\n";
             } else {
-                $log_message .= "FAILED: 이메일 발송 실패 - 문의 ID: {$inquiry_id}, 받는사람: {$admin_email}\n";
+                $log_message .= "SMTP FAILED: 이메일 발송 실패 - 문의 ID: {$inquiry_id}, 받는사람: {$admin_email}, 발송자: {$from_email}\n";
             }
             
             file_put_contents($log_dir . '/email.log', $log_message, FILE_APPEND | LOCK_EX);
