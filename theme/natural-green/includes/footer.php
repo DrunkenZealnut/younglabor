@@ -60,6 +60,16 @@
                   </span>
                 </div>
               </div>
+              
+              <div class="flex items-start gap-2">
+                <i data-lucide="message-circle" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
+                <div>
+                  <span class="font-medium text-forest-700">문의하기</span><br>
+                  <span class="text-gray-600">
+                    <a href="#" onclick="openInquiryModal()" class="text-forest-600 hover:text-lime-600 underline cursor-pointer">온라인 문의하기</a>
+                  </span>
+                </div>
+              </div>
             </div>
             
             <!-- 세 번째 열: 후원 -->

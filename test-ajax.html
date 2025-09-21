@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AJAX 테스트</title>
+</head>
+<body>
+    <h2>AJAX 응답 테스트</h2>
+    <button onclick="testResponse()">응답 테스트</button>
+    <div id="result"></div>
+
+    <script>
+    function testResponse() {
+        fetch('debug-response.php', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            return response.text(); // JSON이 아닌 텍스트로 받아서 확인
+        })
+        .then(text => {
+            console.log('Raw response:', text);
+            document.getElementById('result').innerHTML = '<pre>' + text + '</pre>';
+            
+            try {
+                const json = JSON.parse(text);
+                console.log('Parsed JSON:', json);
+            } catch (e) {
+                console.error('JSON Parse Error:', e);
+                console.log('Response text:', text);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch Error:', error);
+            document.getElementById('result').innerHTML = 'Error: ' + error.message;
+        });
+    }
+    </script>
+</body>
+</html>
