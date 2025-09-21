@@ -205,6 +205,7 @@ $base_path = get_base_path();
   <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
   <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
   <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
+  <a href="<?= admin_url('settings/simple-color-settings.php') ?>">🎨 테마 설정</a>
   <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
   <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>

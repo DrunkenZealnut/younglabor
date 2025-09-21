@@ -142,23 +142,11 @@ try {
     </style>
 </head>
 <body>
-
-<!-- 사이드바 -->
-<div class="sidebar">
-    <div class="logo">
-        <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
-    </div>
-    <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
-    <a href="<?= admin_url('posts/list.php') ?>">📝 게시글 관리</a>
-    <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
-    <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
-    <a href="<?= admin_url('inquiries/list.php') ?>" class="active">📬 문의 관리</a>
-    <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
-    <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
-    <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
-    <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
-    <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
-</div>
+<?php 
+// 현재 메뉴 설정 (문의 관리 활성화)
+$current_menu = 'inquiries';
+include '../includes/sidebar.php'; 
+?>
 
 <!-- 메인 컨텐츠 -->
 <div class="main-content">

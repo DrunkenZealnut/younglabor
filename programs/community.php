@@ -9,13 +9,8 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '소통 및 회원사업 | ' . app_name();
 $currentSlug = 'programs/community';
 
-// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
-require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
-$useCSSVars = detectCSSVarsMode();
-
-if ($useCSSVars && !isset($styleManager)) {
-    $styleManager = getCSSVariableManager();
-}
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
 
 $subject = '소통 및 회원사업';
 $rawHtml = <<<'HTML'

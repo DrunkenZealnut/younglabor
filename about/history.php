@@ -9,13 +9,8 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '연혁 | ' . app_name();
 $currentSlug = 'about/history';
 
-// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
-require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
-$useCSSVars = detectCSSVarsMode();
-
-if ($useCSSVars && !isset($styleManager)) {
-    $styleManager = getCSSVariableManager();
-}
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
 
 try {
     // 연혁 데이터 조회

@@ -9,13 +9,8 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '국내위기아동지원사업 | ' . app_name();
 $currentSlug = 'programs/domestic';
 
-// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
-require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
-$useCSSVars = detectCSSVarsMode();
-
-if ($useCSSVars && !isset($styleManager)) {
-    $styleManager = getCSSVariableManager();
-}
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
 
 // 정적 원문 HTML을 직접 포함 (임시파일 제거)
 $subject = '국내위기아동지원사업';

@@ -118,11 +118,11 @@ include __DIR__ . '/../includes/header.php';
           <div class="initial-hidden fade-in-up animation-delay-200 bg-white/70 backdrop-blur-xl border border-white/30 rounded-2xl shadow-lg p-8 text-center transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
             <div class="flex justify-center items-center gap-4 mb-6">
               <?php 
-              require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
-              $useCSSVars = detectCSSVarsMode();
+              // Legacy mode only - CSS vars mode removed
+              $useCSSVars = false;
               
-              if ($useCSSVars && !isset($styleManager)): 
-                $styleManager = getCSSVariableManager();
+              if (false): 
+                // CSS vars removed
               endif;
               ?>
               <?php if ($useCSSVars): ?>
@@ -172,12 +172,12 @@ include __DIR__ . '/../includes/header.php';
             <div class="flex items-start gap-3">
               <?php 
               // CSS 변수 모드 체크 (통합된 헬퍼 함수 사용)
-              $useCSSVars = detectCSSVarsMode();
+              $useCSSVars = false;
               
               if ($useCSSVars): 
                 // CSS 변수 모드: 인라인 스타일 사용 (이미 로드됨)
                 if (!isset($styleManager)) {
-                  $styleManager = getCSSVariableManager();
+                  // CSS vars removed
                 }
               ?>
                 <div class="shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold hover:scale-105 transition-all duration-200"

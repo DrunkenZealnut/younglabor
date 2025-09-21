@@ -11,13 +11,8 @@ $currentSlug = 'programs/volunteer';
 
 $subject = '자원봉사안내';
 
-// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
-require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
-$useCSSVars = detectCSSVarsMode();
-
-if ($useCSSVars && !isset($styleManager)) {
-    $styleManager = getCSSVariableManager();
-}
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
 
 // 헤더 출력
 include_once __DIR__ . '/../includes/header.php';

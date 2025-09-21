@@ -5,13 +5,8 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '조직도 | ' . app_name();
 $co_id = 'org';
 
-// CSS Variables 모드 지원 추가 (Legacy 모드 보존)
-require_once __DIR__ . '/../includes/CSSVariableThemeManager.php';
-$useCSSVars = detectCSSVarsMode();
-
-if ($useCSSVars && !isset($styleManager)) {
-    $styleManager = getCSSVariableManager();
-}
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -19,11 +14,7 @@ include __DIR__ . '/../includes/header.php';
   <article class="max-w-7xl mx-auto px-4 py-10">
     <header class="mb-8">
       <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>">About</p>
-      <?php if ($useCSSVars): ?>
-        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">조직도</h1>
-      <?php else: ?>
         <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">조직도</h1>
-      <?php endif; ?>
     </header>
 
     <style>

@@ -9,10 +9,7 @@
 
 class CSSModeManager {
     
-    const MODE_LEGACY = 'legacy';      // 기존 Bootstrap + Tailwind
-    const MODE_OPTIMIZED = 'optimized'; // 최적화된 통합 시스템
-    const MODE_CSS_VARS = 'css-vars';  // CSS 변수 기반 테마 시스템
-    const MODE_DEBUG = 'debug';        // 개발자 디버그 모드
+    const MODE_LEGACY = 'legacy';      // 기존 Bootstrap + Tailwind (유일한 모드)
     
     private $currentMode;
     private $config;
@@ -67,8 +64,7 @@ class CSSModeManager {
      * 모드 유효성 검증
      */
     private function isValidMode($mode) {
-        $validModes = [self::MODE_LEGACY, self::MODE_OPTIMIZED, self::MODE_CSS_VARS, self::MODE_DEBUG];
-        return in_array($mode, $validModes);
+        return $mode === self::MODE_LEGACY;
     }
     
     /**
@@ -92,63 +88,22 @@ class CSSModeManager {
      * 현재 모드 반환
      */
     public function getCurrentMode() {
-        return $this->currentMode;
+        return self::MODE_LEGACY; // 항상 Legacy 모드
     }
     
     /**
-     * 최적화 모드 여부 확인
-     */
-    public function isOptimizedMode() {
-        return $this->currentMode === self::MODE_OPTIMIZED;
-    }
-    
-    /**
-     * 레거시 모드 여부 확인
+     * 레거시 모드 여부 확인 (항상 true)
      */
     public function isLegacyMode() {
-        return $this->currentMode === self::MODE_LEGACY;
+        return true;
     }
     
     /**
-     * CSS 변수 모드 여부 확인
-     */
-    public function isCSSVarsMode() {
-        return $this->currentMode === self::MODE_CSS_VARS;
-    }
-    
-    /**
-     * 디버그 모드 여부 확인
-     */
-    public function isDebugMode() {
-        return $this->currentMode === self::MODE_DEBUG;
-    }
-    
-    /**
-     * 모드 전환 URL 생성
+     * 모드 전환 URL 생성 (Legacy 모드만 지원)
      */
     public function getSwitchUrl($targetMode, $currentUrl = null) {
-        if (!$this->isValidMode($targetMode)) {
-            return null;
-        }
-        
-        if ($currentUrl === null) {
-            $currentUrl = $_SERVER['REQUEST_URI'] ?? '/';
-        }
-        
-        // 기존 css_mode 파라미터 제거
-        $urlParts = parse_url($currentUrl);
-        $path = $urlParts['path'] ?? '/';
-        
-        if (isset($urlParts['query'])) {
-            parse_str($urlParts['query'], $params);
-            unset($params['css_mode']);
-            $params['css_mode'] = $targetMode;
-            $query = http_build_query($params);
-        } else {
-            $query = 'css_mode=' . $targetMode;
-        }
-        
-        return $path . '?' . $query;
+        // Legacy 모드만 지원
+        return $currentUrl ?? $_SERVER['REQUEST_URI'] ?? '/';
     }
     
     /**
@@ -170,39 +125,24 @@ class CSSModeManager {
      */
     public function getModeInfo() {
         return [
-            'current_mode' => $this->currentMode,
-            'is_optimized' => $this->isOptimizedMode(),
-            'is_legacy' => $this->isLegacyMode(),
-            'is_css_vars' => $this->isCSSVarsMode(),
-            'is_debug' => $this->isDebugMode(),
-            'switch_urls' => [
-                'legacy' => $this->getSwitchUrl(self::MODE_LEGACY),
-                'optimized' => $this->getSwitchUrl(self::MODE_OPTIMIZED),
-                'css-vars' => $this->getSwitchUrl(self::MODE_CSS_VARS),
-                'debug' => $this->getSwitchUrl(self::MODE_DEBUG)
-            ],
+            'current_mode' => self::MODE_LEGACY,
+            'is_legacy' => true,
             'emergency_url' => $this->getEmergencyUrl()
         ];
     }
     
     /**
-     * 디버그 정보 출력 (개발 모드에서만)
+     * 디버그 정보 출력 (Legacy 모드)
      */
     public function renderDebugInfo() {
         if (!$this->config['debug_enabled']) {
             return;
         }
         
-        $info = $this->getModeInfo();
-        
-        echo "<!-- CSS Mode Debug Info -->\n";
+        echo "<!-- CSS Mode: Legacy Only -->\n";
         echo "<div id=\"css-mode-debug\" style=\"position: fixed; top: 10px; right: 10px; background: #000; color: #fff; padding: 10px; z-index: 9999; font-size: 12px; border-radius: 5px;\">\n";
-        echo "<strong>CSS Mode:</strong> {$info['current_mode']}<br>\n";
-        echo "<a href=\"{$info['switch_urls']['legacy']}\" style=\"color: #ff6b6b;\">Legacy</a> | ";
-        echo "<a href=\"{$info['switch_urls']['optimized']}\" style=\"color: #51cf66;\">Optimized</a> | ";
-        echo "<a href=\"{$info['switch_urls']['css-vars']}\" style=\"color: #84cc16;\">CSS-Vars</a> | ";
-        echo "<a href=\"{$info['switch_urls']['debug']}\" style=\"color: #74c0fc;\">Debug</a><br>";
-        echo "<small><a href=\"{$info['emergency_url']}\" style=\"color: #ffa502;\">Emergency Reset</a></small>\n";
+        echo "<strong>CSS Mode:</strong> Legacy<br>\n";
+        echo "<small>Legacy 모드만 지원됩니다</small>\n";
         echo "</div>\n";
     }
     
@@ -220,35 +160,6 @@ class CSSModeManager {
         error_log($logMessage);
     }
     
-    /**
-     * 성능 메트릭 수집 시작
-     */
-    public function startPerformanceTracking() {
-        if ($this->isDebugMode()) {
-            echo "<script>\n";
-            echo "window.hopecCSSPerformance = {\n";
-            echo "  mode: '{$this->currentMode}',\n";
-            echo "  startTime: performance.now(),\n";
-            echo "  metrics: {}\n";
-            echo "};\n";
-            echo "</script>\n";
-        }
-    }
-    
-    /**
-     * 성능 메트릭 수집 종료
-     */
-    public function endPerformanceTracking() {
-        if ($this->isDebugMode()) {
-            echo "<script>\n";
-            echo "if (window.hopecCSSPerformance) {\n";
-            echo "  window.hopecCSSPerformance.endTime = performance.now();\n";
-            echo "  window.hopecCSSPerformance.totalTime = window.hopecCSSPerformance.endTime - window.hopecCSSPerformance.startTime;\n";
-            echo "  console.log('🎨 CSS Mode Performance:', window.hopecCSSPerformance);\n";
-            echo "}\n";
-            echo "</script>\n";
-        }
-    }
 }
 
 // 전역 인스턴스 생성 (필요시 사용)
@@ -256,27 +167,15 @@ if (!isset($GLOBALS['cssMode'])) {
     $GLOBALS['cssMode'] = new CSSModeManager();
 }
 
-// 헬퍼 함수들
+// 헬퍼 함수들 (Legacy 전용)
 if (!function_exists('getCSSMode')) {
     function getCSSMode() {
         return $GLOBALS['cssMode'];
     }
 }
 
-if (!function_exists('isOptimizedCSS')) {
-    function isOptimizedCSS() {
-        return getCSSMode()->isOptimizedMode();
-    }
-}
-
 if (!function_exists('isLegacyCSS')) {
     function isLegacyCSS() {
-        return getCSSMode()->isLegacyMode();
-    }
-}
-
-if (!function_exists('isCSSVarsMode')) {
-    function isCSSVarsMode() {
-        return getCSSMode()->isCSSVarsMode();
+        return true; // 항상 Legacy 모드
     }
 }
