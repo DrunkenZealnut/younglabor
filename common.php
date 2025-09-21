@@ -124,12 +124,9 @@ $_REQUEST = array_map_deep(G5_ESCAPE_FUNCTION,  $_REQUEST);
 @extract($_SERVER);
 
 
-// 완두콩님이 알려주신 보안관련 오류 수정
-// $member 에 값을 직접 넘길 수 있음
+// 필수 전역 배열 초기화
 $config = array();
 $member = array();
-$board  = array();
-$group  = array();
 $g5     = array();
 
 
@@ -139,7 +136,8 @@ $g5     = array();
 $dbconfig_file = G5_DATA_PATH.'/'.G5_DBCONFIG_FILE;
 if (file_exists($dbconfig_file)) {
     include_once($dbconfig_file);
-    include_once(G5_LIB_PATH.'/common.lib.php');    // 공통 라이브러리 (sql_* 함수 등)
+    // 새로운 유틸리티 클래스들 로드
+include_once(G5_PATH.'/includes/LegacySupport.php');
 
     $connect_db = sql_connect(G5_MYSQL_HOST, G5_MYSQL_USER, G5_MYSQL_PASSWORD) or die('MySQL Connect Error!!!');
     $select_db  = sql_select_db(G5_MYSQL_DB, $connect_db) or die('MySQL DB Error!!!');
@@ -151,42 +149,8 @@ if (file_exists($dbconfig_file)) {
     if(defined('G5_MYSQL_SET_MODE') && G5_MYSQL_SET_MODE) sql_query("SET SESSION sql_mode = ''");
     if (defined('G5_TIMEZONE')) sql_query(" set time_zone = '".G5_TIMEZONE."'");
 } else {
-?>
-
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<title>오류! <?php echo G5_VERSION ?> 설치하기</title>
-<link rel="stylesheet" href="install/install.css">
-</head>
-<body>
-
-<div id="ins_bar">
-    <span id="bar_img">GNUBOARD5</span>
-    <span id="bar_txt">Message</span>
-</div>
-<h1>그누보드5를 먼저 설치해주십시오.</h1>
-<div class="ins_inner">
-    <p>다음 파일을 찾을 수 없습니다.</p>
-    <ul>
-        <li><strong><?php echo G5_DATA_DIR.'/'.G5_DBCONFIG_FILE ?></strong></li>
-    </ul>
-    <p>그누보드 설치 후 다시 실행하시기 바랍니다.</p>
-    <div class="inner_btn">
-        <a href="<?php echo G5_URL; ?>/install/"><?php echo G5_VERSION ?> 설치하기</a>
-    </div>
-</div>
-<div id="ins_ft">
-    <strong>GNUBOARD5</strong>
-    <p>GPL! OPEN SOURCE GNUBOARD</p>
-</div>
-
-</body>
-</html>
-
-<?php
-    exit;
+    // 데이터베이스 설정 파일이 없으면 단순 에러 메시지
+    die('Database configuration file not found: ' . G5_DATA_DIR.'/'.G5_DBCONFIG_FILE);
 }
 //==============================================================================
 
@@ -222,14 +186,9 @@ ini_set("session.cookie_domain", G5_COOKIE_DOMAIN);
 // 기본환경설정
 // 기본적으로 사용하는 필드만 얻은 후 상황에 따라 필드를 추가로 얻음
 $config = sql_fetch(" select * from {$g5['config_table']} ");
-if ($config['cf_editor'])
-    define('G5_EDITOR_LIB', G5_EDITOR_PATH."/{$config['cf_editor']}/editor.lib.php");
-else
-    define('G5_EDITOR_LIB', G5_LIB_PATH."/editor.lib.php");
+// G5_EDITOR_LIB 상수 - 삭제됨 (사용되지 않음)
 
-define('G5_CAPTCHA_DIR',    !empty($config['cf_captcha']) ? $config['cf_captcha'] : 'kcaptcha');
-define('G5_CAPTCHA_URL',    G5_PLUGIN_URL.'/'.G5_CAPTCHA_DIR);
-define('G5_CAPTCHA_PATH',   G5_PLUGIN_PATH.'/'.G5_CAPTCHA_DIR);
+// CAPTCHA 상수들 - 삭제됨 (사용되지 않음)
 
 // 4.00.03 : [보안관련] PHPSESSID 가 틀리면 로그아웃한다.
 if (isset($_REQUEST['PHPSESSID']) && $_REQUEST['PHPSESSID'] != session_id()) {
@@ -237,118 +196,10 @@ if (isset($_REQUEST['PHPSESSID']) && $_REQUEST['PHPSESSID'] != session_id()) {
     goto_url(G5_URL);
 }
 
-// QUERY_STRING
+// 기본 변수 초기화 (필요 시에만)
 $qstr = '';
-
-if (isset($_REQUEST['sca']))  {
-    $sca = clean_xss_tags(trim($_REQUEST['sca']));
-    if ($sca) {
-        $sca = preg_replace("/[\<\>\'\"\\\'\\\"\%\=\(\)\/\^\*]/", "", $sca);
-        $qstr .= '&amp;sca=' . urlencode($sca);
-    }
-} else {
-    $sca = '';
-}
-
-if (isset($_REQUEST['sfl']))  {
-    $sfl = trim($_REQUEST['sfl']);
-    $sfl = preg_replace("/[\<\>\'\"\\\'\\\"\%\=\(\)\/\^\*\s]/", "", $sfl);
-    if ($sfl)
-        $qstr .= '&amp;sfl=' . urlencode($sfl); // search field (검색 필드)
-} else {
-    $sfl = '';
-}
-
-
-if (isset($_REQUEST['stx']))  { // search text (검색어)
-    $stx = get_search_string(trim($_REQUEST['stx']));
-    if ($stx || $stx === '0')
-        $qstr .= '&amp;stx=' . urlencode(cut_str($stx, 20, ''));
-} else {
-    $stx = '';
-}
-
-if (isset($_REQUEST['sst']))  {
-    $sst = trim($_REQUEST['sst']);
-    $sst = preg_replace("/[\<\>\'\"\\\'\\\"\%\=\(\)\/\^\*\s]/", "", $sst);
-    if ($sst)
-        $qstr .= '&amp;sst=' . urlencode($sst); // search sort (검색 정렬 필드)
-} else {
-    $sst = '';
-}
-
-if (isset($_REQUEST['sod']))  { // search order (검색 오름, 내림차순)
-    $sod = preg_match("/^(asc|desc)$/i", $sod) ? $sod : '';
-    if ($sod)
-        $qstr .= '&amp;sod=' . urlencode($sod);
-} else {
-    $sod = '';
-}
-
-if (isset($_REQUEST['sop']))  { // search operator (검색 or, and 오퍼레이터)
-    $sop = preg_match("/^(or|and)$/i", $sop) ? $sop : '';
-    if ($sop)
-        $qstr .= '&amp;sop=' . urlencode($sop);
-} else {
-    $sop = '';
-}
-
-if (isset($_REQUEST['spt']))  { // search part (검색 파트[구간])
-    $spt = (int)$spt;
-    if ($spt)
-        $qstr .= '&amp;spt=' . urlencode($spt);
-} else {
-    $spt = '';
-}
-
-if (isset($_REQUEST['page'])) { // 리스트 페이지
-    $page = (int)$_REQUEST['page'];
-    if ($page)
-        $qstr .= '&amp;page=' . urlencode($page);
-} else {
-    $page = '';
-}
-
-if (isset($_REQUEST['w'])) {
-    $w = substr($w, 0, 2);
-} else {
-    $w = '';
-}
-
-if (isset($_REQUEST['wr_id'])) {
-    $wr_id = (int)$_REQUEST['wr_id'];
-} else {
-    $wr_id = 0;
-}
-
-if (isset($_REQUEST['bo_table'])) {
-    $bo_table = preg_replace('/[^a-z0-9_]/i', '', trim($_REQUEST['bo_table']));
-    $bo_table = substr($bo_table, 0, 20);
-} else {
-    $bo_table = '';
-}
-
-// URL ENCODING
-if (isset($_REQUEST['url'])) {
-    $url = strip_tags(trim($_REQUEST['url']));
-    $urlencode = urlencode($url);
-} else {
-    $url = '';
-    $urlencode = urlencode(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/');
-    if (G5_DOMAIN) {
-        $p = @parse_url(G5_DOMAIN);
-        $urlencode = G5_DOMAIN.urldecode(preg_replace("/^".urlencode($p['path'])."/", "", $urlencode));
-    }
-}
-
-if (isset($_REQUEST['gr_id'])) {
-    if (!is_array($_REQUEST['gr_id'])) {
-        $gr_id = preg_replace('/[^a-z0-9_]/i', '', trim($_REQUEST['gr_id']));
-    }
-} else {
-    $gr_id = '';
-}
-//===================================
+$page = $w = $url = '';
+$wr_id = 0;
 
 
 // 자동로그인 부분에서 첫로그인에 포인트 부여하던것을 로그인중일때로 변경하면서 코드도 대폭 수정하였습니다.
@@ -372,58 +223,11 @@ if (isset($_SESSION['ss_mb_id']) && $_SESSION['ss_mb_id']) { // 로그인중이�
         }
     }
 } else {
-    // 자동로그인 ---------------------------------------
-    // 회원아이디가 쿠키에 저장되어 있다면 (3.27)
-    if ($tmp_mb_id = get_cookie('ck_mb_id')) {
-
-        $tmp_mb_id = substr(preg_replace("/[^a-zA-Z0-9_]*/", "", $tmp_mb_id), 0, 20);
-        // 최고관리자는 자동로그인 금지
-        if (strtolower($tmp_mb_id) != strtolower($config['cf_admin'])) {
-            $sql = " select mb_password, mb_intercept_date, mb_leave_date, mb_email_certify from {$g5['member_table']} where mb_id = '{$tmp_mb_id}' ";
-            $row = sql_fetch($sql);
-            if($row['mb_password']){
-                $key = md5($_SERVER['SERVER_ADDR'] . $_SERVER['SERVER_SOFTWARE'] . $_SERVER['HTTP_USER_AGENT'] . $row['mb_password']);
-                // 쿠키에 저장된 키와 같다면
-                $tmp_key = get_cookie('ck_auto');
-                if ($tmp_key === $key && $tmp_key) {
-                    // 차단, 탈퇴가 아니고 메일인증이 사용이면서 인증을 받았다면
-                    if ($row['mb_intercept_date'] == '' &&
-                        $row['mb_leave_date'] == '' &&
-                        (!$config['cf_use_email_certify'] || preg_match('/[1-9]/', $row['mb_email_certify'])) ) {
-                        // 세션에 회원아이디를 저장하여 로그인으로 간주
-                        set_session('ss_mb_id', $tmp_mb_id);
-
-                        // 페이지를 재실행
-                        echo "<script type='text/javascript'> window.location.reload(); </script>";
-                        exit;
-                    }
-                }
-            }
-            // $row 배열변수 해제
-            unset($row);
-        }
-    }
-    // 자동로그인 end ---------------------------------------
+    // 자동로그인 시스템 - 삭제됨 (현재 프로젝트에서 불필요)
 }
 
 
-$write = array();
-$write_table = "";
-if ($bo_table) {
-    $board = sql_fetch(" select * from {$g5['board_table']} where bo_table = '$bo_table' ");
-    if ($board['bo_table']) {
-        set_cookie("ck_bo_table", $board['bo_table'], 86400 * 1);
-        $gr_id = $board['gr_id'];
-        $write_table = $g5['write_prefix'] . $bo_table; // 게시판 테이블 전체이름
-        //$comment_table = $g5['write_prefix'] . $bo_table . $g5['comment_suffix']; // 코멘트 테이블 전체이름
-        if (isset($wr_id) && $wr_id)
-            $write = sql_fetch(" select * from $write_table where wr_id = '$wr_id' ");
-    }
-}
-
-if ($gr_id) {
-    $group = sql_fetch(" select * from {$g5['group_table']} where gr_id = '$gr_id' ");
-}
+// 게시판 관련 변수는 새로운 시스템에서 처리됨
 
 
 // 회원, 비회원 구분
@@ -440,80 +244,10 @@ if (isset($member['mb_id']) && $member['mb_id']) {
 }
 
 
-if ($is_admin != 'super') {
-    // 로컬 개발 환경(127.0.0.1/사설망)에서는 접근 제한을 해제
-    $remoteIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
-    $hostName = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-    $isLocalDev = in_array($remoteIp, ['127.0.0.1', '::1'], true)
-                  || preg_match('/^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/', $remoteIp)
-                  || preg_match('/^(localhost|127\.0\.0\.1|hopec\.local)(:\\d+)?$/', $hostName) === 1;
-
-    if (!$isLocalDev) {
-        // 접근가능 IP
-        $cf_possible_ip = trim($config['cf_possible_ip']);
-        if ($cf_possible_ip) {
-            $is_possible_ip = false;
-            $pattern = explode("\n", $cf_possible_ip);
-            for ($i=0; $i<count($pattern); $i++) {
-                $pattern[$i] = trim($pattern[$i]);
-                if (empty($pattern[$i]))
-                    continue;
-
-                $pattern[$i] = str_replace(".", "\\.", $pattern[$i]);
-                $pattern[$i] = str_replace("+", "[0-9\\.]+", $pattern[$i]);
-                $pat = "/^{$pattern[$i]}$/";
-                $is_possible_ip = preg_match($pat, $remoteIp);
-                if ($is_possible_ip)
-                    break;
-            }
-            if (!$is_possible_ip)
-                die ("<meta charset=utf-8>접근이 가능하지 않습니다.");
-        }
-
-        // 접근차단 IP
-        $is_intercept_ip = false;
-        $pattern = explode("\n", trim($config['cf_intercept_ip']));
-        for ($i=0; $i<count($pattern); $i++) {
-            $pattern[$i] = trim($pattern[$i]);
-            if (empty($pattern[$i]))
-                continue;
-
-            $pattern[$i] = str_replace(".", "\\.", $pattern[$i]);
-            $pattern[$i] = str_replace("+", "[0-9\\.]+", $pattern[$i]);
-            $pat = "/^{$pattern[$i]}$/";
-            $is_intercept_ip = preg_match($pat, $remoteIp);
-            if ($is_intercept_ip)
-                die ("<meta charset=utf-8>접근 불가합니다.");
-        }
-    }
-}
+// IP 접근 제어 - 삭제됨 (현재 프로젝트에서 불필요)
 
 
-// 테마경로
-if(defined('_THEME_PREVIEW_') && _THEME_PREVIEW_ === true) {
-    $config['cf_theme'] = trim($_GET['theme']);
-} else {
-    // 방법 C: DB 설정과 무관하게 항상 natural-green 강제 적용
-    $config['cf_theme'] = 'natural-green';
-}
-
-if(isset($config['cf_theme']) && trim($config['cf_theme'])) {
-    $theme_path = G5_PATH.'/'.G5_THEME_DIR.'/'.$config['cf_theme'];
-    if(is_dir($theme_path)) {
-        define('G5_THEME_PATH',        $theme_path);
-        define('G5_THEME_URL',         G5_URL.'/'.G5_THEME_DIR.'/'.$config['cf_theme']);
-        define('G5_THEME_LIB_PATH',    $theme_path.'/'.G5_LIB_DIR);
-        define('G5_THEME_CSS_URL',     G5_THEME_URL.'/'.G5_CSS_DIR);
-        define('G5_THEME_IMG_URL',     G5_THEME_URL.'/'.G5_IMG_DIR);
-        define('G5_THEME_JS_URL',      G5_THEME_URL.'/'.G5_JS_DIR);
-    }
-    unset($theme_path);
-}
-
-
-// 테마 설정 로드
-if(defined('G5_THEME_PATH') && is_file(G5_THEME_PATH.'/theme.config.php'))
-    include_once(G5_THEME_PATH.'/theme.config.php');
+// 테마 설정 - 삭제됨 (_common.php에서 natural-green으로 하드코딩 처리)
 
 
 //=====================================================================================
@@ -522,22 +256,7 @@ if(defined('G5_THEME_PATH') && is_file(G5_THEME_PATH.'/theme.config.php'))
 // 모든 기기에서 동일한 레이아웃 사용
 
 
-//==============================================================================
-// 스킨경로 - PC 스킨만 사용
-//------------------------------------------------------------------------------
-$board_skin_path    = get_skin_path('board', isset($board['bo_skin']) ? $board['bo_skin'] : '');
-$board_skin_url     = get_skin_url('board', isset($board['bo_skin']) ? $board['bo_skin'] : '');
-$member_skin_path   = get_skin_path('member', $config['cf_member_skin']);
-$member_skin_url    = get_skin_url('member', $config['cf_member_skin']);
-$new_skin_path      = get_skin_path('new', $config['cf_new_skin']);
-$new_skin_url       = get_skin_url('new', $config['cf_new_skin']);
-$search_skin_path   = get_skin_path('search', $config['cf_search_skin']);
-$search_skin_url    = get_skin_url('search', $config['cf_search_skin']);
-$connect_skin_path  = get_skin_path('connect', $config['cf_connect_skin']);
-$connect_skin_url   = get_skin_url('connect', $config['cf_connect_skin']);
-$faq_skin_path      = get_skin_path('faq', $config['cf_faq_skin']);
-$faq_skin_url       = get_skin_url('faq', $config['cf_faq_skin']);
-//==============================================================================
+// 스킨 경로 설정 - 삭제됨 (현재 프로젝트에서 불필요)
 
 
 // 방문자수의 접속을 남김 (임시 비활성화)
@@ -548,18 +267,7 @@ $faq_skin_url       = get_skin_url('faq', $config['cf_faq_skin']);
 // include_once(G5_BBS_PATH.'/db_table.optimize.php');
 
 
-// 확장 로드 정책: 화이트리스트만 로드 (기본 비어 있음)
-$extend_whitelist = array(
-    // 필요 시 파일명을 추가하세요. 예) 'version.extend.php', 'default.config.php'
-);
-
-if (!empty($extend_whitelist)) {
-    foreach ($extend_whitelist as $file) {
-        $path = G5_EXTEND_PATH.'/'.$file;
-        if (is_file($path)) include_once($path);
-    }
-}
-unset($extend_whitelist);
+// 확장 로드 시스템은 새로운 아키텍처에서 처리
 
 ob_start();
 

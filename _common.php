@@ -1,82 +1,77 @@
 <?php
-// 기본 경로 상수 안전 정의 (common.php 로드 전)
-if (!defined('G5_PATH')) {
-    define('G5_PATH', __DIR__);
+// G5_PATH는 config.php에서 정의됨
+
+// EnvLoader 초기 로드
+if (!function_exists('env')) {
+    require_once(__DIR__.'/includes/EnvLoader.php');
+    EnvLoader::load();
 }
+
 if (!defined('G5_URL')) {
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    
-    // vhost 사용 시 사이트 루트 기준으로 설정
-    $base_path = '';
-    
-    define('G5_URL', $protocol . '://' . $host . $base_path);
-    
-    // 디버그 정보 출력 (로컬 환경에서만)
-    if (strpos($host, 'localhost') !== false || strpos($host, 'hopec.local') !== false) {
-        echo "<!-- G5_URL Debug: " . G5_URL . " -->\n";
+    // 환경변수에서 URL 가져오기, 없으면 자동 감지
+    $env_url = env('APP_URL');
+    if ($env_url) {
+        define('G5_URL', rtrim($env_url, '/'));
+    } else {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        define('G5_URL', $protocol . '://' . $host);
     }
 }
 
-// 기본 디렉토리 상수 정의
-if (!defined('G5_THEME_DIR')) {
-    define('G5_THEME_DIR', 'theme');
-}
+// G5_THEME_DIR은 config.php에서 정의됨
 
-// 기본 설정 배열 초기화
+// 기본 설정 배열 초기화 (환경변수 기반)
 if (!isset($config)) {
     $config = [];
 }
 if (!isset($config['cf_theme'])) {
-    $config['cf_theme'] = 'natural-green';
+    $config['cf_theme'] = env('THEME_NAME', 'natural-green');
 }
 
 // 그누보드 공통 파일 로드
 include_once(__DIR__.'/common.php');
 
-// 개발/점검용 오류 표시(로컬 호스트 또는 ?debug=1 시 활성)
-try {
-    $hostForDebug = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-    $remoteIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
-    $isLocal = in_array($remoteIp, ['127.0.0.1', '::1'], true)
-        || strpos($hostForDebug, 'localhost') !== false
-        || strpos($hostForDebug, 'hopec.local') !== false;
-    if ($isLocal || (isset($_GET['debug']) && $_GET['debug'] === '1')) {
-        @ini_set('display_errors', '1');
-        @ini_set('display_startup_errors', '1');
-        @error_reporting(E_ALL);
+// 환경변수 기반 디버그 모드 설정
+if (env('APP_DEBUG', false) || env('APP_ENV') === 'local') {
+    @ini_set('display_errors', '1');
+    @ini_set('display_startup_errors', '1');
+    @error_reporting(E_ALL);
+}
+
+// 모바일 관련 상수들 - 삭제됨 (반응형 웹으로 통합, 사용되지 않음)
+// define('G5_IS_MOBILE', false);
+// define('G5_MOBILE_PATH', G5_PATH.'/mobile');
+// define('G5_MOBILE_URL', G5_URL.'/mobile');
+// 모바일 테마 경로 - 삭제됨 (반응형으로 통합)
+// define('G5_DEVICE_BUTTON_DISPLAY', false);
+
+// 테마 경로 헬퍼 함수 - 환경변수 기반 (캐시 최적화)
+if (!function_exists('get_theme_path')) {
+    function get_theme_path($sub_path = '') {
+        static $theme_name = null;
+        if ($theme_name === null) {
+            $theme_name = env('THEME_NAME', 'natural-green');
+        }
+        
+        $base_path = __DIR__;
+        return $base_path . '/theme/' . $theme_name . ($sub_path ? '/' . ltrim($sub_path, '/') : '');
     }
-} catch (Throwable $e) { /* no-op */ }
-
-// 모바일 분기 제거를 위한 안전한 상수 정의
-if (!defined('G5_IS_MOBILE')) {
-    define('G5_IS_MOBILE', false);
-}
-if (!defined('G5_MOBILE_PATH')) {
-    define('G5_MOBILE_PATH', G5_PATH.'/mobile');
-}
-if (!defined('G5_MOBILE_URL')) {
-    define('G5_MOBILE_URL', G5_URL.'/mobile');
-}
-if (!defined('G5_THEME_MOBILE_PATH')) {
-    define('G5_THEME_MOBILE_PATH', G5_THEME_PATH.'/mobile');
-}
-if (!defined('G5_DEVICE_BUTTON_DISPLAY')) {
-    define('G5_DEVICE_BUTTON_DISPLAY', false);
 }
 
-// 테마 경로 안전 정의
-if (!defined('G5_THEME_PATH')) {
-    define('G5_THEME_PATH', G5_PATH.'/theme/natural-green');
-}
-if (!defined('G5_THEME_URL')) {
-    define('G5_THEME_URL', G5_URL.'/theme/natural-green');
+if (!function_exists('get_theme_url')) {
+    function get_theme_url($sub_path = '') {
+        static $theme_name = null;
+        if ($theme_name === null) {
+            $theme_name = env('THEME_NAME', 'natural-green');
+        }
+        
+        $base_url = defined('G5_URL') ? G5_URL : '';
+        return $base_url . '/theme/' . $theme_name . ($sub_path ? '/' . ltrim($sub_path, '/') : '');
+    }
 }
 
-// Undefined array key "lo_location" / "lo_url" 경고 방지
-// lib/common.lib.php:2430 에서 $g5['lo_location'] 및 $g5['lo_url']을 참조하나,
-// 이들이 전역으로 정의되지 않아 경고가 발생할 수 있음.
-// 안전한 기본값으로 초기화하여 경고를 방지.
+// 그누보드 전역 변수 초기화 (호환성 유지)
 global $g5;
 if (!isset($g5['lo_location'])) {
     $g5['lo_location'] = '';
@@ -85,17 +80,12 @@ if (!isset($g5['lo_url'])) {
     $g5['lo_url'] = '';
 }
 
-// bbs 폴더 삭제로 인해 필요한 임시 함수들
+// 레거시 호환 함수들 (새로운 시스템에서 대체 예정)
 if (!function_exists('connect')) {
-    function connect() {
-        return '-'; // 임시로 '-' 반환
-    }
+    function connect() { return '-'; }
 }
-
 if (!function_exists('popular')) {
-    function popular($skin_dir='basic', $pop_cnt=7, $date_cnt=3) {
-        return ''; // 임시로 빈 문자열 반환
-    }
+    function popular($skin_dir='basic', $pop_cnt=7, $date_cnt=3) { return ''; }
 }
 
 // 기본 변수들 초기화

@@ -1,4 +1,4 @@
-<?php if (!defined('_GNUBOARD_')) exit; ?>
+<?php if (!defined('_HOPEC_')) exit; ?>
 
     </div>
   </div>
@@ -21,6 +21,4 @@
 
   </body>
 </html>
-
-<?php include_once G5_THEME_PATH . '/tail.sub.php'; ?>
 

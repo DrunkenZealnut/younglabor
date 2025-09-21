@@ -14,30 +14,9 @@ if ($isLocalHost) {
     ini_set('display_errors', 1);
 }
 
-// Modern config 사용 (프로젝트 루트의 .env 파일 기반)
-// 먼저 .env 파일 로드
-$env_file = __DIR__ . '/../.env';
-if (file_exists($env_file)) {
-    $lines = file($env_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0 || strpos($line, '=') === false) {
-            continue;
-        }
-        
-        list($key, $value) = explode('=', $line, 2);
-        $key = trim($key);
-        $value = trim($value);
-        
-        // 따옴표 제거
-        if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
-            (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
-            $value = substr($value, 1, -1);
-        }
-        
-        $_ENV[$key] = $value;
-        putenv("$key=$value");
-    }
-}
+// EnvLoader 사용하여 환경변수 로드
+require_once(__DIR__ . '/EnvLoader.php');
+EnvLoader::load();
 
 $config_path = __DIR__ . '/../admin/config/database.php';
 if (file_exists($config_path)) {
@@ -56,12 +35,12 @@ if (file_exists($config_path)) {
         }
     }
 } else {
-    // Fallback to hardcoded values if config not found
-    $db_host = 'localhost';
-    $db_user = 'root';
-    $db_pass = '';
-    $db_name = 'hopec';
-    $db_charset = 'utf8mb4';
+    // Fallback to environment variables if config not found
+    $db_host = env('DB_HOST', 'localhost');
+    $db_user = env('DB_USERNAME', 'root');
+    $db_pass = env('DB_PASSWORD', '');
+    $db_name = env('DB_DATABASE', 'hopec');
+    $db_charset = env('DB_CHARSET', 'utf8mb4');
 
     // PDO 연결 생성
     try {

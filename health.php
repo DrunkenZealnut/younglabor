@@ -3,7 +3,11 @@
 // - JSON 응답, DB 연결/쿼리 테스트, PHP/시간/호스트 정보 제공
 // - 민감정보(계정/키) 노출 금지
 
+// 캐시 방지 헤더
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 $status = [
   'ok' => false,
@@ -15,23 +19,51 @@ $status = [
 ];
 
 try {
-  // 공통 로드 (DB 상수/연결 함수)
-  @include_once __DIR__ . '/_common.php';
-
-  // DB 연결 핑(간단 SELECT 1)
-  $t0 = microtime(true);
-  @sql_query('SELECT 1');
-  $status['db']['ok'] = true;
-  $status['db']['ms'] = (int)round((microtime(true) - $t0) * 1000);
-  $status['ok'] = true;
-  http_response_code(200);
+  // DB 설정 파일 직접 로드 (common.php 의존성 제거)
+  $dbconfig_file = __DIR__ . '/data/dbconfig.php';
+  if (file_exists($dbconfig_file)) {
+    include $dbconfig_file;
+    
+    // PDO 직접 연결 및 테스트
+    $t0 = microtime(true);
+    $dsn = "mysql:host=" . (defined('G5_MYSQL_HOST') ? G5_MYSQL_HOST : 'localhost') . 
+           ";dbname=" . (defined('G5_MYSQL_DB') ? G5_MYSQL_DB : 'hopec') . 
+           ";charset=utf8mb4";
+    
+    $pdo = new PDO(
+      $dsn,
+      defined('G5_MYSQL_USER') ? G5_MYSQL_USER : 'root',
+      defined('G5_MYSQL_PASSWORD') ? G5_MYSQL_PASSWORD : '',
+      [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_TIMEOUT => 3, // 3초 타임아웃
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+      ]
+    );
+    
+    // 간단한 연결 테스트
+    $pdo->query('SELECT 1');
+    
+    $status['db']['ok'] = true;
+    $status['db']['ms'] = (int)round((microtime(true) - $t0) * 1000);
+    $status['ok'] = true;
+    http_response_code(200);
+  } else {
+    // DB 설정 파일이 없는 경우
+    $status['error'] = 'db config not found';
+    http_response_code(503); // Service Unavailable
+  }
+} catch (PDOException $e) {
+  // DB 연결 실패
+  http_response_code(503);
+  $status['error'] = 'database connection failed';
 } catch (Throwable $e) {
-  // 실패 시 500과 간략 메시지
+  // 기타 실패
   http_response_code(500);
   $status['error'] = 'healthcheck failed';
 }
 
-echo json_encode($status, JSON_UNESCAPED_UNICODE);
+echo json_encode($status, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 exit;
 ?>
 
