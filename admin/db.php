@@ -17,7 +17,7 @@ try {
     $socket = env('DB_SOCKET', '');
     $charset = env('DB_CHARSET', 'utf8mb4');
     $collation = env('DB_COLLATION', 'utf8mb4_unicode_ci');
-    $tablePrefix = env('MODERN_DB_PREFIX', 'hopec_');
+    $tablePrefix = env('DB_PREFIX', 'hopec_');
     
     // DSN 구성
     $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";

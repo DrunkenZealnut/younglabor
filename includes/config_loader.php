@@ -105,7 +105,7 @@ if (!function_exists('getProductionUrl')) {
 
 if (!function_exists('getTablePrefix')) {
     function getTablePrefix() {
-        return $_ENV['DB_TABLE_PREFIX'] ?? (getProjectSlug() . '_');
+        return $_ENV['DB_PREFIX'] ?? (getProjectSlug() . '_');
     }
 }
 

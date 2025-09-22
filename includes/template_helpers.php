@@ -229,7 +229,7 @@ if (!function_exists('logo_url')) {
             }
             
             if ($db_connection) {
-                $table_prefix = env('DB_TABLE_PREFIX', 'hopec_');
+                $table_prefix = env('DB_PREFIX', 'hopec_');
                 $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_logo'");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -238,8 +238,9 @@ if (!function_exists('logo_url')) {
                     // 상대 경로로 저장된 경우 절대 URL로 변환
                     $logo_path = $result['setting_value'];
                     if (!preg_match('/^https?:\/\//', $logo_path)) {
-                        // 루트 경로 기준으로 URL 생성
-                        $logo_url = '/' . ltrim($logo_path, '/');
+                        // BASE_PATH를 고려한 URL 생성
+                        $base_path = env('BASE_PATH', '');
+                        $logo_url = $base_path . '/' . ltrim($logo_path, '/');
                         
                         // 브라우저 캐시 방지를 위해 파일 수정 시간을 쿼리 파라미터로 추가
                         $file_path = $_SERVER['DOCUMENT_ROOT'] . $logo_url;
@@ -298,7 +299,7 @@ if (!function_exists('favicon_url')) {
             }
             
             if ($db_connection) {
-                $table_prefix = env('DB_TABLE_PREFIX', 'hopec_');
+                $table_prefix = env('DB_PREFIX', 'hopec_');
                 $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_favicon'");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -307,8 +308,9 @@ if (!function_exists('favicon_url')) {
                     // 상대 경로로 저장된 경우 절대 URL로 변환
                     $favicon_path = $result['setting_value'];
                     if (!preg_match('/^https?:\/\//', $favicon_path)) {
-                        // 루트 경로 기준으로 URL 생성
-                        $favicon_url = '/' . ltrim($favicon_path, '/');
+                        // BASE_PATH를 고려한 URL 생성
+                        $base_path = env('BASE_PATH', '');
+                        $favicon_url = $base_path . '/' . ltrim($favicon_path, '/');
                         
                         // 브라우저 캐시 방지를 위해 파일 수정 시간을 쿼리 파라미터로 추가
                         $file_path = $_SERVER['DOCUMENT_ROOT'] . $favicon_url;

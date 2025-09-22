@@ -187,15 +187,14 @@ class Database
     }
 
     /**
-     * 회원 정보 가져오기
+     * 회원 정보 가져오기 - 그누보드 호환성 제거로 비활성화
      * @param string $mb_id 회원 ID
      * @param string $fields 가져올 필드
      * @return array|false 회원 정보
      */
     public static function getMember($mb_id, $fields = '*')
     {
-        $mb_id = self::escapeString($mb_id);
-        $sql = "SELECT {$fields} FROM g5_member WHERE mb_id = '{$mb_id}'";
-        return self::fetch($sql);
+        // 그누보드 호환성 제거로 인해 비활성화
+        return false;
     }
 }

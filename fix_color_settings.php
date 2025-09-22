@@ -21,7 +21,7 @@ try {
     
     // 현재 잘못된 색상값들
     echo "<h2>❌ Current (Incorrect) Colors in Database:</h2>\n";
-    $table_prefix = $_ENV['DB_TABLE_PREFIX'] ?? 'hopec_';
+    $table_prefix = $_ENV['DB_PREFIX'] ?? 'hopec_';
     $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM {$table_prefix}site_settings WHERE setting_group = 'theme' AND setting_key LIKE '%_color' ORDER BY setting_key");
     $stmt->execute();
     $currentColors = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -120,7 +120,7 @@ if (!function_exists('get_table_name')) {
      * 테이블명 가져오기 (접두사 포함)
      */
     function get_table_name($table) {
-        $prefix = env('DB_TABLE_PREFIX', 'hopec_');
+        $prefix = env('DB_PREFIX', 'hopec_');
         return $prefix . $table;
     }
 }

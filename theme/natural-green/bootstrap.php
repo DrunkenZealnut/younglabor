@@ -97,8 +97,7 @@ try {
                 ]
             ],
             'prefixes' => [
-                'modern' => env('MODERN_DB_PREFIX', 'hopec_'),
-                'legacy' => env('LEGACY_DB_PREFIX', 'g5_')
+                'modern' => env('DB_PREFIX', 'hopec_')
             ],
             'query_log' => env('DB_QUERY_LOG', false)
         ],

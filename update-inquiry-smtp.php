@@ -223,7 +223,7 @@ try {
     if ($ip_address === "::1") $ip_address = "127.0.0.1";
     
     // 데이터베이스에 저장
-    $table_prefix = env("DB_TABLE_PREFIX", "hopec_");
+    $table_prefix = env("DB_PREFIX", "hopec_");
     $sql = "INSERT INTO {$table_prefix}inquiries (category_id, name, email, phone, subject, message, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, \"new\", ?, ?, NOW())";
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute([$category_id, $name, $email, $phone ?: null, $subject ?: null, $message, $ip_address, $user_agent]);

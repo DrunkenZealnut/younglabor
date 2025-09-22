@@ -9,7 +9,7 @@ return [
     'default' => env('DB_CONNECTION', 'mysql'),
     
     // 테이블 프리픽스
-    'prefix' => env('DB_PREFIX', ''),
+    'prefix' => env('DB_PREFIX', 'hopec_'),
     
     // 연결 설정
     'connections' => [
