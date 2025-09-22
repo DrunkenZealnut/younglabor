@@ -7,7 +7,11 @@
  */
 
 try {
-    $pdo = new PDO("mysql:host=127.0.0.1;dbname=hopec;charset=utf8mb4", 'root', '', [
+    $host = $_ENV['DB_HOST'] ?? '127.0.0.1';
+    $dbname = $_ENV['DB_DATABASE'] ?? 'hopec';
+    $username = $_ENV['DB_USERNAME'] ?? 'root';
+    $password = $_ENV['DB_PASSWORD'] ?? '';
+    $pdo = new PDO("mysql:host={$host};dbname={$dbname};charset=utf8mb4", $username, $password, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
@@ -17,7 +21,8 @@ try {
     
     // 현재 잘못된 색상값들
     echo "<h2>❌ Current (Incorrect) Colors in Database:</h2>\n";
-    $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM hopec_site_settings WHERE setting_group = 'theme' AND setting_key LIKE '%_color' ORDER BY setting_key");
+    $table_prefix = $_ENV['DB_TABLE_PREFIX'] ?? 'hopec_';
+    $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM {$table_prefix}site_settings WHERE setting_group = 'theme' AND setting_key LIKE '%_color' ORDER BY setting_key");
     $stmt->execute();
     $currentColors = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -85,7 +90,7 @@ try {
         
         $pdo->beginTransaction();
         
-        $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ?, updated_at = CURRENT_TIMESTAMP WHERE setting_key = ? AND setting_group = 'theme'");
+        $stmt = $pdo->prepare("UPDATE {$table_prefix}site_settings SET setting_value = ?, updated_at = CURRENT_TIMESTAMP WHERE setting_key = ? AND setting_group = 'theme'");
         
         foreach ($correctColors as $key => $value) {
             $stmt->execute([$value, $key]);
@@ -130,7 +135,7 @@ try {
         
         // 변경 후 색상 확인
         echo "<h2>✅ Updated Colors (Verification):</h2>\n";
-        $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM hopec_site_settings WHERE setting_group = 'theme' AND setting_key LIKE '%_color' ORDER BY setting_key");
+        $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM {$table_prefix}site_settings WHERE setting_group = 'theme' AND setting_key LIKE '%_color' ORDER BY setting_key");
         $stmt->execute();
         $updatedColors = $stmt->fetchAll(PDO::FETCH_ASSOC);
         

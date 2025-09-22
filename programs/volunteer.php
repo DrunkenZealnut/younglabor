@@ -3,6 +3,10 @@
  * 자원봉사안내 페이지
  */
 
+// 헬퍼 함수 로드
+require_once __DIR__ . '/../includes/config_helpers.php';
+load_env_if_exists();
+
 // 모던 부트스트랩 시스템 로드
 require_once __DIR__ . '/../bootstrap/app.php';
 
@@ -32,7 +36,7 @@ include_once __DIR__ . '/../includes/header.php';
     <section class="bg-white rounded-2xl border border-primary-light hover:border-primary shadow-sm p-6 md:p-8 transition-all duration-300">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-start">
         <div class="md:col-span-2">
-          <img src="/programs/img/b15_img.png" alt="자원봉사안내 이미지" class="w-full h-auto rounded-lg border border-primary-light" />
+          <img src="<?= get_app_url('programs/img/b15_img.png') ?>" alt="자원봉사안내 이미지" class="w-full h-auto rounded-lg border border-primary-light" />
         </div>
         <div class="md:col-span-3">
           <?php if ($useCSSVars): ?>
@@ -41,7 +45,7 @@ include_once __DIR__ . '/../includes/header.php';
             <h2 class="text-2xl font-semibold <?= getThemeClass('text', 'primary', '700') ?> mb-3">자원봉사안내</h2>
           <?php endif; ?>
           <p class="text-gray-700 leading-relaxed">
-            사단법인 희망씨는 1365자원봉사센터에 등록되어 있는 단체이며, 나눔활동을 통해 자원봉사시간을 부여하고 있습니다.
+            <?= get_org_name(true) ?>는 1365자원봉사센터에 등록되어 있는 단체이며, 나눔활동을 통해 자원봉사시간을 부여하고 있습니다.
           </p>
           <p class="text-gray-700 leading-relaxed mt-3">
             <?php if ($useCSSVars): ?>
@@ -49,7 +53,7 @@ include_once __DIR__ . '/../includes/header.php';
             <?php else: ?>
               <a href="https://www.1365.go.kr" target="_blank" rel="noopener" class="<?= getThemeClass('text', 'primary', '700') ?> underline hover:<?= getThemeClass('text', 'secondary', '600') ?>">www.1365.go.kr</a>
             <?php endif; ?>
-            로 들어가셔서 회원가입을 한 후, 간단한 개인정보를 희망씨에 알려주시면 나눔활동에 대한 자원봉사시간을 부여해 드립니다.
+            로 들어가셔서 회원가입을 한 후, 간단한 개인정보를 <?= get_org_name() ?>에 알려주시면 나눔활동에 대한 자원봉사시간을 부여해 드립니다.
           </p>
           <div class="mt-5">
             <?php if ($useCSSVars): ?>

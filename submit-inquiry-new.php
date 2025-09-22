@@ -84,14 +84,18 @@ try {
             loadEnv();
             
             $host = env('DB_HOST', 'localhost');
-            $dbname = env('DB_DATABASE', 'hopec');
+            $dbname = env('DB_DATABASE');
             $username = env('DB_USERNAME', 'root');
             $password = env('DB_PASSWORD', '');
             
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } else {
-            $pdo = new PDO("mysql:host=localhost;dbname=hopec;charset=utf8mb4", 'root', '');
+            $host = $_ENV['DB_HOST'] ?? 'localhost';
+            $dbname = $_ENV['DB_DATABASE'] ?? 'hopec';
+            $username = $_ENV['DB_USERNAME'] ?? 'root';
+            $password = $_ENV['DB_PASSWORD'] ?? '';
+            $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
     } catch (Exception $e) {

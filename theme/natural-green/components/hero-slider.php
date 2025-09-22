@@ -76,16 +76,18 @@ try {
                     if (!empty($src)) {
                         // 외부 도메인 URL을 로컬 환경에 맞게 변환
                         if (preg_match('/^https?:\/\//', $src)) {
-                            // 절대 URL인 경우 - hopec.co.kr 또는 www.hopec.co.kr을 로컬 주소로 변환
+                            // 절대 URL인 경우 - 프로덕션 도메인을 로컬 주소로 변환
                             if (env('APP_ENV') !== 'production') {
-                                $src = preg_replace('/^https?:\/\/(www\.)?hopec\.co\.kr/', env('APP_URL', 'http://hopec.local:8012'), $src);
+                                $production_domain = env('PRODUCTION_DOMAIN', 'hopec.co.kr');
+                                $pattern = '/^https?:\/\/(www\.)?' . preg_quote($production_domain, '/') . '/';
+                                $src = preg_replace($pattern, env('APP_URL', 'http://localhost'), $src);
                             }
                             $imageUrl = $src;
                         } else {
                             // 상대 경로인 경우 절대 경로로 변환
                             $baseUrl = env('APP_ENV') === 'production' 
-                                ? env('PRODUCTION_URL', 'https://hopec.co.kr') 
-                                : env('APP_URL', 'http://hopec.local:8012');
+                                ? env('PRODUCTION_URL', 'https://' . env('PRODUCTION_DOMAIN', 'hopec.co.kr')) 
+                                : env('APP_URL', 'http://localhost');
                             
                             if (strpos($src, '/') === 0) {
                                 $imageUrl = $baseUrl . $src;
@@ -144,8 +146,8 @@ try {
                         </linearGradient>
                       </defs>
                       <rect width="1200" height="500" fill="url(#hopecGrad' . $index . ')"/>
-                      <text x="600" y="250" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white" opacity="0.8">희망씨</text>
-                      <text x="600" y="300" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white" opacity="0.6">사단법인 희망씨</text>
+                      <text x="600" y="250" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white" opacity="0.8">' . env('ORG_NAME', '희망씨') . '</text>
+                      <text x="600" y="300" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white" opacity="0.6">' . env('ORG_FULL_NAME', '사단법인 희망씨') . '</text>
                     </svg>'
                 );
             }
@@ -164,7 +166,7 @@ try {
                 <div class="absolute bottom-0 left-0 right-0" style="z-index: 2; background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.3), transparent); padding: 3rem 2rem 2rem;">
                   <div class="text-center text-white max-w-4xl mx-auto">
                     <h1 style="font-size: 3.5rem; font-weight: bold; margin-bottom: 1.5rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.9); line-height: 1.2;">
-                      사단법인 희망씨
+                      <?= env('ORG_FULL_NAME', '사단법인 희망씨') ?>
                     </h1>
                     <p style="font-size: 1.8rem; margin-bottom: 1rem; color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.7), 0px 0px 2px rgba(0,0,0,0.9); opacity: 0.95; line-height: 1.5;">
                       이웃과 친척과 동료와 경쟁하는 삶이 아닌 더불어 사는 삶을 위하여
@@ -197,7 +199,7 @@ try {
             <div class="absolute bottom-0 left-0 right-0" style="z-index: 2; background: linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.2), transparent); padding: 3rem 2rem 2rem;">
               <div class="text-center text-white max-w-4xl mx-auto">
                 <h1 style="font-size: 3.5rem; font-weight: bold; margin-bottom: 1.5rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.7), 1px 1px 3px rgba(0,0,0,0.9); line-height: 1.2;">
-                  사단법인 희망씨
+                  <?= env('ORG_FULL_NAME', '사단법인 희망씨') ?>
                 </h1>
                 <p style="font-size: 1.8rem; margin-bottom: 1rem; color: white; text-shadow: 1px 1px 4px rgba(0,0,0,0.7), 0px 0px 2px rgba(0,0,0,0.9); opacity: 0.95; line-height: 1.5;">
                   이웃과 친척과 동료와 경쟁하는 삶이 아닌 더불어 사는 삶을 위하여

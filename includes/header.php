@@ -1,4 +1,8 @@
 <?php
+// 헬퍼 함수 로드
+require_once __DIR__ . '/config_helpers.php';
+load_env_if_exists();
+
 // 세션 시작
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -102,9 +106,10 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
         } catch (Exception $e) {
             // 네비게이션 로드 실패시 fallback
             echo '<!-- Navigation load error: ' . $e->getMessage() . ' -->';
+            $org_name = env('ORG_NAME', '희망씨');
             echo '<nav class="navbar navbar-expand-lg" style="background-color: var(--primary);">
                     <div class="container">
-                        <a class="navbar-brand text-white" href="/">희망씨</a>
+                        <a class="navbar-brand text-white" href="/">' . htmlspecialchars($org_name) . '</a>
                         <div class="navbar-nav">
                             <a class="nav-link text-white" href="/about/about.php">소개</a>
                             <a class="nav-link text-white" href="/community/gallery.php">갤러리</a>
@@ -116,9 +121,10 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     } else {
         // Fallback: 기본 네비게이션
         echo '<!-- Navigation file not found: ' . $naturalGreenNavigation . ' -->';
+        $org_name = env('ORG_NAME', '희망씨');
         echo '<nav class="navbar navbar-expand-lg" style="background-color: var(--primary);">
                 <div class="container">
-                    <a class="navbar-brand text-white" href="/">희망씨</a>
+                    <a class="navbar-brand text-white" href="/">' . htmlspecialchars($org_name) . '</a>
                     <div class="navbar-nav">
                         <a class="nav-link text-white" href="/about/about.php">소개</a>
                         <a class="nav-link text-white" href="/community/gallery.php">갤러리</a>

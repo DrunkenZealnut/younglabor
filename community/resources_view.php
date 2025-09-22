@@ -1,5 +1,6 @@
 <?php
 // 자료실 상세 (B35) - 댓글 비활성화
+require_once __DIR__ . '/../includes/config_helpers.php';
 require_once __DIR__ . '/../bootstrap/app.php';
 
 // board_templates config 로드 (파일 경로 설정을 위해)
@@ -26,7 +27,7 @@ if ($postId <= 0) {
 
 try {
     $row = DatabaseManager::selectOne(
-        "SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_last, wr_hit, ca_name, wr_content, mb_id FROM hopec_posts WHERE wr_id = :id AND wr_is_comment = 0 AND board_type = :board_type",
+        "SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_last, wr_hit, ca_name, wr_content, mb_id FROM " . get_table_name('posts') . " WHERE wr_id = :id AND wr_is_comment = 0 AND board_type = :board_type",
         [':id' => $postId, ':board_type' => 'resources']
     );
     

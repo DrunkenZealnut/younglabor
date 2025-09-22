@@ -4,6 +4,10 @@ error_reporting(0);
 ini_set('display_errors', 0);
 ini_set('html_errors', 0);
 
+// 헬퍼 함수 로드
+require_once __DIR__ . '/includes/config_helpers.php';
+load_env_if_exists();
+
 // JSON 헤더
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
@@ -215,7 +219,11 @@ try {
             $password = env('DB_PASSWORD', '');
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
         } else {
-            $pdo = new PDO("mysql:host=localhost;dbname=hopec;charset=utf8mb4", 'root', '');
+            $host = env('DB_HOST', 'localhost');
+            $dbname = env('DB_DATABASE', 'hopec');
+            $username = env('DB_USERNAME', 'root');
+            $password = env('DB_PASSWORD', '');
+            $pdo = new PDO("mysql:host={$host};dbname={$dbname};charset=utf8mb4", $username, $password);
         }
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (Exception $e) {

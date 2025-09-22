@@ -48,7 +48,8 @@ try {
 
 // 게시판 정보 조회
 try {
-    $stmt = $pdo->prepare("SELECT * FROM hopec_boards WHERE id = ? AND is_active = 1");
+    $table_prefix = $_ENV['DB_TABLE_PREFIX'] ?? 'hopec_';
+    $stmt = $pdo->prepare("SELECT * FROM {$table_prefix}boards WHERE id = ? AND is_active = 1");
     $stmt->execute([$board_id]);
     $board = $stmt->fetch();
     

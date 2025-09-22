@@ -195,12 +195,14 @@ try {
             require_once __DIR__ . "/admin/env_loader.php";
             loadEnv();
             $host = env("DB_HOST", "localhost");
-            $dbname = env("DB_DATABASE", "hopec");
+            $dbname = env("DB_DATABASE");
             $username = env("DB_USERNAME", "root");
             $password = env("DB_PASSWORD", "");
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
         } else {
-            $pdo = new PDO("mysql:host=localhost;dbname=hopec;charset=utf8mb4", "root", "");
+            $pdo = new PDO("mysql:host=" . ($_ENV['DB_HOST'] ?? 'localhost') . ";dbname=" . ($_ENV['DB_DATABASE'] ?? 'hopec') . ";charset=utf8mb4", 
+                          $_ENV['DB_USERNAME'] ?? 'root', 
+                          $_ENV['DB_PASSWORD'] ?? '');
         }
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (Exception $e) {
@@ -221,7 +223,8 @@ try {
     if ($ip_address === "::1") $ip_address = "127.0.0.1";
     
     // 데이터베이스에 저장
-    $sql = "INSERT INTO hopec_inquiries (category_id, name, email, phone, subject, message, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, \"new\", ?, ?, NOW())";
+    $table_prefix = env("DB_TABLE_PREFIX", "hopec_");
+    $sql = "INSERT INTO {$table_prefix}inquiries (category_id, name, email, phone, subject, message, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, \"new\", ?, ?, NOW())";
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute([$category_id, $name, $email, $phone ?: null, $subject ?: null, $message, $ip_address, $user_agent]);
     
@@ -230,19 +233,20 @@ try {
         
         // SMTP 이메일 발송
         try {
-            $admin_email = env("DEFAULT_ADMIN_EMAIL", "admin@hopec.co.kr");
+            $admin_email = env("DEFAULT_ADMIN_EMAIL");
             $from_email = env("MAIL_FROM_EMAIL", env("MAIL_SMTP_USERNAME", "noreply@hopec.co.kr"));
-            $from_name = env("MAIL_FROM_NAME", "희망씨 웹사이트");
+            $from_name = env("MAIL_FROM_NAME");
             
-            $stmt = $pdo->prepare("SELECT name FROM hopec_inquiry_categories WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT name FROM {$table_prefix}inquiry_categories WHERE id = ?");
             $stmt->execute([$category_id]);
             $category_result = $stmt->fetch(PDO::FETCH_ASSOC);
             $category_name = $category_result ? $category_result["name"] : "일반문의";
             
-            $mail_subject = "[희망씨] 새로운 문의가 접수되었습니다 (ID: {$inquiry_id})";
+            $org_name = env("ORG_NAME", "희망씨");
+            $mail_subject = "[{$org_name}] 새로운 문의가 접수되었습니다 (ID: {$inquiry_id})";
             $mail_body = "
 ==============================================
-희망씨 웹사이트 문의하기
+{$org_name} 웹사이트 문의하기
 ==============================================
 
 문의 번호: {$inquiry_id}

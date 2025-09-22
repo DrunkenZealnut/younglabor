@@ -8,7 +8,14 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 // PHPMailer 라이브러리가 없다면 간단한 cURL 방식으로 Gmail API 사용
-function sendEmailWithGmail($to, $subject, $body, $from_name = '희망씨 웹사이트', $reply_to = null) {
+function sendEmailWithGmail($to, $subject, $body, $from_name = null, $reply_to = null) {
+    // 헬퍼 함수 로드
+    require_once __DIR__ . '/includes/config_helpers.php';
+    load_env_if_exists();
+    
+    if ($from_name === null) {
+        $from_name = get_mail_from_name();
+    }
     // Gmail SMTP 설정이 복잡하므로 일단 로그로 기록하고 관리자가 확인할 수 있도록 처리
     $log_message = "
 === 이메일 발송 로그 ===
@@ -27,7 +34,8 @@ function sendEmailWithGmail($to, $subject, $body, $from_name = '희망씨 웹사
     error_log($log_message, 3, __DIR__ . '/logs/email.log');
     
     // 실제 이메일 발송 시도 (간단한 방법)
-    $headers = "From: {$from_name} <noreply@hopec.co.kr>\r\n";
+    $from_email = env('MAIL_FROM_EMAIL', 'noreply@' . env('PRODUCTION_DOMAIN', 'hopec.co.kr'));
+    $headers = "From: {$from_name} <{$from_email}>\r\n";
     if ($reply_to) {
         $headers .= "Reply-To: {$reply_to}\r\n";
     }

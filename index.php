@@ -27,6 +27,10 @@ if (preg_match('/^board\/list\/(\d+)\/?$/', $path, $matches)) {
     }
 }
 
+// 헬퍼 함수 로드
+require_once __DIR__ . '/includes/config_helpers.php';
+load_env_if_exists();
+
 // 모던 부트스트랩 시스템 로드
 require_once __DIR__ . '/bootstrap/app.php';
 
@@ -36,8 +40,8 @@ if (!defined('_INDEX_')) {
 }
 
 // 페이지 메타 정보 설정
-$pageTitle = '사단법인 희망씨';
-$pageDescription = '사단법인 희망씨 - 청소년 노동인권과 지역사회 연대를 위한 비영리 단체';
+$pageTitle = get_org_name(true);
+$pageDescription = get_org_name(true) . ' - ' . get_org_description();
 $currentSlug = 'home';
 
 // 헤더 출력 (여기서 activeTheme이 설정됨)
@@ -61,8 +65,8 @@ if (file_exists($themeHome)) {
             <div class="content-section">
                 <div class="row">
                     <div class="col-md-8">
-                        <h2>희망씨 소개</h2>
-                        <p>사단법인 희망씨는 청소년 노동인권 교육과 지역사회 연대 활동을 통해 더 나은 사회를 만들어가는 비영리 단체입니다.</p>
+                        <h2><?= get_org_name() ?> 소개</h2>
+                        <p><?= get_org_name(true) ?>는 청소년 노동인권 교육과 지역사회 연대 활동을 통해 더 나은 사회를 만들어가는 비영리 단체입니다.</p>
                         
                         <h3>주요 활동</h3>
                         <ul>
