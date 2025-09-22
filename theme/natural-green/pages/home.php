@@ -36,9 +36,11 @@
         <?php
         // 갤러리에서 최신 게시물 조회
         try {
-            $galleryPosts = DatabaseManager::select(
-                "SELECT wr_id as id, wr_subject as title, wr_content as content, wr_datetime as created_at FROM " . get_table_name('posts') . " WHERE board_type = 'gallery' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 3"
-            );
+            global $pdo;
+            $table_name = get_table_name('posts');
+            $stmt = $pdo->prepare("SELECT wr_id as id, wr_subject as title, wr_content as content, wr_datetime as created_at FROM {$table_name} WHERE board_type = 'gallery' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 3");
+            $stmt->execute();
+            $galleryPosts = $stmt->fetchAll();
             
             foreach ($galleryPosts as $post) {
                 // 본문에서 첫 번째 이미지 추출

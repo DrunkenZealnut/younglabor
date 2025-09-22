@@ -26,14 +26,14 @@ try {
     
     // PDO 직접 연결 및 테스트
     $t0 = microtime(true);
-    $dsn = "mysql:host=" . (defined('G5_MYSQL_HOST') ? G5_MYSQL_HOST : 'localhost') . 
-           ";dbname=" . (defined('G5_MYSQL_DB') ? G5_MYSQL_DB : 'hopec') . 
+    $dsn = "mysql:host=" . env('DB_HOST', 'localhost') . 
+           ";dbname=" . env('DB_DATABASE', 'hopec') . 
            ";charset=utf8mb4";
     
     $pdo = new PDO(
       $dsn,
-      defined('G5_MYSQL_USER') ? G5_MYSQL_USER : 'root',
-      defined('G5_MYSQL_PASSWORD') ? G5_MYSQL_PASSWORD : '',
+      env('DB_USERNAME', 'root'),
+      env('DB_PASSWORD', ''),
       [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_TIMEOUT => 3, // 3초 타임아웃

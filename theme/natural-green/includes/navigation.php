@@ -75,13 +75,18 @@ if (!function_exists('logo_url')) {
 // 데이터베이스에서 메뉴 구조 로드
 $menus = [];
 try {
-    // DatabaseManager가 초기화되지 않은 경우 초기화
-    if (!class_exists('DatabaseManager')) {
-        require_once HOPEC_BASE_PATH . '/includes/DatabaseManager.php';
-        DatabaseManager::initialize();
+    // 직접 PDO 연결 사용
+    global $pdo;
+    if (!isset($pdo)) {
+        // 기본 데이터베이스 연결이 없는 경우 생성
+        $host = env('DB_HOST', 'localhost');
+        $dbname = env('DB_DATABASE', 'hopec');
+        $username = env('DB_USERNAME', 'root');
+        $password = env('DB_PASSWORD', '');
+        
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-    
-    $pdo = DatabaseManager::getConnection();
     
     if ($pdo) {
         // 최상위 메뉴들을 가져옴

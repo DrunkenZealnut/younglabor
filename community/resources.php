@@ -43,13 +43,9 @@ try {
 
 // 목록
 try {
-    $list_params = $bind_params;
-    $list_params[':limit'] = $per_page;
-    $list_params[':offset'] = $offset;
-    
     $rows = DatabaseManager::select(
-        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_file, wr_is_notice FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT :limit OFFSET :offset',
-        $list_params
+        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_file, wr_is_notice FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT ' . (int)$per_page . ' OFFSET ' . (int)$offset,
+        $bind_params
     );
 } catch (Exception $e) {
     $rows = [];

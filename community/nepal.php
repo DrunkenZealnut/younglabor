@@ -40,10 +40,9 @@ $where_sql = implode(' AND ', $where_clauses);
     $total_pages = (int)max(1, ceil($total_posts / $per_page));
 
     // 목록 조회 (콘텐츠 포함)
-    $list_params = array_merge($bind_params, [':limit' => $per_page, ':offset' => $offset]);
     $rows = DatabaseManager::select(
-        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_content, wr_file, wr_is_notice FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT :limit OFFSET :offset',
-        $list_params
+        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_content, wr_file, wr_is_notice FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT ' . (int)$per_page . ' OFFSET ' . (int)$offset,
+        $bind_params
     );
 
 // 첫 이미지 추출
