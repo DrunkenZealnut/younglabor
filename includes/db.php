@@ -18,7 +18,7 @@ if ($isLocalHost) {
 require_once(__DIR__ . '/EnvLoader.php');
 EnvLoader::load();
 
-$config_path = __DIR__ . '/../admin/config/database.php';
+$config_path = __DIR__ . '/../config/database.php';
 if (file_exists($config_path)) {
     $db_config = require $config_path;
     $mysql_config = $db_config['connections']['mysql'];
@@ -26,7 +26,9 @@ if (file_exists($config_path)) {
     // PDO 연결 생성
     try {
         $dsn = "mysql:host={$mysql_config['host']};port={$mysql_config['port']};dbname={$mysql_config['database']};charset={$mysql_config['charset']}";
-        $pdo = new PDO($dsn, $mysql_config['username'], $mysql_config['password'], $mysql_config['options']);
+        // 빈 비밀번호를 null로 변환
+        $password = empty($mysql_config['password']) ? null : $mysql_config['password'];
+        $pdo = new PDO($dsn, $mysql_config['username'], $password, $mysql_config['options']);
     } catch (PDOException $e) {
         if ($isLocalHost) {
             die('Database connection failed: ' . $e->getMessage());

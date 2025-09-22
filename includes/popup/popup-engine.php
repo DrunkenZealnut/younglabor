@@ -43,13 +43,15 @@ try {
         if (file_exists($dbConfigPath)) {
             include $dbConfigPath;
             
-            // 그누보드 설정에서 변수 추출
-            $db_host = defined('G5_MYSQL_HOST') ? G5_MYSQL_HOST : 'localhost';
-            $db_user = defined('G5_MYSQL_USER') ? G5_MYSQL_USER : 'root';
-            $db_pass = defined('G5_MYSQL_PASSWORD') ? G5_MYSQL_PASSWORD : '';
-            $db_name = defined('G5_MYSQL_DB') ? G5_MYSQL_DB : 'hopec';
+            // 환경변수 기반 데이터베이스 설정 사용
+            $db_host = env('DB_HOST', 'localhost');
+            $db_user = env('DB_USERNAME', 'root');
+            $db_pass = env('DB_PASSWORD', '');
+            $db_name = env('DB_DATABASE', 'hopec');
             
-            $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
+            // 빈 비밀번호를 null로 변환
+            $password = empty($db_pass) ? null : $db_pass;
+            $pdo = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } else {
             // 데이터베이스 연결 실패 시 조용히 종료

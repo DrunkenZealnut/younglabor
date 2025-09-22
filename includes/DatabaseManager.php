@@ -46,30 +46,35 @@ class DatabaseManager
         $config = self::$config['connections']['mysql'] ?? [];
         
         try {
-            $dsn = sprintf(
-                'mysql:host=%s;port=%s;dbname=%s;charset=%s',
-                $config['host'],
-                $config['port'],
-                $config['database'],
-                $config['charset']
-            );
+            // 빈 비밀번호를 null로 변환
+            $password = empty($config['password']) ? null : $config['password'];
             
-            // Unix 소켓 사용하는 경우
-            if (!empty($config['socket'])) {
-                $dsn = sprintf(
-                    'mysql:unix_socket=%s;dbname=%s;charset=%s',
-                    $config['socket'],
-                    $config['database'],
-                    $config['charset']
-                );
+            // 환경별 최적화된 연결 순서 결정
+            $connectionMethods = self::getOptimalConnectionOrder();
+            $lastError = null;
+            
+            foreach ($connectionMethods as $method) {
+                try {
+                    $dsn = self::buildDsn($method, $config);
+                    if ($dsn) {
+                        self::$connection = new PDO(
+                            $dsn,
+                            $config['username'],
+                            $password,
+                            $config['options'] ?? []
+                        );
+                        break; // 연결 성공
+                    }
+                } catch (PDOException $e) {
+                    $lastError = $e;
+                    continue; // 다음 방법 시도
+                }
             }
             
-            self::$connection = new PDO(
-                $dsn,
-                $config['username'],
-                $config['password'],
-                $config['options'] ?? []
-            );
+            // 모든 연결 방법 실패시 예외 발생
+            if (self::$connection === null) {
+                throw $lastError ?: new PDOException('모든 데이터베이스 연결 방법이 실패했습니다.');
+            }
             
             // 쿼리 로그 활성화
             if (self::$config['query_log'] ?? false) {
@@ -322,5 +327,98 @@ class DatabaseManager
     public static function validateColumnName($columnName)
     {
         return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $columnName);
+    }
+    
+    /**
+     * 환경별 최적화된 연결 순서 결정
+     */
+    private static function getOptimalConnectionOrder()
+    {
+        // 환경 감지
+        $isXampp = self::isXamppEnvironment();
+        $isLinux = PHP_OS_FAMILY === 'Linux';
+        $isProduction = env('APP_ENV') === 'production';
+        
+        if ($isProduction) {
+            // 프로덕션: TCP 연결 우선
+            return ['tcp', 'socket_linux', 'socket_xampp'];
+        } elseif ($isXampp) {
+            // XAMPP 환경: 소켓 우선
+            return ['socket_xampp', 'tcp', 'socket_linux'];
+        } elseif ($isLinux) {
+            // 리눅스 환경: 리눅스 소켓 우선
+            return ['socket_linux', 'tcp', 'socket_xampp'];
+        } else {
+            // 기타 환경: TCP 우선
+            return ['tcp', 'socket_linux', 'socket_xampp'];
+        }
+    }
+    
+    /**
+     * XAMPP 환경 감지
+     */
+    private static function isXamppEnvironment()
+    {
+        // XAMPP 설치 경로 확인
+        $xamppPaths = [
+            '/Applications/XAMPP/xamppfiles',  // macOS
+            'C:\\xampp',                       // Windows
+            '/opt/lampp'                       // Linux XAMPP
+        ];
+        
+        foreach ($xamppPaths as $path) {
+            if (is_dir($path)) {
+                return true;
+            }
+        }
+        
+        // 환경변수나 서버 소프트웨어로 감지
+        $serverSoftware = $_SERVER['SERVER_SOFTWARE'] ?? '';
+        return stripos($serverSoftware, 'xampp') !== false ||
+               getenv('XAMPP_ROOT') !== false;
+    }
+    
+    /**
+     * 연결 방식별 DSN 생성
+     */
+    private static function buildDsn($method, $config)
+    {
+        switch ($method) {
+            case 'tcp':
+                return sprintf(
+                    'mysql:host=%s;port=%s;dbname=%s;charset=%s',
+                    $config['host'],
+                    $config['port'],
+                    $config['database'],
+                    $config['charset']
+                );
+                
+            case 'socket_xampp':
+                $socket = env('DB_SOCKET_XAMPP', '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock');
+                if (file_exists($socket)) {
+                    return sprintf(
+                        'mysql:unix_socket=%s;dbname=%s;charset=%s',
+                        $socket,
+                        $config['database'],
+                        $config['charset']
+                    );
+                }
+                return null;
+                
+            case 'socket_linux':
+                $socket = env('DB_SOCKET_LINUX', '/var/run/mysqld/mysqld.sock');
+                if (file_exists($socket)) {
+                    return sprintf(
+                        'mysql:unix_socket=%s;dbname=%s;charset=%s',
+                        $socket,
+                        $config['database'],
+                        $config['charset']
+                    );
+                }
+                return null;
+                
+            default:
+                return null;
+        }
     }
 }

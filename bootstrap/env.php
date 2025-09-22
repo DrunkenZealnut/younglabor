@@ -45,7 +45,27 @@ if (!function_exists('load_env')) {
             }
         }
         
+        // 두 번째 패스: 변수 치환 처리
+        foreach ($_ENV as $key => $value) {
+            if (is_string($value) && strpos($value, '${') !== false) {
+                $_ENV[$key] = resolve_env_variables($value, $_ENV);
+                putenv("$key=" . $_ENV[$key]);
+            }
+        }
+        
         return true;
+    }
+}
+
+if (!function_exists('resolve_env_variables')) {
+    /**
+     * 환경변수 값에서 ${VARIABLE} 형태의 변수를 치환
+     */
+    function resolve_env_variables($value, $env_vars) {
+        return preg_replace_callback('/\$\{([^}]+)\}/', function($matches) use ($env_vars) {
+            $var_name = $matches[1];
+            return $env_vars[$var_name] ?? $matches[0]; // 변수가 없으면 원본 유지
+        }, $value);
     }
 }
 

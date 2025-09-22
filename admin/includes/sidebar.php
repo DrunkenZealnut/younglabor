@@ -8,11 +8,14 @@
  * 
  * 옵션 변수:
  * - $current_menu: 현재 활성 메뉴 ID (선택사항)
- * - $admin_title: 관리자 타이틀 (기본값: '희망씨 관리자')
+ * - $admin_title: 관리자 타이틀 (기본값: '{ORG_NAME} 관리자')
  */
 
+// Configuration loader
+require_once __DIR__ . '/../../includes/config_loader.php';
+
 // 기본값 설정
-$admin_title = $admin_title ?? '희망씨 관리자';
+$admin_title = $admin_title ?? (getOrgName('short') . ' 관리자');
 $current_menu = $current_menu ?? '';
 
 // 현재 페이지 감지

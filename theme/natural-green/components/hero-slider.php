@@ -41,6 +41,7 @@ $errorMessage = '';
 try {
     // DatabaseManager 사용하여 갤러리 이미지 가져오기
     if (class_exists('DatabaseManager')) {
+        $postsTable = DatabaseManager::getTableName('posts');
         $rawSlides = DatabaseManager::select("
             SELECT 
                 wr_id, 
@@ -48,7 +49,7 @@ try {
                 wr_content as content, 
                 wr_datetime as created_at,
                 wr_file
-            FROM hopec_posts 
+            FROM {$postsTable}
             WHERE wr_is_comment = 0 AND board_type = 'gallery'
             ORDER BY wr_datetime DESC 
             LIMIT " . intval($hero_config['slide_count'])

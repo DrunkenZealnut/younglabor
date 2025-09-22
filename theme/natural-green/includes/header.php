@@ -56,27 +56,29 @@ try {
         
     } else {
         // PDO 연결이 없는 경우 기본 메뉴 사용
+        $orgNameShort = getOrgName('short');
         $menus = [
-            [ 'title' => '희망씨 소개', 'items' => ['희망씨는','이사장 인사말','조직도','연혁','오시는길','재정보고'] ],
-            [ 'title' => '희망씨 사업', 'items' => ['국내아동지원사업','해외아동지원사업','노동인권사업','소통 및 회원사업','자원봉사안내'] ],
-            [ 'title' => '희망씨 후원안내', 'items' => ['정기후원','일시후원'] ],
+            [ 'title' => $orgNameShort . ' 소개', 'items' => [$orgNameShort . '는','이사장 인사말','조직도','연혁','오시는길','재정보고'] ],
+            [ 'title' => $orgNameShort . ' 사업', 'items' => ['국내아동지원사업','해외아동지원사업','노동인권사업','소통 및 회원사업','자원봉사안내'] ],
+            [ 'title' => $orgNameShort . ' 후원안내', 'items' => ['정기후원','일시후원'] ],
             [ 'title' => '커뮤니티', 'items' => ['공지사항','언론보도','소식지','갤러리','자료실','네팔나눔연대여행'] ],
         ];
     }
 } catch (PDOException $e) {
     // 오류 시 기본 메뉴 구조 유지
     error_log("Menu loading error: " . $e->getMessage());
+    $orgNameShort = getOrgName('short');
     $menus = [
-        [ 'title' => '희망씨 소개', 'items' => ['희망씨는','이사장 인사말','조직도','연혁','오시는길','재정보고'] ],
-        [ 'title' => '희망씨 사업', 'items' => ['국내아동지원사업','해외아동지원사업','노동인권사업','소통 및 회원사업','자원봉사안내'] ],
-        [ 'title' => '희망씨 후원안내', 'items' => ['정기후원','일시후원'] ],
+        [ 'title' => $orgNameShort . ' 소개', 'items' => [$orgNameShort . '는','이사장 인사말','조직도','연혁','오시는길','재정보고'] ],
+        [ 'title' => $orgNameShort . ' 사업', 'items' => ['국내아동지원사업','해외아동지원사업','노동인권사업','소통 및 회원사업','자원봉사안내'] ],
+        [ 'title' => $orgNameShort . ' 후원안내', 'items' => ['정기후원','일시후원'] ],
         [ 'title' => '커뮤니티', 'items' => ['공지사항','언론보도','소식지','갤러리','자료실','네팔나눔연대여행'] ],
     ];
 }
 
-// "희망씨 소개" 하위 메뉴 전용 링크 매핑 (신규 정적 페이지 경로로 교체)
+// 조직 소개 하위 메뉴 전용 링크 매핑 (신규 정적 페이지 경로로 교체)
 $introBoardLinks = [
-  '희망씨는' => '/about/about.php',
+  getOrgName('short') . '는' => '/about/about.php',
   '이사장 인사말' => '/about/greeting.php',
   '조직도' => '/about/org.php', // B03_2
   '연혁' => '/about/history.php', // B03_3
@@ -84,7 +86,7 @@ $introBoardLinks = [
   '재정보고' => '/about/finance.php', // @board_templates 기반 신규 페이지로 연결
 ];
 
-// "희망씨 사업" 하위 메뉴 링크 매핑 (정적 programs 경로)
+// 조직 사업 하위 메뉴 링크 매핑 (정적 programs 경로)
 $programLinks = [
   '국내아동지원사업' => '/programs/domestic.php', // B11
   '해외아동지원사업' => '/programs/overseas.php', // B12
@@ -116,7 +118,7 @@ $communityLinks = [
       <div class="d-flex align-items-center">
         <a href="/" class="d-flex align-items-center text-decoration-none" style="outline: none;">
           <?php if (function_exists('logo_url')): ?>
-            <img src="<?= logo_url() ?>" alt="희망씨 로고" class="h-9" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <img src="<?= logo_url() ?>" alt="<?= getOrgName('short') ?> 로고" class="h-9" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i data-lucide="leaf" class="w-7 h-7" style="display: none; color: var(--primary);"></i>
           <?php else: ?>
             <i data-lucide="leaf" class="w-7 h-7" style="color: var(--primary);"></i>
@@ -478,13 +480,13 @@ $communityLinks = [
 <style>
 /* 드롭다운 메뉴 위치 조정을 위한 CSS */
 
-/* 희망씨 사업 메뉴 (인덱스 1) - 오른쪽 정렬 */
+/* 조직 사업 메뉴 (인덱스 1) - 오른쪽 정렬 */
 .menu-item-1 .dropdown-menu {
   left: auto !important;
   right: 0 !important;
 }
 
-/* 희망씨 후원안내 메뉴 (인덱스 2) - 오른쪽 정렬 */
+/* 조직 후원안내 메뉴 (인덱스 2) - 오른쪽 정렬 */
 .menu-item-2 .dropdown-menu {
   left: auto !important;
   right: 0 !important;
@@ -496,13 +498,13 @@ $communityLinks = [
   right: 0 !important;
 }
 
-/* 희망씨 소개 메뉴 (인덱스 0)만 왼쪽 정렬 유지 */
+/* 조직 소개 메뉴 (인덱스 0)만 왼쪽 정렬 유지 */
 .menu-item-0 .dropdown-menu {
   left: 0 !important;
   right: auto !important;
 }
 
-/* 중간 화면에서는 희망씨 사업부터 오른쪽 정렬 */
+/* 중간 화면에서는 조직 사업부터 오른쪽 정렬 */
 @media (max-width: 1200px) {
   .menu-item-1 .dropdown-menu,
   .menu-item-2 .dropdown-menu,

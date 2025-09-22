@@ -32,3 +32,14 @@ if (env('APP_DEBUG', false) || env('APP_ENV') === 'local') {
     @error_reporting(E_ALL);
 }
 
+// Configuration loader
+require_once(__DIR__.'/config_loader.php');
+
+// 데이터베이스 설정 로드
+$database_config = require(__DIR__.'/../config/database.php');
+$GLOBALS['hopec_config']['database'] = $database_config;
+
+// DatabaseManager 로드 및 초기화
+require_once(__DIR__.'/DatabaseManager.php');
+DatabaseManager::initialize();
+

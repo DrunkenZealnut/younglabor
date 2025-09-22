@@ -27,12 +27,11 @@ if (preg_match('/^board\/list\/(\d+)\/?$/', $path, $matches)) {
     }
 }
 
-// 헬퍼 함수 로드
-require_once __DIR__ . '/includes/config_helpers.php';
-load_env_if_exists();
-
-// 모던 부트스트랩 시스템 로드
+// 모던 부트스트랩 시스템 로드 (환경변수 로딩 포함)
 require_once __DIR__ . '/bootstrap/app.php';
+
+// 헬퍼 함수 로드 (bootstrap 이후)
+require_once __DIR__ . '/includes/config_helpers.php';
 
 // 인덱스 페이지 플래그
 if (!defined('_INDEX_')) {
@@ -82,10 +81,11 @@ if (file_exists($themeHome)) {
                             <h3>최근 소식</h3>
                             
                             <?php
-                            // 최근 공지사항 조회 (hopec_notices 테이블 사용)
+                            // 최근 공지사항 조회 (동적 테이블 프리픽스 사용)
                             try {
+                                $noticesTable = DatabaseManager::getTableName('notices');
                                 $notices = DatabaseManager::select(
-                                    "SELECT wr_id as id, wr_subject as title, wr_datetime as created_at FROM hopec_notices ORDER BY wr_datetime DESC LIMIT 5"
+                                    "SELECT wr_id as id, wr_subject as title, wr_datetime as created_at FROM {$noticesTable} ORDER BY wr_datetime DESC LIMIT 5"
                                 );
                                 
                                 if (!empty($notices)) {

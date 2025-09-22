@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 
 require_once '../bootstrap.php';
 require_once '../env_loader.php';
+require_once '../../includes/config_loader.php';
 require_once 'attachment_helpers.php';
 
 // CSRF 토큰 생성 보장
@@ -108,9 +109,9 @@ $page_title = $post ? '게시글 수정: ' . htmlspecialchars($post['title']) : 
 
 <!DOCTYPE html>
 <html lang="ko">
-<head>희망씨
+<head>
   <meta charset="UTF-8">
-  <title><?= $page_title ?> - 우동615 관리자</title>
+  <title><?= $page_title ?> - <?= getOrgName('short') ?> 관리자</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">

@@ -212,13 +212,49 @@ if (class_exists('DatabaseManager')) {
             include $dbConfigPath;
             
             // 그누보드 설정에서 변수 추출
-            $db_host = defined('G5_MYSQL_HOST') ? G5_MYSQL_HOST : 'localhost';
-            $db_user = defined('G5_MYSQL_USER') ? G5_MYSQL_USER : 'root';
-            $db_pass = defined('G5_MYSQL_PASSWORD') ? G5_MYSQL_PASSWORD : '';
-            $db_name = defined('G5_MYSQL_DB') ? G5_MYSQL_DB : 'hopec';
+            $db_host = env('DB_HOST', 'localhost');
+            $db_user = env('DB_USERNAME', 'root');
+            $db_pass = env('DB_PASSWORD', '');
+            $db_name = env('DB_DATABASE', 'hopec');
             
-            $GLOBALS['pdo'] = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $db_pass);
-            $GLOBALS['pdo']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            // 빈 비밀번호를 null로 변환
+            $password = empty($db_pass) ? null : $db_pass;
+            
+            // 환경별 연결 시도 (DatabaseManager와 동일한 로직)
+            $connected = false;
+            $isProduction = env('APP_ENV') === 'production';
+            
+            // 프로덕션 환경에서는 TCP 연결만 시도
+            if ($isProduction) {
+                $GLOBALS['pdo'] = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $password);
+                $GLOBALS['pdo']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $connected = true;
+            } else {
+                // 개발 환경: 소켓 연결 시도 후 TCP 연결
+                $sockets = [
+                    env('DB_SOCKET_XAMPP', '/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock'),
+                    env('DB_SOCKET_LINUX', '/var/run/mysqld/mysqld.sock')
+                ];
+                
+                foreach ($sockets as $socket_path) {
+                    if (file_exists($socket_path)) {
+                        try {
+                            $GLOBALS['pdo'] = new PDO("mysql:unix_socket=$socket_path;dbname=$db_name;charset=utf8mb4", $db_user, $password);
+                            $GLOBALS['pdo']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                            $connected = true;
+                            break;
+                        } catch (PDOException $e) {
+                            continue;
+                        }
+                    }
+                }
+                
+                // 소켓 연결 실패시 TCP 연결 시도
+                if (!$connected) {
+                    $GLOBALS['pdo'] = new PDO("mysql:host=$db_host;dbname=$db_name;charset=utf8mb4", $db_user, $password);
+                    $GLOBALS['pdo']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                }
+            }
         }
     } catch (Exception $e) {
         if (env('APP_DEBUG')) {

@@ -13,7 +13,7 @@ require_once(__DIR__ . '/includes/EnvLoader.php');
 EnvLoader::load();
 
 // 프레임워크 초기화 - .env 기반
-$app_name = env('APP_NAME', 'HOPEC');
+$app_name = env('APP_NAME', env('PROJECT_NAME', 'ORGANIZATION'));
 define('_HOPEC_', !empty($app_name));
 
 if (PHP_VERSION >= '5.1.0') {

@@ -39,9 +39,9 @@ if (!function_exists('get_org_name')) {
      */
     function get_org_name($full = false) {
         if ($full) {
-            return env('ORG_FULL_NAME', '사단법인 희망씨');
+            return env('ORG_NAME_FULL', '사단법인 희망씨');
         }
-        return env('ORG_NAME', '희망씨');
+        return env('ORG_NAME_SHORT', '희망씨');
     }
 }
 

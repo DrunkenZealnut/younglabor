@@ -5,7 +5,7 @@
       <div class="flex-1 min-w-[320px]">
         <div class="flex items-center gap-3 mb-4">
           <?php if (function_exists('logo_url')): ?>
-            <img src="<?= logo_url() ?>" alt="희망씨 로고" class="h-8" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <img src="<?= logo_url() ?>" alt="<?= get_org_name() ?> 로고" class="h-8" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i data-lucide="trees" class="w-6 h-6 text-lime-500" style="display: none;" aria-hidden="true"></i>
           <?php else: ?>
             <i data-lucide="trees" class="w-6 h-6 text-lime-500" aria-hidden="true"></i>
@@ -78,7 +78,7 @@
                 <i data-lucide="credit-card" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
                   <span class="font-medium text-forest-700">후원계좌</span><br>
-                  <span class="text-gray-600">우리은행 1005-502-430760<br>(사)희망씨</span>
+                  <span class="text-gray-600">우리은행 1005-502-430760<br><?= get_bank_account_holder() ?></span>
                 </div>
               </div>
             </div>
@@ -86,7 +86,7 @@
         </div>
       </div>
       <div id="ft_copy" class="text-sm text-right md:text-left">
-        <p>Copyright © 2019 더불어사는 삶 사단법인 희망씨.</p>
+        <p>Copyright © 2019 더불어사는 삶 <?= get_org_name(true) ?>.</p>
       </div>
     </div>
   </div>

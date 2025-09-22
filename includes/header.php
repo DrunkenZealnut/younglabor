@@ -1,7 +1,11 @@
 <?php
-// 헬퍼 함수 로드
-require_once __DIR__ . '/config_helpers.php';
-load_env_if_exists();
+// Configuration loader 및 헬퍼 함수 로드 (bootstrap이 이미 로드된 상태라고 가정)
+if (!function_exists('env')) {
+    require_once __DIR__ . '/config_loader.php';
+}
+if (!function_exists('get_org_name')) {
+    require_once __DIR__ . '/config_helpers.php';
+}
 
 // 세션 시작
 if (session_status() === PHP_SESSION_NONE) {

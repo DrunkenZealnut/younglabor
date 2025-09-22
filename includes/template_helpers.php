@@ -23,7 +23,7 @@ if (!function_exists('app_name')) {
      * 애플리케이션 이름
      */
     function app_name() {
-        return app_config('name', '희망씨');
+        return app_config('name', $_ENV['ORG_NAME_SHORT'] ?? 'Organization');
     }
 }
 
@@ -47,11 +47,12 @@ if (!function_exists('fix_image_url')) {
         }
         
         // 프로덕션 URL 패턴들을 현재 APP_URL로 교체
+        $productionDomain = $_ENV['PRODUCTION_DOMAIN'] ?? 'organization.org';
         $productionUrls = [
-            'http://hopec.co.kr',
-            'https://hopec.co.kr',
-            'http://www.hopec.co.kr',
-            'https://www.hopec.co.kr'
+            'http://' . $productionDomain,
+            'https://' . $productionDomain,
+            'http://www.' . $productionDomain,
+            'https://www.' . $productionDomain
         ];
         
         $currentUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
@@ -197,32 +198,39 @@ if (!function_exists('logo_url')) {
                 $basePath = $_SERVER['DOCUMENT_ROOT'];
                 if (file_exists($basePath . '/data/dbconfig.php')) {
                     include_once $basePath . '/data/dbconfig.php';
+                    $db_host = env('DB_HOST', 'localhost');
+                    $db_user = env('DB_USERNAME', 'root');
+                    $db_pass = env('DB_PASSWORD', '');
+                    $db_name = env('DB_DATABASE', 'hopec');
+                    $password = empty($db_pass) ? null : $db_pass;
+                    
                     $db_connection = new PDO(
-                        "mysql:host=" . G5_MYSQL_HOST . ";dbname=" . G5_MYSQL_DB . ";charset=utf8mb4",
-                        G5_MYSQL_USER,
-                        G5_MYSQL_PASSWORD,
+                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+                        $db_user,
+                        $password,
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
                     );
                 } elseif (file_exists($basePath . '/config.php')) {
                     include_once $basePath . '/config.php';
-                    // Fallback: MySQL 상수가 정의되지 않은 경우 기본값 사용
-                    if (!defined('G5_MYSQL_HOST')) {
-                        define('G5_MYSQL_HOST', 'localhost');
-                        define('G5_MYSQL_USER', 'root');
-                        define('G5_MYSQL_PASSWORD', '');
-                        define('G5_MYSQL_DB', 'hopec');
-                    }
+                    // 환경변수 기반 데이터베이스 설정 사용
+                    $db_host = env('DB_HOST', 'localhost');
+                    $db_user = env('DB_USERNAME', 'root');
+                    $db_pass = env('DB_PASSWORD', '');
+                    $db_name = env('DB_DATABASE', 'hopec');
+                    $password = empty($db_pass) ? null : $db_pass;
+                    
                     $db_connection = new PDO(
-                        "mysql:host=" . G5_MYSQL_HOST . ";dbname=" . G5_MYSQL_DB . ";charset=utf8mb4",
-                        G5_MYSQL_USER,
-                        G5_MYSQL_PASSWORD,
+                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+                        $db_user,
+                        $password,
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
                     );
                 }
             }
             
             if ($db_connection) {
-                $stmt = $db_connection->prepare("SELECT setting_value FROM hopec_site_settings WHERE setting_key = 'site_logo'");
+                $table_prefix = env('DB_TABLE_PREFIX', 'hopec_');
+                $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_logo'");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 
@@ -274,17 +282,24 @@ if (!function_exists('favicon_url')) {
                 }
                 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/data/dbconfig.php')) {
                     include_once $_SERVER['DOCUMENT_ROOT'] . '/data/dbconfig.php';
+                    $db_host = env('DB_HOST', 'localhost');
+                    $db_user = env('DB_USERNAME', 'root');
+                    $db_pass = env('DB_PASSWORD', '');
+                    $db_name = env('DB_DATABASE', 'hopec');
+                    $password = empty($db_pass) ? null : $db_pass;
+                    
                     $db_connection = new PDO(
-                        "mysql:host=" . G5_MYSQL_HOST . ";dbname=" . G5_MYSQL_DB . ";charset=utf8mb4",
-                        G5_MYSQL_USER,
-                        G5_MYSQL_PASSWORD,
+                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+                        $db_user,
+                        $password,
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
                     );
                 }
             }
             
             if ($db_connection) {
-                $stmt = $db_connection->prepare("SELECT setting_value FROM hopec_site_settings WHERE setting_key = 'site_favicon'");
+                $table_prefix = env('DB_TABLE_PREFIX', 'hopec_');
+                $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_favicon'");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
                 

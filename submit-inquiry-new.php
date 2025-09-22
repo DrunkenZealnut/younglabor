@@ -140,7 +140,7 @@ try {
         
         // 이메일 발송 (오류가 발생해도 문의 접수는 성공)
         try {
-            $admin_email = env('DEFAULT_ADMIN_EMAIL', 'admin@hopec.co.kr');
+            $admin_email = env('DEFAULT_ADMIN_EMAIL', 'admin@' . ($_ENV['PRODUCTION_DOMAIN'] ?? 'organization.org'));
             
             // 카테고리 이름 가져오기
             $stmt = $pdo->prepare("SELECT name FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
@@ -170,11 +170,11 @@ try {
 {$message}
 
 ==============================================
-이 이메일은 희망씨 웹사이트에서 자동 발송된 메일입니다.
+이 이메일은 " . ($_ENV['ORG_NAME_SHORT'] ?? 'Organization') . " 웹사이트에서 자동 발송된 메일입니다.
 ==============================================
 ";
             
-            $headers = "From: 희망씨 웹사이트 <noreply@hopec.co.kr>\r\n";
+            $headers = "From: " . ($_ENV['ORG_NAME_SHORT'] ?? 'Organization') . " 웹사이트 <noreply@" . ($_ENV['PRODUCTION_DOMAIN'] ?? 'organization.org') . ">\r\n";
             $headers .= "Reply-To: {$email}\r\n";
             $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
             

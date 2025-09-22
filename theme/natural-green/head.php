@@ -1,6 +1,7 @@
 <?php if (!defined('_HOPEC_')) exit; ?>
 <?php 
-// Natural Green 단일 테마 로더 사용
+// Configuration loader 및 Natural Green 단일 테마 로더 사용
+require_once __DIR__ . '/../../includes/config_loader.php';
 require_once __DIR__ . '/../../includes/NaturalGreenThemeLoader.php';
 $theme = getNaturalGreenTheme();
 ?>
@@ -12,8 +13,8 @@ $theme = getNaturalGreenTheme();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <?php
       // 환경변수 기반 메타 데이터 설정 (g5 배열 의존성 제거)
-      $pageTitle = getIntegratedSetting('site_name', '사단법인 희망씨');
-      $metaDescription = getIntegratedSetting('site_description', '사단법인 희망씨 공식 웹사이트');
+      $pageTitle = getIntegratedSetting('site_name', getOrgName('full'));
+      $metaDescription = getIntegratedSetting('site_description', getOrgName('full') . ' 공식 웹사이트');
       $reqUri = isset($_SERVER['REQUEST_URI']) ? (string)$_SERVER['REQUEST_URI'] : '/';
       $canonical = app_url() . '/';
     ?>
