@@ -15,8 +15,7 @@ function getBoardDatabase() {
     $possibleConnections = [
         __DIR__ . '/../includes/db.php',
         __DIR__ . '/../config/database.php', 
-        __DIR__ . '/../data/dbconfig.php',
-        __DIR__ . '/../common.php'
+        __DIR__ . '/../data/dbconfig.php'
     ];
     
     foreach ($possibleConnections as $connFile) {

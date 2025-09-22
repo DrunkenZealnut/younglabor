@@ -63,16 +63,7 @@ define('G5_SESSION_DIR',    'session');
 define('G5_THEME_DIR',      'theme');
 
 // URL 은 브라우저상에서의 경로 (도메인으로 부터의)
-if (!defined('G5_URL')) {
-    if (G5_DOMAIN) {
-        define('G5_URL', G5_DOMAIN);
-    } else {
-        if (isset($g5_path['url']))
-            define('G5_URL', $g5_path['url']);
-        else
-            define('G5_URL', '');
-    }
-}
+// G5_URL 제거 - app_url() 함수 사용 권장
 
 if (isset($g5_path['path'])) {
     define('G5_PATH', $g5_path['path']);
@@ -82,13 +73,8 @@ if (isset($g5_path['path'])) {
 
 // 하위 호환: URL 상수들도 기본 사이트 루트로 매핑
 // 폐기된 URL 상수들 - 삭제됨 (사용되지 않음)
-// define('G5_ADMIN_URL', G5_URL);
-// define('G5_BBS_URL', G5_URL);
-define('G5_CSS_URL',        G5_URL.'/'.G5_CSS_DIR);
-define('G5_DATA_URL',       G5_URL.'/'.G5_DATA_DIR);
-define('G5_IMG_URL',        G5_URL.'/'.G5_IMG_DIR);
-define('G5_JS_URL',         G5_URL.'/'.G5_JS_DIR);
-define('G5_SKIN_URL',       G5_URL.'/'.G5_SKIN_DIR);
+// G5_*_URL 상수들 제거 - app_url() 함수 사용 권장
+// 예: app_url('css'), app_url('data'), app_url('img'), app_url('js'), app_url('skin')
 // 플러그인/결제 시스템 URL 상수들 - 삭제됨 (사용되지 않음)
 // define('G5_EDITOR_URL', G5_PLUGIN_URL.'/'.G5_EDITOR_DIR);
 // define('G5_OKNAME_URL', G5_PLUGIN_URL.'/'.G5_OKNAME_DIR);

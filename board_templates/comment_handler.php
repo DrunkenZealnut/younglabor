@@ -14,10 +14,9 @@ function send_json($payload, int $status = 200) {
     exit;
 }
 
-// DB 연결 보장: 상위에서 $pdo를 넘기지 않더라도 자체적으로 연결 시도
+// DB 연결 보장: Database 클래스 직접 사용
     if (!isset($pdo) || !($pdo instanceof PDO)) {
-    $rootCommon = __DIR__ . '/../_common.php';
-    if (file_exists($rootCommon)) { include_once $rootCommon; }
+    require_once __DIR__ . '/../includes/Database.php';
     try {
         if (defined('G5_MYSQL_HOST') && defined('G5_MYSQL_DB')) {
             $pdo = new PDO(
@@ -39,7 +38,7 @@ function send_json($payload, int $status = 200) {
     }
 }
 
-// 세션 보장 (common.php가 이미 시작했다면 패스)
+// 세션 보장 (프레임워크가 이미 시작했다면 패스)
 if (session_status() === PHP_SESSION_NONE) { @session_start(); }
 
 // CSRF 검증 함수 폴백

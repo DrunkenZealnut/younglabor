@@ -3,11 +3,17 @@
 // 테마 bootstrap 로드 (DatabaseManager, 헬퍼 함수 등 초기화)
 require_once __DIR__ . '/bootstrap.php';
 
-// 그누보드 공용 초기화 로드 (선택적)
-if (!defined('_GNUBOARD_')) {
-  $rootCommon = __DIR__ . '/../../_common.php';
-  if (file_exists($rootCommon)) {
-    include_once $rootCommon;
+// HOPEC 프레임워크 초기화
+if (!defined('_HOPEC_')) {
+  $frameworkBootstrap = __DIR__ . '/../../includes/bootstrap.php';
+  if (file_exists($frameworkBootstrap)) {
+    include_once $frameworkBootstrap;
+  }
+  
+  // 템플릿 헬퍼 함수 로드
+  $templateHelpers = __DIR__ . '/../../includes/template_helpers.php';
+  if (file_exists($templateHelpers)) {
+    include_once $templateHelpers;
   }
 }
 

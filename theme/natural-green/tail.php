@@ -16,8 +16,6 @@
   } catch(e) {}
   </script>
   
-  <?php if(defined('G5_DEVICE_BUTTON_DISPLAY') && G5_DEVICE_BUTTON_DISPLAY && !G5_IS_MOBILE) { /* 장치 전환 버튼 자리 */ } ?>
-  <?php if (!empty($config['cf_analytics'])) { echo $config['cf_analytics']; } ?>
 
   </body>
 </html>

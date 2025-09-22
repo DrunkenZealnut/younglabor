@@ -24,6 +24,9 @@ class SecurityManager
         // 보안 헤더 설정
         self::setSecurityHeaders();
         
+        // 전역변수 보호
+        self::protectGlobalVariables();
+        
         // 세션 보안 설정
         self::initializeSession();
         
@@ -35,11 +38,18 @@ class SecurityManager
      */
     private static function setSecurityHeaders()
     {
-        if (!(self::$config['headers']['enabled'] ?? true) || headers_sent()) {
+        if (headers_sent()) {
             return;
         }
         
-        $headers = self::$config['headers'];
+        // P3P 헤더 (IE 호환성 - common.php에서 이전)
+        header('P3P: CP="ALL CURa ADMa DEVa TAIa OUR BUS IND PHY ONL UNI PUR FIN COM NAV INT DEM CNT STA POL HEA PRE LOC OTC"');
+        
+        $headers = self::$config['headers'] ?? [];
+        
+        if (!(self::$config['headers']['enabled'] ?? true)) {
+            return;
+        }
         
         if (!empty($headers['x_frame_options'])) {
             header('X-Frame-Options: ' . $headers['x_frame_options']);
@@ -64,6 +74,26 @@ class SecurityManager
         
         if (!empty($headers['content_security_policy'])) {
             header('Content-Security-Policy: ' . $headers['content_security_policy']);
+        }
+    }
+    
+    /**
+     * 전역변수 보호 (common.php에서 이전)
+     */
+    private static function protectGlobalVariables()
+    {
+        // extract($_GET); 명령으로 인한 보안 취약점 방지
+        $ext_arr = [
+            'PHP_SELF', '_ENV', '_GET', '_POST', '_FILES', '_SERVER', 
+            '_COOKIE', '_SESSION', '_REQUEST', 'HTTP_ENV_VARS', 
+            'HTTP_GET_VARS', 'HTTP_POST_VARS', 'HTTP_POST_FILES', 
+            'HTTP_SERVER_VARS', 'HTTP_COOKIE_VARS', 'HTTP_SESSION_VARS', 
+            'GLOBALS'
+        ];
+        
+        foreach ($ext_arr as $var) {
+            // POST, GET 으로 선언된 전역변수가 있다면 unset() 시킴
+            unset($_GET[$var], $_POST[$var]);
         }
     }
     

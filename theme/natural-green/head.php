@@ -1,4 +1,4 @@
-<?php if (!defined('_GNUBOARD_')) exit; ?>
+<?php if (!defined('_HOPEC_')) exit; ?>
 <?php 
 // Natural Green 단일 테마 로더 사용
 require_once __DIR__ . '/../../includes/NaturalGreenThemeLoader.php';
@@ -11,8 +11,9 @@ $theme = getNaturalGreenTheme();
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <?php
-      $pageTitle = isset($g5['title']) && $g5['title'] ? (string)$g5['title'] : getIntegratedSetting('site_name', '사단법인 희망씨');
-      $metaDescription = isset($g5['meta_description']) && $g5['meta_description'] ? (string)$g5['meta_description'] : getIntegratedSetting('site_description', '사단법인 희망씨 공식 웹사이트');
+      // 환경변수 기반 메타 데이터 설정 (g5 배열 의존성 제거)
+      $pageTitle = getIntegratedSetting('site_name', '사단법인 희망씨');
+      $metaDescription = getIntegratedSetting('site_description', '사단법인 희망씨 공식 웹사이트');
       $reqUri = isset($_SERVER['REQUEST_URI']) ? (string)$_SERVER['REQUEST_URI'] : '/';
       $canonical = app_url() . '/';
     ?>

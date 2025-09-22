@@ -71,6 +71,36 @@ if (!function_exists('fix_image_url')) {
     }
 }
 
+if (!function_exists('get_theme_path')) {
+    /**
+     * 테마 경로 헬퍼 함수 - 환경변수 기반 (캐시 최적화)
+     */
+    function get_theme_path($sub_path = '') {
+        static $theme_name = null;
+        if ($theme_name === null) {
+            $theme_name = env('THEME_NAME', 'natural-green');
+        }
+        
+        $base_path = dirname(__DIR__);
+        return $base_path . '/theme/' . $theme_name . ($sub_path ? '/' . ltrim($sub_path, '/') : '');
+    }
+}
+
+if (!function_exists('get_theme_url')) {
+    /**
+     * 테마 URL 헬퍼 함수 - 환경변수 기반
+     */
+    function get_theme_url($sub_path = '') {
+        static $theme_name = null;
+        if ($theme_name === null) {
+            $theme_name = env('THEME_NAME', 'natural-green');
+        }
+        
+        $base_url = rtrim(env('APP_URL', ''), '/');
+        return $base_url . '/theme/' . $theme_name . ($sub_path ? '/' . ltrim($sub_path, '/') : '');
+    }
+}
+
 if (!function_exists('is_debug')) {
     /**
      * 디버그 모드 확인
