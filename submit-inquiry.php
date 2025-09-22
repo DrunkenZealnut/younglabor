@@ -244,7 +244,7 @@ try {
     if ($ip_address === '::1') $ip_address = '127.0.0.1';
     
     // 데이터베이스에 저장
-    $sql = "INSERT INTO hopec_inquiries (category_id, name, email, phone, subject, message, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, NOW())";
+    $sql = "INSERT INTO " . get_table_name('inquiries') . " (category_id, name, email, phone, subject, message, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, NOW())";
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute([$category_id, $name, $email, $phone ?: null, $subject ?: null, $message, $ip_address, $user_agent]);
     
@@ -254,7 +254,7 @@ try {
         // 이메일 발송 (오류가 발생해도 문의 접수는 성공)
         try {
             $admin_email = env('DEFAULT_ADMIN_EMAIL', 'admin@hopec.co.kr');
-            $stmt = $pdo->prepare("SELECT name FROM hopec_inquiry_categories WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT name FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
             $stmt->execute([$category_id]);
             $category_result = $stmt->fetch(PDO::FETCH_ASSOC);
             $category_name = $category_result ? $category_result['name'] : '일반문의';

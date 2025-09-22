@@ -9,7 +9,7 @@ if (!function_exists('comments_driver_gn_fetch')) {
             $sql = "SELECT wr_id as comment_id, wr_id as post_id, wr_name as author_name, 
                            wr_content as content, wr_datetime as created_at, wr_ip,
                            board_type
-                    FROM hopec_posts 
+                    FROM " . get_table_name('posts') . " 
                     WHERE wr_parent = ? AND wr_is_comment = 1 
                     ORDER BY wr_id ASC";
             $stmt = $pdo->prepare($sql);
@@ -39,11 +39,11 @@ if (!function_exists('comments_driver_gn_create')) {
     function comments_driver_gn_create(PDO $pdo, array $payload, array $options = []): int {
         try {
             // 다음 wr_id 생성
-            $next_id_stmt = $pdo->query("SELECT IFNULL(MAX(wr_id), 0) + 1 AS next_id FROM hopec_posts");
+            $next_id_stmt = $pdo->query("SELECT IFNULL(MAX(wr_id), 0) + 1 AS next_id FROM " . get_table_name('posts') . "");
             $next_id = (int)$next_id_stmt->fetchColumn();
             
             // 부모 글의 board_type 조회
-            $parent_stmt = $pdo->prepare("SELECT board_type FROM hopec_posts WHERE wr_id = ?");
+            $parent_stmt = $pdo->prepare("SELECT board_type FROM " . get_table_name('posts') . " WHERE wr_id = ?");
             $parent_stmt->execute([(int)$payload['post_id']]);
             $board_type = $parent_stmt->fetchColumn();
             
@@ -53,7 +53,7 @@ if (!function_exists('comments_driver_gn_create')) {
             }
             
             // hopec_posts에 댓글 추가
-            $sql = "INSERT INTO hopec_posts 
+            $sql = "INSERT INTO " . get_table_name('posts') . " 
                     SET wr_id = :wr_id,
                         board_type = :board_type,
                         wr_parent = :parent,

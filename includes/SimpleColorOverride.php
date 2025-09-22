@@ -83,7 +83,7 @@ class SimpleColorOverride {
         try {
             $stmt = $this->pdo->prepare("
                 SELECT setting_value 
-                FROM hopec_site_settings 
+                FROM " . get_table_name('site_settings') . " 
                 WHERE setting_key = 'color_override_enabled'
             ");
             $stmt->execute();
@@ -108,7 +108,7 @@ class SimpleColorOverride {
             
             $stmt = $this->pdo->prepare("
                 SELECT setting_key, setting_value 
-                FROM hopec_site_settings 
+                FROM " . get_table_name('site_settings') . " 
                 WHERE setting_key IN ($placeholders)
             ");
             $stmt->execute($colorKeys);
@@ -166,7 +166,7 @@ class SimpleColorOverride {
         
         try {
             $stmt = $this->pdo->prepare("
-                INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group, setting_description)
+                INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group, setting_description)
                 VALUES ('color_override_enabled', '1', 'theme', '색상 오버라이드 활성화')
                 ON DUPLICATE KEY UPDATE setting_value = '1', updated_at = CURRENT_TIMESTAMP
             ");
@@ -188,7 +188,7 @@ class SimpleColorOverride {
         
         try {
             $stmt = $this->pdo->prepare("
-                UPDATE hopec_site_settings 
+                UPDATE " . get_table_name('site_settings') . " 
                 SET setting_value = '0', updated_at = CURRENT_TIMESTAMP
                 WHERE setting_key = 'color_override_enabled'
             ");
@@ -216,7 +216,7 @@ class SimpleColorOverride {
         
         try {
             $stmt = $this->pdo->prepare("
-                UPDATE hopec_site_settings 
+                UPDATE " . get_table_name('site_settings') . " 
                 SET setting_value = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE setting_key = ?
             ");
@@ -249,7 +249,7 @@ class SimpleColorOverride {
             
             foreach ($this->defaultColors as $key => $value) {
                 $stmt = $this->pdo->prepare("
-                    UPDATE hopec_site_settings 
+                    UPDATE " . get_table_name('site_settings') . " 
                     SET setting_value = ?, updated_at = CURRENT_TIMESTAMP
                     WHERE setting_key = ?
                 ");

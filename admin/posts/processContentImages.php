@@ -179,7 +179,7 @@ function updateThumbnailFromContent($content, $post_id, $current_thumbnail, $pdo
         return $update_stmt->execute([$image_path, $post_id]);
     } else {
         // 이미지가 없는 경우 사이트 로고를 썸네일로 설정
-        $settings_stmt = $pdo->query("SELECT setting_value FROM hopec_site_settings WHERE setting_key = 'site_logo'");
+        $settings_stmt = $pdo->query("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'site_logo'");
         $logo_setting = $settings_stmt->fetch(PDO::FETCH_ASSOC);
         
         if ($logo_setting && !empty($logo_setting['setting_value'])) {

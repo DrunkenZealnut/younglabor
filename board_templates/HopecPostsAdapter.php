@@ -72,6 +72,9 @@ class HopecPostsAdapter {
     ];
     
     public function __construct() {
+        // 동적 테이블명 설정
+        $this->tableMapping['board_attachments'] = get_table_name('post_files');
+        
         // 역방향 매핑 초기화
         $this->reverseFieldMapping = array_flip($this->fieldMapping);
     }

@@ -71,7 +71,7 @@ function getBoardPosts($categoryType = 'FREE', $page = 1, $perPage = 15, $search
     if (USE_HOPEC_POSTS) {
         $query = "SELECT wr_id as post_id, 0 as category_id, wr_subject as title, wr_content as content, 
                          wr_name as author_name, wr_hit as view_count, 0 as is_notice, wr_datetime as created_at 
-                  FROM hopec_posts 
+                  FROM " . get_table_name('posts') . " 
                   WHERE board_type = ? AND wr_is_comment = 0";
         
         $params = [$boardType];
@@ -167,7 +167,7 @@ function getBoardPostsCount($categoryType = 'FREE', $searchType = '', $searchKey
     
     // hopec_posts 통합 테이블 사용
     if (USE_HOPEC_POSTS) {
-        $query = "SELECT COUNT(*) FROM hopec_posts WHERE board_type = ? AND wr_is_comment = 0";
+        $query = "SELECT COUNT(*) FROM " . get_table_name('posts') . " WHERE board_type = ? AND wr_is_comment = 0";
         $params = [$boardType];
         
         // 검색 조건
@@ -321,7 +321,7 @@ function incrementViewCount($postId) {
     
     if (USE_HOPEC_POSTS) {
         $boardType = null; // 전체 검색이므로 board_type 제한 없음
-        $query = "UPDATE hopec_posts SET wr_hit = wr_hit + 1 WHERE wr_id = ?";
+        $query = "UPDATE " . get_table_name('posts') . " SET wr_hit = wr_hit + 1 WHERE wr_id = ?";
         $stmt = $pdo->prepare($query);
         return $stmt->execute([$postId]);
     } else {
@@ -343,7 +343,7 @@ function getBoardAttachments($postId) {
         try {
             $query = "SELECT bf_no as attachment_id, bf_source as original_name, bf_file as stored_name, 
                              bf_filesize as file_size, 'FILE' as file_type, bf_download as download_count
-                      FROM hopec_post_files 
+                      FROM " . get_table_name('post_files') . " 
                       WHERE wr_id = ?
                       ORDER BY bf_no";
             
@@ -413,7 +413,7 @@ function getBoardComments($postId) {
         try {
             $query = "SELECT wr_id as comment_id, 0 as user_id, wr_name as author_name, 
                              wr_content as content, 0 as parent_id, wr_datetime as created_at
-                      FROM hopec_posts 
+                      FROM " . get_table_name('posts') . " 
                       WHERE wr_parent = ? AND wr_is_comment = 1
                       ORDER BY wr_id";
             
@@ -462,15 +462,15 @@ function addBoardComment($postId, $commentData) {
         // hopec_posts 통합 테이블에 댓글 추가
         try {
             // 새로운 wr_id 생성
-            $next_id_stmt = $pdo->query("SELECT IFNULL(MAX(wr_id),0)+1 AS next_id FROM hopec_posts");
+            $next_id_stmt = $pdo->query("SELECT IFNULL(MAX(wr_id),0)+1 AS next_id FROM " . get_table_name('posts') . "");
             $next_id = (int)$next_id_stmt->fetchColumn();
             
             // 부모 글의 board_type 조회
-            $parent_stmt = $pdo->prepare("SELECT board_type FROM hopec_posts WHERE wr_id = ?");
+            $parent_stmt = $pdo->prepare("SELECT board_type FROM " . get_table_name('posts') . " WHERE wr_id = ?");
             $parent_stmt->execute([$postId]);
             $board_type = $parent_stmt->fetchColumn() ?: 'FREE';
             
-            $sql = "INSERT INTO hopec_posts 
+            $sql = "INSERT INTO " . get_table_name('posts') . " 
                     SET wr_id = :wr_id,
                         board_type = :board_type,
                         wr_parent = :parent,

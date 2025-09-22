@@ -37,7 +37,7 @@
         // 갤러리에서 최신 게시물 조회
         try {
             $galleryPosts = DatabaseManager::select(
-                "SELECT wr_id as id, wr_subject as title, wr_content as content, wr_datetime as created_at FROM hopec_posts WHERE board_type = 'gallery' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 3"
+                "SELECT wr_id as id, wr_subject as title, wr_content as content, wr_datetime as created_at FROM " . get_table_name('posts') . " WHERE board_type = 'gallery' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 3"
             );
             
             foreach ($galleryPosts as $post) {
@@ -135,7 +135,7 @@
             <?php
             try {
                 $notices = DatabaseManager::select(
-                    "SELECT wr_id as id, wr_subject as title, wr_datetime as created_at FROM hopec_posts WHERE board_type = 'notices' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 5"
+                    "SELECT wr_id as id, wr_subject as title, wr_datetime as created_at FROM " . get_table_name('posts') . " WHERE board_type = 'notices' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 5"
                 );
                 
                 foreach ($notices as $notice) {
@@ -211,7 +211,7 @@
         // 소식지에서 최신 게시물 조회
         try {
             $newsletterPosts = DatabaseManager::select(
-                "SELECT wr_id as id, wr_subject as title, wr_content as content, wr_datetime as created_at FROM hopec_posts WHERE board_type = 'newsletter' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 3"
+                "SELECT wr_id as id, wr_subject as title, wr_content as content, wr_datetime as created_at FROM " . get_table_name('posts') . " WHERE board_type = 'newsletter' AND wr_is_comment = 0 ORDER BY wr_datetime DESC LIMIT 3"
             );
             
             foreach ($newsletterPosts as $post) {

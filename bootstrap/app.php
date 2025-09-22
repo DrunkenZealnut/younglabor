@@ -174,6 +174,7 @@ if (class_exists('SecurityManager')) {
 
 // 유틸리티 함수 로드
 $helperFiles = [
+    'config_helpers.php',
     'security_helpers.php',
     'database_helpers.php', 
     'template_helpers.php',

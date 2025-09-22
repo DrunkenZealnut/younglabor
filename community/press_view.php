@@ -48,7 +48,7 @@ try {
         }
         
         $attachments_data = DatabaseManager::select(
-            'SELECT bf_no, bf_source, bf_file, bf_filesize FROM hopec_post_files WHERE board_type = ? AND wr_id = ? ORDER BY bf_no ASC',
+            'SELECT bf_no, bf_source, bf_file, bf_filesize FROM ' . get_table_name('post_files') . ' WHERE board_type = ? AND wr_id = ? ORDER BY bf_no ASC',
             ['press', $postId]
         );
         

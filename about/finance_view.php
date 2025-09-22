@@ -23,7 +23,7 @@ if ($postId <= 0) {
 
 try {
     $row = DatabaseManager::selectOne(
-        "SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_last, wr_hit, ca_name, wr_content, mb_id FROM hopec_posts WHERE wr_id = :id AND wr_is_comment = 0 AND board_type = :board_type",
+        "SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_last, wr_hit, ca_name, wr_content, mb_id FROM " . get_table_name('posts') . " WHERE wr_id = :id AND wr_is_comment = 0 AND board_type = :board_type",
         [':id' => $postId, ':board_type' => 'finance_reports']
     );
     
@@ -55,8 +55,8 @@ try {
             pf.bf_filesize as file_size,
             pf.board_type as file_board_type,
             p.board_type as post_board_type
-         FROM hopec_post_files pf
-         INNER JOIN hopec_posts p ON pf.wr_id = p.wr_parent
+         FROM " . get_table_name('post_files') . " pf
+         INNER JOIN " . get_table_name('posts') . " p ON pf.wr_id = p.wr_parent
          WHERE p.board_type = :post_board_type
             AND pf.board_type = :file_board_type
             AND p.wr_id = :post_id

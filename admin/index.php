@@ -46,7 +46,7 @@ function getStatistics($pdo) {
     
     try {
         // 게시글 수 계산
-        $stmt = $pdo->query("SELECT COUNT(*) FROM hopec_posts");
+        $stmt = $pdo->query("SELECT COUNT(*) FROM " . get_table_name('posts'));
         $statistics['total_posts'] = $stmt->fetchColumn();
     } catch (Exception $e) {
         // 테이블이 없으면 0으로 유지
@@ -114,7 +114,7 @@ function getStatistics($pdo) {
                 wr_name as author,
                 wr_hit as view_count, 
                 board_type
-            FROM hopec_posts
+            FROM " . get_table_name('posts') . "
             WHERE wr_is_comment = 0
             ORDER BY wr_datetime DESC 
             LIMIT 5

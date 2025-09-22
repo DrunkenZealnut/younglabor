@@ -38,7 +38,7 @@ try {
     $files = $_FILES['attachments'];
     
     // 테이블명 결정 (POST 파라미터 또는 기본값)
-    $table_name = $_POST['table_name'] ?? 'hopec_posts';
+    $table_name = $_POST['table_name'] ?? get_table_name('posts');
     
     // 허용된 파일 확장자
     $allowed_extensions = ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx'];

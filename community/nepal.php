@@ -33,7 +33,7 @@ $where_sql = implode(' AND ', $where_clauses);
 
     // 총 개수
     $total_result = DatabaseManager::selectOne(
-        'SELECT COUNT(*) as count FROM hopec_posts WHERE ' . $where_sql,
+        'SELECT COUNT(*) as count FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql,
         $bind_params
     );
     $total_posts = (int)$total_result['count'];
@@ -42,7 +42,7 @@ $where_sql = implode(' AND ', $where_clauses);
     // 목록 조회 (콘텐츠 포함)
     $list_params = array_merge($bind_params, [':limit' => $per_page, ':offset' => $offset]);
     $rows = DatabaseManager::select(
-        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_content, wr_file, wr_is_notice FROM hopec_posts WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT :limit OFFSET :offset',
+        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_content, wr_file, wr_is_notice FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql . ' ORDER BY wr_is_notice DESC, wr_datetime DESC LIMIT :limit OFFSET :offset',
         $list_params
     );
 

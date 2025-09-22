@@ -28,7 +28,7 @@ $where_sql = implode(' AND ', $where_clauses);
 
 try {
     $total_posts = DatabaseManager::selectOne(
-        'SELECT COUNT(*) as total FROM hopec_posts WHERE ' . $where_sql,
+        'SELECT COUNT(*) as total FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql,
         $bind_params
     )['total'] ?? 0;
     $total_pages = (int)max(1, ceil($total_posts / $per_page));
@@ -43,7 +43,7 @@ try {
     $list_params[':offset'] = $offset;
     
     $rows = DatabaseManager::select(
-        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_file FROM hopec_posts WHERE ' . $where_sql . ' ORDER BY wr_datetime DESC LIMIT :limit OFFSET :offset',
+        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit, wr_file FROM ' . get_table_name('posts') . ' WHERE ' . $where_sql . ' ORDER BY wr_datetime DESC LIMIT :limit OFFSET :offset',
         $list_params
     );
 } catch (Exception $e) {

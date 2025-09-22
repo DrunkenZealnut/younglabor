@@ -118,7 +118,7 @@ try {
     }
     
     // 데이터베이스에 저장
-    $sql = "INSERT INTO hopec_inquiries (
+    $sql = "INSERT INTO " . get_table_name('inquiries') . " (
         category_id, name, email, phone, subject, message, 
         status, ip_address, user_agent, created_at
     ) VALUES (?, ?, ?, ?, ?, ?, 'new', ?, ?, NOW())";
@@ -143,7 +143,7 @@ try {
             $admin_email = env('DEFAULT_ADMIN_EMAIL', 'admin@hopec.co.kr');
             
             // 카테고리 이름 가져오기
-            $stmt = $pdo->prepare("SELECT name FROM hopec_inquiry_categories WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT name FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
             $stmt->execute([$category_id]);
             $category_result = $stmt->fetch(PDO::FETCH_ASSOC);
             $category_name = $category_result ? $category_result['name'] : '일반문의';

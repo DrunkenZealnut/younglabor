@@ -17,7 +17,7 @@ if ($wr_id <= 0) {
 try {
     // 게시글 정보 조회 및 조회수 증가
     $gallery_item = DatabaseManager::selectOne(
-        "SELECT * FROM hopec_posts WHERE wr_id = :wr_id AND board_type = 'gallery'",
+        "SELECT * FROM " . get_table_name('posts') . " WHERE wr_id = :wr_id AND board_type = 'gallery'",
         [':wr_id' => $wr_id]
     );
     
@@ -28,7 +28,7 @@ try {
     
     // 조회수 증가
     DatabaseManager::execute(
-        "UPDATE hopec_posts SET wr_hit = wr_hit + 1 WHERE wr_id = :wr_id AND board_type = 'gallery'",
+        "UPDATE " . get_table_name('posts') . " SET wr_hit = wr_hit + 1 WHERE wr_id = :wr_id AND board_type = 'gallery'",
         [':wr_id' => $wr_id]
     );
     
@@ -36,7 +36,7 @@ try {
     $attachments = [];
     if (!empty($gallery_item['wr_file'])) {
         $attachments = DatabaseManager::select(
-            "SELECT * FROM hopec_post_files WHERE board_type = 'gallery' AND wr_id = :wr_id ORDER BY bf_no",
+            "SELECT * FROM " . get_table_name('post_files') . " WHERE board_type = 'gallery' AND wr_id = :wr_id ORDER BY bf_no",
             [':wr_id' => $wr_id]
         );
     }
@@ -159,7 +159,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
         <?php
         // 이전 글
         $prev_gallery = DatabaseManager::selectOne(
-            "SELECT wr_id, wr_subject FROM hopec_posts 
+            "SELECT wr_id, wr_subject FROM " . get_table_name('posts') . " 
              WHERE board_type = 'gallery' AND wr_is_comment = 0 AND wr_datetime < :datetime 
              ORDER BY wr_datetime DESC LIMIT 1",
             [':datetime' => $gallery_item['wr_datetime']]
@@ -167,7 +167,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
         
         // 다음 글
         $next_gallery = DatabaseManager::selectOne(
-            "SELECT wr_id, wr_subject FROM hopec_posts 
+            "SELECT wr_id, wr_subject FROM " . get_table_name('posts') . " 
              WHERE board_type = 'gallery' AND wr_is_comment = 0 AND wr_datetime > :datetime 
              ORDER BY wr_datetime ASC LIMIT 1",
             [':datetime' => $gallery_item['wr_datetime']]

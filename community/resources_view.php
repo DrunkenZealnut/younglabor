@@ -63,8 +63,8 @@ try {
             pf.bf_filesize as file_size,
             pf.board_type as file_board_type,
             p.board_type as post_board_type
-         FROM hopec_post_files pf
-         INNER JOIN hopec_posts p ON pf.wr_id = p.wr_parent
+         FROM " . get_table_name('post_files') . " pf
+         INNER JOIN " . get_table_name('posts') . " p ON pf.wr_id = p.wr_parent
          WHERE p.board_type = :post_board_type
             AND pf.board_type = :file_board_type
             AND p.wr_id = :post_id

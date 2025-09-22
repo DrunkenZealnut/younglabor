@@ -48,8 +48,8 @@ if (!$pdo) {
 try {
     // 게시물의 board_type을 얻기 위해 hopec_posts와 조인 (wr_parent 기반, board_type 매칭)
     $stmt = $pdo->prepare('SELECT pf.bf_source as original_name, pf.bf_file as stored_name, pf.bf_filesize as file_size, p.board_type 
-                           FROM hopec_post_files pf 
-                           JOIN hopec_posts p ON pf.wr_id = p.wr_parent AND pf.board_type = p.board_type
+                           FROM ' . get_table_name('post_files') . ' pf 
+                           JOIN ' . get_table_name('posts') . ' p ON pf.wr_id = p.wr_parent AND pf.board_type = p.board_type
                            WHERE p.wr_id = ? AND pf.bf_no = ?');
     $stmt->execute([$post_id, $attachment_id]);
     

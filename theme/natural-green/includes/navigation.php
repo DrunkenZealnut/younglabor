@@ -87,7 +87,7 @@ try {
         // 최상위 메뉴들을 가져옴
         $stmt = $pdo->query("
             SELECT id, title, slug, position, sort_order 
-            FROM hopec_menu 
+            FROM " . get_table_name('menu') . " 
             WHERE parent_id IS NULL AND is_active = 1 
             ORDER BY sort_order, id
         ");
@@ -97,7 +97,7 @@ try {
             // 각 최상위 메뉴의 하위 메뉴들을 가져옴
             $stmt = $pdo->prepare("
                 SELECT id, title, slug, board_id
-                FROM hopec_menu 
+                FROM " . get_table_name('menu') . " 
                 WHERE parent_id = ? AND is_active = 1 
                 ORDER BY sort_order, id
             ");

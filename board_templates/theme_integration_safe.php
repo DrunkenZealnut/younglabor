@@ -83,7 +83,7 @@ class SafeBoardThemeIntegration
     {
         try {
             // hopec_site_settings 테이블에서 테마 설정 로드
-            $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM hopec_site_settings WHERE setting_group = 'theme'");
+            $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM " . get_table_name('site_settings') . " WHERE setting_group = 'theme'");
             $stmt->execute();
             
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {

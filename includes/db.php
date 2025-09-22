@@ -70,7 +70,7 @@ if (file_exists($config_path)) {
  * 프론트엔드용 사이트 설정 가져오기
  */
 function getFrontendSiteSettings($pdo, $group = null) {
-    $sql = "SELECT setting_key, setting_value FROM hopec_site_settings";
+    $sql = "SELECT setting_key, setting_value FROM " . get_table_name('site_settings');
     $params = [];
     
     if ($group) {

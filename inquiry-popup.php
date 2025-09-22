@@ -42,7 +42,7 @@ try {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         // 카테고리 목록 가져오기 (ID 순으로 정렬)
-        $stmt = $pdo->query("SELECT id, name FROM hopec_inquiry_categories WHERE is_active = 1 ORDER BY id");
+        $stmt = $pdo->query("SELECT id, name FROM " . get_table_name('inquiry_categories') . " WHERE is_active = 1 ORDER BY id");
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
     } else {
@@ -51,7 +51,7 @@ try {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         // 카테고리 목록 가져오기 (ID 순으로 정렬)
-        $stmt = $pdo->query("SELECT id, name FROM hopec_inquiry_categories WHERE is_active = 1 ORDER BY id");
+        $stmt = $pdo->query("SELECT id, name FROM " . get_table_name('inquiry_categories') . " WHERE is_active = 1 ORDER BY id");
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 } catch (Exception $e) {
