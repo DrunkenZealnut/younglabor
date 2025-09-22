@@ -1,8 +1,9 @@
 <!-- 하단 시작 { -->
 <div id="ft" role="contentinfo" class="bg-white border-t border-lime-200 mt-auto">
   <div id="ft_wr" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-gray-600">
-    <div class="flex flex-col md:flex-row items-start md:items-start justify-between gap-8">
-      <div class="flex-1 min-w-[320px]">
+    <div class="flex flex-col h-full">
+      <!-- 메인 콘텐츠 영역 -->
+      <div class="flex-1">
         <div class="flex items-center gap-3 mb-4">
           <?php if (function_exists('logo_url')): ?>
             <img src="<?= logo_url() ?>" alt="<?= get_org_name() ?> 로고" class="h-8" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
@@ -12,10 +13,10 @@
           <?php endif; ?>
         </div>
         <div id="ft_info" class="text-sm leading-6">
-          <!-- 정보 그리드 - 3열 구조로 재정렬 -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4">
+          <!-- 정보 그리드 - 4열 구조로 재정렬 -->
+          <div class="flex flex-wrap gap-x-8 gap-y-6 justify-between items-start w-full">
             <!-- 첫 번째 열: 소재지와 이사장 -->
-            <div class="space-y-4">
+            <div class="space-y-4 min-w-0 flex-shrink-0">
               <div class="flex items-start gap-2">
                 <i data-lucide="map-pin" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
@@ -34,7 +35,7 @@
             </div>
             
             <!-- 두 번째 열: 연락처 -->
-            <div class="space-y-4">
+            <div class="space-y-4 min-w-0 flex-shrink-0">
               <div class="flex items-start gap-2">
                 <i data-lucide="phone" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
@@ -60,7 +61,21 @@
                   </span>
                 </div>
               </div>
-              
+            </div>
+            
+            <!-- 세 번째 열: 후원 -->
+            <div class="min-w-0 flex-shrink-0">
+              <div class="flex items-start gap-2">
+                <i data-lucide="credit-card" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
+                <div>
+                  <span class="font-medium text-forest-700">후원계좌</span><br>
+                  <span class="text-gray-600">우리은행 1005-502-430760<br><?= get_bank_account_holder() ?></span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 네 번째 열: 문의하기 -->
+            <div class="space-y-4 min-w-0 flex-shrink-0">
               <div class="flex items-start gap-2">
                 <i data-lucide="message-circle" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
@@ -70,22 +85,23 @@
                   </span>
                 </div>
               </div>
-            </div>
-            
-            <!-- 세 번째 열: 후원 -->
-            <div>
+              
               <div class="flex items-start gap-2">
-                <i data-lucide="credit-card" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
+                <i data-lucide="external-link" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
-                  <span class="font-medium text-forest-700">후원계좌</span><br>
-                  <span class="text-gray-600">우리은행 1005-502-430760<br><?= get_bank_account_holder() ?></span>
+                  <span class="font-medium text-forest-700">국민권익위원회</span><br>
+                  <span class="text-gray-600">
+                    <a href="https://www.acrc.go.kr/" target="_blank" rel="noopener noreferrer" class="text-forest-600 hover:text-lime-600 underline">www.acrc.go.kr</a>
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div id="ft_copy" class="text-sm text-right md:text-left">
+      
+      <!-- 저작권 - 맨 아래에 별도 배치 -->
+      <div id="ft_copy" class="text-sm text-right mt-8 pt-4 border-t border-gray-200">
         <p>Copyright © 2019 더불어사는 삶 <?= get_org_name(true) ?>.</p>
       </div>
     </div>
