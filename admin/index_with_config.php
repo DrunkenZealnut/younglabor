@@ -377,7 +377,7 @@ echo admin_component('quick_actions', [
 function admin_clear_cache() {
     if (confirm('모든 캐시를 삭제하시겠습니까?')) {
         // 프레임워크의 캐시 클리어 기능 사용
-        fetch(window.location.href, {
+        fetch(cleanProjectSlugFromUrl(window.location.href), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

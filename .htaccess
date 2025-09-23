@@ -2,6 +2,11 @@
 RewriteEngine On
 RewriteBase /hopec/
 
+# Fix URLs containing ${PROJECT_SLUG} patterns - handled at server level
+# Request containing malformed PROJECT_SLUG should be redirected to 404 handler
+RewriteCond %{REQUEST_URI} \$.*PROJECT_SLUG.*\%7D
+RewriteRule ^(.*)$ /hopec/404_handler.php [L]
+
 # 문자 인코딩 설정 (한글 깨짐 방지)
 AddDefaultCharset UTF-8
 

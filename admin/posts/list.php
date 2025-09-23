@@ -379,7 +379,7 @@ function saveSearchState() {
         search_type: '<?= $search_type ?>',
         search_keyword: '<?= htmlspecialchars($search_keyword, ENT_QUOTES) ?>',
         page: '<?= $page ?>',
-        url: window.location.href
+        url: cleanProjectSlugFromUrl(window.location.href)
     };
     sessionStorage.setItem('admin_posts_search', JSON.stringify(searchData));
 }

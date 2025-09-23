@@ -4,8 +4,10 @@
  * .env 파일에서 설정 정보를 가져옵니다
  */
 
-// 환경 변수 로더 포함
-require_once __DIR__ . '/env_loader.php';
+// 환경 변수 로더 포함 (이미 로드되지 않은 경우만)
+if (!function_exists('env')) {
+    require_once __DIR__ . '/env_loader.php';
+}
 
 try {
     // .env 파일에서 데이터베이스 설정 가져오기

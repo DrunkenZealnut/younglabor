@@ -1,7 +1,7 @@
 <?php
 /**
  * Hero Slider Component for Natural Green Theme
- * 갤러리에서 최신 게시물들을 슬라이더 형태로 표시
+ * 데이터베이스에서 활성화된 히어로 섹션을 표시하거나 기본 갤러리 슬라이더 표시
  */
 
 // 환경변수 로더 포함
@@ -10,6 +10,43 @@ if (file_exists($envPath)) {
     require_once $envPath;
 }
 
+// 활성 히어로 섹션 확인
+$activeHero = null;
+$useCustomHero = false;
+
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=hopec;charset=utf8mb4', 'root', '');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    $stmt = $pdo->query("SELECT * FROM hopec_hero_sections WHERE is_active = 1 LIMIT 1");
+    $activeHero = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($activeHero && $activeHero['type'] !== 'default') {
+        $useCustomHero = true;
+    }
+    
+    // 활성 히어로의 설정이 있으면 hero_config에 병합
+    if ($activeHero && $activeHero['config']) {
+        $customConfig = json_decode($activeHero['config'], true);
+        if (is_array($customConfig)) {
+            $hero_config = array_merge(
+                isset($hero_config) ? $hero_config : [],
+                $customConfig
+            );
+        }
+    }
+} catch (Exception $e) {
+    // 오류 발생시 기본 히어로 사용
+    $useCustomHero = false;
+}
+
+// 커스텀 히어로를 사용하는 경우
+if ($useCustomHero && $activeHero) {
+    echo $activeHero['code'];
+    return; // 커스텀 코드를 출력하고 종료
+}
+
+// 기본 히어로 슬라이더 사용
 // hero-config가 로드되지 않았다면 기본값으로 로드
 if (!isset($hero_config) || !is_array($hero_config)) {
     $hero_config = include __DIR__ . '/../config/hero-config.php';

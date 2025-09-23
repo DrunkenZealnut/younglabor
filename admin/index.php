@@ -46,7 +46,7 @@ function getStatistics($pdo) {
     
     try {
         // 게시글 수 계산
-        $stmt = $pdo->query("SELECT COUNT(*) FROM " . get_table_name('posts'));
+        $stmt = $pdo->query("SELECT COUNT(*) FROM " . table('posts'));
         $statistics['total_posts'] = $stmt->fetchColumn();
     } catch (Exception $e) {
         // 테이블이 없으면 0으로 유지
@@ -114,7 +114,7 @@ function getStatistics($pdo) {
                 wr_name as author,
                 wr_hit as view_count, 
                 board_type
-            FROM " . get_table_name('posts') . "
+            FROM " . table('posts') . "
             WHERE wr_is_comment = 0
             ORDER BY wr_datetime DESC 
             LIMIT 5
@@ -206,6 +206,7 @@ $base_path = get_base_path();
   <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
   <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
   <a href="<?= admin_url('settings/simple-color-settings.php') ?>">🎨 테마 설정</a>
+  <a href="<?= admin_url('settings/hero_settings.php') ?>">🖼️ 히어로 섹션</a>
   <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
   <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>

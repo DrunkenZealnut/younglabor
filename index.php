@@ -5,8 +5,23 @@
  * 모던 PHP 아키텍처 기반 메인 페이지
  */
 
-// 간단한 라우팅 처리 (board/list/{id} URL)
+// Fix URLs containing ${PROJECT_SLUG}
 $request_uri = $_SERVER['REQUEST_URI'] ?? '';
+if (strpos($request_uri, '${PROJECT_SLUG}') !== false || 
+    strpos($request_uri, '%7BPROJECT_SLUG%7D') !== false ||
+    strpos($request_uri, '$%7BPROJECT_SLUG%7D') !== false) {
+    
+    $fixedUri = str_replace(
+        ['${PROJECT_SLUG}', '%7BPROJECT_SLUG%7D', '$%7BPROJECT_SLUG%7D'],
+        'hopec',
+        $request_uri
+    );
+    
+    header('Location: ' . $fixedUri);
+    exit;
+}
+
+// 간단한 라우팅 처리 (board/list/{id} URL)
 $parsed_url = parse_url($request_uri);
 $path = $parsed_url['path'] ?? '';
 

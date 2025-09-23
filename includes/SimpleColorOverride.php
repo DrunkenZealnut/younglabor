@@ -11,6 +11,9 @@
  * Author: Claude Code Simple Color System
  */
 
+// Include config helpers for get_table_name function
+require_once __DIR__ . '/config_helpers.php';
+
 class SimpleColorOverride {
     
     private $enabled = false;

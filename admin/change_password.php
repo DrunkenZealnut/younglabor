@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // 기본 URL 설정
-$baseurl = get_base_url();
+$baseurl = function_exists('get_base_url') ? get_base_url() : '';
 ?>
 <!DOCTYPE html>
 <html lang="ko">

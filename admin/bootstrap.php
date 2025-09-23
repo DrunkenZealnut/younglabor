@@ -3,6 +3,22 @@
  * Admin Bootstrap - 관리자 시스템 부트스트래핑
  */
 
+// Fix URLs containing ${PROJECT_SLUG}
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+if (strpos($requestUri, '${PROJECT_SLUG}') !== false || 
+    strpos($requestUri, '%7BPROJECT_SLUG%7D') !== false ||
+    strpos($requestUri, '$%7BPROJECT_SLUG%7D') !== false) {
+    
+    $fixedUri = str_replace(
+        ['${PROJECT_SLUG}', '%7BPROJECT_SLUG%7D', '$%7BPROJECT_SLUG%7D'],
+        'hopec',
+        $requestUri
+    );
+    
+    header('Location: ' . $fixedUri);
+    exit;
+}
+
 // 보안 강화된 세션 관리 (board_templates 패턴 적용)
 if (session_status() === PHP_SESSION_NONE) {
     // 헤더가 전송되지 않은 경우에만 세션 설정 변경
@@ -397,7 +413,99 @@ if (!function_exists('get_app_name')) {
     }
 }
 
+if (!function_exists('get_base_url')) {
+    /**
+     * 기본 URL 생성 함수 (프로토콜 + 호스트 + BASE_PATH)
+     * @return string 완전한 기본 URL
+     */
+    function get_base_url() {
+        // 프로토콜 감지
+        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+        
+        // 호스트 정보
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        
+        // 포트 정보 (표준 포트가 아닌 경우에만 포함)
+        $port = $_SERVER['SERVER_PORT'] ?? 80;
+        $isStandardPort = ($protocol === 'https' && $port == 443) || ($protocol === 'http' && $port == 80);
+        
+        // 포트가 이미 호스트에 포함되어 있는지 확인
+        if (!$isStandardPort && strpos($host, ':') === false) {
+            $host .= ':' . $port;
+        }
+        
+        // BASE_PATH 가져오기
+        $base_path = get_base_path();
+        
+        return $protocol . '://' . $host . $base_path;
+    }
+}
+
 // 전역 변수로 앱 이름과 관리자 제목 설정
 $app_name = get_app_name();
 $admin_title = $app_name . ' 관리자';
+
+// PROJECT_SLUG 정리용 JavaScript 함수 추가
+if (!defined('PROJECT_SLUG_JS_ADDED')) {
+    define('PROJECT_SLUG_JS_ADDED', true);
+    $project_slug_js = '
+<script>
+// PROJECT_SLUG 패턴을 정리하는 전역 함수
+function cleanProjectSlugFromUrl(url) {
+    if (!url) return url;
+    return url.replace(/\$\{PROJECT_SLUG\}/g, "hopec")
+              .replace(/%7BPROJECT_SLUG%7D/g, "hopec") 
+              .replace(/\$%7BPROJECT_SLUG%7D/g, "hopec");
+}
+
+// 현재 페이지 URL이 PROJECT_SLUG를 포함하고 있다면 즉시 리디렉트
+if (window.location.href.indexOf("PROJECT_SLUG") !== -1) {
+    const cleanUrl = cleanProjectSlugFromUrl(window.location.href);
+    if (cleanUrl !== window.location.href) {
+        window.location.replace(cleanUrl);
+    }
+}
+</script>';
+    
+    // 페이지 하단에 출력될 수 있도록 전역 변수에 저장
+    $GLOBALS['project_slug_js'] = $project_slug_js;
+}
+
+// 중앙 집중화된 Admin 메뉴 URL 설정
+if (!function_exists('get_admin_menu_urls')) {
+    /**
+     * Admin 메뉴 URL들을 중앙에서 관리
+     * @return array 메뉴 ID와 URL 매핑
+     */
+    function get_admin_menu_urls() {
+        $base_path = get_base_path(); // /hopec
+        
+        return [
+            'dashboard' => $base_path . '/admin/',
+            'posts' => $base_path . '/admin/posts/list.php',
+            'boards' => $base_path . '/admin/boards/list.php', 
+            'menu' => $base_path . '/admin/menu/list.php',
+            'inquiries' => $base_path . '/admin/inquiries/list.php',
+            'events' => $base_path . '/admin/events/list.php',
+            'files' => $base_path . '/admin/files/list.php',
+            'settings' => $base_path . '/admin/settings/site_settings.php',
+            'themes' => $base_path . '/admin/settings/simple-color-settings.php',
+            'hero' => $base_path . '/admin/settings/hero_settings.php',
+            'performance' => $base_path . '/admin/system/performance.php',
+            'logout' => $base_path . '/admin/logout.php'
+        ];
+    }
+}
+
+if (!function_exists('get_admin_url')) {
+    /**
+     * 특정 Admin 메뉴의 URL 가져오기
+     * @param string $menu_id 메뉴 ID
+     * @return string URL
+     */
+    function get_admin_url($menu_id) {
+        $urls = get_admin_menu_urls();
+        return $urls[$menu_id] ?? '#';
+    }
+}
 ?>

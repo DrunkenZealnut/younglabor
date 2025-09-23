@@ -392,7 +392,7 @@ window.addEventListener('load', function() {
 // 캐시 클리어 함수
 function clearCache() {
     if (confirm('모든 캐시를 삭제하시겠습니까?')) {
-        fetch(window.location.href, {
+        fetch(cleanProjectSlugFromUrl(window.location.href), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

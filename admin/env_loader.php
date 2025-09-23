@@ -14,7 +14,9 @@ if (!function_exists('loadEnv')) {
         }
         
         $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $env_vars = [];
         
+        // First pass: collect all variables
         foreach ($lines as $line) {
             // 주석 제거
             if (strpos(trim($line), '#') === 0) {
@@ -28,13 +30,26 @@ if (!function_exists('loadEnv')) {
                 $key = trim($key);
                 $value = trim($value);
                 
-                // 따옴표 제거
-                $value = trim($value, '"\'');
+                // 따옴표 제거 (양쪽 끝의 따옴표만 제거)
+                if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
+                    (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
+                    $value = substr($value, 1, -1);
+                }
                 
-                // 환경변수 설정
-                $_ENV[$key] = $value;
-                putenv("$key=$value");
+                $env_vars[$key] = $value;
             }
+        }
+        
+        // Second pass: substitute variables and set environment
+        foreach ($env_vars as $key => $value) {
+            // Replace ${VAR} patterns with actual values
+            $value = preg_replace_callback('/\$\{([A-Z_]+)\}/', function($matches) use ($env_vars) {
+                return isset($env_vars[$matches[1]]) ? $env_vars[$matches[1]] : $matches[0];
+            }, $value);
+            
+            // 환경변수 설정
+            $_ENV[$key] = $value;
+            putenv("$key=$value");
         }
     }
 }

@@ -67,7 +67,7 @@
                     <a href="javascript:history.back()" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-left"></i> 이전으로
                     </a>
-                    <a href="<?= get_base_url() ?>/admin/" class="btn btn-primary">
+                    <a href="<?= function_exists('get_base_url') ? get_base_url() : '' ?>/admin/" class="btn btn-primary">
                         <i class="bi bi-house"></i> 대시보드
                     </a>
                 </div>
