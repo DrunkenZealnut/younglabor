@@ -41,7 +41,7 @@ if (file_exists($envPath)) {
                 $connectionStatus = true;
                 $testMessage = "데이터베이스 '{$currentValues['DB_DATABASE']}'에 성공적으로 연결되었습니다.";
             } else {
-                $testMessage = "데이터베이스 서버 연결은 성공했지만 '{$currentValues['DB_DATABASE']}' 데이터베이스가 존재하지 않습니다.";
+                $testMessage = "데이터베이스 서버 연결은 성공했지만 '{$currentValues['DB_DATABASE']}' 데이터베이스가 존재하지 않습니다. 자동 생성 옵션을 사용하세요.";
             }
         } else {
             $testMessage = "데이터베이스 서버 연결은 성공했지만 데이터베이스 이름이 설정되지 않았습니다.";
@@ -246,6 +246,11 @@ $isXampp = file_exists('/Applications/XAMPP') || file_exists('C:\xampp');
                 <button type="button" class="btn btn-outline-secondary me-2" onclick="testConnection()">
                     <i class="bi bi-plug"></i> 연결 테스트
                 </button>
+                <?php if ($connectionStatus): ?>
+                <button type="button" class="btn btn-outline-success me-2" onclick="createDatabase()">
+                    <i class="bi bi-database-add"></i> 기본 스키마 설치
+                </button>
+                <?php endif; ?>
                 <button type="submit" class="btn btn-primary btn-lg">
                     <i class="bi bi-save"></i> 저장하고 계속
                 </button>
@@ -254,6 +259,9 @@ $isXampp = file_exists('/Applications/XAMPP') || file_exists('C:\xampp');
         
         <!-- 연결 테스트 결과 -->
         <div id="connectionResult" class="mt-3" style="display: none;"></div>
+        
+        <!-- 스키마 설치 결과 -->
+        <div id="schemaResult" class="mt-3" style="display: none;"></div>
         
         <!-- 도움말 -->
         <div class="card mt-4">
@@ -326,6 +334,58 @@ function testConnection() {
         } else {
             resultDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-info-circle"></i> 연결 테스트를 위해 폼을 제출해주세요.</div>';
         }
+    });
+}
+
+function createDatabase() {
+    const resultDiv = document.getElementById('schemaResult');
+    
+    // 로딩 표시
+    resultDiv.innerHTML = '<div class="alert alert-info"><i class="bi bi-hourglass-split"></i> 데이터베이스 스키마를 설치하는 중...</div>';
+    resultDiv.style.display = 'block';
+    
+    // AJAX 요청
+    fetch('api/create-database.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let message = `<div class="alert alert-success">
+                <i class="bi bi-check-circle"></i> <strong>${data.message}</strong><br>
+                <small>데이터베이스: ${data.details.database_name}</small><br>`;
+            
+            if (data.details.operations && data.details.operations.length > 0) {
+                message += '<ul class="mt-2 mb-0 small">';
+                data.details.operations.forEach(op => {
+                    message += `<li>${op}</li>`;
+                });
+                message += '</ul>';
+            }
+            
+            message += '</div>';
+            
+            resultDiv.innerHTML = message;
+            
+            // 3초 후 페이지 새로고침하여 연결 상태 업데이트
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            resultDiv.innerHTML = `<div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> <strong>스키마 설치 실패</strong><br>
+                ${data.message}
+            </div>`;
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = `<div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> <strong>오류 발생</strong><br>
+            네트워크 오류가 발생했습니다: ${error.message}
+        </div>`;
     });
 }
 
