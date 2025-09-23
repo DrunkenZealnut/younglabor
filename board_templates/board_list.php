@@ -198,7 +198,7 @@ if (function_exists('renderSafeBoardTheme')) {
 
         <!-- 게시글 목록 -->
     <?php if (empty($posts)): ?>
-    <div class="px-6 py-12 text-center">
+    <div class="px-6 py-12 text-center" style="min-height: 400px;">
         <i data-lucide="message-circle" class="w-12 h-12 <?= getThemeClass('text', 'text', '400') ?> mx-auto mb-4"></i>
         <h3 class="text-lg font-medium <?= getThemeClass('text', 'text', '600') ?> mb-2">
             <?= !empty($search_keyword) ? '검색 결과가 없습니다' : '게시글이 없습니다' ?>

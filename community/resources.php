@@ -102,7 +102,7 @@ $search_type = $search_type;
 $search_keyword = $search_keyword;
 ?>
 
-<main id="main" role="main" class="flex-1">
+<main id="main" role="main" class="flex-1" style="padding-bottom: 100px;">
 <?php include __DIR__ . '/../board_templates/board_list.php'; ?>
 </main>
 

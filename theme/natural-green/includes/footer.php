@@ -1,16 +1,16 @@
 <!-- 하단 시작 { -->
-<div id="ft" role="contentinfo" class="bg-white border-t border-lime-200 mt-auto">
+<div id="ft" role="contentinfo" class="bg-white border-t border-lime-200">
   <div id="ft_wr" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-gray-600">
     <div class="flex flex-col h-full">
       <!-- 메인 콘텐츠 영역 -->
       <div class="flex-1">
         <div class="flex items-center gap-3 mb-4">
-          <?php if (function_exists('logo_url')): ?>
-            <img src="<?= logo_url() ?>" alt="<?= get_org_name() ?> 로고" class="h-8" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-            <i data-lucide="trees" class="w-6 h-6 text-lime-500" style="display: none;" aria-hidden="true"></i>
-          <?php else: ?>
-            <i data-lucide="trees" class="w-6 h-6 text-lime-500" aria-hidden="true"></i>
-          <?php endif; ?>
+          <img
+            src="<?php echo app_url('assets/images/logo.png'); ?>"
+            alt="사단법인 희망씨"
+            class="object-fit-contain"
+            style="height: 2rem; width: auto; max-width: 10rem;"
+            onerror="this.style.display='none';" />
         </div>
         <div id="ft_info" class="text-sm leading-6">
           <!-- 정보 그리드 - 4열 구조로 재정렬 -->
@@ -69,7 +69,7 @@
                 <i data-lucide="credit-card" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
                   <span class="font-medium text-forest-700">후원계좌</span><br>
-                  <span class="text-gray-600">우리은행 1005-502-430760<br><?= get_bank_account_holder() ?></span>
+                  <span class="text-gray-600">우리은행 1005-502-430760<br><?= get_org_name(true) ?></span>
                 </div>
               </div>
             </div>
