@@ -18,7 +18,7 @@
   ?>
 
   <!-- 최근 활동 보기 섹션 -->
-  <section class="py-12 bg-white" style="background: #ffffff !important;">
+  <section class="py-12 bg-white" style="background: #ffffff !important; min-height: 600px;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
         <a href="<?= app_url('community/gallery.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer no-underline">최근 활동 보기</a>
@@ -121,7 +121,7 @@
   </section>
 
   <!-- 공지사항 & 후원안내 섹션 -->
-  <section class="py-8 bg-white" style="background: #ffffff !important;">
+  <section class="py-8 bg-white" style="background: #ffffff !important; min-height: 400px;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-2 gap-8">
         <!-- 공지사항 -->
@@ -194,7 +194,7 @@
   </section>
 
   <!-- 소식지 섹션 -->
-  <section class="py-12 bg-natural-50" style="background: #f8fffe !important;">
+  <section class="py-12 bg-natural-50" style="background: #f8fffe !important; min-height: 600px;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
         <a href="<?= app_url('community/newsletter.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-lime-600 hover:underline-offset-4">희망씨 소식지</a>

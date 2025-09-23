@@ -70,7 +70,7 @@ if (preg_match_all('/<dl[^>]*>\s*<dt[^>]*>\s*(?:<span[^>]*>\d+<\/span>)?\s*([^<]
 // 헤더 포함
 include __DIR__ . '/../includes/header.php';
 ?>
-<main id="container" role="main">
+<main id="container" role="main" class="flex-1">
   <article aria-labelledby="about-title" class="max-w-5xl mx-auto px-4 py-8">
     <header class="mb-8">
       <p class="text-sm text-gray-500">About</p>

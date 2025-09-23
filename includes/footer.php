@@ -1,4 +1,4 @@
-    </div></div></div><!-- #wrapper 닫기 태그들 -->
+    <!-- Content wrapper ends here -->
     
     <?php 
     // Natural Green 테마 푸터 포함

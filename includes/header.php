@@ -97,54 +97,8 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     </script>
     
     <?= csrf_field() ?>
-    
-    <!-- Footer 조기 표시 문제 해결을 위한 추가 CSS -->
-    <style>
-    /* 전체 페이지 높이 보장 */
-    html, body {
-        height: 100% !important;
-        min-height: 100vh !important;
-    }
-    
-    /* Flexbox 레이아웃 강제 적용 */
-    body {
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    
-    /* Wrapper 구조 flex 설정 강화 - 높이 제한 제거 */
-    #wrapper, #container_wr, #container {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        min-height: 0 !important; /* 높이 제한 제거 */
-        height: auto !important;  /* 자동 높이 */
-    }
-    
-    /* Main 요소 flex 설정 */
-    main {
-        flex: 1 !important;
-        min-height: calc(100vh - 200px) !important; /* 최소 높이 보장 */
-    }
-    
-    /* Footer 위치 고정 */
-    #ft {
-        margin-top: auto !important;
-        flex-shrink: 0 !important; /* Footer 축소 방지 */
-    }
-    
-    /* 게시판 컨테이너 최소 높이 보장 */
-    .board-surface {
-        min-height: 60vh !important;
-    }
-    
-    /* 헤더 높이 고정 */
-    header {
-        flex-shrink: 0 !important;
-    }
-    </style>
   </head>
-  <body class="min-vh-100 d-flex flex-column" style="font-family: 'Noto Sans KR', sans-serif; background-color: var(--background); color: var(--foreground); min-height: 100vh !important;">
+  <body class="d-flex flex-column min-vh-100" style="font-family: 'Noto Sans KR', sans-serif; background-color: var(--background); color: var(--foreground);">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:m-4 focus:p-2 focus:bg-white focus:border focus:border-gray-400">본문 바로가기</a>
     <?php 
     // Natural Green 네비게이션 헤더만 포함 (HTML 문서 구조는 제외)
@@ -184,5 +138,5 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
               </nav>';
     }
     ?>
-    <div id="wrapper" class="flex-1 d-flex flex-column"><div id="container_wr" class="flex-1 d-flex flex-column"><div id="container" class="flex-1 d-flex flex-column">
+    <!-- Main content wrapper with flex-grow -->
 <?php

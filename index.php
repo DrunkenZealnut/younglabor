@@ -54,8 +54,8 @@ if (file_exists($themeHome)) {
 } else {
     // 모던 폴백 페이지
     ?>
-    <main role="main" class="main-content">
-            <div class="container">
+    <main role="main" class="flex-1 main-content">
+        <div class="container">
             <div class="hero-section">
                 <h1 class="hero-title"><?= h(app_name()) ?></h1>
                 <p class="hero-subtitle">청소년 노동인권과 지역사회 연대를 위한 비영리 단체</p>

@@ -10,7 +10,7 @@ $useCSSVars = false;
 
 include __DIR__ . '/../includes/header.php';
 ?>
-<main id="container" role="main" class="<?= getThemeClass('bg', 'gray', '50') ?> min-h-screen">
+<main id="main" role="main" class="<?= getThemeClass('bg', 'gray', '50') ?> flex-1">
   <article class="max-w-7xl mx-auto px-4 py-10">
     <header class="mb-8">
       <p class="text-sm <?= getThemeClass('text', 'muted-foreground') ?>">About</p>

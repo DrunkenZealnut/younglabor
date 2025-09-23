@@ -95,7 +95,7 @@ include __DIR__ . '/../includes/header.php';
 $current_page = $page;
 ?>
 
-<main id="main" role="main" class="flex-1" style="padding-bottom: 100px;">
+<main id="main" role="main" class="flex-1">
 <?php include __DIR__ . '/../board_templates/board_list.php'; ?>
 </main>
 

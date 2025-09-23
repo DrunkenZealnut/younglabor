@@ -1,5 +1,5 @@
 <!-- 하단 시작 { -->
-<div id="ft" role="contentinfo" class="bg-white border-t border-lime-200">
+<div id="ft" role="contentinfo" class="bg-white border-t border-lime-200 mt-auto">
   <div id="ft_wr" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-gray-600">
     <div class="flex flex-col h-full">
       <!-- 메인 콘텐츠 영역 -->
