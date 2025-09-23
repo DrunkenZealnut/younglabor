@@ -35,13 +35,13 @@ function getBoardDatabase() {
         return $GLOBALS['pdo'];
     }
     
-    // 기본 연결 설정 (환경에 맞게 수정 필요)
+    // 기본 연결 설정 (환경변수 기반)
     try {
-        $host = defined('DB_HOST') ? DB_HOST : 'localhost';
-        $dbname = defined('DB_NAME') ? DB_NAME : 'hopec';
-        $username = defined('DB_USER') ? DB_USER : 'root';
-        $password = defined('DB_PASS') ? DB_PASS : '';
-        $charset = defined('DB_CHARSET') ? DB_CHARSET : 'utf8mb4';
+        $host = defined('DB_HOST') ? DB_HOST : (function_exists('env') ? env('DB_HOST', 'localhost') : 'localhost');
+        $dbname = defined('DB_NAME') ? DB_NAME : (function_exists('env') ? env('DB_DATABASE', 'hopec') : 'hopec');
+        $username = defined('DB_USER') ? DB_USER : (function_exists('env') ? env('DB_USERNAME', 'root') : 'root');
+        $password = defined('DB_PASS') ? DB_PASS : (function_exists('env') ? env('DB_PASSWORD', '') : '');
+        $charset = defined('DB_CHARSET') ? DB_CHARSET : (function_exists('env') ? env('DB_CHARSET', 'utf8mb4') : 'utf8mb4');
         
         $dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
         $options = [

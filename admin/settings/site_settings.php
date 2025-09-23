@@ -659,6 +659,12 @@ include '../includes/sidebar.php';
               type="button" role="tab" onclick="location.href='?tab=popup'">
               <i class="bi bi-window-stack"></i> 팝업 관리</button>
     </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link <?= $active_tab === 'config' ? 'active' : '' ?>" 
+              id="config-tab" data-bs-toggle="tab" data-bs-target="#config-pane" 
+              type="button" role="tab" onclick="location.href='?tab=config'">
+              <i class="bi bi-gear-fill"></i> 설정 관리</button>
+    </li>
   </ul>
   
   <!-- 탭 내용 -->
@@ -1001,12 +1007,161 @@ include '../includes/sidebar.php';
       include __DIR__ . '/popup/popup-manager.php';
       ?>
     </div>
+    
+    <!-- 설정 관리 탭 -->
+    <div class="tab-pane fade <?= $active_tab === 'config' ? 'show active' : '' ?>" 
+         id="config-pane" role="tabpanel" aria-labelledby="config-tab">
+      <div class="row">
+        <div class="col-md-6">
+          <!-- 설정 내보내기 -->
+          <div class="card">
+            <div class="card-header">
+              <h5><i class="bi bi-download"></i> 설정 내보내기</h5>
+            </div>
+            <div class="card-body">
+              <p class="text-muted">현재 사이트의 설정을 JSON 파일로 내보내어 다른 사이트에서 재사용할 수 있습니다.</p>
+              
+              <div class="mb-3">
+                <label class="form-label">내보낼 설정 범위:</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="export_project" checked>
+                  <label class="form-check-label" for="export_project">프로젝트 정보</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="export_org" checked>
+                  <label class="form-check-label" for="export_org">조직 정보</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="export_theme" checked>
+                  <label class="form-check-label" for="export_theme">테마 설정</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="export_features" checked>
+                  <label class="form-check-label" for="export_features">기능 설정</label>
+                </div>
+              </div>
+              
+              <button type="button" class="btn btn-primary" onclick="exportSettings()">
+                <i class="bi bi-download"></i> 설정 다운로드
+              </button>
+              
+              <button type="button" class="btn btn-outline-info" onclick="previewSettings()">
+                <i class="bi bi-eye"></i> 미리보기
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-6">
+          <!-- 설정 가져오기 -->
+          <div class="card">
+            <div class="card-header">
+              <h5><i class="bi bi-upload"></i> 설정 가져오기</h5>
+            </div>
+            <div class="card-body">
+              <p class="text-muted">다른 사이트에서 내보낸 설정 파일을 업로드하여 현재 사이트에 적용할 수 있습니다.</p>
+              
+              <form id="importForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label for="config_file" class="form-label">설정 파일 선택</label>
+                  <input type="file" class="form-control" id="config_file" name="config_file" accept=".json">
+                  <div class="form-text">JSON 형식의 설정 파일만 지원됩니다.</div>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="backup_before_import" checked>
+                  <label class="form-check-label" for="backup_before_import">
+                    가져오기 전에 현재 설정 백업 생성
+                  </label>
+                </div>
+                
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="preview_before_apply">
+                  <label class="form-check-label" for="preview_before_apply">
+                    적용하기 전에 미리보기
+                  </label>
+                </div>
+                
+                <button type="button" class="btn btn-success" onclick="importSettings()">
+                  <i class="bi bi-upload"></i> 설정 가져오기
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 설정 미리보기/결과 -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div id="configPreview" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <h5><i class="bi bi-eye"></i> 설정 미리보기</h5>
+              </div>
+              <div class="card-body">
+                <pre id="configPreviewContent" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;"></pre>
+              </div>
+            </div>
+          </div>
+          
+          <div id="configResult" style="display: none;">
+            <div class="card">
+              <div class="card-header">
+                <h5><i class="bi bi-check-circle"></i> 작업 결과</h5>
+              </div>
+              <div class="card-body">
+                <div id="configResultContent"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 도움말 -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5><i class="bi bi-question-circle"></i> 도움말</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-6">
+                  <h6>설정 내보내기</h6>
+                  <ul class="small">
+                    <li>현재 사이트의 모든 설정을 JSON 파일로 저장</li>
+                    <li>민감한 정보(비밀번호 등)는 자동으로 제외</li>
+                    <li>다른 사이트에서 동일한 설정 적용 가능</li>
+                    <li>버전 관리 및 백업 용도로도 활용</li>
+                  </ul>
+                </div>
+                <div class="col-md-6">
+                  <h6>설정 가져오기</h6>
+                  <ul class="small">
+                    <li>다른 사이트에서 내보낸 설정 파일 적용</li>
+                    <li>자동으로 현재 설정 백업 생성</li>
+                    <li>미리보기로 변경사항 확인 가능</li>
+                    <li>데이터베이스 정보는 수동 설정 필요</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i> 
+                <strong>주의:</strong> 설정 가져오기는 현재 설정을 덮어씁니다. 중요한 설정은 미리 백업해두세요.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// 기본 설정 관련 JavaScript만 유지
+// 기본 설정 관련 JavaScript
 document.addEventListener('DOMContentLoaded', function() {
   // 알림 메시지 자동 사라지기 (5초 후)
   const alerts = document.querySelectorAll('.alert');
@@ -1019,6 +1174,153 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 5000);
   });
 });
+
+// 설정 내보내기 함수
+function exportSettings() {
+  const button = event.target;
+  const originalText = button.innerHTML;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass-split"></i> 내보내는 중...';
+  
+  // 설정 내보내기 API 호출
+  window.location.href = '../api/settings/export.php?download=true&bypass=1';
+  
+  setTimeout(() => {
+    button.disabled = false;
+    button.innerHTML = originalText;
+  }, 2000);
+}
+
+// 설정 미리보기 함수
+function previewSettings() {
+  const button = event.target;
+  const originalText = button.innerHTML;
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass-split"></i> 로딩 중...';
+  
+  fetch('../api/settings/export.php?bypass=1')
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('configPreviewContent').textContent = JSON.stringify(data.data, null, 2);
+        document.getElementById('configPreview').style.display = 'block';
+        document.getElementById('configResult').style.display = 'none';
+        
+        // 부드럽게 스크롤
+        document.getElementById('configPreview').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        showAlert('설정 미리보기 실패: ' + data.message, 'danger');
+      }
+    })
+    .catch(error => {
+      showAlert('설정 미리보기 중 오류가 발생했습니다: ' + error.message, 'danger');
+    })
+    .finally(() => {
+      button.disabled = false;
+      button.innerHTML = originalText;
+    });
+}
+
+// 설정 가져오기 함수
+function importSettings() {
+  const button = event.target;
+  const originalText = button.innerHTML;
+  const fileInput = document.getElementById('config_file');
+  
+  if (!fileInput.files[0]) {
+    showAlert('설정 파일을 선택해주세요.', 'warning');
+    return;
+  }
+  
+  if (!confirm('설정을 가져오면 현재 설정이 덮어씌워집니다. 계속하시겠습니까?')) {
+    return;
+  }
+  
+  button.disabled = true;
+  button.innerHTML = '<i class="bi bi-hourglass-split"></i> 가져오는 중...';
+  
+  const formData = new FormData();
+  formData.append('config_file', fileInput.files[0]);
+  formData.append('backup_before_import', document.getElementById('backup_before_import').checked ? '1' : '0');
+  
+  fetch('../api/settings/import.php?bypass=1', {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('configResultContent').innerHTML = `
+          <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i> <strong>설정 가져오기 성공!</strong>
+            <ul class="mt-2 mb-0">
+              <li>가져온 항목: ${data.details.imported_count}개</li>
+              <li>건너뛴 항목: ${data.details.skipped_count}개</li>
+              ${data.details.backup_created ? '<li>백업 파일: ' + data.details.backup_created + '</li>' : ''}
+            </ul>
+          </div>
+          <div class="mt-3">
+            <h6>원본 정보:</h6>
+            <ul class="small">
+              <li>버전: ${data.details.source_info.version}</li>
+              <li>내보낸 날짜: ${data.details.source_info.export_date}</li>
+              <li>원본 URL: ${data.details.source_info.source_url}</li>
+            </ul>
+          </div>
+          <div class="mt-3">
+            <button type="button" class="btn btn-primary" onclick="location.reload()">
+              <i class="bi bi-arrow-clockwise"></i> 페이지 새로고침
+            </button>
+          </div>
+        `;
+        
+        document.getElementById('configResult').style.display = 'block';
+        document.getElementById('configPreview').style.display = 'none';
+        
+        // 부드럽게 스크롤
+        document.getElementById('configResult').scrollIntoView({ behavior: 'smooth' });
+        
+        // 파일 입력 초기화
+        fileInput.value = '';
+        
+      } else {
+        showAlert('설정 가져오기 실패: ' + data.message, 'danger');
+      }
+    })
+    .catch(error => {
+      showAlert('설정 가져오기 중 오류가 발생했습니다: ' + error.message, 'danger');
+    })
+    .finally(() => {
+      button.disabled = false;
+      button.innerHTML = originalText;
+    });
+}
+
+// 알림 메시지 표시 함수
+function showAlert(message, type = 'info') {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+  alertDiv.innerHTML = `
+    <i class="bi bi-info-circle"></i> ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  `;
+  
+  // 설정 관리 탭의 맨 위에 삽입
+  const configPane = document.getElementById('config-pane');
+  if (configPane) {
+    configPane.insertBefore(alertDiv, configPane.firstChild);
+    
+    // 자동으로 사라지게 하기
+    setTimeout(() => {
+      if (alertDiv.parentNode) {
+        const bsAlert = new bootstrap.Alert(alertDiv);
+        bsAlert.close();
+      }
+    }, 5000);
+  }
+}
 </script>
 </body>
 </html>
