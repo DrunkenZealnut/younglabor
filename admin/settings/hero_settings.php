@@ -3,9 +3,8 @@ session_start();
 require_once '../auth.php';
 require_once '../bootstrap.php';
 
-// 히어로 섹션 데이터 조회
-$pdo = new PDO('mysql:host=localhost;dbname=hopec;charset=utf8mb4', 'root', '');
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// 히어로 섹션 데이터 조회 - 환경변수 기반 DB 연결 사용
+// bootstrap.php에서 이미 $pdo가 설정되어 있음
 
 // 모든 히어로 섹션 조회
 $stmt = $pdo->query("SELECT * FROM hopec_hero_sections ORDER BY priority ASC, id DESC");

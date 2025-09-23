@@ -242,7 +242,7 @@ try {
             $category_result = $stmt->fetch(PDO::FETCH_ASSOC);
             $category_name = $category_result ? $category_result["name"] : "일반문의";
             
-            $org_name = env("ORG_NAME", "희망씨");
+            $org_name = org_name_short();
             $mail_subject = "[{$org_name}] 새로운 문의가 접수되었습니다 (ID: {$inquiry_id})";
             $mail_body = "
 ==============================================

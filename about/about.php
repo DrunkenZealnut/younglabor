@@ -165,7 +165,7 @@ include __DIR__ . '/../includes/header.php';
 
     <?php if (!empty($principles)): ?>
     <section aria-labelledby="principles-title" class="mb-12">
-      <h2 id="principles-title" class="text-xl font-bold <?= getThemeClass('text', 'primary', '700') ?> mb-4">사단법인 희망씨의 활동 원칙</h2>
+      <h2 id="principles-title" class="text-xl font-bold <?= getThemeClass('text', 'primary', '700') ?> mb-4"><?php echo htmlspecialchars(org_name_full()); ?>의 활동 원칙</h2>
       <div class="grid md:grid-cols-2 gap-6">
         <?php foreach ($principles as $index => $p): ?>
           <div class="bg-white rounded-xl border <?= getThemeClass('border', 'border', '200') ?> p-6 hover-lift" role="listitem">

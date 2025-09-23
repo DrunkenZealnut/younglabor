@@ -272,6 +272,9 @@ if (env('PERFORMANCE_DEBUG', false)) {
     });
 }
 
+// Organization Helper 로드
+require_once __DIR__ . '/../includes/organization_helper.php';
+
 // 전역 템플릿 변수 설정
 $GLOBALS['hopec_app'] = [
     'name' => env('APP_NAME', '희망씨'),

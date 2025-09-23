@@ -1,10 +1,10 @@
 <?php
 session_start();
 require_once '../../../auth.php';
+require_once '../../../bootstrap.php';
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=hopec;charset=utf8mb4', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // bootstrap.php에서 환경변수 기반 $pdo 사용
     
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
     

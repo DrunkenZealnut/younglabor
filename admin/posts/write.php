@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
  */
 function processAttachments($post_id, $board_type, $files, $pdo) {
     $upload_count = 0;
-    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
+    $upload_path = get_bt_upload_path();
     $allowed_types = explode(',', env('ALLOWED_DOCUMENT_TYPES', 'pdf,doc,docx,hwp,hwpx,xls,xlsx'));
     $allowed_images = explode(',', env('ALLOWED_IMAGE_TYPES', 'jpg,jpeg,png,gif,webp'));
     $max_size = (int)env('UPLOAD_MAX_SIZE', 5242880); // 5MB

@@ -15,7 +15,14 @@ $activeHero = null;
 $useCustomHero = false;
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=hopec;charset=utf8mb4', 'root', '');
+    // 환경변수 기반 데이터베이스 연결
+    $host = env('DB_HOST', 'localhost');
+    $dbname = env('DB_DATABASE', 'hopec');
+    $username = env('DB_USERNAME', 'root');
+    $password = env('DB_PASSWORD', '');
+    $charset = env('DB_CHARSET', 'utf8mb4');
+    
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     $stmt = $pdo->query("SELECT * FROM hopec_hero_sections WHERE is_active = 1 LIMIT 1");

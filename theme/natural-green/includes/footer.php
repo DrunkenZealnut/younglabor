@@ -7,7 +7,7 @@
         <div class="flex items-center gap-3 mb-4">
           <img
             src="<?php echo app_url('assets/images/logo.png'); ?>"
-            alt="사단법인 희망씨"
+            alt="<?php echo htmlspecialchars(org_logo_alt('푸터 로고')); ?>"
             class="object-fit-contain"
             style="height: 2rem; width: auto; max-width: 10rem;"
             onerror="this.style.display='none';" />

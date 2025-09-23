@@ -25,7 +25,7 @@ try {
     }
     
     // 파일 경로 구성 (기존 + 새로운 날짜 기반 구조 모두 지원)
-    $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
+    $upload_path = get_bt_upload_path();
     
     $board_type = $file_info['board_type'];
     $filename = $file_info['bf_file'];

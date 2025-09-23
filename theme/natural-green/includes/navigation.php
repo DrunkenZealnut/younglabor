@@ -218,7 +218,7 @@ $communityLinks = [
            aria-label="홈페이지 메인으로 이동">
           <img
             src="<?php echo app_url('assets/images/logo.png'); ?>"
-            alt="사단법인 희망씨"
+            alt="<?php echo htmlspecialchars(org_logo_alt('로고')); ?>"
             class="object-fit-contain"
             style="height: 3.5rem; width: auto; max-width: 14rem;"
             onerror="this.style.display='none';" />

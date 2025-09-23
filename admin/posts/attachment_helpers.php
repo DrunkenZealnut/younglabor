@@ -212,7 +212,7 @@ function deleteAttachment($file_id, $pdo) {
         
         if ($file_info) {
             // 물리적 파일 삭제
-            $upload_path = rtrim(env('BT_UPLOAD_PATH', '/Users/zealnutkim/Documents/개발/hopec/data/file'), '/');
+            $upload_path = get_bt_upload_path();
             $filename = $file_info['bf_file'];
             $board_type = $file_info['board_type'];
             

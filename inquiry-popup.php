@@ -46,8 +46,14 @@ try {
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
     } else {
-        // 직접 연결 시도 (fallback)
-        $pdo = new PDO("mysql:host=localhost;dbname=hopec;charset=utf8mb4", 'root', '');
+        // 직접 연결 시도 (fallback) - 환경변수 기본값 사용
+        $host = 'localhost';
+        $dbname = 'hopec';
+        $username = 'root';
+        $password = '';
+        $charset = 'utf8mb4';
+        
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         
         // 카테고리 목록 가져오기 (ID 순으로 정렬)

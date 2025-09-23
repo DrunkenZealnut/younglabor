@@ -76,7 +76,7 @@ foreach ($rows as $r) {
 
 $config = [
     'board_title' => '공지사항',
-    'board_description' => '희망씨의 새로운 소식과 중요한 공지사항을 확인하세요.',
+    'board_description' => org_name_short() . '의 새로운 소식과 중요한 공지사항을 확인하세요.',
     'show_write_button' => false,
     'enable_search' => true,
     'detail_url' => app_url('community/notice_view.php'),

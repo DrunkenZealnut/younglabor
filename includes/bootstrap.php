@@ -43,3 +43,9 @@ $GLOBALS['hopec_config']['database'] = $database_config;
 require_once(__DIR__.'/DatabaseManager.php');
 DatabaseManager::initialize();
 
+// Organization Helper 로드
+require_once(__DIR__.'/organization_helper.php');
+
+// Path Helper 로드
+require_once(__DIR__.'/path_helper.php');
+

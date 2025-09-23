@@ -79,7 +79,7 @@ foreach ($rows as $r) {
 
 $config = [
     'board_title' => '언론보도',
-    'board_description' => '언론에 보도된 희망씨의 소식입니다.',
+    'board_description' => '언론에 보도된 ' . org_name_short() . '의 소식입니다.',
     'show_write_button' => false,
     'enable_search' => true,
     'detail_url' => app_url('community/press_view.php'),

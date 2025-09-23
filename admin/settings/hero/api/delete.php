@@ -1,12 +1,12 @@
 <?php
 session_start();
 require_once '../../../auth.php';
+require_once '../../../bootstrap.php';
 
 header('Content-Type: application/json');
 
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=hopec;charset=utf8mb4', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // bootstrap.php에서 환경변수 기반 $pdo 사용
     
     $input = json_decode(file_get_contents('php://input'), true);
     

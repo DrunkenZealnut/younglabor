@@ -6,29 +6,61 @@
 echo "🚀 HOPEC Admin Server Setup"
 echo "=========================="
 
+# Load environment variables
+if [ -f ".env" ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
+# Detect XAMPP installation
+XAMPP_ROOT=""
+POSSIBLE_XAMPP_PATHS=(
+    "/Applications/XAMPP"
+    "/opt/lampp"
+    "C:/xampp"
+    "$XAMPP_ROOT_ENV"
+)
+
+for path in "${POSSIBLE_XAMPP_PATHS[@]}"; do
+    if [ -d "$path" ]; then
+        XAMPP_ROOT="$path"
+        break
+    fi
+done
+
 # 1. Check if XAMPP is installed
-if [ ! -d "/Applications/XAMPP" ]; then
+if [ -z "$XAMPP_ROOT" ]; then
     echo "❌ XAMPP이 설치되지 않았습니다."
     echo "   https://www.apachefriends.org/download.html에서 XAMPP를 설치하세요."
+    echo "   또는 XAMPP_ROOT 환경변수를 설정하세요."
     exit 1
 fi
 
-echo "✅ XAMPP 설치 확인됨"
+echo "✅ XAMPP 설치 확인됨: $XAMPP_ROOT"
+
+# Determine config paths
+HTTPD_CONF="$XAMPP_ROOT/etc/httpd.conf"
+VHOST_CONF="$XAMPP_ROOT/etc/extra/httpd-vhosts.conf"
+
+# Check for alternative paths
+if [ ! -f "$HTTPD_CONF" ] && [ -f "$XAMPP_ROOT/apache/conf/httpd.conf" ]; then
+    HTTPD_CONF="$XAMPP_ROOT/apache/conf/httpd.conf"
+    VHOST_CONF="$XAMPP_ROOT/apache/conf/extra/httpd-vhosts.conf"
+fi
 
 # 2. Backup existing httpd.conf if it exists
-if [ -f "/Applications/XAMPP/etc/httpd.conf" ]; then
-    if [ ! -f "/Applications/XAMPP/etc/httpd.conf.backup" ]; then
+if [ -f "$HTTPD_CONF" ]; then
+    if [ ! -f "$HTTPD_CONF.backup" ]; then
         echo "🔄 기존 httpd.conf 백업 중..."
-        sudo cp /Applications/XAMPP/etc/httpd.conf /Applications/XAMPP/etc/httpd.conf.backup
+        sudo cp "$HTTPD_CONF" "$HTTPD_CONF.backup"
     fi
 fi
 
 # 3. Check if port 8012 is already configured
-if grep -q "Listen 8012" /Applications/XAMPP/etc/httpd.conf 2>/dev/null; then
+if grep -q "Listen 8012" "$HTTPD_CONF" 2>/dev/null; then
     echo "✅ 포트 8012가 이미 설정되어 있습니다."
 else
     echo "🔧 포트 8012 추가 중..."
-    echo "Listen 8012" | sudo tee -a /Applications/XAMPP/etc/httpd.conf >/dev/null
+    echo "Listen 8012" | sudo tee -a "$HTTPD_CONF" >/dev/null
 fi
 
 # 4. Configure Virtual Host
