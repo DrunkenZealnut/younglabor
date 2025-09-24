@@ -37,7 +37,7 @@ try {
     $stmt = $pdo->query("SELECT * FROM " . table('hero_sections') . " WHERE is_active = 1 LIMIT 1");
     $activeHero = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    if ($activeHero && $activeHero['type'] !== 'default') {
+    if ($activeHero && $activeHero['type'] !== 'default' && !empty($activeHero['code'])) {
         $useCustomHero = true;
     }
     
@@ -526,7 +526,7 @@ try {
 <?php endif; ?>
 
 <style>
-/* Hero Slider 추가 스타일 - Cache Busted <?= time() ?> - Image Fix Version */
+/* Hero Slider 추가 스타일 - Cache Busted <?= time() ?> - Hero Update Version */
 
 /* 강력한 배경 제거 - 최우선 적용 */
 * {

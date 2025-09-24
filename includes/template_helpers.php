@@ -229,7 +229,7 @@ if (!function_exists('logo_url')) {
             }
             
             if ($db_connection) {
-                $table_prefix = env('DB_PREFIX', 'hopec_');
+                $table_prefix = env('DB_PREFIX', '');
                 $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_logo'");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -299,7 +299,7 @@ if (!function_exists('favicon_url')) {
             }
             
             if ($db_connection) {
-                $table_prefix = env('DB_PREFIX', 'hopec_');
+                $table_prefix = env('DB_PREFIX', '');
                 $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_favicon'");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);

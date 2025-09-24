@@ -10,10 +10,7 @@ if (defined('THEME_BOOTSTRAP_LOADED')) {
 }
 define('THEME_BOOTSTRAP_LOADED', true);
 
-// 그누보드 호환성을 위한 상수 정의
-if (!defined('_GNUBOARD_')) {
-    define('_GNUBOARD_', true);
-}
+
 
 // 프로젝트 헬퍼 로드
 $projectHelperPath = dirname(__DIR__, 2) . '/includes/project_helpers.php';
@@ -113,7 +110,7 @@ try {
                 ]
             ],
             'prefixes' => [
-                'modern' => env('DB_PREFIX', 'hopec_')
+                'modern' => env('DB_PREFIX', '')
             ],
             'query_log' => env('DB_QUERY_LOG', false)
         ],

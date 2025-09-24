@@ -39,9 +39,9 @@ if (!function_exists('get_org_name')) {
      */
     function get_org_name($full = false) {
         if ($full) {
-            return env('ORG_NAME_FULL', '사단법인 희망씨');
+            return env('ORG_NAME_FULL', '청년노동자인권센터');
         }
-        return env('ORG_NAME_SHORT', '희망씨');
+        return env('ORG_NAME_SHORT', '청년노동자인권센터');
     }
 }
 
@@ -120,7 +120,7 @@ if (!function_exists('get_table_name')) {
      * 테이블명 가져오기 (접두사 포함)
      */
     function get_table_name($table) {
-        $prefix = env('DB_PREFIX', 'hopec_');
+        $prefix = env('DB_PREFIX', '');
         return $prefix . $table;
     }
 }

@@ -4,14 +4,22 @@
     <div class="flex flex-col h-full">
       <!-- 메인 콘텐츠 영역 -->
       <div class="flex-1">
+        <?php if (function_exists('logo_url')): ?>
+        <?php 
+          $logo_src = logo_url();
+          $is_fallback = (strpos($logo_src, 'assets/images/') !== false);
+          if (!$is_fallback): 
+        ?>
         <div class="flex items-center gap-3 mb-4">
           <img
-            src="<?php echo app_url('assets/images/logo.png'); ?>"
+            src="<?php echo htmlspecialchars($logo_src); ?>"
             alt="<?php echo htmlspecialchars(org_logo_alt('푸터 로고')); ?>"
             class="object-fit-contain"
             style="height: 2rem; width: auto; max-width: 10rem;"
             onerror="this.style.display='none';" />
         </div>
+        <?php endif; ?>
+        <?php endif; ?>
         <div id="ft_info" class="text-sm leading-6">
           <!-- 정보 그리드 - 4열 구조로 재정렬 -->
           <div class="flex flex-wrap gap-x-8 gap-y-6 justify-between items-start w-full">

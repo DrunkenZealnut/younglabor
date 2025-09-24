@@ -24,7 +24,7 @@ return [
         ]
     ],
     'prefixes' => [
-        'modern' => $_ENV['DB_PREFIX'] ?? 'hopec_'
+        'modern' => $_ENV['DB_PREFIX'] ?? ''
     ],
     'query_log' => $_ENV['DB_QUERY_LOG'] ?? false
 ];

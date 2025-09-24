@@ -14,6 +14,16 @@ if (file_exists($envPath)) {
     }
 }
 
+// 조직정보 헬퍼 포함
+if (file_exists(dirname(__DIR__, 2) . '/includes/organization_helper.php')) {
+    require_once dirname(__DIR__, 2) . '/includes/organization_helper.php';
+}
+
+// 설정 헬퍼 포함 (get_table_name 함수 사용을 위해)
+if (file_exists(dirname(__DIR__, 2) . '/includes/config_helpers.php')) {
+    require_once dirname(__DIR__, 2) . '/includes/config_helpers.php';
+}
+
 // 간단한 env 함수 (없는 경우만)
 if (!function_exists('env')) {
     function env($key, $default = null) {
@@ -63,6 +73,54 @@ if (!function_exists('app_url')) {
 
 if (!function_exists('logo_url')) {
     function logo_url($fallback = 'logo.png') {
+        // admin 설정에서 site_logo 값 가져오기
+        try {
+            global $pdo;
+            $db_connection = null;
+            
+            if (isset($pdo)) {
+                $db_connection = $pdo;
+            } else {
+                // DB 연결이 없는 경우 직접 연결
+                $host = env('DB_HOST', 'localhost');
+                $dbname = env('DB_DATABASE', 'hopec');
+                $username = env('DB_USERNAME', 'root');
+                $password = env('DB_PASSWORD', '');
+                
+                $db_connection = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+                $db_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            }
+            
+            if ($db_connection) {
+                $stmt = $db_connection->prepare("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'site_logo'");
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($result && !empty($result['setting_value'])) {
+                    // 상대 경로로 저장된 경우 절대 URL로 변환
+                    $logo_path = $result['setting_value'];
+                    if (!preg_match('/^https?:\/\//', $logo_path)) {
+                        // BASE_PATH를 고려한 URL 생성
+                        $base_path = env('BASE_PATH', '');
+                        $logo_url = $base_path . '/' . ltrim($logo_path, '/');
+                        
+                        // 브라우저 캐시 방지를 위해 파일 수정 시간을 쿼리 파라미터로 추가
+                        $file_path = $_SERVER['DOCUMENT_ROOT'] . $logo_url;
+                        if (file_exists($file_path)) {
+                            $logo_url .= '?v=' . filemtime($file_path);
+                        }
+                        
+                        return $logo_url;
+                    }
+                    return $logo_path;
+                }
+            }
+        } catch (Exception $e) {
+            // DB 오류 시 fallback 사용
+            error_log("logo_url() DB error: " . $e->getMessage());
+        }
+        
+        // fallback: 기본 이미지 경로
         return app_url('assets/images/' . $fallback);
     }
 }
@@ -211,12 +269,37 @@ $communityLinks = [
         <a href="<?php echo app_url(''); ?>" 
            class="d-flex align-items-center text-decoration-none"
            aria-label="홈페이지 메인으로 이동">
+          <?php 
+            $logo_src = logo_url();
+            // 로고가 fallback인 경우 (DB에 로고가 없는 경우) 사이트명을 표시
+            $is_fallback = (strpos($logo_src, 'assets/images/') !== false);
+            if (!$is_fallback): 
+          ?>
           <img
-            src="<?php echo app_url('assets/images/logo.png'); ?>"
+            src="<?php echo htmlspecialchars($logo_src); ?>"
             alt="<?php echo htmlspecialchars(org_logo_alt('로고')); ?>"
             class="object-fit-contain"
             style="height: 3.5rem; width: auto; max-width: 14rem;"
             onerror="this.style.display='none';" />
+          <?php else: ?>
+          <?php
+            // 사이트명 가져오기
+            $site_name = '희망씨'; // 기본값
+            try {
+              if ($pdo) {
+                $stmt = $pdo->prepare("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'site_name'");
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($result && !empty($result['setting_value'])) {
+                  $site_name = $result['setting_value'];
+                }
+              }
+            } catch (Exception $e) {
+              // DB 오류 시 기본값 사용
+            }
+          ?>
+          <span class="text-forest-600 fw-bold fs-4"><?php echo htmlspecialchars($site_name); ?></span>
+          <?php endif; ?>
         </a>
       </div>
 

@@ -95,8 +95,8 @@ return [
         'username' => '',
         'password' => '',
         'from' => [
-            'address' => 'noreply@hopec.org',
-            'name' => '사단법인 희망씨'
+            'address' => 'admin@younglabor.kr',
+            'name' => '청년노동자인권센터'
         ]
     ],
     

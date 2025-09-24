@@ -65,7 +65,7 @@ class DatabaseManager
      * 테이블명 반환 (접두사 포함)
      */
     public static function getTableName($table) {
-        $prefix = env('DB_PREFIX', 'hopec_');
+        $prefix = env('DB_PREFIX', '');
         return $prefix . $table;
     }
     
