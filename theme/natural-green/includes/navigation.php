@@ -556,7 +556,6 @@ document.addEventListener('DOMContentLoaded', function() {
         header.style.right = '0px';
         header.style.zIndex = '1050';
         header.style.width = '100%';
-        console.log('🔧 헤더 위치 강제 고정 완료');
     }
 
     // 드롭다운 메뉴 호버 기능
@@ -643,12 +642,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 모바일 서브메뉴 토글 기능 - 간단하고 직접적인 방법
-    console.log('🎯 모바일 서브메뉴 초기화 시작');
-    
-    // 1초 후에 모바일 메뉴 이벤트 설정 (모든 요소 로드 완료 후)
-    setTimeout(function() {
-        // 모든 모바일 메뉴 버튼에 직접 클릭 이벤트 추가
+    // 모바일 서브메뉴 토글 기능 - 최적화된 버전
+    function initMobileSubmenus() {
         document.addEventListener('click', function(event) {
             const target = event.target.closest('[data-section]');
             if (!target) return;
@@ -660,41 +655,27 @@ document.addEventListener('DOMContentLoaded', function() {
             const submenu = document.getElementById('mm-section-' + sectionId);
             const chevron = target.querySelector('[data-lucide="chevron-down"]');
             
-            console.log('🔄 클릭 감지:', sectionId, submenu ? '✅' : '❌');
-            
             if (submenu) {
                 const isVisible = submenu.style.display === 'block';
                 
                 if (isVisible) {
-                    // 닫기
                     submenu.style.display = 'none';
                     target.setAttribute('aria-expanded', 'false');
                     if (chevron) chevron.style.transform = 'rotate(0deg)';
-                    console.log('📴 서브메뉴 닫음:', sectionId);
                 } else {
-                    // 열기
                     submenu.style.display = 'block';
                     target.setAttribute('aria-expanded', 'true');
                     if (chevron) chevron.style.transform = 'rotate(180deg)';
-                    console.log('📂 서브메뉴 열음:', sectionId);
                 }
-            } else {
-                console.log('⚠️ 서브메뉴 없음:', 'mm-section-' + sectionId);
-                // DOM 구조 확인
-                const allSubmenus = document.querySelectorAll('[id^="mm-section-"]');
-                console.log('📋 존재하는 서브메뉴들:', Array.from(allSubmenus).map(el => el.id));
             }
         });
-        
-        console.log('📱 모바일 서브메뉴 이벤트 리스너 등록 완료');
-        
-        // 현재 DOM 상태 확인
-        const buttons = document.querySelectorAll('[data-section]');
-        const submenus = document.querySelectorAll('[id^="mm-section-"]');
-        console.log('🔍 버튼 개수:', buttons.length, '서브메뉴 개수:', submenus.length);
-        
-    }, 1500); // 1.5초 지연으로 확실한 로딩 대기
+    }
     
-    console.log('🍿 Natural Green 네비게이션 로드 완료 - 드롭다운 수:', dropdownItems.length);
+    // DOM 로드 후 즉시 초기화 (지연 시간 제거)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMobileSubmenus);
+    } else {
+        initMobileSubmenus();
+    }
 });
 </script>

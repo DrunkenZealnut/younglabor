@@ -132,76 +132,8 @@ if (file_exists($themeHome)) {
         </div>
     </main>
     
-    <style>
-    .main-content {
-        padding: 2rem 0;
-    }
-    
-    .hero-section {
-        text-align: center;
-        padding: 3rem 0;
-        margin-bottom: 2rem;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 0.5rem;
-    }
-    
-    .hero-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #333;
-        margin-bottom: 1rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.2rem;
-        color: #666;
-        margin-bottom: 0;
-    }
-    
-    .content-section {
-        padding: 2rem 0;
-    }
-    
-    .notice-section {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        margin-top: 2rem;
-    }
-    
-    .notice-list {
-        list-style: none;
-        padding: 0;
-    }
-    
-    .notice-list li {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #e9ecef;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .notice-list li:last-child {
-        border-bottom: none;
-    }
-    
-    .notice-list a {
-        color: #333;
-        text-decoration: none;
-        flex: 1;
-    }
-    
-    .notice-list a:hover {
-        color: #007bff;
-    }
-    
-    .notice-list .date {
-        font-size: 0.875rem;
-        color: #999;
-        margin-left: 0.5rem;
-    }
-    </style>
+    <!-- 홈페이지 폴백 전용 스타일 -->
+    <link rel="stylesheet" href="<?= app_url('css/pages/home-fallback.css') ?>">
     <?php
 }
 

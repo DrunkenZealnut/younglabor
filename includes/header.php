@@ -46,33 +46,42 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>" />
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>" />
+    <!-- Critical CSS - 우선 로딩 -->
+    <?php
+    // Natural Green 단일 테마 CSS 로드 (Critical CSS)
+    renderNaturalGreenTheme();
+    ?>
+    
+    <!-- Pre-connect for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS - 핵심 레이아웃 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Non-critical CSS - 지연 로딩 -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"></noscript>
     
-    <!-- Remodal CSS (팝업 라이브러리) -->
-    <link rel="stylesheet" href="<?= $siteUrl ?>/js/remodal/remodal.css">
-    <link rel="stylesheet" href="<?= $siteUrl ?>/js/remodal/remodal-default-theme.css">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin="anonymous">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous"></noscript>
     
-    <!-- Remodal JavaScript (팝업 라이브러리) -->
-    <script src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"></noscript>
     
-    <!-- Tailwind CSS -->
+    <!-- 팝업 CSS - 지연 로딩 -->
+    <link rel="preload" href="<?= $siteUrl ?>/js/remodal/remodal.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="<?= $siteUrl ?>/js/remodal/remodal-default-theme.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- JavaScript - 비동기 로딩 -->
+    <script async src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script async src="https://unpkg.com/lucide@latest"></script>
+    <script async src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
+    
+    <!-- Tailwind CSS - 개발용 (프로덕션에서는 제거 권장) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <?php
-    // Natural Green 단일 테마 CSS 로드
-    renderNaturalGreenTheme();
-    
     // 색상 오버라이드 시스템 (완전 선택적)
     @include_once __DIR__ . '/color-override-loader.php';
     ?>
