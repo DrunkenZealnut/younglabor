@@ -78,8 +78,45 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <script async src="https://unpkg.com/lucide@latest"></script>
     <script async src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
     
-    <!-- Tailwind CSS - 개발용 (프로덕션에서는 제거 권장) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS 로딩 시스템 -->
+    <?php
+    // 안전한 조건부 로딩 시스템
+    $use_optimized = false;
+    
+    // 1. URL 파라미터로 테스트 모드 활성화
+    if (isset($_GET['optimized']) && $_GET['optimized'] == '1') {
+        $use_optimized = true;
+    }
+    
+    // 2. 긴급 복구 시스템 - 이 파일이 있으면 무조건 CDN 사용
+    if (file_exists(__DIR__ . '/EMERGENCY_FALLBACK.txt')) {
+        $use_optimized = false;
+    }
+    
+    // 3. 개발/관리자 모드 (추후 확장용)
+    if (defined('ADMIN_MODE') && ADMIN_MODE === true) {
+        // $use_optimized = true; // 관리자용 테스트 시 활성화
+    }
+    ?>
+    
+    <?php if ($use_optimized && file_exists(__DIR__ . '/../css/tailwind-optimized.css')): ?>
+        <!-- 최적화된 Tailwind CSS -->
+        <link rel="stylesheet" href="<?= $siteUrl ?>/css/tailwind-optimized.css?v=<?= filemtime(__DIR__ . '/../css/tailwind-optimized.css') ?>">
+        <!-- 최적화 모드 표시 (개발용) -->
+        <?php if (isset($_GET['debug'])): ?>
+            <div style="position: fixed; top: 0; right: 0; background: #10b981; color: white; padding: 5px 10px; z-index: 9999; font-size: 12px;">
+                Optimized CSS Active
+            </div>
+        <?php endif; ?>
+    <?php else: ?>
+        <!-- 기존 CDN 방식 (안전한 기본값) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <?php if (isset($_GET['debug'])): ?>
+            <div style="position: fixed; top: 0; right: 0; background: #ef4444; color: white; padding: 5px 10px; z-index: 9999; font-size: 12px;">
+                CDN Mode Active
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
     
     <?php
     // 색상 오버라이드 시스템 (완전 선택적)

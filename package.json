@@ -1,0 +1,19 @@
+{
+  "name": "hopec-tailwind-optimization",
+  "version": "1.0.0",
+  "description": "Tailwind CSS optimization for HOPEC website",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./css/tailwind-optimized.css",
+    "build-watch": "tailwindcss -i ./src/input.css -o ./css/tailwind-optimized.css --watch",
+    "build-production": "tailwindcss -i ./src/input.css -o ./css/tailwind-optimized.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "local"
+  },
+  "author": "HOPEC Development Team",
+  "license": "ISC"
+}
