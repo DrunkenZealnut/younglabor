@@ -30,13 +30,20 @@ try {
     }
 
     // 첨부파일
-    $attachments_data = DatabaseManager::select(
-        'SELECT bf_no, bf_source, bf_file, bf_filesize, board_type as file_board_type 
-         FROM " . get_table_name('post_files') . " 
-         WHERE wr_id = ? 
-         ORDER BY bf_no ASC',
-        [$postId]
-    );
+    $attachments_data = [];
+    try {
+        $attachments_data = DatabaseManager::select(
+            'SELECT bf_no, bf_source, bf_file, bf_filesize, board_type as file_board_type 
+             FROM ' . get_table_name('post_files') . ' 
+             WHERE wr_id = ? 
+             ORDER BY bf_no ASC',
+            [$postId]
+        );
+    } catch (Exception $e) {
+        error_log('첨부파일 조회 오류 (nepal_view.php): ' . $e->getMessage());
+        // 첨부파일 오류는 치명적이지 않으므로 빈 배열로 계속 진행
+        $attachments_data = [];
+    }
     
     $attachments = [];
     foreach ($attachments_data as $f) {

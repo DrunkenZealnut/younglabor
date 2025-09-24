@@ -208,7 +208,7 @@ $communityLinks = [
 ];
 ?>
 
-<header class="bg-white border-bottom sticky-top z-50 shadow-sm backdrop-blur-md" style="background-color: rgba(255, 255, 255, 0.95); border-color: var(--border);" role="banner">
+<header class="bg-white border-bottom shadow-sm backdrop-blur-md" id="main-header" style="background-color: rgba(255, 255, 255, 0.95); border-color: var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1050;" role="banner">
   <div class="container-xl px-3">
     <div class="d-flex align-items-center h-100" style="min-height: 5rem;">
       <!-- 로고 -->
@@ -298,7 +298,7 @@ $communityLinks = [
 </header>
 
 <!-- 모바일 메뉴 패널 -->
-<div id="mobileMenu" class="d-md-none fixed-top bg-white z-50 d-none" role="dialog" aria-modal="true" aria-labelledby="mobileMenuTitle" style="inset: 0; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px);">
+<div id="mobileMenu" class="d-md-none fixed-top bg-white d-none" role="dialog" aria-modal="true" aria-labelledby="mobileMenuTitle" style="inset: 0; background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); z-index: 1060;">
   <div class="d-flex align-items-center justify-content-between px-4 py-3 border-bottom" style="border-color: var(--border);">
     <h2 id="mobileMenuTitle" class="text-lg text-forest-600">메뉴</h2>
     <button type="button" id="mobileMenuClose" class="d-inline-flex align-items-center justify-content-center rounded text-forest-600" style="width: 2.5rem; height: 2.5rem;" aria-label="메뉴 닫기">
@@ -360,6 +360,30 @@ $communityLinks = [
 </div>
 
 <style>
+/* Fixed 헤더를 위한 body padding 조정 */
+body {
+    padding-top: 5rem !important; /* 헤더 높이만큼 padding 추가 */
+}
+
+@media (max-width: 767px) {
+    body {
+        padding-top: 4rem !important; /* 모바일에서는 헤더 높이가 작으므로 4rem */
+    }
+}
+
+/* Fixed 헤더가 항상 최상단에 고정되도록 보장 */
+#main-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1050 !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    transition: all 0.3s ease !important;
+}
+
 /* 네비게이션 메뉴 스타일 - 반응형 개선 */
 .nav-button-hover {
     padding: 0.5rem 0.75rem !important;
@@ -385,7 +409,7 @@ $communityLinks = [
 .dropdown-menu {
     background-color: var(--natural-50);
     border: 1px solid var(--border);
-    z-index: 1050 !important;
+    z-index: 1055 !important; /* 헤더(1050)보다 높게 설정 */
     max-width: 250px;
     white-space: nowrap;
 }
@@ -506,8 +530,36 @@ $communityLinks = [
 </style>
 
 <script>
-// 드롭다운 메뉴 호버 기능 (header에서 이동)
+// Fixed 헤더 스크롤 이벤트 처리
+window.addEventListener('scroll', function() {
+    const header = document.getElementById('main-header');
+    if (header) {
+        // 스크롤 위치에 관계없이 헤더가 항상 최상단에 고정되도록 보장
+        if (window.scrollY > 0) {
+            header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+            header.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
+        } else {
+            header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+            header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+        }
+    }
+});
+
+// 페이지 로드 시 헤더 위치 초기화
 document.addEventListener('DOMContentLoaded', function() {
+    // 헤더 위치 강제 고정
+    const header = document.getElementById('main-header');
+    if (header) {
+        header.style.position = 'fixed';
+        header.style.top = '0px';
+        header.style.left = '0px';
+        header.style.right = '0px';
+        header.style.zIndex = '1050';
+        header.style.width = '100%';
+        console.log('🔧 헤더 위치 강제 고정 완료');
+    }
+
+    // 드롭다운 메뉴 호버 기능
     const dropdownItems = document.querySelectorAll('.dropdown, .nav-item.dropdown');
     
     dropdownItems.forEach(function(dropdown) {
