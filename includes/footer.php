@@ -2,7 +2,7 @@
     
     <?php 
     // Natural Green 테마 푸터 포함
-    $naturalGreenFooter = HOPEC_BASE_PATH . '/theme/natural-green/includes/footer.php';
+    $naturalGreenFooter = PROJECT_BASE_PATH . '/theme/natural-green/includes/footer.php';
     if (file_exists($naturalGreenFooter)) {
         include $naturalGreenFooter;
     }

@@ -2,18 +2,13 @@
 // Navigation only (without HTML document structure)
 // Natural Green 테마의 네비게이션 헤더 부분만 포함
 
-// 기본 경로 설정
-if (!defined('HOPEC_BASE_PATH')) {
-    define('HOPEC_BASE_PATH', dirname(__DIR__, 3));
-}
-
 // 환경변수 로드
-$envPath = HOPEC_BASE_PATH . '/bootstrap/env.php';
+$envPath = PROJECT_BASE_PATH . '/bootstrap/env.php';
 if (file_exists($envPath)) {
     require_once $envPath;
     // .env 파일 로드 시도
     try {
-        load_env(HOPEC_BASE_PATH . '/.env');
+        load_env(PROJECT_BASE_PATH . '/.env');
     } catch (Exception $e) {
         // .env 파일이 없어도 계속 진행
     }

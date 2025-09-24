@@ -121,7 +121,7 @@ if (!function_exists('include_template')) {
             extract($variables, EXTR_SKIP);
         }
         
-        $templateFile = HOPEC_BASE_PATH . '/templates/' . $template . '.php';
+        $templateFile = PROJECT_BASE_PATH . '/templates/' . $template . '.php';
         
         if (file_exists($templateFile)) {
             include $templateFile;

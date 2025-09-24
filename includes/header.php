@@ -148,7 +148,7 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:m-4 focus:p-2 focus:bg-white focus:border focus:border-gray-400">본문 바로가기</a>
     <?php 
     // Natural Green 네비게이션 헤더만 포함 (HTML 문서 구조는 제외)
-    $naturalGreenNavigation = HOPEC_BASE_PATH . '/theme/natural-green/includes/navigation.php';
+    $naturalGreenNavigation = PROJECT_BASE_PATH . '/theme/natural-green/includes/navigation.php';
     
     if (file_exists($naturalGreenNavigation)) {
         try {

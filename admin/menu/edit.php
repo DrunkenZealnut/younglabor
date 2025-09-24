@@ -12,7 +12,7 @@ $id = (int)$_GET['id'];
 
 // 상위 메뉴 목록 불러오기 (현재 메뉴 제외)
 try {
-  $stmt = $pdo->prepare("SELECT id, title FROM hopec_menu WHERE parent_id IS NULL AND id != ? ORDER BY sort_order");
+  $stmt = $pdo->prepare("SELECT id, title FROM " . table('menu') . " WHERE parent_id IS NULL AND id != ? ORDER BY sort_order");
   $stmt->execute([$id]);
   $parentMenus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -25,7 +25,7 @@ try {
   // 이미 사용 중인 게시판 ID 목록 조회 (현재 메뉴 제외)
   $usedBoardsStmt = $pdo->prepare("
       SELECT board_id 
-      FROM hopec_menu 
+      FROM " . table('menu') . " 
       WHERE board_id IS NOT NULL AND id != ?
   ");
   $usedBoardsStmt->execute([$id]);
@@ -42,7 +42,7 @@ try {
 
 // 메뉴 정보 불러오기
 try {
-  $stmt = $pdo->prepare("SELECT * FROM hopec_menu WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT * FROM " . table('menu') . " WHERE id = ?");
   $stmt->execute([$id]);
   $menu = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->exec("SET NAMES utf8mb4");
     
     // 준비된 명령문 사용
-    $stmt = $pdo->prepare("UPDATE hopec_menu SET 
+    $stmt = $pdo->prepare("UPDATE " . table('menu') . " SET 
                             parent_id = :parent_id, 
                             title = :title, 
                             slug = :slug, 

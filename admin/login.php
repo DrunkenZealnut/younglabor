@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
     
     // 직접 인증 처리 (bootstrap 우회)
     try {
-        $stmt = $pdo->prepare("SELECT * FROM hopec_admin_user WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT * FROM " . table('admin_user') . " WHERE username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
         

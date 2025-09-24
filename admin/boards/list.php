@@ -12,14 +12,14 @@ $type = $_GET['type'] ?? '';
 $is_active = $_GET['is_active'] ?? '';
 $search = trim($_GET['search'] ?? '');
 
-// 게시판 목록을 hopec_boards 테이블에서 조회
+// 게시판 목록을 boards 테이블에서 조회
 try {
-    $sql = "SELECT * FROM hopec_boards ORDER BY sort_order ASC, id ASC";
+    $sql = "SELECT * FROM " . table('boards') . " ORDER BY sort_order ASC, id ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // board_type별 게시글 수 조회 (hopec_posts 테이블에서)
+    // board_type별 게시글 수 조회 (posts 테이블에서)
     $board_type_mapping = [
         '재정보고' => 'finance_reports',
         '공지사항' => 'notices', 
@@ -34,7 +34,7 @@ try {
         $board_type = $board_type_mapping[$board['board_name']] ?? $board['board_type'] ?? null;
         if ($board_type) {
             try {
-                $count_query = "SELECT COUNT(*) as post_count FROM hopec_posts WHERE board_type = ?";
+                $count_query = "SELECT COUNT(*) as post_count FROM " . table('posts') . " WHERE board_type = ?";
                 $stmt = $pdo->prepare($count_query);
                 $stmt->execute([$board_type]);
                 $count_result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -49,7 +49,7 @@ try {
     unset($board);
     
 } catch (PDOException $e) {
-    // hopec_boards 테이블이 없는 경우 fallback
+    // boards 테이블이 없는 경우 fallback
     $boards = [];
 }
 

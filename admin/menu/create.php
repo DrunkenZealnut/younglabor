@@ -4,7 +4,7 @@ require_once '../bootstrap.php';
 
 // 상위 메뉴 목록 불러오기
 try {
-  $stmt = $pdo->query("SELECT id, title FROM hopec_menu WHERE parent_id IS NULL ORDER BY sort_order");
+  $stmt = $pdo->query("SELECT id, title FROM " . table('menu') . " WHERE parent_id IS NULL ORDER BY sort_order");
   $parentMenus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   $parentMenus = [];
@@ -14,11 +14,11 @@ try {
 // 게시판 목록 불러오기
 try {
   // 이미 사용 중인 게시판 ID 목록 조회
-  $usedBoardsStmt = $pdo->query("SELECT board_id FROM hopec_menu WHERE board_id IS NOT NULL");
+  $usedBoardsStmt = $pdo->query("SELECT board_id FROM " . table('menu') . " WHERE board_id IS NOT NULL");
   $usedBoards = $usedBoardsStmt->fetchAll(PDO::FETCH_COLUMN);
   
   // 모든 활성 게시판 목록 조회
-  $stmt = $pdo->query("SELECT id, board_name FROM hopec_boards WHERE is_active = 1 ORDER BY board_name");
+  $stmt = $pdo->query("SELECT id, board_name FROM " . table('boards') . " WHERE is_active = 1 ORDER BY board_name");
   $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   $boards = [];
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->exec("SET NAMES utf8mb4");
     
     // 준비된 명령문 사용
-    $stmt = $pdo->prepare("INSERT INTO hopec_menu (parent_id, title, slug, position, sort_order, is_active, board_id)
+    $stmt = $pdo->prepare("INSERT INTO " . table('menu') . " (parent_id, title, slug, position, sort_order, is_active, board_id)
                           VALUES (:parent_id, :title, :slug, :position, :sort_order, :is_active, :board_id)");
     
     $result = $stmt->execute([

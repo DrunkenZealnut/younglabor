@@ -17,7 +17,7 @@ $id = (int)$_GET['id'];
 
 try {
   // 1. 메뉴가 존재하는지 확인
-  $stmt = $pdo->prepare("SELECT id, title FROM hopec_menu WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT id, title FROM " . table('menu') . " WHERE id = ?");
   $stmt->execute([$id]);
   $menu = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -27,12 +27,12 @@ try {
   }
   
   // 2. 하위 메뉴가 있는지 확인 (외래 키 제약으로 자동 삭제되지만, 사용자에게 알려주기 위해)
-  $stmt = $pdo->prepare("SELECT COUNT(*) FROM hopec_menu WHERE parent_id = ?");
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM " . table('menu') . " WHERE parent_id = ?");
   $stmt->execute([$id]);
   $childCount = $stmt->fetchColumn();
   
   // 3. 메뉴 삭제 (하위 메뉴도 외래키 제약 조건의 CASCADE 옵션으로 자동 삭제됨)
-  $stmt = $pdo->prepare("DELETE FROM hopec_menu WHERE id = ?");
+  $stmt = $pdo->prepare("DELETE FROM " . table('menu') . " WHERE id = ?");
   $result = $stmt->execute([$id]);
   
   if ($result) {

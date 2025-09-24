@@ -15,9 +15,25 @@ if (!defined('_GNUBOARD_')) {
     define('_GNUBOARD_', true);
 }
 
-// 기본 경로 설정
-if (!defined('HOPEC_BASE_PATH')) {
-    define('HOPEC_BASE_PATH', dirname(__DIR__, 2));
+// 프로젝트 헬퍼 로드
+$projectHelperPath = dirname(__DIR__, 2) . '/includes/project_helpers.php';
+if (file_exists($projectHelperPath)) {
+    require_once $projectHelperPath;
+    // 동적으로 BASE_PATH 상수 정의
+    $constantName = define_project_base_path(__DIR__, 2);
+} else {
+    // Ensure PROJECT_BASE_PATH is defined by bootstrap fallback
+    if (!defined('PROJECT_BASE_PATH')) {
+        // If project_helpers.php is not available, load manually and define
+        $helpersPath = dirname(__DIR__, 2) . '/includes/project_helpers.php';
+        if (file_exists($helpersPath)) {
+            require_once $helpersPath;
+            define_project_base_path(__DIR__, 2);
+        } else {
+            // Last resort fallback
+            define('PROJECT_BASE_PATH', dirname(__DIR__, 2));
+        }
+    }
 }
 
 // env 함수 정의 (bootstrap/env.php가 로드되지 않은 경우)
@@ -38,8 +54,8 @@ if (!function_exists('env')) {
         static $envLoaded = false;
         if (!$envLoaded) {
             $envFiles = [
-                HOPEC_BASE_PATH . '/.env',
-                HOPEC_BASE_PATH . '/.env.local',
+                PROJECT_BASE_PATH . '/.env',
+                PROJECT_BASE_PATH . '/.env.local',
                 dirname(__DIR__, 2) . '/.env'
             ];
             
@@ -74,7 +90,7 @@ if (!function_exists('env')) {
 try {
     // DatabaseManager 로드
     if (!class_exists('DatabaseManager')) {
-        require_once HOPEC_BASE_PATH . '/includes/DatabaseManager.php';
+        require_once PROJECT_BASE_PATH . '/includes/DatabaseManager.php';
     }
     
     // 데이터베이스 설정 구성
@@ -119,8 +135,8 @@ try {
 
 // 헬퍼 함수들 로드
 $helperFiles = [
-    HOPEC_BASE_PATH . '/includes/template_helpers.php',
-    HOPEC_BASE_PATH . '/includes/theme_helpers.php'
+    PROJECT_BASE_PATH . '/includes/template_helpers.php',
+    PROJECT_BASE_PATH . '/includes/theme_helpers.php'
 ];
 
 foreach ($helperFiles as $helperFile) {
@@ -139,7 +155,7 @@ if (!function_exists('get_natural_green_theme')) {
         static $theme = null;
         if ($theme === null) {
             if (!class_exists('NaturalGreenThemeLoader')) {
-                require_once HOPEC_BASE_PATH . '/includes/NaturalGreenThemeLoader.php';
+                require_once PROJECT_BASE_PATH . '/includes/NaturalGreenThemeLoader.php';
             }
             $theme = getNaturalGreenTheme();
         }

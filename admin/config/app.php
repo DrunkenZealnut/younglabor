@@ -6,16 +6,16 @@
 
 return [
     // 애플리케이션 정보
-    'name' => env('APP_NAME', 'HopeC Admin'),
+    'name' => env('APP_NAME', '청년노동자인권센터'),
     'env' => env('APP_ENV', 'local'),
     'debug' => env('APP_DEBUG', false) === 'true',
-    'url' => env('APP_URL', 'http://hopec.local:8012'),
+    'url' => env('APP_URL', 'http://localhost:8080/younglabor'),
     
     // 기본 사이트 설정
     'defaults' => [
-        'site_name' => env('DEFAULT_SITE_NAME', '사단법인 희망씨'),
-        'site_description' => env('DEFAULT_SITE_DESCRIPTION', 'Administrative Management System'),
-        'admin_email' => env('DEFAULT_ADMIN_EMAIL', 'admin@hopec.com'),
+        'site_name' => env('DEFAULT_SITE_NAME', '청년노동자인권센터'),
+        'site_description' => env('DEFAULT_SITE_DESCRIPTION', '청년노동자는 평등하다'),
+        'admin_email' => env('DEFAULT_ADMIN_EMAIL', 'admin@younglabor.kr'),
     ],
     
     // 보안 설정
@@ -34,14 +34,14 @@ return [
     
     // 테마 설정
     'theme' => [
-        'primary_color' => env('THEME_PRIMARY_COLOR', '#1fff9e'),
-        'secondary_color' => env('THEME_SECONDARY_COLOR', '#6610f2'),
-        'success_color' => env('THEME_SUCCESS_COLOR', '#28a745'),
-        'info_color' => env('THEME_INFO_COLOR', '#17a2b8'),
+        'primary_color' => env('THEME_PRIMARY_COLOR', '#f2f4f8'),
+        'secondary_color' => env('THEME_SECONDARY_COLOR', '#7493af'),
+        'success_color' => env('THEME_SUCCESS_COLOR', '#32e290'),
+        'info_color' => env('THEME_INFO_COLOR', '#2f6a46'),
         'warning_color' => env('THEME_WARNING_COLOR', '#ffc107'),
         'danger_color' => env('THEME_DANGER_COLOR', '#dc3545'),
         'light_color' => env('THEME_LIGHT_COLOR', '#f8f9fa'),
-        'dark_color' => env('THEME_DARK_COLOR', '#343a40'),
+        'dark_color' => env('THEME_DARK_COLOR', '#212529'),
     ],
     
     // 로깅 설정

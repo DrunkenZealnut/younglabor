@@ -308,7 +308,7 @@ if (!function_exists('authenticateAdmin')) {
         global $pdo;
         
         try {
-            $stmt = $pdo->prepare("SELECT * FROM hopec_admin_user WHERE username = ?");
+            $stmt = $pdo->prepare("SELECT * FROM " . table('admin_user') . " WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch();
             

@@ -100,9 +100,9 @@ data/
 # 데이터베이스 관련 파일들
 # ========================================
 # SQL 백업 파일들
-hopec_backup_*.sql
+younglabor*.sql
 *_backup_*.sql
-backup_hopec_*.sql
+backup_younglabor_*.sql
 
 # 데이터베이스 덤프 파일들
 *.dump

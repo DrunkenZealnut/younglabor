@@ -14,10 +14,11 @@ if (version_compare(PHP_VERSION, '7.4.0', '<')) {
 error_reporting(E_ALL);
 ini_set('display_errors', 0); // 기본적으로는 숨김 (환경에 따라 변경)
 
-// 기본 상수 정의
-if (!defined('HOPEC_BASE_PATH')) {
-    define('HOPEC_BASE_PATH', dirname(__DIR__));
-}
+// 프로젝트 헬퍼 로드
+require_once dirname(__DIR__) . '/includes/project_helpers.php';
+
+// 동적으로 BASE_PATH 상수 정의
+$constantName = define_project_base_path(__DIR__, 1);
 
 // 업로드 경로 헬퍼 함수
 if (!function_exists('get_upload_path')) {
@@ -25,7 +26,7 @@ if (!function_exists('get_upload_path')) {
      * 물리적 업로드 경로 반환 (BASE_PATH와 UPLOAD_PATH 조합)
      */
     function get_upload_path() {
-        $base_path = rtrim(HOPEC_BASE_PATH, '/');
+        $base_path = rtrim(PROJECT_BASE_PATH, '/');
         $upload_path = env('UPLOAD_PATH', 'data/file');
         return $base_path . '/' . ltrim($upload_path, '/');
     }
@@ -98,7 +99,7 @@ if ($isLocalEnv && env('ERROR_DISPLAY', false)) {
 }
 
 // 설정 파일들 로드
-$configPath = HOPEC_BASE_PATH . '/config';
+$configPath = PROJECT_BASE_PATH . '/config';
 $configs = [];
 
 // 설정 파일들을 배열로 로드
@@ -124,12 +125,12 @@ if (env('SECURITY_HEADERS', true)) {
 spl_autoload_register(function($className) {
     // 네임스페이스별 디렉토리 매핑
     $namespaceMap = [
-        'Hopec\\' => HOPEC_BASE_PATH . '/src/',
-        'Hopec\\Core\\' => HOPEC_BASE_PATH . '/src/Core/',
-        'Hopec\\Database\\' => HOPEC_BASE_PATH . '/src/Database/',
-        'Hopec\\Security\\' => HOPEC_BASE_PATH . '/src/Security/',
-        'Hopec\\Menu\\' => HOPEC_BASE_PATH . '/src/Menu/',
-        'Hopec\\Board\\' => HOPEC_BASE_PATH . '/src/Board/',
+        'Hopec\\' => PROJECT_BASE_PATH . '/src/',
+        'Hopec\\Core\\' => PROJECT_BASE_PATH . '/src/Core/',
+        'Hopec\\Database\\' => PROJECT_BASE_PATH . '/src/Database/',
+        'Hopec\\Security\\' => PROJECT_BASE_PATH . '/src/Security/',
+        'Hopec\\Menu\\' => PROJECT_BASE_PATH . '/src/Menu/',
+        'Hopec\\Board\\' => PROJECT_BASE_PATH . '/src/Board/',
     ];
     
     foreach ($namespaceMap as $namespace => $directory) {
@@ -143,7 +144,7 @@ spl_autoload_register(function($className) {
     }
     
     // 기본 includes 디렉토리에서 클래스 파일 찾기
-    $classFile = HOPEC_BASE_PATH . '/includes/' . $className . '.php';
+    $classFile = PROJECT_BASE_PATH . '/includes/' . $className . '.php';
     if (file_exists($classFile)) {
         require_once $classFile;
     }
@@ -159,7 +160,7 @@ $coreClasses = [
 ];
 
 foreach ($coreClasses as $class) {
-    $classFile = HOPEC_BASE_PATH . '/includes/' . $class . '.php';
+    $classFile = PROJECT_BASE_PATH . '/includes/' . $class . '.php';
     if (file_exists($classFile)) {
         require_once $classFile;
     }
@@ -180,7 +181,7 @@ $helperFiles = [
 ];
 
 foreach ($helperFiles as $helper) {
-    $helperFile = HOPEC_BASE_PATH . '/includes/' . $helper;
+    $helperFile = PROJECT_BASE_PATH . '/includes/' . $helper;
     if (file_exists($helperFile)) {
         require_once $helperFile;
     }
@@ -205,7 +206,7 @@ if (class_exists('DatabaseManager')) {
 } else {
     // DatabaseManager가 없는 경우 직접 PDO 연결
     try {
-        $dbConfigPath = HOPEC_BASE_PATH . '/data/dbconfig.php';
+        $dbConfigPath = PROJECT_BASE_PATH . '/data/dbconfig.php';
         if (file_exists($dbConfigPath)) {
             include $dbConfigPath;
             

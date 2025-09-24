@@ -320,7 +320,7 @@ class SecurityManager
             'request_uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
         ];
         
-        $logFile = HOPEC_BASE_PATH . '/' . ($loggingConfig['log_file'] ?? 'logs/security.log');
+        $logFile = PROJECT_BASE_PATH . '/' . ($loggingConfig['log_file'] ?? 'logs/security.log');
         $logDir = dirname($logFile);
         
         if (!is_dir($logDir)) {

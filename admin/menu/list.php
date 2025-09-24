@@ -15,7 +15,7 @@ $parent_id = isset($_GET['parent_id']) ? (int)$_GET['parent_id'] : null;
 
 // 상위 메뉴 목록 불러오기 (필터 드롭다운용)
 try {
-  $parentQuery = "SELECT id, title FROM hopec_menu WHERE parent_id IS NULL ORDER BY sort_order";
+  $parentQuery = "SELECT id, title FROM " . table('menu') . " WHERE parent_id IS NULL ORDER BY sort_order";
   $parentStmt = $pdo->query($parentQuery);
   $parentMenus = $parentStmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
@@ -25,9 +25,9 @@ try {
 // 쿼리 빌더 시작
 $query = "
     SELECT m.*, p.title as parent_title, b.board_name as board_name
-    FROM hopec_menu m
-    LEFT JOIN hopec_menu p ON m.parent_id = p.id
-    LEFT JOIN hopec_boards b ON m.board_id = b.id
+    FROM " . table('menu') . " m
+    LEFT JOIN " . table('menu') . " p ON m.parent_id = p.id
+    LEFT JOIN " . table('boards') . " b ON m.board_id = b.id
     WHERE 1=1
 ";
 $params = [];
@@ -77,7 +77,7 @@ try {
 $parentMenuInfo = null;
 if ($parent_id !== null) {
   try {
-    $stmt = $pdo->prepare("SELECT title FROM hopec_menu WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT title FROM " . table('menu') . " WHERE id = ?");
     $stmt->execute([$parent_id]);
     $parentMenuInfo = $stmt->fetch(PDO::FETCH_ASSOC);
   } catch (PDOException $e) {

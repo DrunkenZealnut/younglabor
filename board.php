@@ -4,10 +4,9 @@
  * URL: /board/list/{id}/ -> board.php?id={id}
  */
 
-// 기본 설정 로드
-if (!defined('HOPEC_BASE_PATH')) {
-    define('HOPEC_BASE_PATH', __DIR__);
-}
+// Ensure PROJECT_BASE_PATH is defined by bootstrap
+require_once __DIR__ . '/includes/project_helpers.php';
+define_project_base_path(__DIR__, 0);
 
 // 게시판 ID 확인
 $board_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
@@ -82,7 +81,7 @@ if (isset($board_routes[$board_id])) {
     $target_url = $board_routes[$board_id];
     
     // 파일이 존재하는지 확인
-    $file_path = HOPEC_BASE_PATH . $target_url;
+    $file_path = PROJECT_BASE_PATH . $target_url;
     if (file_exists($file_path)) {
         // 영구 리다이렉트 (301) - SEO를 위해
         header("Location: $target_url", true, 301);
@@ -91,12 +90,12 @@ if (isset($board_routes[$board_id])) {
 }
 
 // 헤더 포함
-include_once HOPEC_BASE_PATH . '/includes/header.php';
+include_once PROJECT_BASE_PATH . '/includes/header.php';
 
 echo '<main id="main" role="main" class="flex-1">' . "\n";
 
 // 기본 게시판 템플릿으로 라우팅 (board_templates 사용)
-$template_path = HOPEC_BASE_PATH . '/board_templates/board_list.php';
+$template_path = PROJECT_BASE_PATH . '/board_templates/board_list.php';
 if (file_exists($template_path)) {
     // 게시판 정보를 전역 변수로 설정
     $currentBoard = $board;
@@ -150,5 +149,5 @@ if (file_exists($template_path)) {
 echo '</main>' . "\n";
 
 // 푸터 포함
-include_once HOPEC_BASE_PATH . '/includes/footer.php';
+include_once PROJECT_BASE_PATH . '/includes/footer.php';
 ?>
