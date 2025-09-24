@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summernote 링크 미리보기 에디터</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .note-toolbar .note-btn-group, .note-popover .note-btn-group { display: flex; }
+        .note-editor.note-frame {
+             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+             border-radius: 0.75rem;
+             border: 1px solid #e5e7eb;
+        }
+        .preview-card { cursor: default; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* 게시글 보기 페이지 스타일 추가 */
+        .post-view-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-3xl mx-auto p-4 sm:p-6 md:p-8">
+
+        <!-- Editor View -->
+        <div id="editor-container">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="mb-4">
+                    <h1 class="text-2xl font-bold text-gray-800">Summernote 링크 미리보기 에디터</h1>
+                    <p class="text-gray-500 mt-1">뉴스 기사 링크를 아래 에디터에 붙여넣어 보세요.</p>
+                </div>
+                
+                <div id="summernote-editor"></div>
+
+                <div class="flex justify-end mt-4">
+                    <button id="complete-btn" class="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-colors duration-300">
+                        완료
+                    </button>
+                </div>
+            </div>
+            <footer class="text-center text-gray-500 mt-6 text-sm">
+                <p>&copy; 2025 Link Preview Editor. All rights reserved.</p>
+            </footer>
+        </div>
+
+        <!-- Post View (Initially Hidden) -->
+        <div id="post-view-container" style="display: none;">
+             <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+                    <h1 class="text-3xl font-bold text-gray-800">게시글 보기</h1>
+                    <a href="#" id="edit-btn" class="px-6 py-2 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 transition-colors duration-300">
+                        수정하기
+                    </a>
+                </div>
+                <div id="post-content-display" class="post-view-container">
+                    <!-- Content will be injected here -->
+                </div>
+            </div>
+             <footer class="text-center text-gray-500 mt-6 text-sm">
+                <p>&copy; 2025 Link Preview Editor. All rights reserved.</p>
+            </footer>
+        </div>
+    </div>
+
+    <template id="previewCardTemplate">
+        <div class="preview-card my-4 bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300" contenteditable="false">
+            <div class="flex flex-col sm:flex-row items-stretch">
+                <div class="sm:w-1/3">
+                    <img class="preview-image w-full h-48 sm:h-full object-cover" src="https://placehold.co/400x300/e2e8f0/4a5568?text=Image" alt="미리보기 이미지" onerror="this.onerror=null;this.src='https://placehold.co/400x300/e2e8f0/4a5568?text=Image';">
+                </div>
+                <div class="flex-1 p-4 flex flex-col justify-between">
+                    <div>
+                        <h3 class="preview-title font-bold text-lg text-gray-800 line-clamp-2">제목을 불러오는 중...</h3>
+                        <p class="preview-description text-gray-600 mt-2 text-sm line-clamp-3">설명을 불러오는 중...</p>
+                    </div>
+                    <a class="preview-link text-gray-400 text-xs mt-3 truncate block" href="#" target="_blank" rel="noopener noreferrer">출처 링크</a>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#summernote-editor').summernote({
+                placeholder: '이곳에 뉴스 링크를 붙여넣으세요...',
+                tabsize: 2,
+                height: 400,
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link', 'picture']],
+                    ['view', ['fullscreen', 'codeview', 'help']]
+                ],
+                callbacks: {
+                    onPaste: function(e) {
+                        const bufferText = ((e.originalEvent.clipboardData || window.clipboardData).getData('text'));
+                        const urlRegex = /(https?:\/\/[^\s]+)/g;
+                        const urls = bufferText.match(urlRegex);
+
+                        if (urls && urls.length > 0) {
+                            e.preventDefault();
+                            createLinkPreview(urls[0]);
+                        }
+                    }
+                }
+            });
+
+            // '완료' 버튼 클릭 이벤트 핸들러
+            $('#complete-btn').on('click', function() {
+                const postContent = $('#summernote-editor').summernote('code');
+                localStorage.setItem('summernotePostContent', postContent);
+
+                // 게시글 보기 화면에 콘텐츠 삽입
+                $('#post-content-display').html(postContent);
+
+                // 에디터 화면 숨기고 게시글 보기 화면 표시
+                $('#editor-container').hide();
+                $('#post-view-container').show();
+            });
+
+            // '수정하기' 버튼 클릭 이벤트 핸들러
+            $('#edit-btn').on('click', function(e) {
+                e.preventDefault();
+                // 게시글 보기 화면 숨기고 에디터 화면 표시
+                $('#post-view-container').hide();
+                $('#editor-container').show();
+            });
+        });
+
+        async function createLinkPreview(url) {
+            const loadingId = 'loading-' + Date.now();
+            const loadingHtml = `<div id="${loadingId}" class="p-4 text-center text-gray-500">"${url}" 링크 정보를 불러오는 중입니다...</div>`;
+            $('#summernote-editor').summernote('pasteHTML', loadingHtml);
+
+            try {
+                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+                if (!response.ok) {
+                    throw new Error(`정보를 불러오는데 실패했습니다. (상태 코드: ${response.status})`);
+                }
+
+                const htmlContent = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlContent, 'text/html');
+                const getMetaTag = (prop) => doc.querySelector(`meta[property='${prop}']`)?.getAttribute('content') || '';
+
+                const previewData = {
+                    title: getMetaTag('og:title') || doc.querySelector('title')?.textContent || '제목 없음',
+                    description: getMetaTag('og:description') || '설명 없음',
+                    image: getMetaTag('og:image') || '',
+                    url: getMetaTag('og:url') || url,
+                };
+                
+                const template = document.getElementById('previewCardTemplate');
+                const cardClone = template.content.cloneNode(true);
+                const cardElement = cardClone.querySelector('.preview-card');
+
+                cardElement.querySelector('.preview-image').src = previewData.image;
+                cardElement.querySelector('.preview-title').textContent = previewData.title;
+                cardElement.querySelector('.preview-description').textContent = previewData.description;
+                const linkElement = cardElement.querySelector('.preview-link');
+                linkElement.href = previewData.url;
+                linkElement.textContent = previewData.url;
+
+                const editorBody = $('.note-editable');
+                const loadingNode = editorBody.find(`#${loadingId}`);
+                
+                if (loadingNode.length > 0) {
+                    loadingNode.replaceWith(cardElement);
+                } else {
+                     $('#summernote-editor').summernote('insertNode', cardElement);
+                }
+
+            } catch (error) {
+                console.error('Error fetching link preview:', error);
+                const editorBody = $('.note-editable');
+                const loadingNode = editorBody.find(`#${loadingId}`);
+                if (loadingNode.length > 0) {
+                    loadingNode.text(`'${url}' 링크 미리보기를 생성할 수 없습니다.`);
+                    setTimeout(() => loadingNode.remove(), 3000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

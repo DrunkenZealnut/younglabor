@@ -1,0 +1,303 @@
+# ========================================
+# Admin 폴더 보안 설정 .htaccess 템플릿
+# 용도: admin 폴더를 다른 프로젝트에 이식할 때 사용
+# 사용법: 이 파일을 admin/.htaccess로 복사하여 사용
+# ========================================
+
+# 디렉터리 리스팅 비활성화
+Options -Indexes
+Options -ExecCGI
+Options -MultiViews
+
+# 서버 정보 숨기기
+ServerTokens Prod
+ServerSignature Off
+
+# ========================================
+# 보안 파일 접근 차단
+# ========================================
+
+# 시스템 파일 보호
+<FilesMatch "\.(log|sql|env|config|ini|bak|backup|tmp|temp)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP 설정 파일 보호 (직접 접근 차단)
+<FilesMatch "^(bootstrap|auth|db|templates_bridge|config)\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 숨김 파일 보호
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 압축 파일 보호
+<FilesMatch "\.(zip|tar|gz|rar|7z)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# README, 문서 파일 보호
+<FilesMatch "\.(md|txt|readme)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ========================================
+# 보안 헤더 설정
+# ========================================
+
+<IfModule mod_headers.c>
+    # XSS 보호
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # MIME 스니핑 방지
+    Header always set X-Content-Type-Options nosniff
+    
+    # 클릭재킹 방지
+    Header always set X-Frame-Options DENY
+    
+    # 참조자 정책
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # HTTPS 강제 (HTTPS 사용시만)
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # 권한 정책
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+</IfModule>
+
+# ========================================
+# PHP 보안 설정
+# ========================================
+
+<IfModule mod_php8.c>
+    # 에러 표시 비활성화 (운영 환경)
+    php_flag display_errors Off
+    php_flag display_startup_errors Off
+    php_flag log_errors On
+    
+    # 파일 업로드 제한
+    php_value upload_max_filesize 5M
+    php_value post_max_size 5M
+    php_value max_execution_time 30
+    php_value max_input_time 30
+    php_value memory_limit 128M
+    
+    # 위험한 함수 비활성화
+    php_value disable_functions "exec,passthru,shell_exec,system,proc_open,popen,curl_exec,curl_multi_exec,parse_ini_file,show_source,file_get_contents"
+    
+    # 세션 보안
+    php_flag session.cookie_httponly On
+    php_flag session.use_strict_mode On
+    php_value session.cookie_samesite Strict
+</IfModule>
+
+# ========================================
+# 접근 제한 (IP 기반)
+# ========================================
+
+# 특정 IP만 허용 (필요시 주석 해제)
+# <RequireAll>
+#     Require ip 192.168.1.0/24
+#     Require ip 10.0.0.0/8
+#     Require ip your.office.ip.here
+# </RequireAll>
+
+# 특정 IP 차단 (필요시)
+# <RequireAll>
+#     Require all granted
+#     Require not ip 192.168.1.100
+#     Require not ip 10.0.0.50
+# </RequireAll>
+
+# ========================================
+# HTTP 메소드 제한
+# ========================================
+
+# 필요한 메소드만 허용
+<LimitExcept GET POST PUT DELETE>
+    Order deny,allow
+    Deny from all
+</LimitExcept>
+
+# OPTIONS 메소드 차단 (필요시)
+<Limit OPTIONS>
+    Order deny,allow
+    Deny from all
+</Limit>
+
+# ========================================
+# 브루트포스 공격 방지
+# ========================================
+
+# 로그인 페이지 접근 제한 (mod_evasive 또는 fail2ban 권장)
+<Files "login.php">
+    # 1분간 최대 5회 접근 허용
+    <IfModule mod_evasive24.c>
+        DOSPageCount 5
+        DOSPageInterval 60
+        DOSSiteCount 50
+        DOSSiteInterval 60
+        DOSBlockingPeriod 3600
+    </IfModule>
+</Files>
+
+# ========================================
+# 캐시 설정
+# ========================================
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # CSS, JS 파일
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    
+    # 이미지 파일
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/ico "access plus 1 month"
+    ExpiresByType image/icon "access plus 1 month"
+    ExpiresByType text/ico "access plus 1 month"
+    ExpiresByType application/ico "access plus 1 month"
+    
+    # 폰트 파일
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    
+    # HTML, PHP 파일은 캐시하지 않음
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/x-php "access plus 0 seconds"
+</IfModule>
+
+# ========================================
+# 압축 설정
+# ========================================
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/atom_xml
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ========================================
+# URL 재작성 (필요시)
+# ========================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # HTTPS 강제 리다이렉트 (필요시 주석 해제)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # www 제거 (필요시)
+    # RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    # RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+    
+    # 슬래시 추가
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} !(.*)/$
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1/ [L,R=301]
+    
+    # 의심스러운 요청 차단
+    RewriteCond %{QUERY_STRING} (\<|%3C).*script.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2}) [OR]
+    RewriteCond %{QUERY_STRING} base64_encode.*\(.*\) [OR]
+    RewriteCond %{QUERY_STRING} (\<|%3C).*iframe.*(\>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} php://
+    RewriteRule .* - [F]
+    
+    # User-Agent 기반 차단 (봇 차단)
+    RewriteCond %{HTTP_USER_AGENT} ^$ [OR]
+    RewriteCond %{HTTP_USER_AGENT} "libwww-perl" [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} "wget" [NC,OR]
+    RewriteCond %{HTTP_USER_AGENT} "python" [NC]
+    RewriteRule .* - [F]
+</IfModule>
+
+# ========================================
+# 에러 페이지 사용자 정의
+# ========================================
+
+ErrorDocument 403 /admin/errors/403.html
+ErrorDocument 404 /admin/errors/404.html
+ErrorDocument 500 /admin/errors/500.html
+
+# 에러 페이지에서 서버 정보 숨기기
+<Files "error_log">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# ========================================
+# 추가 보안 설정
+# ========================================
+
+# 빈 User-Agent 차단
+<IfModule mod_setenvif.c>
+    SetEnvIfNoCase User-Agent "^$" bad_bot
+    SetEnvIfNoCase User-Agent "curl" bad_bot
+    SetEnvIfNoCase User-Agent "wget" bad_bot
+    SetEnvIfNoCase User-Agent "libwww-perl" bad_bot
+    SetEnvIfNoCase User-Agent "python" bad_bot
+    SetEnvIfNoCase User-Agent "nikto" bad_bot
+    SetEnvIfNoCase User-Agent "sqlmap" bad_bot
+    
+    Order allow,deny
+    Allow from all
+    Deny from env=bad_bot
+</IfModule>
+
+# Hotlinking 방지 (이미지 도용 방지)
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^http(s)?://(www\.)?yourdomain.com [NC]
+    RewriteRule \.(jpg|jpeg|png|gif)$ - [NC,F,L]
+</IfModule>
+
+# ========================================
+# 주석 및 추가 정보
+# ========================================
+
+# 이 .htaccess 파일은 admin 시스템 보안을 위한 기본 설정입니다.
+# 
+# 추가 보안 강화를 위해 고려할 사항:
+# 1. WAF (Web Application Firewall) 도입
+# 2. fail2ban을 이용한 자동 IP 차단
+# 3. ModSecurity 보안 모듈 설치
+# 4. SSL/TLS 인증서 적용
+# 5. 정기적인 보안 업데이트
+# 
+# 성능 최적화를 위한 추가 고려사항:
+# 1. Redis/Memcached 캐싱 시스템
+# 2. CDN 도입
+# 3. 데이터베이스 쿼리 최적화
+# 4. 이미지 최적화 및 WebP 변환
+# 
+# 모니터링 권장사항:
+# 1. 접근 로그 정기 분석
+# 2. 에러 로그 모니터링
+# 3. 성능 지표 추적
+# 4. 보안 이벤트 알림 설정

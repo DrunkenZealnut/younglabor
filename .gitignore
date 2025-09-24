@@ -1,0 +1,290 @@
+# ========================================
+# HopeC 프로젝트 - Git 무시 파일
+# ========================================
+
+# ========================================
+# 시스템 파일
+# ========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========================================
+# 환경 설정 파일 (보안상 중요!)
+# ========================================
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+.env.staging
+.env.development
+.env.testing
+
+# 서브 폴더의 환경 설정 파일들
+admin/.env
+admin/.env.*
+!admin/.env.example
+board_templates/.env
+board_templates/.env.*
+!board_templates/.env.example
+
+# ========================================
+# 데이터베이스 파일
+# ========================================
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+data/backup/
+data/dbconfig.php
+
+# 하지만 스키마나 샘플 데이터는 포함
+!*schema*.sql
+!*sample*.sql
+!create_*.sql
+!setup_*.sql
+!manual_*.sql
+
+# ========================================
+# 로그 파일
+# ========================================
+*.log
+logs/
+storage/logs/*
+!storage/logs/.gitkeep
+error.log
+access.log
+debug_log.txt
+
+# ========================================
+# 캐시 및 임시 파일
+# ========================================
+data/cache/
+data/tmp/
+data/session/
+uploads/theme_cache/
+temp/
+tmp/
+cache/
+*.tmp
+*.temp
+*~
+*.bak
+*.backup
+
+# ========================================
+# 업로드 파일 (용량이 클 수 있음)
+# ========================================
+data/file/
+data/member/
+data/member_image/
+data/content/
+data/editor/
+uploads/*
+!uploads/.gitkeep
+!uploads/README.md
+
+# 하지만 기본 이미지나 샘플은 포함할 수 있음
+!uploads/default/
+!uploads/samples/
+
+# ========================================
+# Data 폴더 무시 (대용량 파일 및 민감한 데이터)
+# ========================================
+data/
+!data/.gitkeep
+!data/README.md
+
+# ========================================
+# 데이터베이스 관련 파일들
+# ========================================
+# SQL 백업 파일들
+hopec_backup_*.sql
+*_backup_*.sql
+backup_hopec_*.sql
+
+# 데이터베이스 덤프 파일들
+*.dump
+*.dmp
+database_dump_*
+
+# MySQL 로그 파일들
+mysql-bin.*
+mysql-slow.log
+*.err
+
+# ========================================
+# 개발 및 테스트 파일들
+# ========================================
+# 테스트 파일들
+test.php
+test-*.php
+*-test.php
+debug.php
+debug-*.php
+
+# CSS/테마 테스트 파일들
+comprehensive-css-test.php
+simple-css-test.php
+test-critical-css.php
+test-layout-fix.php
+test-optimized-*.php
+theme-test*.php
+comprehensive_theme_diagnosis.php
+
+# ========================================
+# 관리자/설정 관련 임시 파일들
+# ========================================
+# 관리자 설정 백업
+admin/config/*.backup
+admin/settings/*.backup
+
+# 팝업 관련 임시 파일
+popup-debug.php
+
+# ========================================
+# 빌드 및 최적화 관련
+# ========================================
+# CSS 최적화 관련
+regenerate_*.php
+clear-css-cache.php
+force_cache_clear.php
+css-optimization-demo.php
+
+# 테마 관련 임시 파일
+generate_unified_theme.php
+fix_*_theme_*.php
+update_theme_*.php
+verify_*.php
+
+# ========================================
+# 설치 및 설정 관련
+# ========================================
+# 설치 관련 임시 파일
+template-setup*.php
+setup_*.php
+direct_db_setup.php
+manual_installation_guide.md
+
+# 데이터베이스 관리 파일들
+db_manager.php
+*_table_*.php
+
+# ========================================
+# 언어/지역 관련 임시 파일
+# ========================================
+korean-labor-day-history.html
+
+# ========================================
+# 에디터 관련
+# ========================================
+ckeditor4-test.html
+
+# ========================================
+# 백업 파일 및 폴더
+# ========================================
+# backup이 포함된 모든 파일과 폴더
+backup/
+backup*/
+*backup/
+*backup*
+backup_*
+*_backup*
+*.backup
+
+# 백업 압축 파일들
+20*.tar.gz
+*.zip.backup
+backup*.zip
+*backup*.tar.gz
+*backup*.tar
+*backup*.rar
+
+# 날짜 형식 백업 파일들
+*_20[0-9][0-9]*
+backup_20[0-9][0-9]*
+
+# ========================================
+# 개발 도구 설정
+# ========================================
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+
+# ========================================
+# 테스트 및 디버그 파일
+# ========================================
+test_*.php
+debug_*.php
+*_test.php
+*_debug.php
+
+# 테스트 폴더 전체 (개발용 테스트 파일들)
+test/
+
+# 하지만 공식 테스트 파일은 포함
+!tests/
+
+# ========================================
+# 브라우저 자동화 도구
+# ========================================
+.playwright-mcp/
+
+# ========================================
+# Node.js (사용하는 경우)
+# ========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================================
+# Composer (PHP 패키지 매니저 사용시)
+# ========================================
+vendor/
+composer.lock
+
+# ========================================
+# 배포 관련
+# ========================================
+build_*/
+deploy_*/
+
+# ========================================
+# 서버 설정 (민감할 수 있음)
+# ========================================
+.htaccess.backup
+.htaccess.dev
+.htaccess.production
+config.backup.php
+*vhost*.txt
+*xampp*.txt
+port-*-check.txt
+
+# ========================================
+# 중복 및 임시 파일들
+# ========================================
+*" 2"
+*" 3"
+*" 4"
+*" 5"
+* 2.php
+* 3.php
+* 2/
+* 3/
+
+# ========================================
+# 언어별 임시 파일
+# ========================================
+# 한글 이름 임시 폴더
+무제*/
+
+# ========================================
+# 기타
+# ========================================
+naver*.html
+favicon.ico.backup
+robots.txt.backup

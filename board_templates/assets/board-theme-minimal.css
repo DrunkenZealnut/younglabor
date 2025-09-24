@@ -1,0 +1,156 @@
+/* 
+ * Minimal Board Theme CSS - 500 에러 폴백용
+ * 기본적인 스타일만 포함하여 오류 가능성 최소화
+ */
+
+:root {
+    /* 기본 Natural-Green 색상 */
+    --theme-primary: #3a7a4e;
+    --theme-secondary: #16a34a;
+    --theme-success: #65a30d;
+    --theme-warning: #a3e635;
+    --theme-error: #dc2626;
+    --theme-info: #3b82f6;
+    --theme-light: #fafffe;
+    --theme-dark: #1f3b2d;
+    
+    /* 기본 스타일 */
+    --theme-bg-primary: var(--theme-light);
+    --theme-text-primary: var(--theme-dark);
+    --theme-border-light: #e2e8f0;
+}
+
+.board-surface {
+    background-color: var(--theme-bg-primary);
+    color: var(--theme-text-primary);
+    border: 1px solid var(--theme-border-light);
+    border-radius: 8px;
+}
+
+.board-surface .btn-primary {
+    background-color: var(--theme-primary) !important;
+    color: white !important;
+    border: 1px solid var(--theme-primary) !important;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.board-surface .btn-primary:hover {
+    opacity: 0.9;
+}
+
+.board-surface a {
+    color: var(--theme-primary);
+    text-decoration: none;
+}
+
+.board-surface a:hover {
+    text-decoration: underline;
+}
+
+/* 페이지네이션 스타일 */
+.board-surface nav a {
+    color: var(--theme-text-primary);
+    text-decoration: none;
+}
+
+.board-surface nav a:hover {
+    background-color: var(--theme-border-light) !important;
+    text-decoration: none;
+}
+
+/* 현재 페이지는 primary 색상으로 */
+.board-surface nav a[style*="background-color"] {
+    background-color: var(--theme-primary) !important;
+    color: white !important;
+}
+
+.board-surface nav a[style*="background-color"]:hover {
+    opacity: 0.9;
+}
+
+/* ===== 텍스트 세로 출력 방지 ===== */
+/* 가로쓰기 강제 - 모든 텍스트가 세로로 나오는 문제 해결 */
+.board-surface,
+.board-surface *,
+.board-surface table,
+.board-surface th,
+.board-surface td,
+.board-surface thead,
+.board-surface tbody {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+}
+
+/* 테이블 헤더와 셀의 텍스트 방향 명시적 설정 */
+.board-surface table th,
+.board-surface table td,
+.board-surface thead th,
+.board-surface tbody td {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+    white-space: normal !important;
+}
+
+/* 폰트 관련 설정 - 한글 폰트 우선순위 */
+.board-surface {
+    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
+    font-feature-settings: normal !important;
+}
+
+/* 텍스트 정렬 관련 */
+.board-surface .text-center {
+    text-align: center !important;
+}
+
+.board-surface .text-left {
+    text-align: left !important;
+}
+
+.board-surface .text-right {
+    text-align: right !important;
+}
+
+/* ===== Basic형 게시판 칼럼 너비 조정 ===== */
+/* 번호 칼럼과 조회 칼럼을 각각 74px(64px+10px)로 고정 */
+.board-surface table th[style*="width: 74px"],
+.board-surface table td[style*="width: 74px"] {
+    width: 74px !important;
+    min-width: 74px !important;
+    max-width: 74px !important;
+}
+
+/* 제목 칼럼이 나머지 공간을 차지하도록 설정 */
+.board-surface table {
+    table-layout: fixed !important;
+}
+
+.board-surface table th:nth-child(2),
+.board-surface table td:nth-child(2) {
+    width: auto !important;
+    min-width: 0 !important;
+}
+
+/* ===== 페이징 스타일 ===== */
+/* 현재 페이지 번호 배경색을 테마 메인 색상으로 설정 */
+.board-surface nav span {
+    background-color: var(--theme-primary, var(--primary, #84cc16)) !important;
+    color: white !important;
+    padding: 9px 13px !important;
+}
+
+/* 페이징 링크 호버 효과 */
+.board-surface nav a:hover {
+    background-color: var(--theme-bg-hover, #f8fafc) !important;
+    color: var(--theme-primary, var(--primary, #84cc16)) !important;
+}
+
+/* 페이징 링크 크기 통일 */
+.board-surface nav a {
+    padding: 9px 13px !important;
+}
+

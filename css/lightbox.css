@@ -1,0 +1,293 @@
+/**
+ * HOPEC 통합 라이트박스 CSS 스타일
+ * gallery_view.php, nepal_view.php, newsletter_view.php 공용 스타일
+ * 
+ * @version 1.0.0
+ * @author HOPEC Development Team
+ * @description 기존 프로젝트 테마 색상과 통일된 라이트박스 스타일
+ */
+
+/* ==========================================================================
+   라이트박스 모달 컨테이너
+   ========================================================================== */
+#lightbox {
+  /* Tailwind CSS 클래스로 구현되는 기본 스타일:
+   * .fixed .inset-0 .bg-black .bg-opacity-90 .z-50 
+   * .hidden .items-center .justify-center .p-4
+   */
+}
+
+/* ==========================================================================
+   라이트박스 이미지
+   ========================================================================== */ 
+#lightbox-image {
+  /* Tailwind CSS 클래스로 구현:
+   * .max-w-full .max-h-full .object-contain
+   */
+}
+
+/* ==========================================================================
+   라이트박스 네비게이션 버튼
+   ========================================================================== */
+.lightbox-nav-btn {
+  background-color: var(--forest-600, #2b5d3e);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 3rem; /* 48px */
+  height: 3rem; /* 48px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem; /* 24px */
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+}
+
+.lightbox-nav-btn:hover {
+  background-color: var(--forest-700, #1f3b2d);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-nav-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* 이전 버튼 위치 */
+#prev-btn {
+  left: 1rem; /* 16px */
+}
+
+/* 다음 버튼 위치 */
+#next-btn {
+  right: 1rem; /* 16px */
+}
+
+/* 비활성화된 버튼 스타일 */
+.lightbox-nav-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.lightbox-nav-btn.disabled:hover {
+  background-color: var(--forest-600, #2b5d3e);
+  transform: translateY(-50%) scale(1);
+}
+
+/* ==========================================================================
+   라이트박스 닫기 버튼
+   ========================================================================== */
+.lightbox-close-btn {
+  background-color: var(--error, #ef4444);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem; /* 40px */
+  height: 2.5rem; /* 40px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem; /* 20px */
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  position: absolute;
+  top: 1rem; /* 16px */
+  right: 1rem; /* 16px */
+  z-index: 30;
+}
+
+.lightbox-close-btn:hover {
+  background-color: var(--danger, #dc2626);
+  transform: scale(1.1);
+}
+
+.lightbox-close-btn:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   라이트박스 카운터
+   ========================================================================== */
+.lightbox-counter {
+  background-color: rgba(47, 91, 62, 0.9); /* forest-600 with opacity */
+  color: white;
+  padding: 0.25rem 0.75rem; /* px-3 py-1 */
+  border-radius: 9999px; /* rounded-full */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  position: absolute;
+  bottom: 1rem; /* 16px */
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 20;
+}
+
+/* ==========================================================================
+   갤러리 썸네일 스타일
+   ========================================================================== */
+.lightbox-thumbnail {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.lightbox-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+.lightbox-thumbnail img {
+  width: 100%;
+  height: 8rem; /* h-32 */
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+/* ==========================================================================
+   반응형 스타일
+   ========================================================================== */
+@media (max-width: 768px) {
+  .lightbox-nav-btn {
+    width: 2.5rem; /* 40px */
+    height: 2.5rem; /* 40px */
+    font-size: 1.25rem; /* 20px */
+  }
+  
+  .lightbox-close-btn {
+    width: 2rem; /* 32px */
+    height: 2rem; /* 32px */
+    font-size: 1rem; /* 16px */
+    top: 0.5rem; /* 8px */
+    right: 0.5rem; /* 8px */
+  }
+  
+  #prev-btn {
+    left: 0.5rem; /* 8px */
+  }
+  
+  #next-btn {
+    right: 0.5rem; /* 8px */
+  }
+  
+  .lightbox-counter {
+    bottom: 0.5rem; /* 8px */
+    font-size: 0.75rem; /* text-xs */
+  }
+}
+
+/* ==========================================================================
+   키보드 접근성 스타일
+   ========================================================================== */
+.lightbox-nav-btn:focus,
+.lightbox-close-btn:focus {
+  outline: 2px solid var(--primary, #85E546);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   애니메이션 효과
+   ========================================================================== */
+#lightbox.show {
+  animation: lightbox-fade-in 0.3s ease-out;
+}
+
+#lightbox.hide {
+  animation: lightbox-fade-out 0.2s ease-in;
+}
+
+@keyframes lightbox-fade-in {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+@keyframes lightbox-fade-out {
+  from {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+  to {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+}
+
+#lightbox-image {
+  animation: lightbox-image-in 0.2s ease-out;
+}
+
+@keyframes lightbox-image-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================================
+   다크모드 지원 (향후 확장용)
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  .lightbox-counter {
+    background-color: rgba(31, 59, 45, 0.95); /* forest-700 with opacity */
+  }
+}
+
+/* ==========================================================================
+   인쇄 스타일 (라이트박스는 인쇄에서 제외)
+   ========================================================================== */
+@media print {
+  #lightbox {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   고대비 모드 지원
+   ========================================================================== */
+@media (prefers-contrast: high) {
+  .lightbox-nav-btn,
+  .lightbox-close-btn {
+    border: 2px solid currentColor;
+  }
+  
+  .lightbox-counter {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* ==========================================================================
+   모션 감소 설정 지원
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-nav-btn,
+  .lightbox-close-btn,
+  .lightbox-thumbnail,
+  .lightbox-thumbnail img,
+  #lightbox-image {
+    transition: none;
+    animation: none;
+  }
+  
+  .lightbox-nav-btn:hover,
+  .lightbox-close-btn:hover,
+  .lightbox-thumbnail:hover {
+    transform: none;
+  }
+}

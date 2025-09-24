@@ -1,0 +1,202 @@
+/* 기존 초록색 테마 (원본) */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 14px;
+  --background: #FEFEFE;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #6B9B37;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #6B9B37;
+  --muted: #F5F7F0;
+  --muted-foreground: #717182;
+  --accent: #E9F5DB;
+  --accent-foreground: #6B9B37;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(158, 212, 72, 0.15);
+  --input: transparent;
+  --input-background: #FEFEFE;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #6B9B37;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* ========================================
+   청색 테마 오버라이드 시작
+   초록색 테마를 청색으로 덮어쓰기
+   ======================================== */
+
+/* 라이트 모드 - 청색 테마로 덮어쓰기 */
+:root {
+  /* 초록색 → 청색 변환 */
+  --background: #fffef9 !important;  /* #FEFEFE → #fffef9 매우 연한 노란빛 배경 */
+  --primary: #fbbf24 !important;     /* #6B9B37 → #fbbf24 황금색 */
+  --secondary-foreground: #fbbf24 !important;  /* #6B9B37 → #fbbf24 황금색 */
+  --muted: #fef9e7 !important;       /* #F5F7F0 → #fef9e7 매우 연한 레몬색 */
+  --accent: #fef3c7 !important;      /* #E9F5DB → #fef3c7 연한 노랑 */
+  --accent-foreground: #fbbf24 !important;     /* #6B9B37 → #fbbf24 황금색 */
+  --border: rgba(251, 191, 36, 0.15) !important;  /* 초록색 투명도 → 황금색 투명도 */
+  --input-background: #fffef9 !important;  /* #FEFEFE → #fffef9 매우 연한 크림색 */
+  --sidebar-primary: #fbbf24 !important;   /* #6B9B37 → #fbbf24 황금색 */
+}
+
+/* 다크 모드 - 노란색 테마로 덮어쓰기 */
+.dark {
+  --sidebar-primary: #fde68a !important;  /* 다크모드에서는 밝은 노랑 */
+}
+
+/* 초록색 유틸리티 클래스를 노란색으로 오버라이드 */
+@layer utilities {
+  /* 초록색 그라디언트를 노란색으로 덮어쓰기 */
+  .gradient-primary {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%) !important;
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(135deg, #fffef9 0%, #fef9e7 100%) !important;
+  }
+  
+  .gradient-success {
+    background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%) !important;
+  }
+  
+  .gradient-warm {
+    background: linear-gradient(135deg, #fffef9 0%, #fef9e7 100%) !important;
+  }
+  
+  .gradient-natural {
+    background: linear-gradient(135deg, #fef9e7 0%, #fef3c7 50%, #fde68a 100%) !important;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(251, 191, 36, 0.15) !important;  /* 초록색 그림자 → 황금색 그림자 */
+  }
+  
+  /* 초록색 배경 클래스를 노란색으로 오버라이드 */
+  .bg-natural-50 {
+    background-color: #fffef9 !important;  /* #FEFEFE → #fffef9 매우 연한 크림 */
+  }
+  
+  .bg-natural-100 {
+    background-color: #fef9e7 !important;  /* #F5F7F0 → #fef9e7 레몬 크림 */
+  }
+  
+  .bg-natural-200 {
+    background-color: #fef3c7 !important;  /* #E9F5DB → #fef3c7 연한 노랑 */
+  }
+  
+  .bg-natural-300 {
+    background-color: #fde68a !important;  /* #D4E9B9 → #fde68a 밝은 노랑 */
+  }
+  
+  .bg-natural-400 {
+    background-color: #fbbf24 !important;  /* #B8D487 → #fbbf24 황금색 */
+  }
+  
+  /* 초록색 텍스트 클래스를 노란색으로 오버라이드 */
+  .text-forest-600 {
+    color: #facc15 !important;  /* #2D5016 → #facc15 진한 노랑 */
+  }
+  
+  .text-forest-700 {
+    color: #eab308 !important;  /* #1F3710 → #eab308 다크 골드 */
+  }
+  
+  .text-lime-500 {
+    color: #fde68a !important;  /* #9ED448 → #fde68a 밝은 노랑 */
+  }
+  
+  .text-lime-600 {
+    color: #fbbf24 !important;  /* #7FB93D → #fbbf24 황금색 */
+  }
+  
+  /* 초록색 보더 클래스를 노란색으로 오버라이드 */
+  .border-lime-200 {
+    border-color: #fef3c7 !important;  /* #D4E9B9 → #fef3c7 연한 노랑 */
+  }
+  
+  .border-lime-300 {
+    border-color: #fde68a !important;  /* #B8D487 → #fde68a 밝은 노랑 */
+  }
+}
+
+/* ========================================
+   추가 노란색 테마 유틸리티 클래스
+   (초록색 테마에 없던 노란색 전용 클래스들)
+   ======================================== */
+
+@layer utilities {
+  /* 노란색 전용 새로운 유틸리티 클래스 */
+  .bg-sky-50 { background-color: #fffef9; }
+  .bg-sky-100 { background-color: #fef9e7; }
+  .bg-sky-200 { background-color: #fef3c7; }
+  .bg-sky-300 { background-color: #fde68a; }
+  .bg-sky-400 { background-color: #fbbf24; }
+  
+  .text-blue-600 { color: #facc15; }
+  .text-blue-700 { color: #eab308; }
+  .text-sky-500 { color: #fde68a; }
+  .text-sky-600 { color: #fbbf24; }
+  
+  .border-blue-200 { border-color: #fef3c7; }
+  .border-blue-300 { border-color: #fde68a; }
+  
+  /* 추가 효과 클래스 (노란색 버전) */
+  .gradient-text-primary {
+    background: linear-gradient(135deg, #eab308, #fbbf24, #fde68a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(251, 191, 36, 0.12);
+  }
+  
+  .animate-bounce-slow { animation: bounce 3s infinite; }
+  .animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  
+  .floating-animation { animation: float 6s ease-in-out infinite; }
+  @keyframes float { 
+    0%, 100% { transform: translateY(0); } 
+    50% { transform: translateY(-20px); } 
+  }
+  
+  .card-glow { position: relative; overflow: hidden; }
+  .card-glow::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(253, 230, 138, 0.5), transparent);
+    transition: left 0.5s;
+  }
+  .card-glow:hover::before { left: 100%; }
+}

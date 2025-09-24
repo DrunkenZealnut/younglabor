@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>초간단 테스트</title>
+    <style>
+        .test-box {
+            width: 200px;
+            height: 200px;
+            border: 3px solid black;
+            background-color: red;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>초간단 색상 변경 테스트</h1>
+    
+    <div id="testBox" class="test-box">
+        테스트 박스
+    </div>
+    
+    <p id="result">결과가 여기에 표시됩니다</p>
+    
+    <script>
+    function changeColor(color, colorName) {
+        console.log(`${colorName} 변경 시작`);
+        const box = document.getElementById('testBox');
+        const result = document.getElementById('result');
+        
+        if (!box) {
+            console.error('testBox를 찾을 수 없습니다!');
+            result.textContent = 'ERROR: testBox를 찾을 수 없음';
+            return;
+        }
+        
+        if (!result) {
+            console.error('result를 찾을 수 없습니다!');
+            return;
+        }
+        
+        console.log('요소 찾기 성공, 색상 변경 시도:', color);
+        box.style.backgroundColor = color;
+        result.textContent = `${colorName}으로 변경 시도 완료`;
+        console.log(`${colorName} 변경 완료`);
+        
+        // 실제 적용된 색상 확인
+        setTimeout(() => {
+            const computed = window.getComputedStyle(box);
+            const actual = computed.backgroundColor;
+            console.log('실제 적용된 색상:', actual);
+            result.textContent += ` (실제: ${actual})`;
+        }, 10);
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded - 페이지 준비됨');
+        
+        // 버튼들을 동적으로 생성
+        const colors = [
+            { color: 'blue', name: '파란색' },
+            { color: 'yellow', name: '노란색' },
+            { color: 'green', name: '초록색' }
+        ];
+        
+        const result = document.getElementById('result');
+        
+        colors.forEach(colorInfo => {
+            const button = document.createElement('button');
+            button.textContent = `${colorInfo.name}으로 변경`;
+            button.onclick = () => changeColor(colorInfo.color, colorInfo.name);
+            result.parentNode.insertBefore(button, result);
+        });
+        
+        console.log('버튼 생성 완료');
+    });
+    </script>
+</body>
+</html>

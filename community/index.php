@@ -1,0 +1,5 @@
+<?php
+// community 디렉토리 기본 페이지 리디렉션
+header('Location: notice_view.php');
+exit;
+?>

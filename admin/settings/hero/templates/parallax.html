@@ -1,0 +1,33 @@
+<div style="height: 500px; background: url('https://images.unsplash.com/photo-1517849845537-4d257902454a?w=1200') center/cover fixed; position: relative; border-radius: 1.5rem; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)); display: flex; align-items: center; justify-content: center;">
+        <div style="text-align: center; color: white; padding: 20px; animation: fadeInUp 1s ease;">
+            <h1 style="font-size: 3.5rem; margin-bottom: 1.5rem; font-weight: bold; text-shadow: 3px 3px 8px rgba(0,0,0,0.8); letter-spacing: -1px;">
+                패럴랙스 히어로 섹션
+            </h1>
+            <p style="font-size: 1.8rem; margin-bottom: 2rem; text-shadow: 2px 2px 5px rgba(0,0,0,0.8); max-width: 800px;">
+                스크롤할 때 배경이 천천히 움직이며 깊이감을 제공합니다
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 40px; font-size: 1.1rem; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: transform 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    시작하기
+                </button>
+                <button style="background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); color: white; padding: 15px 40px; font-size: 1.1rem; border: 2px solid white; border-radius: 50px; cursor: pointer; font-weight: bold; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                    더 알아보기
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>

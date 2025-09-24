@@ -1,0 +1,14 @@
+@charset "utf-8";
+/* 기본 보드 스타일 - 존재하지 않는 경로 참조 제거 */
+
+:root{
+  --forest-700:#1f3b2d; --forest-600:#2b5d3e; --lime-500:#22c55e;
+}
+
+/* 타이포/컬러 보강 */
+body, .view_bo_con{font-family:"Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Malgun Gothic,sans-serif}
+#bo_v h1,#bo_v h2,#bo_v h3{color:var(--forest-700)}
+.btn, a{transition:color .2s ease, background-color .2s ease}
+.btn_b02{background:#22c55e;border-color:#16a34a}
+.btn_b02:hover{background:#16a34a}
+

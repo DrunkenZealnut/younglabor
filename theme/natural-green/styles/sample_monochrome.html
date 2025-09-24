@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>모노크롬 테마 샘플 페이지</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 모노크롬 테마 CSS -->
+    <link rel="stylesheet" href="basic_globals.css">
+    
+    <!-- 다크모드 토글 스크립트 -->
+    <script>
+        // 다크모드 초기화
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
+    
+    <style>
+        /* CSS 변수를 실제로 적용 */
+        body {
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+    </style>
+</head>
+<body class="min-h-screen transition-colors duration-300">
+    <!-- 헤더 -->
+    <header class="border-b" style="border-color: var(--border);">
+        <div class="container mx-auto px-4 py-4">
+            <nav class="flex items-center justify-between">
+                <div class="flex items-center space-x-8">
+                    <h1 class="text-2xl font-bold" style="color: var(--primary);">MONOCHROME</h1>
+                    <div class="hidden md:flex space-x-6">
+                        <a href="#" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">홈</a>
+                        <a href="#" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">소개</a>
+                        <a href="#" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">서비스</a>
+                        <a href="#" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors">문의</a>
+                    </div>
+                </div>
+                
+                <!-- 다크모드 토글 버튼 -->
+                <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <svg class="w-6 h-6 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"></path>
+                    </svg>
+                    <svg class="w-6 h-6 block dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 히어로 섹션 -->
+    <section class="py-20 gradient-secondary">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-5xl font-bold mb-6 gradient-text-primary">미니멀 디자인의 정수</h2>
+            <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                흑백의 조화로 만들어내는 깔끔하고 모던한 디자인. 
+                본질에 집중하는 미니멀리즘의 아름다움을 경험하세요.
+            </p>
+            <div class="flex gap-4 justify-center">
+                <button class="px-8 py-3 rounded-lg font-medium transition-all hover-lift" 
+                        style="background-color: var(--primary); color: var(--primary-foreground);">
+                    시작하기
+                </button>
+                <button class="px-8 py-3 rounded-lg font-medium border-2 transition-all hover:bg-gray-100 dark:hover:bg-gray-800" 
+                        style="border-color: var(--border);">
+                    더 알아보기
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 특징 카드 섹션 -->
+    <section class="py-16" style="background-color: var(--muted);">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12" style="color: var(--primary);">주요 특징</h3>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 카드 1 -->
+                <div class="glass-card rounded-xl p-6 card-glow hover-lift">
+                    <div class="w-12 h-12 rounded-lg mb-4 gradient-primary"></div>
+                    <h4 class="text-xl font-semibold mb-3">깔끔한 디자인</h4>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        불필요한 요소를 제거하고 핵심만 남긴 깨끗한 인터페이스
+                    </p>
+                </div>
+                
+                <!-- 카드 2 -->
+                <div class="glass-card rounded-xl p-6 card-glow hover-lift">
+                    <div class="w-12 h-12 rounded-lg mb-4 gradient-success"></div>
+                    <h4 class="text-xl font-semibold mb-3">높은 가독성</h4>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        명확한 대비와 적절한 여백으로 최상의 읽기 경험 제공
+                    </p>
+                </div>
+                
+                <!-- 카드 3 -->
+                <div class="glass-card rounded-xl p-6 card-glow hover-lift">
+                    <div class="w-12 h-12 rounded-lg mb-4 gradient-natural"></div>
+                    <h4 class="text-xl font-semibold mb-3">다크모드 지원</h4>
+                    <p class="text-gray-600 dark:text-gray-400">
+                        라이트/다크 모드를 완벽하게 지원하는 적응형 디자인
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 그라디언트 배경 섹션 -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">그라디언트 스타일</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="h-32 rounded-lg gradient-primary shadow-mono-md"></div>
+                <div class="h-32 rounded-lg gradient-secondary shadow-mono-md"></div>
+                <div class="h-32 rounded-lg gradient-success shadow-mono-md"></div>
+                <div class="h-32 rounded-lg gradient-warm shadow-mono-md"></div>
+                <div class="h-32 rounded-lg gradient-natural shadow-mono-md"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 색상 팔레트 섹션 -->
+    <section class="py-16" style="background-color: var(--accent);">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">색상 팔레트</h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
+                <div class="text-center">
+                    <div class="bg-gray-50 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 50</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-100 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 100</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-200 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 200</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-300 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 300</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-400 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 400</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-500 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 500</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-600 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 600</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-700 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 700</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-800 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 800</span>
+                </div>
+                <div class="text-center">
+                    <div class="bg-gray-900 h-20 rounded-lg shadow-mono-sm mb-2"></div>
+                    <span class="text-xs text-gray-600">Gray 900</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 컴포넌트 예시 섹션 -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">UI 컴포넌트</h3>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- 폼 예시 -->
+                <div class="glass-card rounded-xl p-6">
+                    <h4 class="text-xl font-semibold mb-4">폼 요소</h4>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">이메일</label>
+                            <input type="email" class="w-full px-4 py-2 rounded-lg border" 
+                                   style="background-color: var(--input-background); border-color: var(--border);"
+                                   placeholder="example@email.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">메시지</label>
+                            <textarea class="w-full px-4 py-2 rounded-lg border" rows="3"
+                                     style="background-color: var(--input-background); border-color: var(--border);"
+                                     placeholder="메시지를 입력하세요"></textarea>
+                        </div>
+                        <button class="w-full py-2 rounded-lg font-medium transition-all hover:opacity-90"
+                                style="background-color: var(--primary); color: var(--primary-foreground);">
+                            전송하기
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- 그림자 효과 예시 -->
+                <div class="space-y-4">
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-mono-sm">
+                        <p class="font-medium">Small Shadow</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">shadow-mono-sm 적용</p>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-mono">
+                        <p class="font-medium">Default Shadow</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">shadow-mono 적용</p>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-mono-md">
+                        <p class="font-medium">Medium Shadow</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">shadow-mono-md 적용</p>
+                    </div>
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-mono-lg">
+                        <p class="font-medium">Large Shadow</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">shadow-mono-lg 적용</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 애니메이션 예시 -->
+    <section class="py-16" style="background-color: var(--muted);">
+        <div class="container mx-auto px-4">
+            <h3 class="text-3xl font-bold text-center mb-12">애니메이션 효과</h3>
+            
+            <div class="flex flex-wrap justify-center gap-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gray-400 rounded-lg animate-bounce-slow"></div>
+                    <p class="mt-2 text-sm">Bounce</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gray-500 rounded-lg animate-pulse-slow"></div>
+                    <p class="mt-2 text-sm">Pulse</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-gray-600 rounded-lg floating-animation"></div>
+                    <p class="mt-2 text-sm">Float</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="py-8 border-t" style="border-color: var(--border); background-color: var(--accent);">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-gray-600 dark:text-gray-400">
+                © 2024 Monochrome Theme. 모든 권리 보유.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 다크모드 토글 함수
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+        }
+    </script>
+</body>
+</html>

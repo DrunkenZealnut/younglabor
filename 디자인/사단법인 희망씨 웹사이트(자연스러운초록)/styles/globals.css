@@ -1,0 +1,57 @@
+/* 브라우저에서 바로 동작하도록 Tailwind 전처리 지시어(@apply/@layer 등)를 제거한 순수 CSS 정의 */
+
+/* 기본 글자 크기 */
+html { font-size: 14px; }
+
+/* 자연스러운 초록색 테마: 커스텀 유틸리티 */
+.gradient-primary { background: linear-gradient(135deg, #9ED448 0%, #6B9B37 50%, #2D5016 100%); }
+.gradient-secondary { background: linear-gradient(135deg, #D4E9B9 0%, #B8D487 100%); }
+.gradient-success { background: linear-gradient(135deg, #9ED448 0%, #7FB93D 100%); }
+.gradient-warm { background: linear-gradient(135deg, #F0F8E8 0%, #E1F0D0 100%); }
+.gradient-natural { background: linear-gradient(135deg, #FEFEFE 0%, #F5F7F0 50%, #E9F5DB 100%); }
+
+.gradient-text-primary {
+  background: linear-gradient(135deg, #6B9B37, #9ED448, #2D5016);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(158, 212, 72, 0.2);
+}
+
+.hover-lift { transition: all 0.3s ease; }
+.hover-lift:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(45, 80, 22, 0.15); }
+
+.animate-bounce-slow { animation: bounce 3s infinite; }
+.animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+.floating-animation { animation: float 6s ease-in-out infinite; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+.card-glow { position: relative; overflow: hidden; }
+.card-glow::before {
+  content: "";
+  position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(158, 212, 72, 0.3), transparent);
+  transition: left .5s;
+}
+.card-glow:hover::before { left: 100%; }
+
+/* 팔레트 유틸리티 */
+.bg-natural-50 { background-color: #FEFEFE; }
+.bg-natural-100 { background-color: #F5F7F0; }
+.bg-natural-200 { background-color: #E9F5DB; }
+.bg-natural-300 { background-color: #D4E9B9; }
+
+.text-forest-600 { color: #2D5016; }
+.text-forest-700 { color: #1F3710; }
+.text-lime-500 { color: #9ED448; }
+.text-lime-600 { color: #7FB93D; }
+
+.border-lime-200 { border-color: #D4E9B9; }
+.border-lime-300 { border-color: #B8D487; }

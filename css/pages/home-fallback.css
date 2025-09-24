@@ -1,0 +1,71 @@
+/* 홈페이지 폴백 스타일 - index.php용 */
+.main-content {
+    padding: 2rem 0;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, var(--natural-100) 0%, var(--natural-200) 100%);
+    border-radius: var(--radius);
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--forest-700);
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--forest-600);
+    margin-bottom: 0;
+}
+
+.content-section {
+    padding: 2rem 0;
+}
+
+.notice-section {
+    background: var(--natural-100);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    margin-top: 2rem;
+}
+
+.notice-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notice-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notice-list li:last-child {
+    border-bottom: none;
+}
+
+.notice-list a {
+    color: var(--forest-700);
+    text-decoration: none;
+    flex: 1;
+    transition: color 0.2s ease;
+}
+
+.notice-list a:hover {
+    color: var(--primary);
+}
+
+.notice-list .date {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-left: 0.5rem;
+}
