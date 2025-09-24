@@ -6,7 +6,7 @@ require_once '../../../bootstrap.php';
 header('Content-Type: application/json');
 
 try {
-    // bootstrap.php에서 환경변수 기반 $pdo 사용
+    // bootstrap.php에서 환경변수 기반 $pdo 사용 및 table() 함수 로드됨
     
     $input = json_decode(file_get_contents('php://input'), true);
     
@@ -20,7 +20,7 @@ try {
     $config = json_encode($input['config'] ?? []);
     
     $stmt = $pdo->prepare("
-        INSERT INTO hopec_hero_sections (name, type, code, config, is_active, priority) 
+        INSERT INTO " . table('hero_sections') . " (name, type, code, config, is_active, priority) 
         VALUES (?, ?, ?, ?, false, ?)
     ");
     

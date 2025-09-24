@@ -28,7 +28,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admin_user` (
-  `id` int(11) NOT NULL COMMENT '사용자 ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '사용자 ID',
   `username` varchar(50) NOT NULL COMMENT '사용자명',
   `password_hash` varchar(255) NOT NULL COMMENT '비밀번호 해시',
   `email` varchar(100) NOT NULL COMMENT '이메일',
@@ -44,6 +44,18 @@ CREATE TABLE `admin_user` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='관리자 사용자 테이블';
 
 --
+-- Indexes for table `admin_user`
+--
+ALTER TABLE `admin_user`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `admin_user`
+--
+ALTER TABLE `admin_user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '사용자 ID';
+
+--
 -- 테이블의 덤프 데이터 `admin_user`
 --
 
@@ -57,7 +69,7 @@ INSERT INTO `admin_user` (`id`, `username`, `password_hash`, `email`, `name`, `r
 --
 
 CREATE TABLE `boards` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `board_name` varchar(100) NOT NULL COMMENT '게시판 이름',
   `board_code` varchar(50) NOT NULL COMMENT '게시판 고유 코드',
   `board_type` varchar(20) DEFAULT 'basic',
@@ -76,6 +88,18 @@ CREATE TABLE `boards` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `allow_attachments` tinyint(1) DEFAULT 1 COMMENT '첨부파일 허용 여부'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for table `boards`
+--
+ALTER TABLE `boards`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `boards`
+--
+ALTER TABLE `boards`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 테이블의 덤프 데이터 `boards`
@@ -152,7 +176,7 @@ INSERT INTO `board_config` (`board_type`, `board_name`, `board_skin`, `board_des
 --
 
 CREATE TABLE `comments` (
-  `comment_id` int(11) NOT NULL COMMENT '댓글 고유 ID',
+  `comment_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '댓글 고유 ID',
   `board_type` varchar(50) NOT NULL COMMENT '게시판 타입',
   `post_id` int(11) NOT NULL COMMENT '게시글 ID (posts.wr_id)',
   `parent_id` int(11) DEFAULT 0 COMMENT '부모 댓글 ID (대댓글용, 0이면 최상위 댓글)',
@@ -177,6 +201,18 @@ CREATE TABLE `comments` (
   `blocked_reason` varchar(255) DEFAULT NULL COMMENT '차단 사유'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='통합 댓글 관리 테이블';
 
+--
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`comment_id`);
+
+--
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '댓글 고유 ID';
+
 -- --------------------------------------------------------
 
 --
@@ -184,7 +220,7 @@ CREATE TABLE `comments` (
 --
 
 CREATE TABLE `comment_notifications` (
-  `notify_id` int(11) NOT NULL,
+  `notify_id` int(11) NOT NULL AUTO_INCREMENT,
   `comment_id` int(11) NOT NULL COMMENT '댓글 ID',
   `post_id` int(11) NOT NULL COMMENT '게시글 ID',
   `board_type` varchar(50) NOT NULL COMMENT '게시판 타입',
@@ -196,6 +232,18 @@ CREATE TABLE `comment_notifications` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='댓글 알림 관리';
 
+--
+-- Indexes for table `comment_notifications`
+--
+ALTER TABLE `comment_notifications`
+  ADD PRIMARY KEY (`notify_id`);
+
+--
+-- AUTO_INCREMENT for table `comment_notifications`
+--
+ALTER TABLE `comment_notifications`
+  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT;
+
 -- --------------------------------------------------------
 
 --
@@ -203,7 +251,7 @@ CREATE TABLE `comment_notifications` (
 --
 
 CREATE TABLE `donate` (
-  `wr_id` int(11) NOT NULL,
+  `wr_id` int(11) NOT NULL AUTO_INCREMENT,
   `wr_num` int(11) NOT NULL DEFAULT 0,
   `wr_reply` varchar(10) NOT NULL,
   `wr_parent` int(11) NOT NULL DEFAULT 0,
@@ -244,6 +292,18 @@ CREATE TABLE `donate` (
   `wr_10` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Indexes for table `donate`
+--
+ALTER TABLE `donate`
+  ADD PRIMARY KEY (`wr_id`);
+
+--
+-- AUTO_INCREMENT for table `donate`
+--
+ALTER TABLE `donate`
+  MODIFY `wr_id` int(11) NOT NULL AUTO_INCREMENT;
+
 -- --------------------------------------------------------
 
 --
@@ -251,7 +311,7 @@ CREATE TABLE `donate` (
 --
 
 CREATE TABLE `events` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL COMMENT '행사 제목',
   `description` text DEFAULT NULL COMMENT '행사 설명',
   `start_date` datetime NOT NULL COMMENT '시작 일시',
@@ -263,6 +323,18 @@ CREATE TABLE `events` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '생성 일시',
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정 일시'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for table `events`
+--
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `events`
+--
+ALTER TABLE `events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 -- --------------------------------------------------------
 
@@ -440,7 +512,7 @@ CREATE TABLE `history` (
 --
 
 CREATE TABLE `inquiries` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `category_id` int(11) DEFAULT NULL COMMENT '카테고리 ID',
   `name` varchar(100) NOT NULL COMMENT '문의자명',
   `email` varchar(255) NOT NULL COMMENT '이메일',
@@ -459,6 +531,18 @@ CREATE TABLE `inquiries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='문의 관리';
 
 --
+-- Indexes for table `inquiries`
+--
+ALTER TABLE `inquiries`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `inquiries`
+--
+ALTER TABLE `inquiries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- 테이블의 덤프 데이터 `inquiries`
 --
 
@@ -475,13 +559,25 @@ INSERT INTO `inquiries` (`id`, `category_id`, `name`, `email`, `phone`, `subject
 --
 
 CREATE TABLE `inquiry_categories` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL COMMENT '카테고리명',
   `description` text DEFAULT NULL COMMENT '카테고리 설명',
   `is_active` tinyint(1) DEFAULT 1 COMMENT '활성화 여부',
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='문의 카테고리 관리';
+
+--
+-- Indexes for table `inquiry_categories`
+--
+ALTER TABLE `inquiry_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `inquiry_categories`
+--
+ALTER TABLE `inquiry_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 테이블의 덤프 데이터 `inquiry_categories`
@@ -557,7 +653,7 @@ INSERT INTO `location` (`wr_id`, `wr_num`, `wr_reply`, `wr_parent`, `wr_is_comme
 --
 
 CREATE TABLE `members` (
-  `mb_no` int(11) NOT NULL,
+  `mb_no` int(11) NOT NULL AUTO_INCREMENT,
   `mb_id` varchar(20) NOT NULL DEFAULT '',
   `mb_password` varchar(255) NOT NULL DEFAULT '',
   `mb_name` varchar(255) NOT NULL DEFAULT '',
@@ -610,6 +706,18 @@ CREATE TABLE `members` (
   `mb_10` varchar(255) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 계정 및 회원정보 관리';
 
+--
+-- Indexes for table `members`
+--
+ALTER TABLE `members`
+  ADD PRIMARY KEY (`mb_no`);
+
+--
+-- AUTO_INCREMENT for table `members`
+--
+ALTER TABLE `members`
+  MODIFY `mb_no` int(11) NOT NULL AUTO_INCREMENT;
+
 -- --------------------------------------------------------
 
 --
@@ -617,7 +725,7 @@ CREATE TABLE `members` (
 --
 
 CREATE TABLE `menu` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) DEFAULT NULL,
   `title` varchar(100) NOT NULL,
   `slug` varchar(100) DEFAULT NULL,
@@ -628,6 +736,18 @@ CREATE TABLE `menu` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `board_id` int(11) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사이트 네비게이션 메뉴 관리';
+
+--
+-- Indexes for table `menu`
+--
+ALTER TABLE `menu`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `menu`
+--
+ALTER TABLE `menu`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 -- --------------------------------------------------------
 INSERT INTO `menu` (`id`, `parent_id`, `title`, `slug`, `position`, `sort_order`, `is_active`, `created_at`, `updated_at`, `board_id`) VALUES
@@ -706,7 +826,7 @@ CREATE TABLE `notices` (
 --
 
 CREATE TABLE `popup_settings` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL COMMENT '팝업 제목',
   `content` text DEFAULT NULL COMMENT '팝업 내용 (HTML 지원)',
   `popup_type` enum('notice','promotion','announcement','custom') DEFAULT 'notice' COMMENT '팝업 유형',
@@ -724,6 +844,18 @@ CREATE TABLE `popup_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='팝업 설정 테이블';
 
 --
+-- Indexes for table `popup_settings`
+--
+ALTER TABLE `popup_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `popup_settings`
+--
+ALTER TABLE `popup_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- 테이블의 덤프 데이터 `popup_settings`
 --
 
@@ -737,7 +869,7 @@ INSERT INTO `popup_settings` (`id`, `title`, `content`, `popup_type`, `display_c
 --
 
 CREATE TABLE `popup_views` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `popup_id` int(11) NOT NULL,
   `user_ip` varchar(45) NOT NULL COMMENT '사용자 IP (IPv6 지원)',
   `user_agent` text DEFAULT NULL COMMENT '브라우저 정보',
@@ -747,6 +879,18 @@ CREATE TABLE `popup_views` (
   `action` enum('viewed','closed','clicked','ignored') DEFAULT 'viewed' COMMENT '사용자 액션',
   `device_type` enum('desktop','mobile','tablet') DEFAULT NULL COMMENT '디바이스 타입'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='팝업 조회 로그';
+
+--
+-- Indexes for table `popup_views`
+--
+ALTER TABLE `popup_views`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `popup_views`
+--
+ALTER TABLE `popup_views`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 테이블의 덤프 데이터 `popup_views`
@@ -765,7 +909,7 @@ INSERT INTO `popup_views` (`id`, `popup_id`, `user_ip`, `user_agent`, `session_i
 --
 
 CREATE TABLE `posts` (
-  `wr_id` int(11) NOT NULL,
+  `wr_id` int(11) NOT NULL AUTO_INCREMENT,
   `board_type` varchar(50) NOT NULL COMMENT '게시판 타입 (finance_reports, notices, press, newsletter, gallery, resources, nepal_travel)',
   `wr_num` int(11) NOT NULL DEFAULT 0,
   `wr_reply` varchar(10) NOT NULL,
@@ -810,6 +954,18 @@ CREATE TABLE `posts` (
   `comment_count` int(11) DEFAULT 0 COMMENT '댓글 수 (캐시)'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='통합 게시판 테이블';
 
+--
+-- Indexes for table `posts`
+--
+ALTER TABLE `posts`
+  ADD PRIMARY KEY (`wr_id`);
+
+--
+-- AUTO_INCREMENT for table `posts`
+--
+ALTER TABLE `posts`
+  MODIFY `wr_id` int(11) NOT NULL AUTO_INCREMENT;
+
 -- --------------------------------------------------------
 
 --
@@ -817,7 +973,7 @@ CREATE TABLE `posts` (
 --
 
 CREATE TABLE `post_files` (
-  `bf_no` int(11) NOT NULL,
+  `bf_no` int(11) NOT NULL AUTO_INCREMENT,
   `board_type` varchar(50) NOT NULL,
   `wr_id` int(11) NOT NULL,
   `bf_source` varchar(255) NOT NULL,
@@ -830,6 +986,18 @@ CREATE TABLE `post_files` (
   `bf_type` tinyint(4) NOT NULL DEFAULT 0,
   `bf_datetime` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for table `post_files`
+--
+ALTER TABLE `post_files`
+  ADD PRIMARY KEY (`bf_no`);
+
+--
+-- AUTO_INCREMENT for table `post_files`
+--
+ALTER TABLE `post_files`
+  MODIFY `bf_no` int(11) NOT NULL AUTO_INCREMENT;
 
 -- --------------------------------------------------------
 
@@ -955,7 +1123,7 @@ CREATE TABLE `resources` (
 --
 
 CREATE TABLE `site_settings` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `setting_key` varchar(100) NOT NULL COMMENT '설정 키',
   `setting_value` text DEFAULT NULL COMMENT '설정 값',
   `setting_group` varchar(50) NOT NULL DEFAULT 'general' COMMENT '설정 그룹',
@@ -963,6 +1131,18 @@ CREATE TABLE `site_settings` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '생성 일시',
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '수정 일시'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for table `site_settings`
+--
+ALTER TABLE `site_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `site_settings`
+--
+ALTER TABLE `site_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 테이블의 덤프 데이터 `site_settings`
@@ -998,7 +1178,7 @@ INSERT INTO `site_settings` (`id`, `setting_key`, `setting_value`, `setting_grou
 --
 
 CREATE TABLE `theme_presets` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `preset_name` varchar(100) NOT NULL,
   `preset_colors` text NOT NULL COMMENT 'JSON format: 8가지 색상 데이터',
   `preset_description` varchar(255) DEFAULT NULL,
@@ -1008,6 +1188,18 @@ CREATE TABLE `theme_presets` (
   `is_active` tinyint(1) DEFAULT 1,
   `sort_order` int(11) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자 정의 테마 색상 프리셋 저장 테이블';
+
+--
+-- Indexes for table `theme_presets`
+--
+ALTER TABLE `theme_presets`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `theme_presets`
+--
+ALTER TABLE `theme_presets`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- 테이블의 덤프 데이터 `theme_presets`
@@ -1026,14 +1218,122 @@ INSERT INTO `theme_presets` (`id`, `preset_name`, `preset_colors`, `preset_descr
 --
 
 CREATE TABLE `visitor_log` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip_address` varchar(45) NOT NULL,
   `user_agent` text DEFAULT NULL,
   `visit_date` date NOT NULL,
   `visit_time` timestamp NOT NULL DEFAULT current_timestamp(),
   `page_url` varchar(500) DEFAULT NULL,
-  `referrer` varchar(500) DEFAULT NULL
+  `referrer` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Indexes for table `visitor_log`
+--
+ALTER TABLE `visitor_log`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for table `visitor_log`
+--
+ALTER TABLE `visitor_log`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+-- --------------------------------------------------------
+
+--
+-- AUTO_INCREMENT 속성 업데이트 스크립트
+-- 기존 데이터베이스에서 테이블들의 id 필드에 AUTO_INCREMENT 속성을 추가하는 스크립트
+--
+
+-- admin_user 테이블
+ALTER TABLE `admin_user` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '사용자 ID',
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- boards 테이블
+ALTER TABLE `boards` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- comments 테이블
+ALTER TABLE `comments` 
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '댓글 고유 ID',
+  ADD PRIMARY KEY IF NOT EXISTS (`comment_id`);
+
+-- comment_notifications 테이블
+ALTER TABLE `comment_notifications` 
+  MODIFY `notify_id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`notify_id`);
+
+-- donate 테이블
+ALTER TABLE `donate` 
+  MODIFY `wr_id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`wr_id`);
+
+-- events 테이블
+ALTER TABLE `events` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- inquiries 테이블
+ALTER TABLE `inquiries` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- inquiry_categories 테이블
+ALTER TABLE `inquiry_categories` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- members 테이블
+ALTER TABLE `members` 
+  MODIFY `mb_no` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`mb_no`);
+
+-- menu 테이블
+ALTER TABLE `menu` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- posts 테이블
+ALTER TABLE `posts` 
+  MODIFY `wr_id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`wr_id`);
+
+-- post_files 테이블
+ALTER TABLE `post_files` 
+  MODIFY `bf_no` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`bf_no`);
+
+-- popup_settings 테이블
+ALTER TABLE `popup_settings` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- popup_views 테이블
+ALTER TABLE `popup_views` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- site_settings 테이블
+ALTER TABLE `site_settings` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+-- theme_presets 테이블
+ALTER TABLE `theme_presets` 
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+  ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
+
+
+-- 만약 visit_log 테이블이 따로 존재한다면 아래 주석을 해제하세요
+-- ALTER TABLE `visit_log` 
+--   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,
+--   ADD PRIMARY KEY IF NOT EXISTS (`id`);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

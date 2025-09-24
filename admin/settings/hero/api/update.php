@@ -21,7 +21,7 @@ try {
     // 코드가 있는 경우에만 업데이트
     if (isset($input['code']) && $input['code'] !== null) {
         $stmt = $pdo->prepare("
-            UPDATE hopec_hero_sections 
+            UPDATE " . table('hero_sections') . " 
             SET name = ?, code = ?, config = ?, updated_at = NOW() 
             WHERE id = ?
         ");
@@ -29,7 +29,7 @@ try {
     } else {
         // 코드 없이 설정만 업데이트
         $stmt = $pdo->prepare("
-            UPDATE hopec_hero_sections 
+            UPDATE " . table('hero_sections') . " 
             SET name = ?, config = ?, updated_at = NOW() 
             WHERE id = ?
         ");

@@ -14,7 +14,7 @@ try {
         throw new Exception('ID가 필요합니다.');
     }
     
-    $stmt = $pdo->prepare("SELECT * FROM hopec_hero_sections WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT * FROM " . table('hero_sections') . " WHERE id = ?");
     $stmt->execute([$id]);
     
     $hero = $stmt->fetch(PDO::FETCH_ASSOC);

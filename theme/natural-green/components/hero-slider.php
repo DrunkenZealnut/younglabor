@@ -21,11 +21,20 @@ try {
     $username = env('DB_USERNAME', 'root');
     $password = env('DB_PASSWORD', '');
     $charset = env('DB_CHARSET', 'utf8mb4');
+    $tablePrefix = env('DB_PREFIX', '');
     
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=$charset", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    $stmt = $pdo->query("SELECT * FROM hopec_hero_sections WHERE is_active = 1 LIMIT 1");
+    // table() 함수 정의 (db.php와 동일한 방식)
+    if (!function_exists('table')) {
+        function table($tableName) {
+            global $tablePrefix;
+            return $tablePrefix . $tableName;
+        }
+    }
+    
+    $stmt = $pdo->query("SELECT * FROM " . table('hero_sections') . " WHERE is_active = 1 LIMIT 1");
     $activeHero = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($activeHero && $activeHero['type'] !== 'default') {
@@ -49,7 +58,15 @@ try {
 
 // 커스텀 히어로를 사용하는 경우
 if ($useCustomHero && $activeHero) {
-    echo $activeHero['code'];
+    ?>
+    <section class="hero-section py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="relative overflow-hidden" style="border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+          <?= $activeHero['code'] ?>
+        </div>
+      </div>
+    </section>
+    <?php
     return; // 커스텀 코드를 출력하고 종료
 }
 
@@ -168,8 +185,8 @@ try {
 }
 ?>
 
-<section class="hero-section">
-  <div class="relative w-full">
+<section class="hero-section py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="relative overflow-hidden" style="border-radius: 1.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
       <div class="hero-slider relative" style="height: <?= $hero_config['height'] ?>; min-height: 400px; border-radius: 1.5rem; overflow: hidden;">
         
@@ -546,12 +563,30 @@ main {
     background: var(--background) !important;
     background-color: var(--background) !important;
     background-image: none !important;
-    overflow: visible;
-    margin: 2rem auto 2rem auto; /* 상하단 여백 추가 */
-    max-width: 1200px;
-    padding: 0 2rem;
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
     position: relative;
     z-index: 1;
+}
+
+/* 히어로 섹션 내부 컨테이너 강제 제한 */
+.hero-section > div {
+    max-width: 80rem !important; /* max-w-7xl = 80rem */
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+}
+
+@media (min-width: 640px) {
+    .hero-section > div {
+        padding: 0 1.5rem !important; /* sm:px-6 */
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-section > div {
+        padding: 0 2rem !important; /* lg:px-8 */
+    }
 }
 
 .hero-slider {
@@ -660,6 +695,19 @@ main {
     outline: 3px solid #ffffff;
     outline-offset: 3px;
     box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+/* 커스텀 히어로 섹션 너비 제한 - 컨테이너 크기를 준수 */
+.hero-section > div > div > div[style*="height: 500px"],
+.hero-section .carousel-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.hero-section .carousel-slide {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 /* 슬라이드 레이아웃 - 올바른 레이아웃 */

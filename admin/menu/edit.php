@@ -32,7 +32,7 @@ try {
   $usedBoards = $usedBoardsStmt->fetchAll(PDO::FETCH_COLUMN);
   
   // 모든 활성 게시판 목록 조회
-  $stmt = $pdo->query("SELECT id, board_name FROM hopec_boards WHERE is_active = 1 ORDER BY board_name");
+  $stmt = $pdo->query("SELECT id, board_name FROM " . table('boards') . " WHERE is_active = 1 ORDER BY board_name");
   $boards = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   $boards = [];

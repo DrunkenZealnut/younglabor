@@ -20,10 +20,10 @@ try {
     $pdo->beginTransaction();
     
     // 모든 히어로 섹션을 비활성화
-    $pdo->exec("UPDATE hopec_hero_sections SET is_active = false");
+    $pdo->exec("UPDATE " . table('hero_sections') . " SET is_active = false");
     
     // 선택한 히어로 섹션만 활성화
-    $stmt = $pdo->prepare("UPDATE hopec_hero_sections SET is_active = true WHERE id = ?");
+    $stmt = $pdo->prepare("UPDATE " . table('hero_sections') . " SET is_active = true WHERE id = ?");
     $stmt->execute([$id]);
     
     // 트랜잭션 커밋

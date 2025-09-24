@@ -17,7 +17,7 @@ try {
     $id = intval($input['id']);
     
     // 기본 히어로는 삭제할 수 없음
-    $stmt = $pdo->prepare("SELECT type FROM hopec_hero_sections WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT type FROM " . table('hero_sections') . " WHERE id = ?");
     $stmt->execute([$id]);
     $hero = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -26,7 +26,7 @@ try {
     }
     
     // 히어로 섹션 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_hero_sections WHERE id = ?");
+    $stmt = $pdo->prepare("DELETE FROM " . table('hero_sections') . " WHERE id = ?");
     $stmt->execute([$id]);
     
     echo json_encode(['success' => true]);
