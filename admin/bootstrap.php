@@ -492,6 +492,7 @@ if (!function_exists('get_admin_menu_urls')) {
             'themes' => $base_path . '/admin/settings/simple-color-settings.php',
             'hero' => $base_path . '/admin/settings/hero_settings.php',
             'performance' => $base_path . '/admin/system/performance.php',
+            'change_password' => $base_path . '/admin/change_password.php',
             'logout' => $base_path . '/admin/logout.php'
         ];
     }

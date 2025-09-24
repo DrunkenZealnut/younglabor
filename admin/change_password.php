@@ -66,6 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // 페이지 제목
 $page_title = '비밀번호 변경 - ' . $admin_title;
+$current_menu = 'change_password';
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -76,14 +77,54 @@ $page_title = '비밀번호 변경 - ' . $admin_title;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-            padding-top: 50px;
+        body { 
+            min-height: 100vh; 
+            display: flex; 
+            font-family: 'Segoe UI', sans-serif; 
+        }
+        .sidebar { 
+            width: 220px; 
+            min-width: 220px; 
+            background-color: #343a40; 
+            color: white; 
+            padding: 0; 
+            position: fixed; 
+            height: 100vh; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+        .sidebar a { 
+            color: white; 
+            padding: 12px 16px; 
+            text-decoration: none; 
+            display: block; 
+            white-space: nowrap; 
+            text-overflow: ellipsis; 
+            overflow: hidden;
+        }
+        .sidebar a:hover { background-color: #495057; }
+        .sidebar a.active { background-color: #0d6efd; }
+        .main-content { 
+            flex-grow: 1; 
+            flex-basis: 0; 
+            padding: 30px; 
+            background-color: #f8f9fa; 
+            min-width: 0; 
+            margin-left: 220px;
+        }
+        .sidebar .logo { 
+            font-weight: bold; 
+            font-size: 1.3rem; 
+            padding: 20px 16px; 
+            border-bottom: 1px solid #495057; 
+            margin-bottom: 0;
         }
         .card {
             border: none;
             border-radius: 10px;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            max-width: 600px;
+            margin: 0 auto;
         }
         .card-header {
             background-color: #0d6efd;
@@ -98,10 +139,11 @@ $page_title = '비밀번호 변경 - ' . $admin_title;
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
+    <?php include __DIR__ . '/includes/sidebar.php'; ?>
+    
+    <div class="main-content">
+        <h1 class="mb-4">🔐 비밀번호 변경</h1>
+        <div class="card">
                     <div class="card-header text-center">
                         <h3 class="mb-0">관리자 비밀번호 변경</h3>
                     </div>
@@ -165,8 +207,6 @@ $page_title = '비밀번호 변경 - ' . $admin_title;
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

@@ -1,4 +1,4 @@
-    <!-- Content wrapper ends here -->
+<!-- Content wrapper ends here -->
     
     <?php 
     // Natural Green 테마 푸터 포함
@@ -55,14 +55,20 @@
     
     <!-- 문의하기 팝업 JavaScript -->
     <script>
+    // Define a base URL for fetch calls
+    const BASE_URL = '<?= rtrim(app_url('/'), '/') ?>';
+    
     // 라이브러리 로딩 대기 함수
     function waitForLibraries(callback) {
         const maxAttempts = 50; // 최대 5초 대기
         let attempts = 0;
-        
+
         const checkLibraries = () => {
             attempts++;
-            if (typeof $ !== 'undefined' && typeof $.fn.remodal !== 'undefined') {
+            if (
+                (typeof jQuery !== 'undefined' && jQuery.fn && jQuery.fn.remodal) ||
+                (typeof $ !== 'undefined' && $.fn && $.fn.remodal)
+            ) {
                 callback();
             } else if (attempts < maxAttempts) {
                 setTimeout(checkLibraries, 100);
@@ -70,7 +76,7 @@
                 alert('팝업 라이브러리를 로드할 수 없습니다.\n페이지를 새로고침 후 다시 시도해주세요.');
             }
         };
-        
+
         checkLibraries();
     }
     
@@ -93,11 +99,11 @@
                 $('.error-icon').removeClass('hidden');
             }
             
-            // 메시지 설정 (XSS 방지를 위해 안전한 방식 사용)
+            // 메시지 설정
             $('#messageTitle').text(title);
             const $messageText = $('#messageText');
             $messageText.text(message);
-            $messageText.css('white-space', 'pre-line'); // 개행을 안전하게 보존
+            $messageText.css('white-space', 'pre-line'); // preserve newlines safely
             
             // 모달 표시
             var messageModal = $('[data-remodal-id=message-modal]').remodal();
@@ -117,7 +123,7 @@
         submitBtn.classList.add('loading');
         
         // 먼저 최신 CSRF 토큰을 가져옵니다
-        fetch('get-csrf-token.php', {
+        fetch(`${BASE_URL}/get-csrf-token.php`, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -151,7 +157,7 @@
             }
             
             // AJAX 요청
-            return fetch('submit-inquiry.php', {
+            return fetch(`${BASE_URL}/submit-inquiry.php`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

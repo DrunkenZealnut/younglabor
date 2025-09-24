@@ -137,7 +137,7 @@ if (!function_exists('admin_url')) {
         ⚡ 성능 모니터링
     </a>
     
-    <a href="<?= admin_url('change_password.php') ?>" 
+    <a href="<?= get_admin_url('change_password') ?>" 
        <?= is_sidebar_menu_active('change_password', $current_menu, $current_page, $current_dir) ? 'class="active"' : '' ?>>
         🔐 비밀번호 변경
     </a>
