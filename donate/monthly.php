@@ -9,6 +9,9 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '정기후원 | ' . app_name();
 $currentSlug = 'donate/monthly';
 
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
+
 // 설명 블록 (정기후원 신청은 기존 시스템의 작성 폼을 사용하도록 유도)
 $monthlyIntro = '매달 꾸준한 나눔으로 아이들의 오늘과 내일을 함께 지켜주세요.';
 
@@ -22,7 +25,12 @@ include_once __DIR__ . '/../includes/header.php';
 <main id="main" role="main" class="flex-1">
   <article class="max-w-3xl mx-auto px-4 py-10">
     <header class="mb-6">
-      <h1 class="text-3xl md:text-4xl font-bold text-forest-700">정기후원</h1>
+      <p class="text-sm text-gray-500">Donate</p>
+      <?php if ($useCSSVars): ?>
+        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">정기후원</h1>
+      <?php else: ?>
+        <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">정기후원</h1>
+      <?php endif; ?>
       <p class="text-gray-600 mt-2"><?= h($monthlyIntro) ?></p>
     </header>
 

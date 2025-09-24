@@ -9,6 +9,9 @@ require_once __DIR__ . '/../bootstrap/app.php';
 $pageTitle = '일시후원 | ' . app_name();
 $currentSlug = 'donate/one-time';
 
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
+
 // 일시후원 카테고리 설정 (hopec_donate 테이블 기반)
 $bo_table = 'B22R'; // 호환성을 위한 변수 유지
 $categories = ['개인후원', '단체후원', '기업후원']; // 일시후원 카테고리
@@ -28,7 +31,12 @@ include_once __DIR__ . '/../includes/header.php';
 <main id="main" role="main" class="flex-1">
   <article class="max-w-5xl mx-auto px-4 py-10">
     <header class="mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-forest-700">일시후원</h1>
+      <p class="text-sm text-gray-500">Donate</p>
+      <?php if ($useCSSVars): ?>
+        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">일시후원</h1>
+      <?php else: ?>
+        <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">일시후원</h1>
+      <?php endif; ?>
       <p class="text-gray-600 mt-2">원하시는 분야를 선택하여 일시후원에 참여해 주세요</p>
     </header>
 

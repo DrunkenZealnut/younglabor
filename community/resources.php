@@ -92,9 +92,14 @@ $config = [
     'posts_per_page' => $per_page,
     'container_max_width_class' => 'max-w-7xl', // notices.php와 동일한 폭으로 설정
     'author_col_class' => 'w-28', // 작성자 컬럼 폭 설정
+    'hide_board_header' => true, // 게시판 헤더 숨김 (중복 방지)
 ];
 
 $pageTitle = '자료실 | ' . app_name();
+
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
+
 include __DIR__ . '/../includes/header.php';
 
 $current_page = $page;
@@ -102,8 +107,21 @@ $search_type = $search_type;
 $search_keyword = $search_keyword;
 ?>
 
-<main id="main" role="main" class="flex-1" style="padding-bottom: 100px;">
-<?php include __DIR__ . '/../board_templates/board_list.php'; ?>
+<main id="main" role="main" class="flex-1">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- 페이지 헤더 -->
+    <div class="mb-4">
+      <p class="text-sm text-gray-500">Community</p>
+      <?php if ($useCSSVars): ?>
+        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">자료실</h1>
+      <?php else: ?>
+        <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">자료실</h1>
+      <?php endif; ?>
+      <p class="text-gray-600 mt-2"><?= h($config['board_description']) ?></p>
+    </div>
+  </div>
+  
+  <?php include __DIR__ . '/../board_templates/board_list.php'; ?>
 </main>
 
 <?php include_once __DIR__ . '/../includes/footer.php';

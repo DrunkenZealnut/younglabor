@@ -18,7 +18,7 @@
   ?>
 
   <!-- 최근 활동 보기 섹션 -->
-  <section class="py-12 bg-white" style="background: #ffffff !important; min-height: 600px;">
+  <section class="py-12" style="background: var(--background); min-height: 600px;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
         <a href="<?= app_url('community/gallery.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer no-underline">최근 활동 보기</a>
@@ -54,7 +54,7 @@
                 //     $imageUrl = '/theme/natural-green/assets/images/default-gallery.jpg';
                 // }
                 ?>
-                <a href="<?= app_url('community/gallery_view.php?wr_id=' . $post['id']) ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
+                <a href="<?= app_url('community/gallery_view.php?wr_id=' . $post['id']) ?>" class="block rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer" style="background: var(--card);">
                   <div class="relative overflow-hidden h-64 bg-gradient-to-br from-natural-100 to-natural-200">
                     <!-- 블러 배경 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
@@ -83,7 +83,7 @@
             if (empty($galleryPosts)) {
                 for ($i = 0; $i < 3; $i++) {
                     ?>
-                    <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
+                    <div class="rounded-lg shadow-md border border-primary-light overflow-hidden h-96" style="background: var(--card);">
                       <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                         <div class="flex items-center justify-center h-full text-gray-400">
                           <i data-lucide="image" class="w-16 h-16"></i>
@@ -101,7 +101,7 @@
             // 오류 발생 시 기본 카드 표시
             for ($i = 0; $i < 3; $i++) {
                 ?>
-                <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
+                <div class="rounded-lg shadow-md border border-primary-light overflow-hidden h-96" style="background: var(--card);">
                   <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                     <div class="flex items-center justify-center h-full text-gray-400">
                       <i data-lucide="image" class="w-16 h-16"></i>
@@ -121,11 +121,11 @@
   </section>
 
   <!-- 공지사항 & 후원안내 섹션 -->
-  <section class="py-8 bg-white" style="background: #ffffff !important; min-height: 400px;">
+  <section class="py-8" style="background: var(--background); min-height: 400px;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-2 gap-8">
         <!-- 공지사항 -->
-        <div class="bg-white rounded-lg shadow-md border border-primary-light hover:border-primary p-6 transition-all duration-300">
+        <div class="rounded-lg shadow-md border border-primary-light hover:border-primary p-6 transition-all duration-300" style="background: var(--card);">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-2xl font-bold text-forest-700">공지사항</h3>
             <a href="<?= app_url('community/notices.php') ?>" class="text-sm text-forest-600 hover:text-lime-600 font-medium">
@@ -194,7 +194,7 @@
   </section>
 
   <!-- 소식지 섹션 -->
-  <section class="py-12 bg-natural-50" style="background: #f8fffe !important; min-height: 600px;">
+  <section class="py-12" style="background: var(--background); min-height: 600px;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
         <a href="<?= app_url('community/newsletter.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-lime-600 hover:underline-offset-4">희망씨 소식지</a>
@@ -228,7 +228,7 @@
                 //     $imageUrl = '/theme/natural-green/assets/images/default-newsletter.jpg';
                 // }
                 ?>
-                <a href="<?= app_url('community/newsletter_view.php?wr_id=' . $post['id']) ?>" class="block bg-white rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer">
+                <a href="<?= app_url('community/newsletter_view.php?wr_id=' . $post['id']) ?>" class="block rounded-lg shadow-md border border-primary-light hover:border-primary overflow-hidden hover:shadow-lg transition-all duration-300 h-96 cursor-pointer" style="background: var(--card);">
                   <div class="relative overflow-hidden h-64 bg-gradient-to-br from-natural-100 to-natural-200">
                     <!-- 블러 배경 -->
                     <img src="<?= htmlspecialchars($imageUrl) ?>" 
@@ -257,7 +257,7 @@
             if (empty($newsletterPosts)) {
                 for ($i = 0; $i < 3; $i++) {
                     ?>
-                    <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
+                    <div class="rounded-lg shadow-md border border-primary-light overflow-hidden h-96" style="background: var(--card);">
                       <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                         <div class="flex items-center justify-center h-full text-gray-400">
                           <i data-lucide="newspaper" class="w-16 h-16"></i>
@@ -275,7 +275,7 @@
             // 오류 발생 시 기본 카드 표시
             for ($i = 0; $i < 3; $i++) {
                 ?>
-                <div class="bg-white rounded-lg shadow-md border border-primary-light overflow-hidden h-96">
+                <div class="rounded-lg shadow-md border border-primary-light overflow-hidden h-96" style="background: var(--card);">
                   <div class="bg-gradient-to-br from-natural-100 to-natural-200 h-64">
                     <div class="flex items-center justify-center h-full text-gray-400">
                       <i data-lucide="newspaper" class="w-16 h-16"></i>

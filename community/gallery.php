@@ -12,6 +12,9 @@ $pageTitle = '활동 갤러리 | ' . app_name();
 $pageDescription = '희망씨의 다양한 활동 사진을 확인하세요.';
 $currentSlug = 'community/gallery';
 
+// Legacy mode only - CSS vars mode removed
+$useCSSVars = false;
+
 // 강력한 캐시 방지 헤더
 header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
 header('Pragma: no-cache');
@@ -127,16 +130,13 @@ try {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- 페이지 헤더 -->
     <div class="mb-8">
-      <nav class="breadcrumb mb-4" aria-label="breadcrumb">
-        <ol class="flex items-center space-x-2 text-sm text-gray-500">
-          <li><a href="/" class="hover:text-forest-600">홈</a></li>
-          <li class="before:content-['>'] before:mx-2">커뮤니티</li>
-          <li class="before:content-['>'] before:mx-2 text-forest-600 font-medium">활동 갤러리</li>
-        </ol>
-      </nav>
-      
-      <h1 class="text-3xl font-bold text-forest-700 mb-2">활동 갤러리</h1>
-      <p class="text-gray-600">희망씨의 다양한 활동 사진을 확인하세요.</p>
+      <p class="text-sm text-gray-500">Community</p>
+      <?php if ($useCSSVars): ?>
+        <h1 class="text-3xl md:text-4xl font-bold" style="<?= $styleManager->getStyleString(['color' => 'forest-600']) ?>">활동 갤러리</h1>
+      <?php else: ?>
+        <h1 class="text-3xl md:text-4xl font-bold <?= getThemeClass('text', 'primary', '600') ?>">활동 갤러리</h1>
+      <?php endif; ?>
+      <p class="text-gray-600 mt-2">희망씨의 다양한 활동 사진을 확인하세요.</p>
     </div>
 
     <!-- 검색 메뉴 -->

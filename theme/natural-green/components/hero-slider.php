@@ -516,35 +516,35 @@ try {
     box-sizing: border-box;
 }
 
-/* 기본 페이지 배경은 투명하게 설정 */
+/* 기본 페이지 배경은 테마 배경색 사용 */
 html, body {
-    background: transparent !important;
-    background-color: transparent !important;
+    background: var(--background) !important;
+    background-color: var(--background) !important;
     background-image: none !important;
 }
 
-/* 메인 컨텐츠와 섹션은 흰색 배경 */
+/* 메인 컨텐츠와 섹션도 테마 배경색 사용 */
 main {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: var(--background) !important;
+    background-color: var(--background) !important;
 }
 
-/* 히어로 섹션은 투명 배경 유지 */
+/* 히어로 섹션도 테마 배경색 사용 */
 .hero-section {
-    background: transparent !important;
-    background-color: transparent !important;
+    background: var(--background) !important;
+    background-color: var(--background) !important;
     background-image: none !important;
 }
 
 /* Tailwind 및 테마 회색 클래스들 강제 오버라이드 */
 .bg-gray-50, .bg-gray-100, .bg-gray-200, .bg-gray-300, 
 .bg-natural-50, .bg-natural-100, .bg-natural-200 {
-    background-color: #ffffff !important;
+    background-color: var(--background) !important;
 }
 
 .hero-section {
-    background: transparent !important;
-    background-color: transparent !important;
+    background: var(--background) !important;
+    background-color: var(--background) !important;
     background-image: none !important;
     overflow: visible;
     margin: 2rem auto 2rem auto; /* 상하단 여백 추가 */

@@ -17,6 +17,7 @@ $config += [
     'detail_url' => 'detail.php',
     'write_url' => 'write.php',
     'category_type' => 'FREE', // 기본 게시판 타입
+    'hide_board_header' => false, // 게시판 헤더 숨김 옵션
 ];
 
 // 게시판 데이터 자동 로드 (외부에서 설정되지 않은 경우)
@@ -99,7 +100,8 @@ if (function_exists('renderSafeBoardTheme')) {
 }
 ?>
 
-<div class="board-surface bg-white rounded-lg border border-primary-light hover:border-primary shadow-sm <?= htmlspecialchars($containerMaxWidthClass) ?> mx-auto mt-8 mb-8 transition-all duration-300">
+<div class="board-surface rounded-lg border border-primary-light hover:border-primary shadow-sm <?= htmlspecialchars($containerMaxWidthClass) ?> mx-auto mt-0 mb-8 transition-all duration-300" style="background: var(--card);">
+    <?php if (!($config['hide_board_header'] ?? false)): ?>
     <!-- 게시판 헤더 -->
     <div class="px-6 py-4 border-b border-primary-light board-header-border">
         <div class="flex justify-between items-center flex-wrap gap-4">
@@ -127,9 +129,10 @@ if (function_exists('renderSafeBoardTheme')) {
             <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
 
     <!-- 게시글 통계 -->
-    <div class="px-6 py-3 <?= getThemeClass('bg', 'background', '50') ?> border-b border-primary-light">
+    <div class="px-6 py-3 <?= getThemeClass('bg', 'background', '50') ?> border-b border-primary-light <?= ($config['hide_board_header'] ?? false) ? 'rounded-t-lg' : '' ?>">
         <div class="flex justify-between items-center flex-wrap gap-4">
             <div class="text-sm <?= getThemeClass('text', 'text', '600') ?>">
                 <?php if (!empty($search_keyword)): ?>
@@ -221,7 +224,7 @@ if (function_exists('renderSafeBoardTheme')) {
         <div class="px-6 py-6">
             <div class="grid gap-6 <?= htmlspecialchars($gridColsClass) ?>">
             <?php foreach ($posts as $index => $post): ?>
-                <a href="<?= htmlspecialchars(($config['detail_url'] ?? 'detail.php')) ?>?id=<?= (int)$post['post_id'] ?>" class="block group rounded-lg border border-primary-light hover:border-primary overflow-hidden bg-white hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300">
+                <a href="<?= htmlspecialchars(($config['detail_url'] ?? 'detail.php')) ?>?id=<?= (int)$post['post_id'] ?>" class="block group rounded-lg border border-primary-light hover:border-primary overflow-hidden hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-300" style="background: var(--card);">
                     <div class="<?= getThemeClass('bg', 'background', '100') ?>" style="aspect-ratio:<?= htmlspecialchars($cardAspectRatio) ?>;">
                         <?php if (!empty($post['thumbnail_url'])): ?>
                             <img src="<?= htmlspecialchars($post['thumbnail_url']) ?>" alt="<?= htmlspecialchars($post['title']) ?>" class="w-full h-full object-cover" loading="lazy" decoding="async">
@@ -264,7 +267,7 @@ if (function_exists('renderSafeBoardTheme')) {
                         <th scope="col" class="px-4 py-3 text-center text-xs font-medium <?= getThemeClass('text', 'text', '500') ?> uppercase tracking-wider" style="width: 74px;">조회</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y border-primary-light">
+                <tbody class="divide-y border-primary-light" style="background: var(--card);">
                     <?php foreach ($posts as $index => $post): ?>
                     <tr class="hover:<?= getThemeClass('bg', 'background', '50') ?> transition-colors" style="<?= $post['is_notice'] ? 'background-color: var(--primary);' : '' ?>">
                         <!-- 번호 -->
@@ -421,7 +424,7 @@ if (typeof lucide !== 'undefined') {
     border: 1px solid #d1d5db;
     border-right: none;
     border-radius: 4px 0 0 4px;
-    background-color: #fff;
+    background-color: var(--card);
     font-size: 13px;
     color: #333;
     outline: none;
