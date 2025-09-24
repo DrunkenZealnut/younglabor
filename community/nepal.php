@@ -84,6 +84,7 @@ if (!function_exists('extract_first_image_src')) {
             'attachment_count' => (int)($attachmentCounts[$wr_id] ?? 0),
             'is_notice' => (int)($r['wr_is_notice'] ?? 0),
             'thumbnail_url' => extract_first_image_src($r['wr_content'] ?? ''),
+            'summary' => mb_substr(strip_tags($r['wr_content'] ?? ''), 0, 100) . '...',
         ];
     }
 
@@ -146,12 +147,12 @@ $search_keyword = $search_keyword;
         <?= !empty($search_keyword) ? '검색 결과가 없습니다.' : '등록된 게시글이 없습니다.' ?>
       </div>
     <?php else: ?>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <?php foreach ($posts as $index => $post): ?>
         <article class="bg-white rounded-lg shadow-sm border border-primary-light hover:border-primary overflow-hidden hover:shadow-md transition-all duration-300"<?= $post['is_notice'] ? ' style="background-color: var(--primary);"' : '' ?>>
           <a href="<?= app_url('community/nepal_view.php?wr_id=' . $post['post_id']) ?>" class="block">
-            <!-- 이미지 -->
-            <div class="relative h-48 bg-gray-100 overflow-hidden">
+            <!-- 이미지 (높이 증가 및 블러 배경 적용) -->
+            <div class="relative h-56 bg-gray-100 overflow-hidden">
               <?php if (!empty($post['thumbnail_url'])): ?>
                 <!-- 블러 배경 이미지 -->
                 <img src="<?= htmlspecialchars($post['thumbnail_url']) ?>" 
@@ -183,13 +184,17 @@ $search_keyword = $search_keyword;
               <?php endif; ?>
             </div>
             
-            <!-- 콘텐츠 -->
+            <!-- 콘텐츠 (패딩 및 간격 조정) -->
             <div class="p-3">
               <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2 leading-tight">
                 <?= htmlspecialchars($post['title']) ?>
               </h3>
               
-              <div class="flex items-center justify-between text-xs text-gray-500 mt-2">
+              <p class="text-sm text-gray-600 mb-2 line-clamp-1 leading-snug">
+                <?= htmlspecialchars($post['summary']) ?>
+              </p>
+              
+              <div class="flex items-center justify-between text-xs text-gray-500">
                 <div class="flex items-center space-x-2">
                   <span class="flex items-center">
                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -236,15 +241,15 @@ $search_keyword = $search_keyword;
           <!-- 첫 페이지 화살표 -->
           <?php if ($page > 3): ?>
             <a href="?page=1<?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
-              «
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
+              ≪
             </a>
           <?php endif; ?>
           
           <!-- 이전 페이지 화살표 -->
           <?php if ($page > 1): ?>
             <a href="?page=<?= $page - 1 ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
               ‹
             </a>
           <?php endif; ?>
@@ -261,12 +266,12 @@ $search_keyword = $search_keyword;
           
           for ($i = $start_page; $i <= $end_page; $i++): ?>
             <?php if ($i == $page): ?>
-              <span class="inline-flex items-center justify-center w-8 h-8 text-sm bg-forest-600 text-white rounded font-medium">
+              <span class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-600 text-white border border-forest-600 rounded-lg font-bold shadow-lg">
                 <?= $i ?>
               </span>
             <?php else: ?>
               <a href="?page=<?= $i ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-                 class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
+                 class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-medium transition-all duration-200">
                 <?= $i ?>
               </a>
             <?php endif; ?>
@@ -275,7 +280,7 @@ $search_keyword = $search_keyword;
           <!-- 다음 페이지 화살표 -->
           <?php if ($page < $total_pages): ?>
             <a href="?page=<?= $page + 1 ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
               ›
             </a>
           <?php endif; ?>
@@ -283,8 +288,8 @@ $search_keyword = $search_keyword;
           <!-- 마지막 페이지 화살표 -->
           <?php if ($page < $total_pages - 2): ?>
             <a href="?page=<?= $total_pages ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
-              »
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
+              ≫
             </a>
           <?php endif; ?>
         </div>
@@ -296,6 +301,38 @@ $search_keyword = $search_keyword;
 </main>
 
 <style>
+/* 페이징 버튼 - 테마 색상 변수 사용 */
+.pagination-btn {
+  background-color: var(--natural-100);
+  color: var(--forest-700);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pagination-btn:hover {
+  background-color: var(--forest-600);
+  color: white;
+  border-color: var(--forest-600);
+  transform: scale(1.05);
+}
+
+.pagination-current {
+  background-color: var(--forest-600) !important;
+  color: white !important;
+  border-color: var(--forest-600) !important;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.2);
+}
+
 .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;

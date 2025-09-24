@@ -204,7 +204,7 @@ if (preg_match_all('/<img[^>]+src=["\'](([^"\']++))["\'][^>]*>/i', $row['wr_cont
       <?php if (!empty($images)): ?>
       <div class="border-t px-6 py-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">이미지 갤러리</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
           <?php foreach ($images as $index => $image): ?>
           <div class="aspect-w-1 aspect-h-1 bg-gray-100 rounded-lg overflow-hidden cursor-pointer" 
                onclick="openLightbox(<?= $index ?>)">
