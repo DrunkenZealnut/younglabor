@@ -240,6 +240,27 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.bun/
+bun.lockb
+package-lock.json
+
+# Node.js 캐시 파일들
+.npm/
+.yarn/
+~/.bun/install/cache/
+
+# Lucide React 캐시 파일들
+*.lucide-react*
+**/cache/lucide-react*
+~/.bun/install/cache/lucide-react*
+
+# JavaScript 빌드 파일들
+dist/
+build/
+*.js.map
+*.ts.d.ts
+*.js.d.ts
+dynamicIconImports.*
 
 # ========================================
 # Composer (PHP 패키지 매니저 사용시)
