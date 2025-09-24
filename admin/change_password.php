@@ -1,20 +1,9 @@
 <?php
-session_start();
-require_once __DIR__ . '/../includes/db_connect.php';
-require_once __DIR__ . '/../includes/functions.php';
+// Admin 시스템 기본 설정
+require_once 'bootstrap.php';
 
-// 로그인 여부 확인
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    // 현재 페이지 URL을 세션에 저장
-    $_SESSION['redirect_after_login'] = 'change_password.php';
-    
-    // 로그인 페이지로 리다이렉트
-    header('Location: login.php');
-    exit;
-}
-
-// admin_id가 없는 경우 세션에서 가져오거나 설정
-$admin_id = $_SESSION['admin_id'] ?? null;
+// admin_id 설정 (세션에서 admin_user_id 사용)
+$admin_id = $_SESSION['admin_user_id'] ?? null;
 if (!$admin_id && isset($_SESSION['admin_username'])) {
     // 사용자 이름으로 ID를 조회
     try {
@@ -23,7 +12,7 @@ if (!$admin_id && isset($_SESSION['admin_username'])) {
         $result = $stmt->fetch();
         if ($result) {
             $admin_id = $result['id'];
-            $_SESSION['admin_id'] = $admin_id;
+            $_SESSION['admin_user_id'] = $admin_id;
         }
     } catch (PDOException $e) {
         // 오류 처리
@@ -75,15 +64,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 기본 URL 설정
-$baseurl = function_exists('get_base_url') ? get_base_url() : '';
+// 페이지 제목
+$page_title = '비밀번호 변경 - ' . $admin_title;
 ?>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>관리자 비밀번호 변경 - 우리동네노동권찾기</title>
+    <title><?= htmlspecialchars($page_title) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -121,7 +110,7 @@ $baseurl = function_exists('get_base_url') ? get_base_url() : '';
                             <div class="alert alert-success">
                                 <?= htmlspecialchars($message) ?>
                                 <div class="text-center mt-3">
-                                    <a href="<?= $baseurl ?>/admin/" class="btn btn-primary">관리자 대시보드로 돌아가기</a>
+                                    <a href="<?= admin_url('index.php') ?>" class="btn btn-primary">관리자 대시보드로 돌아가기</a>
                                 </div>
                             </div>
                         <?php else: ?>
@@ -169,7 +158,7 @@ $baseurl = function_exists('get_base_url') ? get_base_url() : '';
                                 </div>
                                 
                                 <div class="text-center mt-3">
-                                    <a href="<?= $baseurl ?>/admin/" class="btn btn-link">관리자 대시보드로 돌아가기</a>
+                                    <a href="<?= admin_url('index.php') ?>" class="btn btn-link">관리자 대시보드로 돌아가기</a>
                                 </div>
                             </form>
                         <?php endif; ?>

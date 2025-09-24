@@ -208,6 +208,7 @@ $base_path = get_base_path();
   <a href="<?= admin_url('settings/simple-color-settings.php') ?>">🎨 테마 설정</a>
   <a href="<?= admin_url('settings/hero_settings.php') ?>">🖼️ 히어로 섹션</a>
   <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
+  <a href="<?= admin_url('change_password.php') ?>">🔐 비밀번호 변경</a>
   <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
 </div>
 

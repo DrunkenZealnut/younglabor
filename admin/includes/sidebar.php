@@ -54,6 +54,8 @@ if (!function_exists('is_sidebar_menu_active')) {
                 return $current_dir === 'settings' && $current_page === 'hero_settings.php';
             case 'performance':
                 return $current_dir === 'system' && $current_page === 'performance.php';
+            case 'change_password':
+                return $current_page === 'change_password.php' && $current_dir === 'admin';
             default:
                 return false;
         }
@@ -133,6 +135,11 @@ if (!function_exists('admin_url')) {
     <a href="<?= get_admin_url('performance') ?>" 
        <?= is_sidebar_menu_active('performance', $current_menu, $current_page, $current_dir) ? 'class="active"' : '' ?>>
         ⚡ 성능 모니터링
+    </a>
+    
+    <a href="<?= admin_url('change_password.php') ?>" 
+       <?= is_sidebar_menu_active('change_password', $current_menu, $current_page, $current_dir) ? 'class="active"' : '' ?>>
+        🔐 비밀번호 변경
     </a>
     
     <a href="<?= get_admin_url('logout') ?>">
