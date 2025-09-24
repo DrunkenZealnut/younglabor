@@ -8,14 +8,7 @@
     }
     ?>
     
-    <!-- jQuery 로드 (필요한 경우만) -->
-    <script>
-    if (typeof jQuery === 'undefined') {
-        document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
-    }
-    </script>
-    
-    <!-- Remodal 라이브러리는 header.php에서 이미 로드됨 -->
+    <!-- jQuery와 Remodal은 header.php에서 이미 로드됨 -->
     
     <script>
     // Lucide 아이콘 초기화
@@ -62,33 +55,54 @@
     
     <!-- 문의하기 팝업 JavaScript -->
     <script>
+    // 라이브러리 로딩 대기 함수
+    function waitForLibraries(callback) {
+        const maxAttempts = 50; // 최대 5초 대기
+        let attempts = 0;
+        
+        const checkLibraries = () => {
+            attempts++;
+            if (typeof $ !== 'undefined' && typeof $.fn.remodal !== 'undefined') {
+                callback();
+            } else if (attempts < maxAttempts) {
+                setTimeout(checkLibraries, 100);
+            } else {
+                alert('팝업 라이브러리를 로드할 수 없습니다.\n페이지를 새로고침 후 다시 시도해주세요.');
+            }
+        };
+        
+        checkLibraries();
+    }
+    
     // 문의하기 모달 열기
     function openInquiryModal() {
-        if (typeof $ !== 'undefined' && typeof $.fn.remodal !== 'undefined') {
+        waitForLibraries(() => {
             var inquiryModal = $('[data-remodal-id=inquiry-modal]').remodal();
             inquiryModal.open();
-        } else {
-            alert('팝업 라이브러리를 로드할 수 없습니다.');
-        }
+        });
     }
     
     // 메시지 모달 표시
     function showMessage(title, message, isSuccess = true) {
-        // 아이콘 설정
-        $('.success-icon, .error-icon').addClass('hidden');
-        if (isSuccess) {
-            $('.success-icon').removeClass('hidden');
-        } else {
-            $('.error-icon').removeClass('hidden');
-        }
-        
-        // 메시지 설정
-        $('#messageTitle').text(title);
-        $('#messageText').html(message.replace(/\n/g, '<br>'));
-        
-        // 모달 표시
-        var messageModal = $('[data-remodal-id=message-modal]').remodal();
-        messageModal.open();
+        waitForLibraries(() => {
+            // 아이콘 설정
+            $('.success-icon, .error-icon').addClass('hidden');
+            if (isSuccess) {
+                $('.success-icon').removeClass('hidden');
+            } else {
+                $('.error-icon').removeClass('hidden');
+            }
+            
+            // 메시지 설정 (XSS 방지를 위해 안전한 방식 사용)
+            $('#messageTitle').text(title);
+            const $messageText = $('#messageText');
+            $messageText.text(message);
+            $messageText.css('white-space', 'pre-line'); // 개행을 안전하게 보존
+            
+            // 모달 표시
+            var messageModal = $('[data-remodal-id=message-modal]').remodal();
+            messageModal.open();
+        });
     }
     
     // 문의하기 폼 제출
@@ -103,7 +117,7 @@
         submitBtn.classList.add('loading');
         
         // 먼저 최신 CSRF 토큰을 가져옵니다
-        fetch('../get-csrf-token.php', {
+        fetch('get-csrf-token.php', {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -137,7 +151,7 @@
             }
             
             // AJAX 요청
-            return fetch('../submit-inquiry.php', {
+            return fetch('submit-inquiry.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -161,16 +175,18 @@
                 }
                 
                 // 성공 시 문의하기 모달 닫기
-                var inquiryModal = $('[data-remodal-id=inquiry-modal]').remodal();
-                inquiryModal.close();
-                
-                // 폼 초기화
-                form.reset();
-                
-                // 성공 메시지 표시
-                setTimeout(() => {
-                    showMessage('문의 접수 완료', result.message, true);
-                }, 300);
+                waitForLibraries(() => {
+                    var inquiryModal = $('[data-remodal-id=inquiry-modal]').remodal();
+                    inquiryModal.close();
+                    
+                    // 폼 초기화
+                    form.reset();
+                    
+                    // 성공 메시지 표시
+                    setTimeout(() => {
+                        showMessage('문의 접수 완료', result.message, true);
+                    }, 300);
+                });
                 
             } else {
                 // 실패 메시지 표시

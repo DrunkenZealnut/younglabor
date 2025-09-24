@@ -69,14 +69,14 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet"></noscript>
     
-    <!-- 팝업 CSS - 지연 로딩 -->
-    <link rel="preload" href="<?= $siteUrl ?>/js/remodal/remodal.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="<?= $siteUrl ?>/js/remodal/remodal-default-theme.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- 팝업 CSS - 즉시 로딩 -->
+    <link rel="stylesheet" href="<?= $siteUrl ?>/js/remodal/remodal.css">
+    <link rel="stylesheet" href="<?= $siteUrl ?>/js/remodal/remodal-default-theme.css">
     
-    <!-- JavaScript - 비동기 로딩 -->
-    <script async src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <!-- JavaScript - 동기 로딩 (라이브러리 로딩 순서 보장) -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
     <script async src="https://unpkg.com/lucide@latest"></script>
-    <script async src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
     
     <!-- Tailwind CSS 로딩 시스템 -->
     <?php

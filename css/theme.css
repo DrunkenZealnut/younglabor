@@ -951,9 +951,6 @@ main { flex: 1 1 auto; }
 }
 
 /* ===== 추가 스타일 (최소화) ===== */
-.text-gray-500 { color: #6b7280; }
-.text-gray-600 { color: #4b5563; }
-.text-gray-700 { color: #374151; }
 .bg-white\/70 { background-color: rgba(255, 255, 255, 0.7); }
 .border-white\/30 { border-color: rgba(255, 255, 255, 0.3); }
 
