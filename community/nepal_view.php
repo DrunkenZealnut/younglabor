@@ -201,7 +201,7 @@ if (preg_match_all('/<img[^>]+src=["\'](([^"\']++))["\'][^>]*>/i', $row['wr_cont
       </div>
       
       <!-- 이미지 갤러리 (본문에 이미지가 있는 경우) -->
-      <?php if (!empty($images) && count($images) > 1): ?>
+      <?php if (!empty($images)): ?>
       <div class="border-t px-6 py-6">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">이미지 갤러리</h3>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -270,25 +270,27 @@ if (preg_match_all('/<img[^>]+src=["\'](([^"\']++))["\'][^>]*>/i', $row['wr_cont
 <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden items-center justify-center p-4">
   <div class="relative max-w-5xl max-h-full">
     <button onclick="closeLightbox()" 
-            class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
-      <i data-lucide="x" class="w-8 h-8"></i>
+            class="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white rounded-full w-10 h-10 shadow-lg transition-all duration-200 hover:scale-110 flex items-center justify-center text-xl font-bold z-10">
+      ×
     </button>
     
     <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain">
     
     <!-- 네비게이션 버튼 -->
+    <?php if (count($images) > 1): ?>
     <button id="prev-btn" onclick="prevImage()" 
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 hidden">
-      <i data-lucide="chevron-left" class="w-8 h-8"></i>
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-forest-600 hover:bg-forest-700 text-white rounded-full w-12 h-12 shadow-xl transition-all duration-200 hover:scale-110 flex items-center justify-center text-2xl font-bold">
+      ‹
     </button>
     
     <button id="next-btn" onclick="nextImage()" 
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 hidden">
-      <i data-lucide="chevron-right" class="w-8 h-8"></i>
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-forest-600 hover:bg-forest-700 text-white rounded-full w-12 h-12 shadow-xl transition-all duration-200 hover:scale-110 flex items-center justify-center text-2xl font-bold">
+      ›
     </button>
+    <?php endif; ?>
     
     <!-- 이미지 카운터 -->
-    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-forest-600 bg-opacity-90 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
       <span id="current-image">1</span> / <span id="total-images"><?= count($images) ?></span>
     </div>
   </div>
@@ -333,8 +335,31 @@ function updateLightbox() {
   img.src = images[currentIndex];
   currentSpan.textContent = currentIndex + 1;
   
-  prevBtn.classList.toggle('hidden', currentIndex === 0);
-  nextBtn.classList.toggle('hidden', currentIndex === images.length - 1);
+  // 이미지가 2개 이상일 때만 버튼 표시 로직 적용
+  if (images.length > 1) {
+    if (prevBtn) {
+      if (currentIndex === 0) {
+        prevBtn.classList.add('opacity-30', 'cursor-not-allowed');
+        prevBtn.classList.remove('hover:bg-forest-700', 'hover:scale-110');
+        prevBtn.style.pointerEvents = 'none';
+      } else {
+        prevBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+        prevBtn.classList.add('hover:bg-forest-700', 'hover:scale-110');
+        prevBtn.style.pointerEvents = 'auto';
+      }
+    }
+    if (nextBtn) {
+      if (currentIndex === images.length - 1) {
+        nextBtn.classList.add('opacity-30', 'cursor-not-allowed');
+        nextBtn.classList.remove('hover:bg-forest-700', 'hover:scale-110');
+        nextBtn.style.pointerEvents = 'none';
+      } else {
+        nextBtn.classList.remove('opacity-30', 'cursor-not-allowed');
+        nextBtn.classList.add('hover:bg-forest-700', 'hover:scale-110');
+        nextBtn.style.pointerEvents = 'auto';
+      }
+    }
+  }
 }
 
 // ESC 키로 라이트박스 닫기
@@ -394,6 +419,66 @@ function formatFileSize($bytes) {
     return round($size, 2) . ' ' . $units[$exp];
 }
 
+?>
+
+<style>
+/* 라이트박스 버튼 - 테마 색상 변수 사용 */
+.lightbox-nav-btn {
+  background-color: var(--forest-600);
+  color: white;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.lightbox-nav-btn:hover {
+  background-color: var(--forest-700);
+  transform: scale(1.1);
+}
+
+.lightbox-close-btn {
+  background-color: var(--error);
+  color: white;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.lightbox-close-btn:hover {
+  background-color: var(--button-error-hover);
+  transform: scale(1.1);
+}
+
+.lightbox-counter {
+  background-color: rgba(47, 91, 62, 0.9); /* forest-600 with opacity */
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+</style>
+
+<?php
 include_once __DIR__ . '/../includes/footer.php';
 ?>
 

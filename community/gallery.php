@@ -226,15 +226,15 @@ try {
           <!-- 첫 페이지 화살표 -->
           <?php if ($page > 3): ?>
             <a href="?page=1<?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
-              «
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
+              ≪
             </a>
           <?php endif; ?>
           
           <!-- 이전 페이지 화살표 -->
           <?php if ($page > 1): ?>
             <a href="?page=<?= $page - 1 ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
               ‹
             </a>
           <?php endif; ?>
@@ -251,12 +251,12 @@ try {
           
           for ($i = $start_page; $i <= $end_page; $i++): ?>
             <?php if ($i == $page): ?>
-              <span class="inline-flex items-center justify-center w-8 h-8 text-sm bg-forest-600 text-white rounded font-medium">
+              <span class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-600 text-white border border-forest-600 rounded-lg font-bold shadow-lg">
                 <?= $i ?>
               </span>
             <?php else: ?>
               <a href="?page=<?= $i ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-                 class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
+                 class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-medium transition-all duration-200">
                 <?= $i ?>
               </a>
             <?php endif; ?>
@@ -265,7 +265,7 @@ try {
           <!-- 다음 페이지 화살표 -->
           <?php if ($page < $total_pages): ?>
             <a href="?page=<?= $page + 1 ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
               ›
             </a>
           <?php endif; ?>
@@ -273,8 +273,8 @@ try {
           <!-- 마지막 페이지 화살표 -->
           <?php if ($page < $total_pages - 2): ?>
             <a href="?page=<?= $total_pages ?><?= !empty($search_keyword) ? '&search_type=' . urlencode($search_type) . '&search=' . urlencode($search_keyword) : '' ?>" 
-               class="inline-flex items-center justify-center w-8 h-8 text-sm text-gray-700 hover:bg-gray-100 rounded font-medium">
-              »
+               class="inline-flex items-center justify-center w-10 h-10 text-sm bg-forest-100 text-forest-700 hover:bg-forest-600 hover:text-white border border-forest-200 hover:border-forest-600 rounded-lg font-bold transition-all duration-200 text-lg">
+              ≫
             </a>
           <?php endif; ?>
         </div>
@@ -284,6 +284,47 @@ try {
 
   </div>
 </main>
+
+<style>
+/* 페이징 버튼 - 테마 색상 변수 사용 */
+.pagination-btn {
+  background-color: var(--natural-100);
+  color: var(--forest-700);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pagination-btn:hover {
+  background-color: var(--forest-600);
+  color: white;
+  border-color: var(--forest-600);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(47, 91, 62, 0.15);
+}
+
+.pagination-btn.active {
+  background-color: var(--forest-600);
+  color: white;
+  border-color: var(--forest-600);
+  font-weight: bold;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.pagination-arrow {
+  font-size: 1.125rem;
+  font-weight: bold;
+}
+</style>
 
 <?php include_once __DIR__ . '/../includes/footer.php'; ?>
 

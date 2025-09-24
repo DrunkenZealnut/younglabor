@@ -102,7 +102,7 @@
       
       <!-- 저작권 - 맨 아래에 별도 배치 -->
       <div id="ft_copy" class="text-sm text-right mt-8 pt-4 border-t border-gray-200">
-        <p>Copyright © 2019 더불어사는 삶 <?= get_org_name(true) ?>.</p>
+        <p>Copyright © 2013 더불어사는 삶 <?= get_org_name(true) ?></p>
       </div>
     </div>
   </div>
