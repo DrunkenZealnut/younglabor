@@ -86,7 +86,7 @@ $config = [
     'list_url' => app_url('community/press.php'),
     'posts_per_page' => $per_page,
     'container_max_width_class' => 'max-w-7xl', // notices.php와 동일한 폭으로 설정
-    'author_col_class' => 'w-28', // 작성자 컬럼 폭 설정
+    'author_col_class' => 'w-28 hidden sm:table-cell', // 작성자 컬럼 폭 설정
     'hide_board_header' => true, // 게시판 헤더 숨김 (중복 방지)
 ];
 

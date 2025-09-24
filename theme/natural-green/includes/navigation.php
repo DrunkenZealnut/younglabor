@@ -317,7 +317,7 @@ $communityLinks = [
           <span class="text-base font-medium"><?php echo htmlspecialchars($menu['title']); ?></span>
           <i data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
         </button>
-        <ul id="mm-section-<?php echo $mi; ?>" class="hidden px-6 pb-3 space-y-1">
+        <ul id="mm-section-<?php echo $mi; ?>" class="px-6 pb-3 space-y-1" style="display: none;">
           <?php foreach ($menu['items'] as $item): ?>
             <?php
               $itemTitle = is_array($item) ? $item['title'] : $item;
@@ -360,7 +360,7 @@ $communityLinks = [
 </div>
 
 <style>
-/* 네비게이션 메뉴 스타일 - 강화된 우선순위 */
+/* 네비게이션 메뉴 스타일 - 반응형 개선 */
 .nav-button-hover {
     padding: 0.5rem 0.75rem !important;
     border-radius: 0.5rem !important;
@@ -385,12 +385,19 @@ $communityLinks = [
 .dropdown-menu {
     background-color: var(--natural-50);
     border: 1px solid var(--border);
+    z-index: 1050 !important;
+    max-width: 250px;
+    white-space: nowrap;
 }
 
 .dropdown-menu a,
 .dropdown-item {
     background-color: transparent;
     color: var(--forest-600);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdown-menu a:hover,
@@ -407,7 +414,95 @@ $communityLinks = [
     pointer-events: auto !important;
 }
 
-/* Navigation specific overrides - moved to theme.css */
+/* 모바일 메뉴 반응형 개선 */
+@media (max-width: 767px) {
+    .dropdown-menu {
+        position: static !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+    }
+    
+    /* 헤더 컨테이너 높이 조정 */
+    header .d-flex {
+        min-height: 4rem !important;
+    }
+    
+    /* 로고 크기 조정 */
+    header img {
+        height: 2.5rem !important;
+    }
+    
+    /* 모바일 서브메뉴 스타일링 - 강화된 버전 */
+    #mobileMenu ul[id^="mm-section-"] {
+        background-color: rgba(245, 251, 241, 0.8) !important;
+        border-radius: 8px !important;
+        margin-top: 8px !important;
+        margin-bottom: 8px !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        padding-bottom: 0.75rem !important;
+        transition: all 0.3s ease !important;
+        border: 1px solid rgba(132, 204, 22, 0.2) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    #mobileMenu ul[id^="mm-section-"] li {
+        list-style: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    #mobileMenu ul[id^="mm-section-"] li a {
+        display: block !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 4px !important;
+        transition: background-color 0.2s ease !important;
+        color: var(--forest-600) !important;
+        text-decoration: none !important;
+        font-size: 0.95rem !important;
+        line-height: 1.4 !important;
+    }
+    
+    #mobileMenu ul[id^="mm-section-"] li a:hover,
+    #mobileMenu ul[id^="mm-section-"] li a:focus {
+        background-color: var(--natural-200) !important;
+        color: var(--forest-700) !important;
+    }
+    
+    /* 모바일 메뉴 버튼 호버 효과 */
+    #mobileMenu button[data-section] {
+        transition: background-color 0.2s ease;
+    }
+    
+    #mobileMenu button[data-section]:hover,
+    #mobileMenu button[data-section]:focus {
+        background-color: rgba(132, 204, 22, 0.1);
+    }
+}
+
+/* 태블릿 반응형 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .dropdown-menu {
+        max-width: 200px;
+    }
+    
+    .nav-button-hover {
+        padding: 0.4rem 0.6rem !important;
+        font-size: 0.9rem;
+    }
+}
+
+/* 데스크탑 큰 화면 */
+@media (min-width: 1024px) {
+    .dropdown-menu {
+        max-width: 280px;
+    }
+}
 </style>
 
 <script>
@@ -495,6 +590,58 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // 모바일 서브메뉴 토글 기능 - 간단하고 직접적인 방법
+    console.log('🎯 모바일 서브메뉴 초기화 시작');
+    
+    // 1초 후에 모바일 메뉴 이벤트 설정 (모든 요소 로드 완료 후)
+    setTimeout(function() {
+        // 모든 모바일 메뉴 버튼에 직접 클릭 이벤트 추가
+        document.addEventListener('click', function(event) {
+            const target = event.target.closest('[data-section]');
+            if (!target) return;
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const sectionId = target.getAttribute('data-section');
+            const submenu = document.getElementById('mm-section-' + sectionId);
+            const chevron = target.querySelector('[data-lucide="chevron-down"]');
+            
+            console.log('🔄 클릭 감지:', sectionId, submenu ? '✅' : '❌');
+            
+            if (submenu) {
+                const isVisible = submenu.style.display === 'block';
+                
+                if (isVisible) {
+                    // 닫기
+                    submenu.style.display = 'none';
+                    target.setAttribute('aria-expanded', 'false');
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                    console.log('📴 서브메뉴 닫음:', sectionId);
+                } else {
+                    // 열기
+                    submenu.style.display = 'block';
+                    target.setAttribute('aria-expanded', 'true');
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                    console.log('📂 서브메뉴 열음:', sectionId);
+                }
+            } else {
+                console.log('⚠️ 서브메뉴 없음:', 'mm-section-' + sectionId);
+                // DOM 구조 확인
+                const allSubmenus = document.querySelectorAll('[id^="mm-section-"]');
+                console.log('📋 존재하는 서브메뉴들:', Array.from(allSubmenus).map(el => el.id));
+            }
+        });
+        
+        console.log('📱 모바일 서브메뉴 이벤트 리스너 등록 완료');
+        
+        // 현재 DOM 상태 확인
+        const buttons = document.querySelectorAll('[data-section]');
+        const submenus = document.querySelectorAll('[id^="mm-section-"]');
+        console.log('🔍 버튼 개수:', buttons.length, '서브메뉴 개수:', submenus.length);
+        
+    }, 1500); // 1.5초 지연으로 확실한 로딩 대기
     
     console.log('🍿 Natural Green 네비게이션 로드 완료 - 드롭다운 수:', dropdownItems.length);
 });

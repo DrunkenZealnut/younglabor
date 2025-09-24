@@ -1,0 +1,189 @@
+/* 홈페이지 전용 반응형 CSS - 개선된 버전 */
+
+/* 공통 반응형 요소 */
+.responsive-container {
+    transition: all 0.3s ease;
+}
+
+/* 모바일 기본 스타일 (320px - 767px) */
+@media (max-width: 767px) {
+    /* 갤러리 카드 그리드 조정 */
+    .grid.grid-cols-1.md\\:grid-cols-3 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1rem;
+    }
+    
+    /* 갤러리 카드 높이 조정 (모바일에서 더 컴팩트하게) */
+    .grid.grid-cols-1.md\\:grid-cols-3 > * {
+        height: 320px !important;
+    }
+    
+    /* 갤러리 카드 내 이미지 영역 조정 */
+    .grid.grid-cols-1.md\\:grid-cols-3 .h-64 {
+        height: 200px !important;
+    }
+    
+    /* 갤러리 카드 내 텍스트 영역 조정 */
+    .grid.grid-cols-1.md\\:grid-cols-3 .h-32 {
+        height: 120px !important;
+    }
+    
+    /* 공지사항 & 후원 섹션 조정 */
+    .grid.md\\:grid-cols-2 {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+    
+    /* 컨테이너 패딩 조정 */
+    .max-w-7xl.mx-auto.px-4,
+    .max-w-7xl.mx-auto.px-4.sm\\:px-6.lg\\:px-8 {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* 섹션 패딩 조정 */
+    .py-12 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+    
+    .py-8 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+    
+    .py-6 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    /* 텍스트 크기 조정 */
+    .text-3xl {
+        font-size: 1.5rem !important;
+        line-height: 2rem !important;
+    }
+    
+    .text-2xl {
+        font-size: 1.25rem !important;
+        line-height: 1.75rem !important;
+    }
+    
+    /* 버튼 및 링크 터치 영역 확보 */
+    .hover\\:text-lime-600,
+    a[class*="hover"] {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* 태블릿 스타일 (768px - 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* 갤러리 카드를 2열로 표시 */
+    .grid.grid-cols-1.md\\:grid-cols-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+    
+    /* 갤러리 카드 높이 유지 */
+    .grid.grid-cols-1.md\\:grid-cols-3 > * {
+        height: 380px !important;
+    }
+    
+    /* 컨테이너 패딩 조정 */
+    .max-w-7xl.mx-auto.px-4.sm\\:px-6.lg\\:px-8 {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+    
+    /* 공지사항 & 후원 섹션 2열 유지하되 간격 조정 */
+    .grid.md\\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem;
+    }
+    
+    /* 텍스트 크기 중간 사이즈 */
+    .text-3xl {
+        font-size: 2rem !important;
+        line-height: 2.25rem !important;
+    }
+}
+
+/* 데스크탑 스타일 (1024px 이상) */
+@media (min-width: 1024px) {
+    .grid.grid-cols-1.md\\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1.5rem;
+    }
+    
+    /* 갤러리 카드 최적 높이 */
+    .grid.grid-cols-1.md\\:grid-cols-3 > * {
+        height: 384px !important; /* h-96과 동일 */
+    }
+    
+    /* 대형 화면에서 컨테이너 최대 너비 조정 */
+    .max-w-7xl {
+        max-width: 80rem;
+    }
+    
+    /* 공지사항 & 후원 섹션 간격 최적화 */
+    .grid.md\\:grid-cols-2 {
+        gap: 2rem;
+    }
+}
+
+/* 초대형 화면 (1440px 이상) */
+@media (min-width: 1440px) {
+    .max-w-7xl.mx-auto.px-4.sm\\:px-6.lg\\:px-8 {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+    
+    /* 갤러리 그리드 간격 증가 */
+    .grid.grid-cols-1.md\\:grid-cols-3 {
+        gap: 2rem;
+    }
+    
+    /* 공지사항 & 후원 섹션 간격 증가 */
+    .grid.md\\:grid-cols-2 {
+        gap: 2.5rem;
+    }
+}
+
+/* 인터랙티브 요소 개선 */
+@media (hover: hover) {
+    /* 호버 가능한 디바이스에서만 호버 효과 적용 */
+    .hover\\:shadow-lg:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .hover\\:border-primary:hover {
+        border-color: var(--primary) !important;
+    }
+}
+
+/* 터치 디바이스를 위한 개선 */
+@media (hover: none) {
+    /* 터치 디바이스에서는 호버 효과 대신 포커스 효과 사용 */
+    .hover\\:shadow-lg:focus,
+    .hover\\:shadow-lg:active {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+}
+
+/* 접근성 개선 - 포커스 표시 */
+@media (prefers-reduced-motion: no-preference) {
+    .responsive-container,
+    .grid > *,
+    .hover\\:shadow-lg {
+        transition: all 0.3s ease !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .responsive-container,
+    .grid > *,
+    .hover\\:shadow-lg {
+        transition: none !important;
+    }
+}

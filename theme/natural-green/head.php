@@ -46,6 +46,14 @@ $theme = getNaturalGreenTheme();
     <link rel="stylesheet" href="<?php echo app_url('theme/natural-green'); ?>/css/default_board.css" />
     <?php endif; ?>
     
+    <?php
+    // 반응형 홈페이지 CSS 추가 로드 (홈페이지 전용)
+    $currentPage = isset($_GET['page']) ? trim($_GET['page']) : 'home';
+    if ($currentPage === 'home' && file_exists(__DIR__ . '/assets/css/responsive-home.css')): 
+    ?>
+    <link rel="stylesheet" href="<?php echo app_url('theme/natural-green'); ?>/assets/css/responsive-home.css?v=<?php echo filemtime(__DIR__ . '/assets/css/responsive-home.css'); ?>" />
+    <?php endif; ?>
+    
     <?php if (!empty($GLOBALS['analytics_id'])): ?>
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $GLOBALS['analytics_id'] ?>"></script>
@@ -163,6 +171,52 @@ $theme = getNaturalGreenTheme();
         });
         
         console.log('🍿 드롭다운 메뉴 호버 기능 활성화됨 - 아이템 수:', dropdownItems.length);
+        
+        // 모바일 메뉴 토글 기능 강화
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const mobileMenuClose = document.getElementById('mobileMenuClose');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuToggle && mobileMenu) {
+          mobileMenuToggle.addEventListener('click', function() {
+            mobileMenu.classList.remove('d-none');
+            mobileMenu.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            // 접근성을 위한 포커스 이동
+            const firstFocusableElement = mobileMenu.querySelector('button, a');
+            if (firstFocusableElement) {
+              setTimeout(() => firstFocusableElement.focus(), 100);
+            }
+          });
+          
+          if (mobileMenuClose) {
+            mobileMenuClose.addEventListener('click', closeMobileMenu);
+          }
+          
+          // 배경 클릭시 메뉴 닫기
+          mobileMenu.addEventListener('click', function(e) {
+            if (e.target === mobileMenu) {
+              closeMobileMenu();
+            }
+          });
+          
+          // ESC 키로 메뉴 닫기
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !mobileMenu.classList.contains('d-none')) {
+              closeMobileMenu();
+            }
+          });
+          
+          function closeMobileMenu() {
+            mobileMenu.classList.add('d-none');
+            mobileMenu.style.display = 'none';
+            document.body.style.overflow = '';
+            // 포커스를 메뉴 토글 버튼으로 되돌리기
+            mobileMenuToggle.focus();
+          }
+        }
+        
+        console.log('📱 모바일 메뉴 기능은 navigation.php에서 처리됨');
       });
     </script>
   </head>

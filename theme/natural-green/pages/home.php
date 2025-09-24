@@ -296,6 +296,9 @@
 
 </main>
 
+<!-- 반응형 CSS 로드 -->
+<link rel="stylesheet" href="<?= app_url('theme/natural-green/assets/css/responsive-home.css') ?>">
+
 <script>
 // Lucide 아이콘 초기화
 document.addEventListener('DOMContentLoaded', function() {
