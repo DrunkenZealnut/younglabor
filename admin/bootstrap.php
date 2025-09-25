@@ -448,14 +448,15 @@ $admin_title = $app_name . ' 관리자';
 // PROJECT_SLUG 정리용 JavaScript 함수 추가
 if (!defined('PROJECT_SLUG_JS_ADDED')) {
     define('PROJECT_SLUG_JS_ADDED', true);
+    $project_slug_value = env('PROJECT_SLUG', 'hopec');
     $project_slug_js = '
 <script>
 // PROJECT_SLUG 패턴을 정리하는 전역 함수
 function cleanProjectSlugFromUrl(url) {
     if (!url) return url;
-    return url.replace(/\$\{PROJECT_SLUG\}/g, "hopec")
-              .replace(/%7BPROJECT_SLUG%7D/g, "hopec") 
-              .replace(/\$%7BPROJECT_SLUG%7D/g, "hopec");
+    return url.replace(/\$\{PROJECT_SLUG\}/g, "' . $project_slug_value . '")
+              .replace(/%7BPROJECT_SLUG%7D/g, "' . $project_slug_value . '") 
+              .replace(/\$%7BPROJECT_SLUG%7D/g, "' . $project_slug_value . '");
 }
 
 // 현재 페이지 URL이 PROJECT_SLUG를 포함하고 있다면 즉시 리디렉트

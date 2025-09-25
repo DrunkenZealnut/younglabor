@@ -200,7 +200,7 @@ try {
             $password = env("DB_PASSWORD", "");
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
         } else {
-            $pdo = new PDO("mysql:host=" . ($_ENV['DB_HOST'] ?? 'localhost') . ";dbname=" . ($_ENV['DB_DATABASE'] ?? 'hopec') . ";charset=utf8mb4", 
+            $pdo = new PDO("mysql:host=" . ($_ENV['DB_HOST'] ?? 'localhost') . ";dbname=" . ($_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec')) . ";charset=utf8mb4", 
                           $_ENV['DB_USERNAME'] ?? 'root', 
                           $_ENV['DB_PASSWORD'] ?? '');
         }

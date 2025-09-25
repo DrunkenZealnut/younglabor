@@ -32,7 +32,7 @@ try {
         
         // 데이터베이스 연결 정보
         $host = env('DB_HOST', 'localhost');
-        $dbname = env('DB_DATABASE', 'hopec');
+        $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
         $username = env('DB_USERNAME', 'root');
         $password = env('DB_PASSWORD', '');
         $charset = env('DB_CHARSET', 'utf8mb4');
@@ -48,7 +48,7 @@ try {
     } else {
         // 직접 연결 시도 (fallback) - 환경변수 기본값 사용
         $host = 'localhost';
-        $dbname = 'hopec';
+        $dbname = env('PROJECT_SLUG', 'hopec');
         $username = 'root';
         $password = '';
         $charset = 'utf8mb4';

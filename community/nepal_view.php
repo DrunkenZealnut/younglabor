@@ -29,32 +29,6 @@ try {
         exit;
     }
 
-    // 첨부파일
-    $attachments_data = [];
-    try {
-        $attachments_data = DatabaseManager::select(
-            'SELECT bf_no, bf_source, bf_file, bf_filesize, board_type as file_board_type 
-             FROM ' . get_table_name('post_files') . ' 
-             WHERE wr_id = ? 
-             ORDER BY bf_no ASC',
-            [$postId]
-        );
-    } catch (Exception $e) {
-        error_log('첨부파일 조회 오류 (nepal_view.php): ' . $e->getMessage());
-        // 첨부파일 오류는 치명적이지 않으므로 빈 배열로 계속 진행
-        $attachments_data = [];
-    }
-    
-    $attachments = [];
-    foreach ($attachments_data as $f) {
-        $no = (int)$f['bf_no'];
-        $attachments[] = [
-            'bf_no'         => $no,
-            'original_name' => (string)$f['bf_source'],
-            'stored_name'   => (string)$f['bf_file'],
-            'file_size'     => (int)$f['bf_filesize'],
-        ];
-    }
 
     // 이전글/다음글 조회
     $prev_post = null;
@@ -89,7 +63,6 @@ try {
         'view_count'    => (int)$row['wr_hit'],
         'category_name' => (string)$row['ca_name'],
         'content'       => (string)$row['wr_content'],
-        'attachments'   => $attachments,
         'is_notice'     => 0,
         'user_id'       => (string)($row['mb_id'] ?? ''),
         'prev_post'     => $prev_post,
@@ -171,27 +144,6 @@ if (preg_match_all('/<img[^>]+src=["\'](([^"\']++))["\'][^>]*>/i', $row['wr_cont
         </div>
       </div>
       
-      <!-- 첨부파일 -->
-      <?php if (!empty($attachments)): ?>
-      <div class="border-b bg-blue-50 px-6 py-3">
-        <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-          <i data-lucide="paperclip" class="w-4 h-4 mr-1"></i>
-          첨부파일
-        </h3>
-        <ul class="space-y-1">
-          <?php foreach ($attachments as $file): ?>
-          <li>
-            <a href="/download.php?board_type=nepal_travel&wr_id=<?= $postId ?>&bf_no=<?= $file['bf_no'] ?>" 
-               class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-              <i data-lucide="download" class="w-3 h-3 mr-1"></i>
-              <?= htmlspecialchars($file['original_name']) ?>
-              <span class="text-gray-500 ml-1">(<?= formatFileSize($file['file_size']) ?>)</span>
-            </a>
-          </li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-      <?php endif; ?>
       
       <!-- 본문 -->
       <div class="px-6 py-8">

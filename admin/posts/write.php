@@ -29,10 +29,22 @@ foreach ($board_types as $id => $info) {
 
 // 환경 변수 로드 (파일 업로드용)
 require_once '../env_loader.php';
-require_once 'attachment_helpers.php';
+error_log("attachment_helpers.php 파일을 로드하기 전");
+require_once __DIR__ . '/../attachment_helpers.php';
+error_log("attachment_helpers.php 파일을 로드한 후");
+
+// 디버그: 함수 존재 여부 확인
+if (!function_exists('get_bt_upload_path')) {
+    error_log("get_bt_upload_path 함수가 정의되지 않았습니다!");
+    error_log("attachment_helpers.php 파일 경로: " . __DIR__ . '/attachment_helpers.php');
+    error_log("파일 존재 여부: " . (file_exists(__DIR__ . '/attachment_helpers.php') ? 'YES' : 'NO'));
+} else {
+    error_log("get_bt_upload_path 함수가 정상적으로 로드되었습니다.");
+}
 
 // 게시글 저장 처리
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_log("Write.php POST 처리 시작");
     // 폼 데이터 가져오기
     $board_id = (int)$_POST['board_id'];
     $title = trim($_POST['title']);
@@ -147,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $pdo->commit();
                 $_SESSION['success_message'] = '게시글이 성공적으로 작성되었습니다.';
-                header("Location: list.php");
+                header("Location: " . admin_url('posts/list.php'));
                 exit;
             } else {
                 $pdo->rollback();
@@ -156,9 +168,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         } catch (PDOException $e) {
             $pdo->rollback();
+            error_log("Write.php PDO 오류: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
             $errors[] = "데이터베이스 오류: " . $e->getMessage();
         } catch (Exception $e) {
             $pdo->rollback();
+            error_log("Write.php Exception 오류: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine());
             $errors[] = "파일 업로드 오류: " . $e->getMessage();
         }
     }

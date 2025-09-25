@@ -21,7 +21,7 @@ return [
                 'driver' => 'mysql',
                 'host' => '127.0.0.1',
                 'port' => 3306,
-                'database' => 'hopec',
+                'database' => $_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec'),
                 'username' => 'root',
                 'password' => '',
                 'charset' => 'utf8mb4',

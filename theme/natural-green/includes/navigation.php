@@ -83,7 +83,7 @@ if (!function_exists('logo_url')) {
             } else {
                 // DB 연결이 없는 경우 직접 연결
                 $host = env('DB_HOST', 'localhost');
-                $dbname = env('DB_DATABASE', 'hopec');
+                $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
                 $username = env('DB_USERNAME', 'root');
                 $password = env('DB_PASSWORD', '');
                 

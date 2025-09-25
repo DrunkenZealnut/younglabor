@@ -32,14 +32,6 @@ try {
         [':wr_id' => $wr_id]
     );
     
-    // 첨부파일 조회 (있는 경우)
-    $attachments = [];
-    if (!empty($gallery_item['wr_file'])) {
-        $attachments = DatabaseManager::select(
-            "SELECT * FROM " . get_table_name('post_files') . " WHERE board_type = 'gallery' AND wr_id = :wr_id ORDER BY bf_no",
-            [':wr_id' => $wr_id]
-        );
-    }
     
 } catch (Exception $e) {
     $pageTitle = '활동 갤러리 | ' . app_name();
@@ -104,27 +96,6 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
         </div>
       </div>
       
-      <!-- 첨부파일 -->
-      <?php if (!empty($attachments)): ?>
-      <div class="border-b bg-blue-50 px-6 py-3">
-        <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-          <i data-lucide="paperclip" class="w-4 h-4 mr-1"></i>
-          첨부파일
-        </h3>
-        <ul class="space-y-1">
-          <?php foreach ($attachments as $file): ?>
-          <li>
-            <a href="/download.php?board_type=gallery&wr_id=<?= $wr_id ?>&bf_no=<?= $file['bf_no'] ?>" 
-               class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-              <i data-lucide="download" class="w-3 h-3 mr-1"></i>
-              <?= h($file['bf_source']) ?>
-              <span class="text-gray-500 ml-1">(<?= format_bytes($file['bf_filesize']) ?>)</span>
-            </a>
-          </li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-      <?php endif; ?>
       
       <!-- 본문 -->
       <div class="px-6 py-8">
@@ -177,7 +148,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
         <?php if ($prev_gallery): ?>
         <div class="border-b pb-3 mb-3">
           <div class="text-xs text-gray-500 mb-1">이전글</div>
-          <a href="/community/gallery_view.php?wr_id=<?= $prev_gallery['wr_id'] ?>" 
+          <a href="<?= app_url('community/gallery_view.php?wr_id=' . $prev_gallery['wr_id']) ?>" 
              class="text-sm text-gray-700 hover:text-forest-600 line-clamp-1">
             <?= h($prev_gallery['wr_subject']) ?>
           </a>
@@ -187,7 +158,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
         <?php if ($next_gallery): ?>
         <div class="pb-3">
           <div class="text-xs text-gray-500 mb-1">다음글</div>
-          <a href="/community/gallery_view.php?wr_id=<?= $next_gallery['wr_id'] ?>" 
+          <a href="<?= app_url('community/gallery_view.php?wr_id=' . $next_gallery['wr_id']) ?>" 
              class="text-sm text-gray-700 hover:text-forest-600 line-clamp-1">
             <?= h($next_gallery['wr_subject']) ?>
           </a>

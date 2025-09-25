@@ -47,7 +47,7 @@ try {
             $db_host = env('DB_HOST', 'localhost');
             $db_user = env('DB_USERNAME', 'root');
             $db_pass = env('DB_PASSWORD', '');
-            $db_name = env('DB_DATABASE', 'hopec');
+            $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
             
             // 빈 비밀번호를 null로 변환
             $password = empty($db_pass) ? null : $db_pass;

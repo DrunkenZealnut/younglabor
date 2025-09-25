@@ -14,7 +14,7 @@ $status = [
   'time' => date('c'),
   'host' => $_SERVER['HTTP_HOST'] ?? '',
   'php' => PHP_VERSION,
-  'app' => 'hopec',
+  'app' => env('PROJECT_SLUG', 'hopec'),
   'db' => ['ok' => false, 'ms' => null],
 ];
 
@@ -27,7 +27,7 @@ try {
     // PDO 직접 연결 및 테스트
     $t0 = microtime(true);
     $dsn = "mysql:host=" . env('DB_HOST', 'localhost') . 
-           ";dbname=" . env('DB_DATABASE', 'hopec') . 
+           ";dbname=" . env('DB_DATABASE', env('PROJECT_SLUG', 'hopec')) . 
            ";charset=utf8mb4";
     
     $pdo = new PDO(

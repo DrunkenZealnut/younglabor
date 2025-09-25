@@ -201,7 +201,7 @@ if (!function_exists('logo_url')) {
                     $db_host = env('DB_HOST', 'localhost');
                     $db_user = env('DB_USERNAME', 'root');
                     $db_pass = env('DB_PASSWORD', '');
-                    $db_name = env('DB_DATABASE', 'hopec');
+                    $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
                     $password = empty($db_pass) ? null : $db_pass;
                     
                     $db_connection = new PDO(
@@ -216,7 +216,7 @@ if (!function_exists('logo_url')) {
                     $db_host = env('DB_HOST', 'localhost');
                     $db_user = env('DB_USERNAME', 'root');
                     $db_pass = env('DB_PASSWORD', '');
-                    $db_name = env('DB_DATABASE', 'hopec');
+                    $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
                     $password = empty($db_pass) ? null : $db_pass;
                     
                     $db_connection = new PDO(
@@ -286,7 +286,7 @@ if (!function_exists('favicon_url')) {
                     $db_host = env('DB_HOST', 'localhost');
                     $db_user = env('DB_USERNAME', 'root');
                     $db_pass = env('DB_PASSWORD', '');
-                    $db_name = env('DB_DATABASE', 'hopec');
+                    $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
                     $password = empty($db_pass) ? null : $db_pass;
                     
                     $db_connection = new PDO(

@@ -8,7 +8,7 @@
 
 try {
     $host = $_ENV['DB_HOST'] ?? '127.0.0.1';
-    $dbname = $_ENV['DB_DATABASE'] ?? 'hopec';
+    $dbname = $_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec');
     $username = $_ENV['DB_USERNAME'] ?? 'root';
     $password = $_ENV['DB_PASSWORD'] ?? '';
     $pdo = new PDO("mysql:host={$host};dbname={$dbname};charset=utf8mb4", $username, $password, [

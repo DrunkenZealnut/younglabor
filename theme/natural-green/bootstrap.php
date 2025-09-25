@@ -97,7 +97,7 @@ try {
                 'mysql' => [
                     'host' => env('DB_HOST', 'localhost'),
                     'port' => env('DB_PORT', 3306),
-                    'database' => env('DB_DATABASE', 'hopec'),
+                    'database' => env('DB_DATABASE', env('PROJECT_SLUG', 'hopec')),
                     'username' => env('DB_USERNAME', 'root'),
                     'password' => env('DB_PASSWORD', ''),
                     'charset' => 'utf8mb4',

@@ -214,13 +214,13 @@ try {
             require_once __DIR__ . '/admin/env_loader.php';
             loadEnv();
             $host = env('DB_HOST', 'localhost');
-            $dbname = env('DB_DATABASE', 'hopec');
+            $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
             $username = env('DB_USERNAME', 'root');
             $password = env('DB_PASSWORD', '');
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
         } else {
             $host = env('DB_HOST', 'localhost');
-            $dbname = env('DB_DATABASE', 'hopec');
+            $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
             $username = env('DB_USERNAME', 'root');
             $password = env('DB_PASSWORD', '');
             $pdo = new PDO("mysql:host={$host};dbname={$dbname};charset=utf8mb4", $username, $password);

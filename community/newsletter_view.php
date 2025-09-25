@@ -32,14 +32,6 @@ try {
         [':wr_id' => $wr_id]
     );
     
-    // 첨부파일 조회 (있는 경우)
-    $attachments = [];
-    if (!empty($newsletter_item['wr_file'])) {
-        $attachments = DatabaseManager::select(
-            "SELECT * FROM " . get_table_name('post_files') . " WHERE wr_id = :wr_id AND board_type = 'newsletter' ORDER BY bf_no",
-            [':wr_id' => $wr_id]
-        );
-    }
     
 } catch (Exception $e) {
     $pageTitle = '소식지 | ' . app_name();
@@ -104,27 +96,6 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $newsletter_item['wr_c
         </div>
       </div>
       
-      <!-- 첨부파일 -->
-      <?php if (!empty($attachments)): ?>
-      <div class="border-b bg-blue-50 px-6 py-3">
-        <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-          <i data-lucide="paperclip" class="w-4 h-4 mr-1"></i>
-          첨부파일
-        </h3>
-        <ul class="space-y-1">
-          <?php foreach ($attachments as $file): ?>
-          <li>
-            <a href="/download.php?board_type=newsletter&wr_id=<?= $wr_id ?>&bf_no=<?= $file['bf_no'] ?>" 
-               class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800">
-              <i data-lucide="download" class="w-3 h-3 mr-1"></i>
-              <?= h($file['bf_source']) ?>
-              <span class="text-gray-500 ml-1">(<?= format_bytes($file['bf_filesize']) ?>)</span>
-            </a>
-          </li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-      <?php endif; ?>
       
       <!-- 본문 -->
       <div class="px-6 py-8">
@@ -177,7 +148,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $newsletter_item['wr_c
         <?php if ($prev_newsletter): ?>
         <div class="border-b pb-3 mb-3">
           <div class="text-xs text-gray-500 mb-1">이전글</div>
-          <a href="/community/newsletter_view.php?wr_id=<?= $prev_newsletter['wr_id'] ?>" 
+          <a href="<?= app_url('community/newsletter_view.php?wr_id=' . $prev_newsletter['wr_id']) ?>" 
              class="text-sm text-gray-700 hover:text-forest-600 line-clamp-1">
             <?= h($prev_newsletter['wr_subject']) ?>
           </a>
@@ -187,7 +158,7 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $newsletter_item['wr_c
         <?php if ($next_newsletter): ?>
         <div class="pb-3">
           <div class="text-xs text-gray-500 mb-1">다음글</div>
-          <a href="/community/newsletter_view.php?wr_id=<?= $next_newsletter['wr_id'] ?>" 
+          <a href="<?= app_url('community/newsletter_view.php?wr_id=' . $next_newsletter['wr_id']) ?>" 
              class="text-sm text-gray-700 hover:text-forest-600 line-clamp-1">
             <?= h($next_newsletter['wr_subject']) ?>
           </a>

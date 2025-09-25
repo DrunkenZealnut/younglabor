@@ -13,7 +13,7 @@ try {
     // .env 파일에서 데이터베이스 설정 가져오기
     $host = env('DB_HOST', 'localhost');
     $port = env('DB_PORT', '3306');
-    $dbname = env('DB_DATABASE', 'hopec');
+    $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
     $username = env('DB_USERNAME', 'root');
     $password = env('DB_PASSWORD', '');
     $socket = env('DB_SOCKET', '');

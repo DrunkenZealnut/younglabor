@@ -38,7 +38,7 @@ function getBoardDatabase() {
     // 기본 연결 설정 (환경변수 기반)
     try {
         $host = defined('DB_HOST') ? DB_HOST : (function_exists('env') ? env('DB_HOST', 'localhost') : 'localhost');
-        $dbname = defined('DB_NAME') ? DB_NAME : (function_exists('env') ? env('DB_DATABASE', 'hopec') : 'hopec');
+        $dbname = defined('DB_NAME') ? DB_NAME : (function_exists('env') ? env('DB_DATABASE', env('PROJECT_SLUG', 'hopec')) : env('PROJECT_SLUG', 'hopec'));
         $username = defined('DB_USER') ? DB_USER : (function_exists('env') ? env('DB_USERNAME', 'root') : 'root');
         $password = defined('DB_PASS') ? DB_PASS : (function_exists('env') ? env('DB_PASSWORD', '') : '');
         $charset = defined('DB_CHARSET') ? DB_CHARSET : (function_exists('env') ? env('DB_CHARSET', 'utf8mb4') : 'utf8mb4');
