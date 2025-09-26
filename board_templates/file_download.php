@@ -1,7 +1,7 @@
 <?php
-// 범용 파일 다운로드 핸들러 - hopec_posts 통합 호환
+// 범용 파일 다운로드 핸들러 - younglabor_posts 통합 호환
 // 입력: GET post_id, attachment_id
-// hopec_post_files 테이블 조회 후 파일 전송
+// younglabor_post_files 테이블 조회 후 파일 전송
 
 // 모든 출력 버퍼 정리 (파일 전송 전에 먼저 실행)
 while (ob_get_level()) {
@@ -11,7 +11,7 @@ while (ob_get_level()) {
 // 에러 출력을 버퍼에 저장 (헤더 전송 후 에러가 발생하지 않도록)
 ob_start();
 
-// hopec_posts 호환성 레이어 로드
+// younglabor_posts 호환성 레이어 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -44,9 +44,9 @@ if (!$pdo) {
     exit;
 }
 
-// 파일 메타 조회 (hopec_post_files + hopec_posts 조인)
+// 파일 메타 조회 (younglabor_post_files + younglabor_posts 조인)
 try {
-    // 게시물의 board_type을 얻기 위해 hopec_posts와 조인 (wr_parent 기반, board_type 매칭)
+    // 게시물의 board_type을 얻기 위해 younglabor_posts와 조인 (wr_parent 기반, board_type 매칭)
     $stmt = $pdo->prepare('SELECT pf.bf_source as original_name, pf.bf_file as stored_name, pf.bf_filesize as file_size, p.board_type 
                            FROM ' . get_table_name('post_files') . ' pf 
                            JOIN ' . get_table_name('posts') . ' p ON pf.wr_id = p.wr_parent AND pf.board_type = p.board_type
@@ -83,7 +83,7 @@ if (empty($post_board_type)) {
 // 설정된 파일 베이스 경로 사용
 $baseDir = rtrim(BOARD_TEMPLATES_FILE_BASE_PATH, '/');
 
-// 1차: 게시물의 board_type 경로 시도
+// 파일 경로 구성: baseDir + board_type + filename
 $filePath = $baseDir . '/' . $post_board_type . '/' . $storedName;
 
 // 파일이 없으다면 다른 board_type 디렉토리에서 찾기

@@ -104,7 +104,7 @@ include_once __DIR__ . '/../includes/header.php';
       </p>
 
       <?php
-      // 1) 후원 카테고리 설정 (hopec_donate 테이블 기반)
+      // 1) 후원 카테고리 설정 (younglabor_donate 테이블 기반)
       $categories = ['정회원', '준회원', '후원회원'];
       $bo_table = 'B21'; // 호환성을 위한 변수 유지
 

@@ -4,15 +4,16 @@ header('Content-Type: text/html; charset=utf-8');
 mb_internal_encoding('UTF-8');
 
 require 'db.php';
+require_once '../includes/config_helpers.php';
 
 try {
     // allow_attachments 컬럼 추가 여부 확인
-    $stmt = $pdo->query("SHOW COLUMNS FROM hopec_boards LIKE 'allow_attachments'");
+    $stmt = $pdo->query("SHOW COLUMNS FROM " . get_table_name('boards') . " LIKE 'allow_attachments'");
     $columnExists = $stmt->fetch();
     
     if (!$columnExists) {
         // allow_attachments 컬럼 추가
-        $sql = "ALTER TABLE hopec_boards ADD COLUMN allow_attachments TINYINT(1) DEFAULT 1 COMMENT '첨부파일 허용 여부'";
+        $sql = "ALTER TABLE " . get_table_name('boards') . " ADD COLUMN allow_attachments TINYINT(1) DEFAULT 1 COMMENT '첨부파일 허용 여부'";
         $pdo->exec($sql);
         echo "<p style='color:green'>첨부파일 허용 컬럼이 성공적으로 추가되었습니다!</p>";
     } else {

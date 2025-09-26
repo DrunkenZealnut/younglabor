@@ -167,7 +167,7 @@ if (!function_exists('hash_password')) {
      * 비밀번호 해싱
      */
     function hash_password($password) {
-        $config = $GLOBALS['hopec_config']['security']['password'] ?? [];
+        $config = $GLOBALS['younglabor_config']['security']['password'] ?? [];
         $algorithm = $config['hash_algorithm'] ?? PASSWORD_DEFAULT;
         $options = $config['hash_options'] ?? ['cost' => 12];
         

@@ -2,7 +2,12 @@
 
 class EventModel extends BaseModel 
 {
-    protected $table = 'hopec_events';
+    protected $table;
+    
+    public function __construct($db) {
+        parent::__construct($db);
+        $this->table = get_table_name('events');
+    }
     
     protected $fillable = [
         'title',
@@ -24,7 +29,7 @@ class EventModel extends BaseModel
      */
     public function createTable()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->table} (
+        $sql = "CREATE TABLE IF NOT EXISTS " . get_table_name('events') . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             title VARCHAR(255) NOT NULL COMMENT '행사 제목',
             description TEXT COMMENT '행사 설명',

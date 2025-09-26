@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reply'])) {
     
     if (!empty($reply_content)) {
         try {
-            $stmt = $pdo->prepare("UPDATE hopec_inquiries SET reply = ?, status = '답변완료', replied_at = NOW() WHERE id = ?");
+            $stmt = $pdo->prepare("UPDATE " . get_table_name('inquiries') . " SET reply = ?, status = '답변완료', replied_at = NOW() WHERE id = ?");
             $result = $stmt->execute([$reply_content, $inquiry_id]);
             
             if ($result) {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_status'])) {
     $new_status = trim($_POST['status']);
     
     try {
-        $stmt = $pdo->prepare("UPDATE hopec_inquiries SET status = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE " . get_table_name('inquiries') . " SET status = ? WHERE id = ?");
         $result = $stmt->execute([$new_status, $inquiry_id]);
         
         if ($result) {
@@ -58,8 +58,8 @@ try {
     // 문의사항 정보 조회
     $stmt = $pdo->prepare("
         SELECT i.*, c.name as category_name 
-        FROM hopec_inquiries i
-        LEFT JOIN hopec_inquiry_categories c ON i.category_id = c.id
+        FROM " . get_table_name('inquiries') . " i
+        LEFT JOIN " . get_table_name('inquiry_categories') . " c ON i.category_id = c.id
         WHERE i.id = ?
     ");
     $stmt->execute([$inquiry_id]);
@@ -71,7 +71,7 @@ try {
     }
     
     // 카테고리 목록 가져오기 (상태 변경용)
-    $stmt = $pdo->query("SELECT id, name FROM hopec_inquiry_categories WHERE is_active = 1 ORDER BY name");
+    $stmt = $pdo->query("SELECT id, name FROM " . get_table_name('inquiry_categories') . " WHERE is_active = 1 ORDER BY name");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch (PDOException $e) {

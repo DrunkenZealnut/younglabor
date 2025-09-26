@@ -21,7 +21,7 @@ class DatabaseManager
         
         if (!isset($pdo)) {
             $host = env('DB_HOST', 'localhost');
-            $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+            $dbname = env('DB_DATABASE', '');
             $username = env('DB_USERNAME', 'root');
             $password = env('DB_PASSWORD', '');
             

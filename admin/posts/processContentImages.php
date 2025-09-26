@@ -175,7 +175,7 @@ function updateThumbnailFromContent($content, $post_id, $current_thumbnail, $pdo
         error_log("updateThumbnailFromContent: 게시글 ID " . $post_id . "의 썸네일을 본문 이미지로 설정: " . $image_path);
         
         // 썸네일 업데이트
-        $update_stmt = $pdo->prepare("UPDATE hopec_posts SET thumbnail = ? WHERE id = ?");
+        $update_stmt = $pdo->prepare("UPDATE " . get_table_name('posts') . " SET thumbnail = ? WHERE id = ?");
         return $update_stmt->execute([$image_path, $post_id]);
     } else {
         // 이미지가 없는 경우 사이트 로고를 썸네일로 설정
@@ -187,7 +187,7 @@ function updateThumbnailFromContent($content, $post_id, $current_thumbnail, $pdo
             error_log("updateThumbnailFromContent: 게시글 ID " . $post_id . "에 이미지가 없어 로고로 설정: " . $logo_path);
             
             // 썸네일 업데이트
-            $update_stmt = $pdo->prepare("UPDATE hopec_posts SET thumbnail = ? WHERE id = ?");
+            $update_stmt = $pdo->prepare("UPDATE " . get_table_name('posts') . " SET thumbnail = ? WHERE id = ?");
             return $update_stmt->execute([$logo_path, $post_id]);
         }
     }

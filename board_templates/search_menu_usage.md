@@ -106,7 +106,7 @@ board_templates/
 
 ## 적용된 파일들
 
-### hopec 프로젝트
+### younglabor 프로젝트
 - ✅ `board_templates/board_list.php` - 기존 검색 기능을 새 검색메뉴로 교체
 - ✅ `board_templates/search_menu.php` - 독립적인 검색메뉴 컴포넌트
 
@@ -115,7 +115,7 @@ board_templates/
 
 ## 검색 기능 매핑
 
-### board_templates (hopec)
+### board_templates (younglabor)
 ```php
 // GET 파라미터 매핑
 $search_type = $_GET['search_type'] ?? 'all';  // 검색 카테고리
@@ -154,7 +154,7 @@ if (!empty($search_keyword)) {
 - HTML5 지원 브라우저
 - 외부 라이브러리 없음 (순수 PHP/HTML/CSS/JS)
 
-## 통합 완료 사항 (hopec 프로젝트)
+## 통합 완료 사항 (younglabor 프로젝트)
 
 ### 직접 적용된 파일
 1. **`community/gallery.php`** - 기존 검색 UI를 검색메뉴로 교체

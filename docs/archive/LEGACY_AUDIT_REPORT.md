@@ -1,7 +1,7 @@
 # 희망씨 웹사이트 그누보드 의존성 감사 보고서
 
 **감사 일시**: 2025년 1월  
-**대상**: 희망씨 웹사이트 (/Users/zealnutkim/Documents/개발/hopec)  
+**대상**: 희망씨 웹사이트 (/Users/zealnutkim/Documents/개발/younglabor)  
 **목적**: 그누보드 프레임워크 의존성 코드 식별 및 모던 아키텍처 마이그레이션 계획 수립
 
 ---
@@ -14,13 +14,13 @@
 
 #### 핵심 그누보드 파일들
 ```php
-/hopec/_common.php              // 메인 초기화 파일
-/hopec/common.php              // 그누보드 핵심 공통 파일
-/hopec/config.php              // 그누보드 설정
-/hopec/head.php                // HTML 헤더
-/hopec/head.sub.php            // 서브 헤더
-/hopec/_tail.php               // HTML 푸터
-/hopec/lib/common.lib.php      // 공통 라이브러리
+/younglabor/_common.php              // 메인 초기화 파일
+/younglabor/common.php              // 그누보드 핵심 공통 파일
+/younglabor/config.php              // 그누보드 설정
+/younglabor/head.php                // HTML 헤더
+/younglabor/head.sub.php            // 서브 헤더
+/younglabor/_tail.php               // HTML 푸터
+/younglabor/lib/common.lib.php      // 공통 라이브러리
 ```
 
 #### 페이지별 의존성 분포
@@ -126,8 +126,8 @@
 
 ```bash
 # 1. 새 Laravel 프로젝트 초기화
-composer create-project laravel/laravel hopec-modern
-cd hopec-modern
+composer create-project laravel/laravel younglabor-modern
+cd younglabor-modern
 
 # 2. Docker 환경 설정
 # docker-compose.yml 생성
@@ -137,7 +137,7 @@ cd hopec-modern
 # - Nginx
 
 # 3. 기존 데이터베이스 마이그레이션
-php artisan make:migration create_hopec_tables
+php artisan make:migration create_younglabor_tables
 ```
 
 **Deliverables**:
@@ -162,7 +162,7 @@ class Notice extends Model
 {
     use HasFactory;
     
-    protected $table = 'hopec_notices';
+    protected $table = 'younglabor_notices';
     protected $primaryKey = 'wr_id';
     
     protected $fillable = [
@@ -338,7 +338,7 @@ class AuthController extends Controller
         }
         
         $user = Auth::user();
-        $token = $user->createToken('hopec-token')->plainTextToken;
+        $token = $user->createToken('younglabor-token')->plainTextToken;
         
         return response()->json([
             'user' => $user,
@@ -395,7 +395,7 @@ class NoticeTest extends TestCase
         $response = $this->postJson('/api/notices', $data);
         
         $response->assertStatus(201);
-        $this->assertDatabaseHas('hopec_notices', $data);
+        $this->assertDatabaseHas('younglabor_notices', $data);
     }
 }
 ```
@@ -415,8 +415,8 @@ class NoticeTest extends TestCase
 1. **환경 구축**
 ```bash
 # 새 Laravel 프로젝트 생성
-composer create-project laravel/laravel hopec-modern
-cd hopec-modern
+composer create-project laravel/laravel younglabor-modern
+cd younglabor-modern
 
 # Docker 환경 설정
 cp docker-compose.example.yml docker-compose.yml
@@ -433,7 +433,7 @@ composer require --dev pestphp/pest
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=hopec_db
+DB_DATABASE=younglabor_db
 DB_USERNAME=root
 DB_PASSWORD=
 

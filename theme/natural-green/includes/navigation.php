@@ -14,16 +14,6 @@ if (file_exists($envPath)) {
     }
 }
 
-// 조직정보 헬퍼 포함
-if (file_exists(dirname(__DIR__, 2) . '/includes/organization_helper.php')) {
-    require_once dirname(__DIR__, 2) . '/includes/organization_helper.php';
-}
-
-// 설정 헬퍼 포함 (get_table_name 함수 사용을 위해)
-if (file_exists(dirname(__DIR__, 2) . '/includes/config_helpers.php')) {
-    require_once dirname(__DIR__, 2) . '/includes/config_helpers.php';
-}
-
 // 간단한 env 함수 (없는 경우만)
 if (!function_exists('env')) {
     function env($key, $default = null) {
@@ -57,7 +47,7 @@ if (!function_exists('app_url')) {
             
             if ($isLocal) {
                 // 로컬 환경: BASE_PATH 사용
-                $basePath = $basePath ?: '/hopec';
+                $basePath = $basePath ?: '/';
                 $baseUrl = $protocol . $host . $basePath;
             } else {
                 // 프로덕션 환경: 루트 기준
@@ -73,54 +63,6 @@ if (!function_exists('app_url')) {
 
 if (!function_exists('logo_url')) {
     function logo_url($fallback = 'logo.png') {
-        // admin 설정에서 site_logo 값 가져오기
-        try {
-            global $pdo;
-            $db_connection = null;
-            
-            if (isset($pdo)) {
-                $db_connection = $pdo;
-            } else {
-                // DB 연결이 없는 경우 직접 연결
-                $host = env('DB_HOST', 'localhost');
-                $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
-                $username = env('DB_USERNAME', 'root');
-                $password = env('DB_PASSWORD', '');
-                
-                $db_connection = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-                $db_connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            }
-            
-            if ($db_connection) {
-                $stmt = $db_connection->prepare("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'site_logo'");
-                $stmt->execute();
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($result && !empty($result['setting_value'])) {
-                    // 상대 경로로 저장된 경우 절대 URL로 변환
-                    $logo_path = $result['setting_value'];
-                    if (!preg_match('/^https?:\/\//', $logo_path)) {
-                        // BASE_PATH를 고려한 URL 생성
-                        $base_path = env('BASE_PATH', '');
-                        $logo_url = $base_path . '/' . ltrim($logo_path, '/');
-                        
-                        // 브라우저 캐시 방지를 위해 파일 수정 시간을 쿼리 파라미터로 추가
-                        $file_path = $_SERVER['DOCUMENT_ROOT'] . $logo_url;
-                        if (file_exists($file_path)) {
-                            $logo_url .= '?v=' . filemtime($file_path);
-                        }
-                        
-                        return $logo_url;
-                    }
-                    return $logo_path;
-                }
-            }
-        } catch (Exception $e) {
-            // DB 오류 시 fallback 사용
-            error_log("logo_url() DB error: " . $e->getMessage());
-        }
-        
-        // fallback: 기본 이미지 경로
         return app_url('assets/images/' . $fallback);
     }
 }
@@ -269,37 +211,12 @@ $communityLinks = [
         <a href="<?php echo app_url(''); ?>" 
            class="d-flex align-items-center text-decoration-none"
            aria-label="홈페이지 메인으로 이동">
-          <?php 
-            $logo_src = logo_url();
-            // 로고가 fallback인 경우 (DB에 로고가 없는 경우) 사이트명을 표시
-            $is_fallback = (strpos($logo_src, 'assets/images/') !== false);
-            if (!$is_fallback): 
-          ?>
           <img
-            src="<?php echo htmlspecialchars($logo_src); ?>"
+            src="<?php echo app_url('assets/images/logo.png'); ?>"
             alt="<?php echo htmlspecialchars(org_logo_alt('로고')); ?>"
             class="object-fit-contain"
             style="height: 3.5rem; width: auto; max-width: 14rem;"
             onerror="this.style.display='none';" />
-          <?php else: ?>
-          <?php
-            // 사이트명 가져오기
-            $site_name = '희망씨'; // 기본값
-            try {
-              if ($pdo) {
-                $stmt = $pdo->prepare("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'site_name'");
-                $stmt->execute();
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($result && !empty($result['setting_value'])) {
-                  $site_name = $result['setting_value'];
-                }
-              }
-            } catch (Exception $e) {
-              // DB 오류 시 기본값 사용
-            }
-          ?>
-          <span class="text-forest-600 fw-bold fs-4"><?php echo htmlspecialchars($site_name); ?></span>
-          <?php endif; ?>
         </a>
       </div>
 
@@ -369,6 +286,8 @@ $communityLinks = [
                 aria-controls="mobileMenu"
                 aria-label="메뉴 열기">
           <i data-lucide="menu" class="w-6 h-6"></i>
+          <!-- 폴백 햄버거 아이콘 (Lucide 실패시) -->
+          <span class="hamburger-fallback" style="display: none; font-size: 18px; line-height: 1;">☰</span>
         </button>
       </div>
     </div>
@@ -381,6 +300,8 @@ $communityLinks = [
     <h2 id="mobileMenuTitle" class="text-lg text-forest-600">메뉴</h2>
     <button type="button" id="mobileMenuClose" class="d-inline-flex align-items-center justify-content-center rounded text-forest-600" style="width: 2.5rem; height: 2.5rem;" aria-label="메뉴 닫기">
       <i data-lucide="x" class="w-6 h-6"></i>
+      <!-- 폴백 닫기 아이콘 (Lucide 실패시) -->
+      <span class="close-fallback" style="display: none; font-size: 20px; line-height: 1;">×</span>
     </button>
   </div>
   <nav class="px-2 py-2 overflow-y-auto max-h-[calc(100svh-56px)]" role="navigation" aria-label="모바일 메뉴">
@@ -605,6 +526,59 @@ body {
         max-width: 280px;
     }
 }
+
+/* 햄버거 메뉴 아이콘 스타일링 강화 */
+#mobileMenuToggle {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+#mobileMenuToggle:hover {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+#mobileMenuToggle [data-lucide="menu"] {
+    width: 24px !important;
+    height: 24px !important;
+    color: #333333 !important;
+    stroke: #333333 !important;
+    stroke-width: 2 !important;
+    fill: none !important;
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* 모바일 메뉴 닫기 아이콘도 동일하게 스타일링 */
+#mobileMenuClose [data-lucide="x"] {
+    width: 24px !important;
+    height: 24px !important;
+    color: #333333 !important;
+    stroke: #333333 !important;
+    stroke-width: 2 !important;
+    fill: none !important;
+}
+
+/* 폴백 아이콘 스타일링 */
+.hamburger-fallback,
+.close-fallback {
+    color: #333333 !important;
+    font-weight: bold;
+    pointer-events: none;
+}
+
+/* Lucide 아이콘이 없을 때만 폴백 아이콘 표시 */
+[data-lucide]:empty + .hamburger-fallback,
+[data-lucide]:empty + .close-fallback {
+    display: inline-block !important;
+}
+
+[data-lucide]:not(:empty) + .hamburger-fallback,
+[data-lucide]:not(:empty) + .close-fallback {
+    display: none !important;
+}
 </style>
 
 <script>
@@ -635,6 +609,35 @@ document.addEventListener('DOMContentLoaded', function() {
         header.style.zIndex = '1050';
         header.style.width = '100%';
     }
+
+    // 폴백 아이콘 시스템 - Lucide 실패 시 자동 활성화
+    function checkAndActivateFallbacks() {
+        // 햄버거 메뉴 아이콘 체크
+        const menuIcon = document.querySelector('#mobileMenuToggle [data-lucide="menu"]');
+        const menuFallback = document.querySelector('#mobileMenuToggle .hamburger-fallback');
+        
+        if (menuIcon && menuFallback) {
+            if (menuIcon.innerHTML.trim() === '') {
+                menuFallback.style.display = 'inline-block';
+                console.log('🔄 햄버거 메뉴 폴백 아이콘 활성화');
+            }
+        }
+        
+        // 닫기 아이콘 체크
+        const closeIcon = document.querySelector('#mobileMenuClose [data-lucide="x"]');
+        const closeFallback = document.querySelector('#mobileMenuClose .close-fallback');
+        
+        if (closeIcon && closeFallback) {
+            if (closeIcon.innerHTML.trim() === '') {
+                closeFallback.style.display = 'inline-block';
+                console.log('🔄 닫기 메뉴 폴백 아이콘 활성화');
+            }
+        }
+    }
+    
+    // DOM 로드 후 즉시 체크, 그리고 1초 후 한 번 더 체크
+    checkAndActivateFallbacks();
+    setTimeout(checkAndActivateFallbacks, 1000);
 
     // 드롭다운 메뉴 호버 기능
     const dropdownItems = document.querySelectorAll('.dropdown, .nav-item.dropdown');

@@ -9,7 +9,7 @@ admin과 theme 템플릿을 새로운 프로젝트에서 사용하기 위한 설
 1. **프로젝트 파일 복사**
    ```bash
    # 전체 템플릿 복사
-   cp -r hopec-template /your-new-project/
+   cp -r younglabor-template /your-new-project/
    cd /your-new-project/
    ```
 
@@ -92,7 +92,7 @@ mysql -u username -p your_database < template-sql/database-schema.sql
 데이터베이스에 직접 관리자 계정 추가:
 
 ```sql
-INSERT INTO hopec_admin_users (username, email, password, name, role, created_at) 
+INSERT INTO younglabor_admin_users (username, email, password, name, role, created_at) 
 VALUES ('admin', 'admin@example.com', '$2y$10$hashed_password', 'Administrator', 'admin', NOW());
 ```
 

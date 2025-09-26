@@ -200,7 +200,7 @@ try {
             $password = env("DB_PASSWORD", "");
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
         } else {
-            $pdo = new PDO("mysql:host=" . ($_ENV['DB_HOST'] ?? 'localhost') . ";dbname=" . ($_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec')) . ";charset=utf8mb4", 
+            $pdo = new PDO("mysql:host=" . ($_ENV['DB_HOST'] ?? 'localhost') . ";dbname=" . ($_ENV['DB_DATABASE'] ?? '') . ";charset=utf8mb4", 
                           $_ENV['DB_USERNAME'] ?? 'root', 
                           $_ENV['DB_PASSWORD'] ?? '');
         }
@@ -223,7 +223,7 @@ try {
     if ($ip_address === "::1") $ip_address = "127.0.0.1";
     
     // 데이터베이스에 저장
-    $table_prefix = env("DB_PREFIX", "hopec_");
+    $table_prefix = env("DB_PREFIX", "younglabor_");
     $sql = "INSERT INTO {$table_prefix}inquiries (category_id, name, email, phone, subject, message, status, ip_address, user_agent, created_at) VALUES (?, ?, ?, ?, ?, ?, \"new\", ?, ?, NOW())";
     $stmt = $pdo->prepare($sql);
     $result = $stmt->execute([$category_id, $name, $email, $phone ?: null, $subject ?: null, $message, $ip_address, $user_agent]);
@@ -234,7 +234,7 @@ try {
         // SMTP 이메일 발송
         try {
             $admin_email = env("DEFAULT_ADMIN_EMAIL");
-            $from_email = env("MAIL_FROM_EMAIL", env("MAIL_SMTP_USERNAME", "noreply@hopec.co.kr"));
+            $from_email = env("MAIL_FROM_EMAIL", env("MAIL_SMTP_USERNAME", "noreply@younglabor.co.kr"));
             $from_name = env("MAIL_FROM_NAME");
             
             $stmt = $pdo->prepare("SELECT name FROM {$table_prefix}inquiry_categories WHERE id = ?");

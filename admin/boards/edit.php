@@ -12,7 +12,8 @@ $id = (int)$_GET['id'];
 
 // 게시판 데이터 불러오기
 try {
-  $stmt = $pdo->prepare("SELECT * FROM hopec_boards WHERE id = ?");
+  $tableName = get_table_name('boards');
+  $stmt = $pdo->prepare("SELECT * FROM {$tableName} WHERE id = ?");
   $stmt->execute([$id]);
   $board = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // 명시적으로 UTF-8 설정
       $pdo->exec("SET NAMES utf8mb4");
       
-      $stmt = $pdo->prepare("UPDATE hopec_boards 
+      $stmt = $pdo->prepare("UPDATE {$tableName} 
                             SET board_name = :name, 
                                 description = :description, 
                                 board_type = :board_type,

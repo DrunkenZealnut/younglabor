@@ -1,10 +1,10 @@
 <?php
 /**
- * HOPEC 통합 라이트박스 HTML 템플릿
+ * younglabor 통합 라이트박스 HTML 템플릿
  * gallery_view.php, nepal_view.php, newsletter_view.php 공용 템플릿
  * 
  * @version 1.0.0
- * @author HOPEC Development Team
+ * @author younglabor Development Team
  * @description 재사용 가능한 라이트박스 모달 HTML 구조
  * 
  * 사용법:

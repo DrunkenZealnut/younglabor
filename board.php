@@ -29,7 +29,7 @@ if (file_exists(__DIR__ . '/.env')) {
 // 데이터베이스 연결
 try {
     $host = $_ENV['DB_HOST'] ?? 'localhost';
-    $dbname = $_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec');
+    $dbname = $_ENV['DB_DATABASE'] ?? '';
     $username = $_ENV['DB_USERNAME'] ?? 'root';
     $password = $_ENV['DB_PASSWORD'] ?? '';
     $charset = $_ENV['DB_CHARSET'] ?? 'utf8mb4';
@@ -47,7 +47,7 @@ try {
 
 // 게시판 정보 조회
 try {
-    $table_prefix = $_ENV['DB_PREFIX'] ?? 'hopec_';
+    $table_prefix = $_ENV['DB_PREFIX'] ?? '';
     $stmt = $pdo->prepare("SELECT * FROM {$table_prefix}boards WHERE id = ? AND is_active = 1");
     $stmt->execute([$board_id]);
     $board = $stmt->fetch();

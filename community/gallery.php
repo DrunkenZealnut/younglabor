@@ -1,7 +1,7 @@
 <?php
 /**
  * 활동 갤러리 목록 페이지
- * hopec_posts 테이블 사용 (board_type = 'gallery')
+ * younglabor_posts 테이블 사용 (board_type = 'gallery')
  */
 
 // 모던 부트스트랩 시스템 로드

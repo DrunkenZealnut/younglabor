@@ -83,7 +83,7 @@ include __DIR__ . '/../components/hero-slider.php';
 
 ## 데이터베이스 요구사항
 
-Hero 슬라이더는 `hopec_gallery` 테이블에서 데이터를 가져옵니다:
+Hero 슬라이더는 `younglabor_gallery` 테이블에서 데이터를 가져옵니다:
 - `wr_id`: 게시글 ID
 - `wr_subject`: 제목
 - `wr_content`: 내용 (이미지 추출용)

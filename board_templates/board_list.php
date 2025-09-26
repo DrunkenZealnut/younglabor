@@ -1,6 +1,6 @@
-<!-- 교육 시스템용 게시판 목록 템플릿 - hopec_posts 통합 호환 -->
+<!-- 교육 시스템용 게시판 목록 템플릿 - younglabor_posts 통합 호환 -->
 <?php
-// hopec_posts 호환성 레이어 로드
+// younglabor_posts 호환성 레이어 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -47,7 +47,7 @@ if (!isset($posts)) {
         $config['board_skin'] = $board_skin;
     }
     
-    // hopec_posts 호환 데이터 로드
+    // younglabor_posts 호환 데이터 로드
     $posts = getBoardPosts($category_type, $current_page, $per_page, $search_type, $search_keyword);
     $total_posts = getBoardPostsCount($category_type, $search_type, $search_keyword);
     $total_pages = ceil($total_posts / $per_page);

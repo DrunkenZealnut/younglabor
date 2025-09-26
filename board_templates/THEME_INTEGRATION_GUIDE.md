@@ -106,12 +106,12 @@ if (function_exists('renderBoardTheme')) {
 게시판 템플릿들이 이미 업데이트되어 있으므로 **별도 설정 불필요**합니다.
 
 ### 2. Admin에서 색상 변경
-1. `/hopec/admin/settings/site_settings.php` 접속
+1. `/younglabor/admin/settings/site_settings.php` 접속
 2. "테마 색상 설정" 섹션에서 8가지 색상 변경
 3. 저장 후 게시판 페이지 새로고침
 
 ### 3. 테스트 및 확인
-- **데모 페이지**: `/hopec/board_templates/theme_integration_demo.php`
+- **데모 페이지**: `/younglabor/board_templates/theme_integration_demo.php`
 - **디버그 모드**: `?debug=1` 파라미터 추가
 - **실제 게시판**: 기존 게시판 페이지들에서 확인
 
@@ -125,7 +125,7 @@ require_once __DIR__ . '/theme_integration.php';
 if (function_exists('renderBoardTheme')) {
     renderBoardTheme();
 } else {
-    echo '<link rel="stylesheet" href="/hopec/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />';
+    echo '<link rel="stylesheet" href="/younglabor/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />';
 }
 ?>
 
@@ -229,7 +229,7 @@ private function darkenColor($hex, $percent) {
 # 원인: CSS 파일 경로 오류
 
 # 해결방법:
-1. /hopec/board_templates/assets/board-theme-enhanced.css 파일 존재 확인
+1. /younglabor/board_templates/assets/board-theme-enhanced.css 파일 존재 확인
 2. 웹서버 권한 설정 확인 (읽기 권한 필요)
 ```
 
@@ -238,7 +238,7 @@ private function darkenColor($hex, $percent) {
 #### 1. 테마 변수 확인
 ```php
 // URL에 ?debug=1 추가하여 현재 테마 변수 확인
-// http://localhost/hopec/board_templates/theme_integration_demo.php?debug=1
+// http://localhost/younglabor/board_templates/theme_integration_demo.php?debug=1
 ```
 
 #### 2. 브라우저 개발자 도구

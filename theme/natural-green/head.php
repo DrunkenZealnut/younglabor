@@ -1,4 +1,4 @@
-<?php if (!defined('_HOPEC_')) exit; ?>
+<?php if (!defined('_younglabor_')) exit; ?>
 <?php 
 // Configuration loader 및 Natural Green 단일 테마 로더 사용
 require_once __DIR__ . '/../../includes/config_loader.php';
@@ -98,9 +98,9 @@ $theme = getNaturalGreenTheme();
         }
         
         // 테마 정보가 있으면 사용, 없으면 CSS 변수 직접 확인
-        if (window.HOPEC_THEME) {
-          console.log('🎨 테마 정보:', window.HOPEC_THEME);
-          document.body.setAttribute('data-theme', window.HOPEC_THEME.display_name.toUpperCase());
+        if (window.younglabor_THEME) {
+          console.log('🎨 테마 정보:', window.younglabor_THEME);
+          document.body.setAttribute('data-theme', window.younglabor_THEME.display_name.toUpperCase());
         } else {
           // Fallback: CSS 변수 확인
           const currentTheme = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();

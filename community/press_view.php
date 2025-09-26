@@ -27,7 +27,7 @@ try {
 
     // 게시글 조회
     $row = DatabaseManager::selectOne(
-        "SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_last, wr_hit, ca_name, wr_content, mb_id FROM hopec_press WHERE wr_id = :id AND wr_is_comment = 0",
+        "SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_last, wr_hit, ca_name, wr_content, mb_id FROM younglabor_press WHERE wr_id = :id AND wr_is_comment = 0",
         [':id' => $postId]
     );
 
@@ -92,7 +92,6 @@ try {
     $config = [
         'list_url' => app_url('community/press.php'),
         'enable_comments' => false,
-        'gnuboard_bo_table' => 'hopec_press',
     ];
 } catch (Exception $e) {
     $message = '데이터베이스 오류가 발생했습니다.';

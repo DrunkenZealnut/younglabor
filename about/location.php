@@ -16,7 +16,7 @@ try {
     // 오시는길 콘텐츠 조회
     $row = DatabaseManager::selectOne("
         SELECT wr_subject, wr_content
-        FROM hopec_location
+        FROM younglabor_location
         WHERE wr_is_comment = 0
         ORDER BY wr_id ASC
         LIMIT 1

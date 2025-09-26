@@ -1,11 +1,11 @@
 <?php
-// HopecPosts comment driver: pure hopec_posts integration (gnuboard compatibility removed)
-// Uses hopec_posts unified table system only
+// younglaborPosts comment driver: pure younglabor_posts integration (gnuboard compatibility removed)
+// Uses younglabor_posts unified table system only
 
 if (!function_exists('comments_driver_gn_fetch')) {
     function comments_driver_gn_fetch(PDO $pdo, int $postId, array $options = []): array {
         try {
-            // hopec_posts에서 댓글 조회
+            // younglabor_posts에서 댓글 조회
             $sql = "SELECT wr_id as comment_id, wr_id as post_id, wr_name as author_name, 
                            wr_content as content, wr_datetime as created_at, wr_ip,
                            board_type
@@ -29,7 +29,7 @@ if (!function_exists('comments_driver_gn_fetch')) {
                 ];
             }, $rows ?: []);
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 조회 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 조회 실패: " . $e->getMessage());
             return [];
         }
     }
@@ -52,7 +52,7 @@ if (!function_exists('comments_driver_gn_create')) {
                 $board_type = $options['board_type'] ?? 'notice';
             }
             
-            // hopec_posts에 댓글 추가
+            // younglabor_posts에 댓글 추가
             $sql = "INSERT INTO " . get_table_name('posts') . " 
                     SET wr_id = :wr_id,
                         board_type = :board_type,
@@ -80,7 +80,7 @@ if (!function_exists('comments_driver_gn_create')) {
             
             return $result ? $next_id : 0;
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 작성 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 작성 실패: " . $e->getMessage());
             return 0;
         }
     }
@@ -89,11 +89,11 @@ if (!function_exists('comments_driver_gn_create')) {
 if (!function_exists('comments_driver_gn_delete')) {
     function comments_driver_gn_delete(PDO $pdo, int $commentId, array $options = []): bool {
         try {
-            // hopec_posts에서 댓글 삭제 (실제 삭제)
-            $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE wr_id = ? AND wr_is_comment = 1");
+            // younglabor_posts에서 댓글 삭제 (실제 삭제)
+            $stmt = $pdo->prepare("DELETE FROM younglabor_posts WHERE wr_id = ? AND wr_is_comment = 1");
             return $stmt->execute([$commentId]);
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 삭제 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 삭제 실패: " . $e->getMessage());
             return false;
         }
     }
@@ -102,8 +102,8 @@ if (!function_exists('comments_driver_gn_delete')) {
 if (!function_exists('comments_driver_gn_update')) {
     function comments_driver_gn_update(PDO $pdo, int $commentId, array $payload, array $options = []): bool {
         try {
-            // hopec_posts에서 댓글 수정
-            $sql = "UPDATE hopec_posts 
+            // younglabor_posts에서 댓글 수정
+            $sql = "UPDATE younglabor_posts 
                     SET wr_content = :content,
                         wr_last = NOW()
                     WHERE wr_id = ? AND wr_is_comment = 1";
@@ -114,7 +114,7 @@ if (!function_exists('comments_driver_gn_update')) {
                 $commentId
             ]);
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 수정 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 수정 실패: " . $e->getMessage());
             return false;
         }
     }
@@ -124,11 +124,11 @@ if (!function_exists('comments_driver_gn_update')) {
 if (!function_exists('comments_driver_gn_count')) {
     function comments_driver_gn_count(PDO $pdo, int $postId): int {
         try {
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM hopec_posts WHERE wr_parent = ? AND wr_is_comment = 1");
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM younglabor_posts WHERE wr_parent = ? AND wr_is_comment = 1");
             $stmt->execute([$postId]);
             return (int)$stmt->fetchColumn();
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 개수 조회 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 개수 조회 실패: " . $e->getMessage());
             return 0;
         }
     }

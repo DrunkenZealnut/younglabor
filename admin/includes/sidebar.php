@@ -62,14 +62,37 @@ if (!function_exists('is_sidebar_menu_active')) {
     }
 }
 
-// admin_url 함수가 없는 경우 기본 구현
+// bootstrap.php에서 get_admin_url 함수를 사용
+// admin_url 함수를 get_admin_url로 대체하기 위한 wrapper
 if (!function_exists('admin_url')) {
     function admin_url($path = '') {
-        $base_path = rtrim(dirname($_SERVER['PHP_SELF']), '/admin');
-        if (strpos($base_path, '/admin') === false) {
-            $base_path .= '/admin';
+        // bootstrap.php에서 정의된 함수들을 사용
+        if (function_exists('get_admin_menu_urls') && function_exists('get_admin_url')) {
+            // 특정 페이지들은 get_admin_url 사용
+            $menu_mapping = [
+                'index.php' => 'dashboard',
+                'posts/list.php' => 'posts',
+                'boards/list.php' => 'boards',
+                'menu/list.php' => 'menu',
+                'inquiries/list.php' => 'inquiries',
+                'events/list.php' => 'events',
+                'files/list.php' => 'files',
+                'settings/site_settings.php' => 'settings',
+                'settings/simple-color-settings.php' => 'themes',
+                'settings/hero_settings.php' => 'hero',
+                'system/performance.php' => 'performance',
+                'change_password.php' => 'change_password',
+                'logout.php' => 'logout'
+            ];
+            
+            if (isset($menu_mapping[$path])) {
+                return get_admin_url($menu_mapping[$path]);
+            }
         }
-        return $base_path . '/' . ltrim($path, '/');
+        
+        // 기본 fallback
+        $base_path = get_base_path() ?? '/hopec';
+        return $base_path . '/admin/' . ltrim($path, '/');
     }
 }
 ?>

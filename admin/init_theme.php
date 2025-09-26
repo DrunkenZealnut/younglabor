@@ -75,7 +75,7 @@ initializePageTheme();
     echo '<ul>';
     echo '<li>데이터베이스 연결 확인</li>';
     echo '<li>파일 쓰기 권한 확인</li>';
-    echo '<li>hopec_site_settings 테이블 존재 확인</li>';
+    echo '<li>site_settings 테이블 존재 확인</li>';
     echo '</ul>';
 }
 ?>

@@ -2,6 +2,7 @@
 // /admin/settings/site_settings.php - Admin 독립 버전
 require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/../templates_bridge.php';
+require_once __DIR__ . '/../../includes/config_helpers.php';
 
 // Include theme functions
 if (file_exists(__DIR__ . '/../../includes/theme_functions.php')) {
@@ -42,7 +43,7 @@ if (!function_exists('saveCustomTheme')) {
     function saveCustomTheme($pdo, $theme_name, $theme_data) {
     try {
         $stmt = $pdo->prepare("
-            INSERT INTO hopec_custom_themes (theme_name, theme_data, created_at) 
+            INSERT INTO " . get_table_name('custom_themes') . " (theme_name, theme_data, created_at) 
             VALUES (?, ?, NOW())
             ON DUPLICATE KEY UPDATE 
             theme_data = VALUES(theme_data), 
@@ -94,7 +95,7 @@ if (!function_exists('getDefaultThemes')) {
 if (!function_exists('getCurrentThemeId')) {
     function getCurrentThemeId($pdo) {
         try {
-            $stmt = $pdo->prepare("SELECT setting_value FROM hopec_site_settings WHERE setting_key = 'current_theme'");
+            $stmt = $pdo->prepare("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'current_theme'");
             $stmt->execute();
             $result = $stmt->fetchColumn();
             return $result ?: 'default';
@@ -116,7 +117,7 @@ if (!function_exists('applyThemePreset')) {
             $pdo->beginTransaction();
             
             // 테마 설정 적용
-            $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+            $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
             foreach ($theme_settings as $key => $value) {
                 $stmt->execute([$value, $key]);
             }
@@ -141,10 +142,10 @@ if (!function_exists('applyThemePreset')) {
 
 // 테이블이 없는 경우 생성
 try {
-  $pdo->query("SELECT 1 FROM hopec_site_settings LIMIT 1");
+  $pdo->query("SELECT 1 FROM " . get_table_name('site_settings') . " LIMIT 1");
 } catch (PDOException $e) {
   // 테이블 생성 코드 (원본과 동일)
-  $sql = "CREATE TABLE hopec_site_settings (
+  $sql = "CREATE TABLE " . get_table_name('site_settings') . " (
     id INT(11) NOT NULL AUTO_INCREMENT,
     setting_key VARCHAR(100) NOT NULL COMMENT '설정 키',
     setting_value TEXT COMMENT '설정 값',
@@ -189,7 +190,7 @@ try {
     ['custom_js', '', 'other']
   ];
   
-  $sql = "INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
+  $sql = "INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
   $stmt = $pdo->prepare($sql);
   
   foreach ($default_settings as $setting) {
@@ -281,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'admin_email' => trim($_POST['admin_email'] ?? '')
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       foreach ($general_settings as $key => $value) {
         $stmt->execute([$value, $key]);
       }
@@ -307,7 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'dark_color' => trim($_POST['dark_color'] ?? '#212529')
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       foreach ($theme_settings as $key => $value) {
         $stmt->execute([$value, $key]);
       }
@@ -332,7 +333,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'font_size_base' => trim($_POST['font_size_base'] ?? '1rem')
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       foreach ($font_settings as $key => $value) {
         $stmt->execute([$value, $key]);
       }
@@ -354,7 +355,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'container_width' => trim($_POST['container_width'] ?? 'standard')
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       foreach ($layout_settings as $key => $value) {
         $stmt->execute([$value, $key]);
       }
@@ -377,7 +378,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'kakaotalk_url' => trim($_POST['kakaotalk_url'] ?? '')
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       foreach ($social_settings as $key => $value) {
         $stmt->execute([$value, $key]);
       }
@@ -398,7 +399,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'custom_js' => trim($_POST['custom_js'] ?? '')
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       foreach ($other_settings as $key => $value) {
         $stmt->execute([$value, $key]);
       }

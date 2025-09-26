@@ -20,7 +20,7 @@ $response = [
 ];
 
 // 업로드 경로 직접 계산 (하드코딩 제거)
-$physical_base_path = dirname(dirname(__DIR__)); // hopec 루트 디렉토리
+$physical_base_path = dirname(dirname(__DIR__)); //
 $upload_path = env('UPLOAD_PATH');
 $upload_base_path = rtrim($physical_base_path, '/') . '/' . ltrim($upload_path, '/');
 
@@ -31,6 +31,7 @@ $upload_url_base = rtrim($app_url, '/') . '/' . ltrim($upload_url, '/');
 
 // 게시판 정보 추출 (POST 데이터에서)
 $board_table = isset($_POST['board_table']) ? $_POST['board_table'] : 'general';
+
 
 // board_type을 폴더명으로 사용 (write.php와 일치)
 $board_type_mapping = [
@@ -45,12 +46,10 @@ $board_type_mapping = [
 
 $board_folder = isset($board_type_mapping[$board_table]) ? $board_type_mapping[$board_table] : 'general';
 
-// 날짜 기반 폴더 생성 (년도+월 형식, 예: 2509)
-$date_folder = date('ym'); // 현재 년도 2자리 + 월 2자리
 
-// write.php와 동일한 폴더 구조: UPLOAD_PATH/board_type/ym/
-$upload_dir = rtrim($upload_base_path, '/') . "/$board_folder/$date_folder/";
-$relative_upload_path = "$board_folder/$date_folder/";
+// 첨부파일과 동일하게 날짜 폴더 없이 테이블 정보만 사용: UPLOAD_PATH/board_type/
+$upload_dir = rtrim($upload_base_path, '/') . "/$board_folder/";
+$relative_upload_path = "$board_folder/";
 
 // 디버깅 메시지 초기화
 $debug_info = '';
@@ -157,8 +156,8 @@ if (!in_array($type, $allowed_types)) {
         $debug_info .= "파일 업로드 성공\n";
         $response['success'] = true;
         
-        // 업로드 성공 시 통일된 URL 생성 (새로운 날짜 구조)
-        $url_path = rtrim($upload_url_base, '/') . "/$board_folder/$date_folder/" . $new_filename;
+        // 업로드 성공 시 통일된 URL 생성 (첨부파일과 동일한 구조)
+        $url_path = rtrim($upload_url_base, '/') . "/$board_folder/" . $new_filename;
         $response['url'] = $url_path;
         
         // 다양한 URL 형식 제공

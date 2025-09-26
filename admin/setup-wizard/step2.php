@@ -228,7 +228,7 @@ $isXampp = file_exists('/Applications/XAMPP') || file_exists('C:\xampp');
                         <label for="db_prefix" class="form-label">테이블 접두사</label>
                         <input type="text" class="form-control" id="db_prefix" name="db_prefix" 
                                value="<?= htmlspecialchars($currentValues['DB_PREFIX'] ?? '') ?>" 
-                               placeholder="예: hopec_">
+                               placeholder="예: 프로젝트명_">
                         <div class="form-text">테이블 이름 앞에 붙을 접두사 (선택사항)</div>
                     </div>
                     

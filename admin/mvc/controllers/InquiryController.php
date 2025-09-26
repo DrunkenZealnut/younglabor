@@ -435,7 +435,7 @@ class InquiryController extends BaseController
         try {
             $stmt = $this->db->prepare("
                 SELECT id, name 
-                FROM hopec_inquiry_categories 
+                FROM " . get_table_name('inquiry_categories') 
                 WHERE is_active = 1 
                 ORDER BY name
             ");
@@ -454,7 +454,7 @@ class InquiryController extends BaseController
         try {
             $stmt = $this->db->prepare("
                 SELECT id, name 
-                FROM hopec_inquiry_categories 
+                FROM " . get_table_name('inquiry_categories') 
                 WHERE id = ?
             ");
             $stmt->execute([$id]);

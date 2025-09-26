@@ -8,7 +8,7 @@
 
 try {
     $host = $_ENV['DB_HOST'] ?? '127.0.0.1';
-    $dbname = $_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec');
+    $dbname = $_ENV['DB_DATABASE'] ?? '';
     $username = $_ENV['DB_USERNAME'] ?? 'root';
     $password = $_ENV['DB_PASSWORD'] ?? '';
     $pdo = new PDO("mysql:host={$host};dbname={$dbname};charset=utf8mb4", $username, $password, [
@@ -21,7 +21,7 @@ try {
     
     // 현재 잘못된 색상값들
     echo "<h2>❌ Current (Incorrect) Colors in Database:</h2>\n";
-    $table_prefix = $_ENV['DB_PREFIX'] ?? 'hopec_';
+    $table_prefix = $_ENV['DB_PREFIX'] ?? '';
     $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM {$table_prefix}site_settings WHERE setting_group = 'theme' AND setting_key LIKE '%_color' ORDER BY setting_key");
     $stmt->execute();
     $currentColors = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -1,45 +1,5 @@
 <?php
-/**
- * Templates Bridge - 현재 프로젝트와 재사용 프레임워크 연결
- * 
- * 단계적 마이그레이션을 위한 브릿지 시스템
- * 기존 코드를 최소한으로 변경하면서 재사용 프레임워크 도입
- */
 
-// 재사용 프레임워크 로드 비활성화 (템플릿 충돌 방지)
-/*
-$framework_path = __DIR__ . '/../shared_admin_framework/bootstrap.php';
-if (file_exists($framework_path)) {
-    require_once $framework_path;
-    
-    // 현재 프로젝트 설정
-    $project_config = [
-        'project_name' => '<?= htmlspecialchars($admin_title) ?>',
-        'theme' => 'hopec',
-        'lang' => 'ko',
-        'template_path' => __DIR__ . '/templates_project',  // 프로젝트 전용 템플릿
-        'debug' => true,
-        'cache_enabled' => true,
-        'performance_monitoring' => true,
-        'minify_output' => false  // 개발 단계에서는 비활성화
-    ];
-
-    // 프레임워크가 있을 때만 초기화
-    if (class_exists('AdminFramework')) {
-        AdminFramework::init($project_config);
-    }
-}
-*/
-
-// 캐시 클리어 요청 처리 (shared_admin_framework 비활성화로 인해 주석 처리)
-/*
-if (isset($_POST['action']) && $_POST['action'] === 'clear_cache') {
-    AdminFramework::clearCache();
-    http_response_code(200);
-    echo json_encode(['status' => 'success', 'message' => 'Cache cleared successfully']);
-    exit;
-}
-*/
 
 // 기존 코드 호환성을 위한 브릿지 클래스 (중복 방지)
 if (!class_exists('TemplateHelper')) {

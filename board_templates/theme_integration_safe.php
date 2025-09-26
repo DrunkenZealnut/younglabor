@@ -34,7 +34,7 @@ class SafeBoardThemeIntegration
     private function canConnectToDatabase()
     {
         try {
-            // hopec 프로젝트의 DB 설정 확인
+            // younglabor 프로젝트의 DB 설정 확인
             $dbConfigPath = dirname(__DIR__) . '/includes/db.php';
             if (file_exists($dbConfigPath)) {
                 return true;
@@ -55,7 +55,7 @@ class SafeBoardThemeIntegration
     private function loadAdminThemeSettings()
     {
         try {
-            // hopec 프로젝트 DB 연결 시도
+            // younglabor 프로젝트 DB 연결 시도
             $dbConfigPath = dirname(__DIR__) . '/includes/db.php';
             if (file_exists($dbConfigPath)) {
                 require_once $dbConfigPath;
@@ -82,7 +82,7 @@ class SafeBoardThemeIntegration
     private function loadThemeFromDatabase($pdo)
     {
         try {
-            // hopec_site_settings 테이블에서 테마 설정 로드
+            // younglabor_site_settings 테이블에서 테마 설정 로드
             $stmt = $pdo->prepare("SELECT setting_key, setting_value FROM " . get_table_name('site_settings') . " WHERE setting_group = 'theme'");
             $stmt->execute();
             
@@ -184,7 +184,7 @@ class SafeBoardThemeIntegration
         $themeGlobalsPath = dirname(__DIR__) . '/theme/' . $activeTheme . '/styles/globals.css';
         if (file_exists($themeGlobalsPath)) {
             $cssVersion = filemtime($themeGlobalsPath);
-            $cssUrl = '/hopec/theme/' . $activeTheme . '/styles/globals.css?v=' . $cssVersion . '&board=1';
+            $cssUrl = '/younglabor/theme/' . $activeTheme . '/styles/globals.css?v=' . $cssVersion . '&board=1';
             echo '<link rel="stylesheet" href="' . $cssUrl . '" />' . "\n";
             echo "<!-- Board 테마 CSS 로드됨: {$activeTheme} -->\n";
         } else {
@@ -207,7 +207,7 @@ class SafeBoardThemeIntegration
         // 2. 기본 CSS 파일도 로드 (있는 경우)
         $cssPath = __DIR__ . '/assets/board-theme-minimal.css';
         if (file_exists($cssPath)) {
-            $cssUrl = '/hopec/board_templates/assets/board-theme-minimal.css?v=' . filemtime($cssPath);
+            $cssUrl = '/younglabor/board_templates/assets/board-theme-minimal.css?v=' . filemtime($cssPath);
             echo '<link rel="stylesheet" href="' . $cssUrl . '" />' . "\n";
         }
         

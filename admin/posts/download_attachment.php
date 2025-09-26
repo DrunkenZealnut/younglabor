@@ -5,6 +5,7 @@
  */
 require_once '../bootstrap.php';
 require_once '../env_loader.php';
+require_once __DIR__ . '/../../includes/path_helper.php';
 
 // 파일 ID 검증
 $file_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -15,7 +16,7 @@ if (!$file_id) {
 
 try {
     // 파일 정보 조회
-    $stmt = $pdo->prepare("SELECT * FROM hopec_post_files WHERE bf_no = ?");
+    $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('post_files') . " WHERE bf_no = ?");
     $stmt->execute([$file_id]);
     $file_info = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -43,14 +44,8 @@ try {
     
     $folder_name = $folder_mapping[$board_type] ?? $board_type;
     
-    // 새로운 구조 확인: bf_file에 경로가 포함되어 있는지 확인
-    if (strpos($filename, '/') !== false) {
-        // 새로운 구조: board_type/날짜/파일명이 bf_file에 저장됨
-        $file_path = $upload_path . '/' . $filename;
-    } else {
-        // 기존 구조: board_type/파일명
-        $file_path = $upload_path . '/' . $folder_name . '/' . $filename;
-    }
+    // 파일 경로 구성: upload_path/board_type/filename
+    $file_path = $upload_path . '/' . $folder_name . '/' . $filename;
     
     // 파일 존재 확인
     if (!file_exists($file_path) || !is_readable($file_path)) {
@@ -68,7 +63,7 @@ try {
     }
     
     // 다운로드 수 증가
-    $update_stmt = $pdo->prepare("UPDATE hopec_post_files SET bf_download = bf_download + 1 WHERE bf_no = ?");
+    $update_stmt = $pdo->prepare("UPDATE " . get_table_name('post_files') . " SET bf_download = bf_download + 1 WHERE bf_no = ?");
     $update_stmt->execute([$file_id]);
     
     // MIME 타입 결정

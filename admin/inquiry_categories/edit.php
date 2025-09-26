@@ -2,6 +2,7 @@
 // /admin/inquiry_categories/edit.php
 require '../auth.php';
 require '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 한글 깨짐 방지를 위한 문자셋 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -17,7 +18,7 @@ $id = (int)$_GET['id'];
 
 // 카테고리 데이터 불러오기
 try {
-    $stmt = $pdo->prepare("SELECT * FROM hopec_inquiry_categories WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
     $stmt->execute([$id]);
     $category = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 명시적으로 UTF-8 설정
             $pdo->exec("SET NAMES utf8mb4");
             
-            $stmt = $pdo->prepare("UPDATE hopec_inquiry_categories 
+            $stmt = $pdo->prepare("UPDATE " . get_table_name('inquiry_categories') 
                                    SET name = :name, 
                                        description = :description, 
                                        is_active = :is_active 

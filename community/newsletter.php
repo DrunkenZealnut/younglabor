@@ -1,7 +1,7 @@
 <?php
 /**
  * 소식지 목록 페이지
- * hopec_newsletter 테이블 사용
+ * younglabor_newsletter 테이블 사용
  */
 
 // 모던 부트스트랩 시스템 로드

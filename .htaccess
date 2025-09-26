@@ -1,6 +1,6 @@
 # 개발환경용 htaccess - younglabor 사이트
 RewriteEngine On
-RewriteBase /younglabor/
+RewriteBase /
 
 # Fix URLs containing ${PROJECT_SLUG} patterns - handled at server level
 # Request containing malformed PROJECT_SLUG should be redirected to 404 handler

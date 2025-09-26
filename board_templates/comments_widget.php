@@ -1,6 +1,6 @@
 <?php
-// 게시글 상세 하단에 포함하는 댓글 위젯 - hopec_posts 통합 호환
-// hopec_posts 호환성 레이어 로드
+// 게시글 상세 하단에 포함하는 댓글 위젯 - younglabor_posts 통합 호환
+// younglabor_posts 호환성 레이어 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -37,25 +37,14 @@ if (isset($post) && is_array($post) && isset($post['post_id'])) {
 }
 if ($post_id <= 0) { return; }
 
-// 댓글 목록 조회 (hopec_posts 호환)
+// 댓글 목록 조회 (younglabor_posts 호환)
 try {
     $comments = getBoardComments($post_id);
 } catch (Throwable $e) {
     $comments = [];
 }
 
-if (empty($comments)) {
-    // Driver 방식으로 GNUBOARD 폴백 처리 (USE_HOPEC_POSTS가 false일 때만)
-    if (!defined('USE_HOPEC_POSTS') || !USE_HOPEC_POSTS) {
-        $bo_table = $config['gnuboard_bo_table'] ?? null;
-        if ($bo_table) {
-            @include_once __DIR__ . '/comments_drivers/hopec_posts.php';
-            if (function_exists('comments_driver_gn_fetch')) {
-                $comments = comments_driver_gn_fetch($pdo, (int)$post_id, ['bo_table' => $bo_table]);
-            }
-        }
-    }
-}
+// Note: Legacy GNU Board fallback removed
 
 // 트리 구성
 $byParent = [];
@@ -118,7 +107,7 @@ if (!defined('BOARD_THEME_LOADED')) {
         renderBoardTheme();
     } else {
         // 폴백: 기본 board-theme.css 로드
-        echo '<link rel="stylesheet" href="/hopec/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
+        echo '<link rel="stylesheet" href="/younglabor/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
     }
     define('BOARD_THEME_LOADED', true);
 }
@@ -131,9 +120,6 @@ if (!defined('BOARD_THEME_LOADED')) {
   <form id="commentForm" class="mb-4" aria-labelledby="commentsHeading" aria-describedby="commentHelp">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
     <input type="hidden" name="post_id" value="<?= (int)$post_id ?>">
-    <?php if (!empty($config['gnuboard_bo_table'])): ?>
-    <input type="hidden" name="bo_table" value="<?= htmlspecialchars($config['gnuboard_bo_table']) ?>">
-    <?php endif; ?>
     <input type="hidden" name="parent_id" id="parent_id" value="">
     <?php if (!$current_user): ?>
       <input type="text" name="author_name" class="w-full border border-slate-300 rounded-md px-3 py-2 mb-2" placeholder="작성자명" required>

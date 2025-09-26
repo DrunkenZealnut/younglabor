@@ -2,6 +2,7 @@
 // /admin/inquiry_categories/delete.php
 require '../auth.php';
 require '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 한글 깨짐 방지를 위한 문자셋 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -19,7 +20,7 @@ $id = (int)$_GET['id'];
 if (!isset($_GET['confirm']) || $_GET['confirm'] !== 'yes') {
     // 카테고리 정보 조회
     try {
-        $stmt = $pdo->prepare("SELECT name FROM hopec_inquiry_categories WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT name FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
         $stmt->execute([$id]);
         $category = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -29,7 +30,7 @@ if (!isset($_GET['confirm']) || $_GET['confirm'] !== 'yes') {
         }
         
         // 이 카테고리를 사용하는 문의 개수 확인
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM hopec_inquiries WHERE category_id = ?");
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM " . get_table_name('inquiries') . " WHERE category_id = ?");
         $stmt->execute([$id]);
         $inquiryCount = $stmt->fetchColumn();
         
@@ -89,7 +90,7 @@ try {
     $pdo->beginTransaction();
     
     // 카테고리 정보 조회 (삭제 메시지용)
-    $stmt = $pdo->prepare("SELECT name FROM hopec_inquiry_categories WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT name FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
     $stmt->execute([$id]);
     $category = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -100,11 +101,11 @@ try {
     }
     
     // 이 카테고리를 사용하는 문의 삭제 (외래 키 제약 조건으로 자동 삭제될 수도 있지만 확실히 처리)
-    $stmt = $pdo->prepare("DELETE FROM hopec_inquiries WHERE category_id = ?");
+    $stmt = $pdo->prepare("DELETE FROM " . get_table_name('inquiries') . " WHERE category_id = ?");
     $stmt->execute([$id]);
     
     // 카테고리 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_inquiry_categories WHERE id = ?");
+    $stmt = $pdo->prepare("DELETE FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
     $result = $stmt->execute([$id]);
     
     if ($result) {

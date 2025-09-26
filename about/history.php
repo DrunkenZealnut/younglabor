@@ -20,7 +20,7 @@ try {
        CASE wr_subject WHEN '연중' THEN -1 ELSE wr_subject END AS month_val,
        wr_subject,
        wr_content
-     FROM hopec_history
+     FROM younglabor_history
      WHERE wr_is_comment = 0
      ORDER BY year DESC, month_val DESC
     ";

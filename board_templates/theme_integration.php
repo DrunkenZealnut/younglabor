@@ -271,7 +271,7 @@ class BoardThemeIntegration
         
         // 상대 경로로 CSS URL 생성
         if (file_exists($cssPath)) {
-            $cssUrl = '/hopec/board_templates_new/assets/board-theme.css?v=' . filemtime($cssPath);
+            $cssUrl = '/younglabor/board_templates_new/assets/board-theme.css?v=' . filemtime($cssPath);
             echo '<link rel="stylesheet" href="' . htmlspecialchars($cssUrl) . '" />' . "\n";
             echo '<!-- Board Theme CSS 로드됨: ' . date('H:i:s', filemtime($cssPath)) . ' -->' . "\n";
         } else {
@@ -369,7 +369,7 @@ if (!function_exists('renderBoardTheme')) {
         } catch (Exception $e) {
             // 오류 발생 시 기본 CSS 로드
             error_log('renderBoardTheme Error: ' . $e->getMessage());
-            echo '<link rel="stylesheet" href="/hopec/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
+            echo '<link rel="stylesheet" href="/younglabor/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
         }
     }
 }

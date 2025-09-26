@@ -14,7 +14,7 @@ EnvLoader::load();
 
 // 프레임워크 초기화 - .env 기반
 $app_name = env('APP_NAME', env('PROJECT_NAME', 'ORGANIZATION'));
-define('_HOPEC_', !empty($app_name));
+define('_younglabor_', !empty($app_name));
 
 if (PHP_VERSION >= '5.1.0') {
     //if (function_exists("date_default_timezone_set")) date_default_timezone_set("Asia/Seoul");

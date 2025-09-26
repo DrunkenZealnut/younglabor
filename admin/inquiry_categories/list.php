@@ -2,6 +2,7 @@
 // /admin/inquiry_categories/list.php
 require '../auth.php';
 require '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 한글 깨짐 방지를 위한 문자셋 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -9,7 +10,7 @@ mb_internal_encoding('UTF-8');
 
 // 카테고리 목록 가져오기
 try {
-    $stmt = $pdo->query("SELECT * FROM hopec_inquiry_categories ORDER BY id ASC");
+    $stmt = $pdo->query("SELECT * FROM " . get_table_name('inquiry_categories') . " ORDER BY id ASC");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $error = $e->getMessage();

@@ -12,7 +12,7 @@ echo "1. Checking for duplicate entries in database...\n";
 
 $duplicate_check = "
 SELECT wr_id, wr_subject, COUNT(*) as count 
-FROM hopec_gallery 
+FROM gallery 
 GROUP BY wr_subject, wr_content, wr_datetime 
 HAVING COUNT(*) > 1
 ORDER BY count DESC
@@ -34,7 +34,7 @@ echo "\n";
 echo "2. Checking pagination boundaries...\n";
 
 $per_page = 12;
-$total_count = DatabaseManager::selectOne("SELECT COUNT(*) as total FROM hopec_gallery")['total'];
+$total_count = DatabaseManager::selectOne("SELECT COUNT(*) as total FROM gallery")['total'];
 $total_pages = ceil($total_count / $per_page);
 
 echo "Total posts: $total_count, Total pages: $total_pages\n";
@@ -47,13 +47,13 @@ if ($total_pages > 1) {
     // 마지막-1 페이지
     $prev_offset = ($prev_page - 1) * $per_page;
     $prev_posts = DatabaseManager::select(
-        "SELECT wr_id, wr_subject FROM hopec_gallery ORDER BY wr_id DESC LIMIT $per_page OFFSET $prev_offset"
+        "SELECT wr_id, wr_subject FROM gallery ORDER BY wr_id DESC LIMIT $per_page OFFSET $prev_offset"
     );
     
     // 마지막 페이지
     $last_offset = ($last_page - 1) * $per_page;
     $last_posts = DatabaseManager::select(
-        "SELECT wr_id, wr_subject FROM hopec_gallery ORDER BY wr_id DESC LIMIT $per_page OFFSET $last_offset"
+        "SELECT wr_id, wr_subject FROM gallery ORDER BY wr_id DESC LIMIT $per_page OFFSET $last_offset"
     );
     
     echo "\nPage $prev_page (offset: $prev_offset) - " . count($prev_posts) . " posts:\n";
@@ -83,7 +83,7 @@ echo "\n";
 // 3. 갤러리 테이블 구조 확인
 echo "3. Checking table structure...\n";
 
-$table_info = DatabaseManager::select("DESCRIBE hopec_gallery");
+$table_info = DatabaseManager::select("DESCRIBE gallery");
 echo "Table structure:\n";
 foreach ($table_info as $column) {
     echo "  {$column['Field']} - {$column['Type']} - {$column['Key']}\n";
@@ -94,7 +94,7 @@ echo "\n";
 // 4. 인덱스 확인
 echo "4. Checking indexes...\n";
 
-$indexes = DatabaseManager::select("SHOW INDEX FROM hopec_gallery");
+$indexes = DatabaseManager::select("SHOW INDEX FROM gallery");
 echo "Indexes:\n";
 foreach ($indexes as $idx) {
     echo "  {$idx['Key_name']} on {$idx['Column_name']}\n";
@@ -105,7 +105,7 @@ echo "\n";
 // 5. 최근 데이터 샘플 확인
 echo "5. Recent data sample...\n";
 
-$recent = DatabaseManager::select("SELECT wr_id, wr_subject, wr_datetime FROM hopec_gallery ORDER BY wr_id DESC LIMIT 5");
+$recent = DatabaseManager::select("SELECT wr_id, wr_subject, wr_datetime FROM gallery ORDER BY wr_id DESC LIMIT 5");
 foreach ($recent as $post) {
     echo "  ID: {$post['wr_id']}, Subject: " . mb_substr($post['wr_subject'], 0, 50) . ", Date: {$post['wr_datetime']}\n";
 }

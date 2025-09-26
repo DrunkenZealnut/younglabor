@@ -7,7 +7,12 @@ require_once 'BaseModel.php';
 
 class PostModel extends BaseModel 
 {
-    protected $table = 'hopec_posts';
+    protected $table;
+    
+    public function __construct($db) {
+        parent::__construct($db);
+        $this->table = get_table_name('posts');
+    }
     
     protected $fillable = [
         'board_id',
@@ -73,7 +78,7 @@ class PostModel extends BaseModel
     {
         $sql = "SELECT p.*, b.board_name, b.category_list, b.use_category 
                 FROM {$this->table} p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE p.board_id = ? AND p.status = 'published'";
         $params = [$boardId];
         
@@ -117,7 +122,7 @@ class PostModel extends BaseModel
         
         $query = "SELECT p.*, b.board_name, b.category_list, b.use_category 
                  FROM {$this->table} p
-                 LEFT JOIN hopec_boards b ON p.board_id = b.id
+                 LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id
                  WHERE p.status != 'deleted'";
         $params = [];
         
@@ -252,7 +257,7 @@ class PostModel extends BaseModel
     {
         $sql = "SELECT p.*, b.board_name 
                 FROM {$this->table} p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE p.status = 'published' AND p.is_public = 1";
         $params = [];
         
@@ -282,7 +287,7 @@ class PostModel extends BaseModel
         $sql = "SELECT p.*, b.board_name,
                 MATCH(p.title, p.content) AGAINST(? IN NATURAL LANGUAGE MODE) as relevance
                 FROM {$this->table} p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE MATCH(p.title, p.content) AGAINST(? IN NATURAL LANGUAGE MODE)
                 AND p.status = 'published' AND p.is_public = 1
                 ORDER BY relevance DESC, p.created_at DESC 
@@ -332,7 +337,7 @@ class PostModel extends BaseModel
         
         $sql = "SELECT p.*, b.board_name 
                 FROM {$this->table} p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE {$whereClause} AND p.status = 'published' AND p.is_public = 1";
         
         if ($boardId) {
@@ -515,7 +520,7 @@ class PostModel extends BaseModel
     {
         $sql = "SELECT p.*, b.board_name 
                 FROM {$this->table} p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE p.status = 'published' AND p.is_public = 1 
                 AND p.created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
                 ORDER BY p.views DESC, p.likes DESC, p.created_at DESC 
@@ -544,7 +549,7 @@ class PostModel extends BaseModel
                  WHERE p2.tags REGEXP CONCAT('(^|,)', p.tags, '(,|$)') 
                  AND p2.id = p.id) as tag_matches
                 FROM {$this->table} p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE p.id != ? AND p.status = 'published' AND p.is_public = 1
                 AND (";
         

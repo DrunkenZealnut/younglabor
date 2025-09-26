@@ -41,8 +41,8 @@ if (!function_exists('get_upload_url')) {
     }
 }
 
-if (!defined('HOPEC_START_TIME')) {
-    define('HOPEC_START_TIME', microtime(true));
+if (!defined('younglabor_START_TIME')) {
+    define('younglabor_START_TIME', microtime(true));
 }
 
 // 환경변수 로드
@@ -65,7 +65,7 @@ if (session_status() === PHP_SESSION_NONE) {
         ini_set('session.cookie_secure', env('SESSION_SECURE', false) ? 1 : 0);
         ini_set('session.use_strict_mode', 1);
         ini_set('session.cookie_samesite', env('SESSION_SAME_SITE', 'Strict'));
-        ini_set('session.name', env('SESSION_NAME', 'HOPEC_SESSION'));
+        ini_set('session.name', env('SESSION_NAME', 'younglabor_SESSION'));
         
         // 세션 만료 시간 설정
         ini_set('session.gc_maxlifetime', env('SESSION_LIFETIME', 7200));
@@ -111,7 +111,7 @@ foreach (['app', 'database', 'security', 'cache'] as $configFile) {
 }
 
 // 전역 설정 변수 설정
-$GLOBALS['hopec_config'] = $configs;
+$GLOBALS['younglabor_config'] = $configs;
 
 // 기본 헤더 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -125,12 +125,12 @@ if (env('SECURITY_HEADERS', true)) {
 spl_autoload_register(function($className) {
     // 네임스페이스별 디렉토리 매핑
     $namespaceMap = [
-        'Hopec\\' => PROJECT_BASE_PATH . '/src/',
-        'Hopec\\Core\\' => PROJECT_BASE_PATH . '/src/Core/',
-        'Hopec\\Database\\' => PROJECT_BASE_PATH . '/src/Database/',
-        'Hopec\\Security\\' => PROJECT_BASE_PATH . '/src/Security/',
-        'Hopec\\Menu\\' => PROJECT_BASE_PATH . '/src/Menu/',
-        'Hopec\\Board\\' => PROJECT_BASE_PATH . '/src/Board/',
+        'younglabor\\' => PROJECT_BASE_PATH . '/src/',
+        'younglabor\\Core\\' => PROJECT_BASE_PATH . '/src/Core/',
+        'younglabor\\Database\\' => PROJECT_BASE_PATH . '/src/Database/',
+        'younglabor\\Security\\' => PROJECT_BASE_PATH . '/src/Security/',
+        'younglabor\\Menu\\' => PROJECT_BASE_PATH . '/src/Menu/',
+        'younglabor\\Board\\' => PROJECT_BASE_PATH . '/src/Board/',
     ];
     
     foreach ($namespaceMap as $namespace => $directory) {
@@ -214,7 +214,7 @@ if (class_exists('DatabaseManager')) {
             $db_host = env('DB_HOST', 'localhost');
             $db_user = env('DB_USERNAME', 'root');
             $db_pass = env('DB_PASSWORD', '');
-            $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+            $db_name = env('DB_DATABASE', '');
             
             // 빈 비밀번호를 null로 변환
             $password = empty($db_pass) ? null : $db_pass;
@@ -267,7 +267,7 @@ if (class_exists('DatabaseManager')) {
 // 성능 로깅 (디버그 모드)
 if (env('PERFORMANCE_DEBUG', false)) {
     register_shutdown_function(function() {
-        $executionTime = microtime(true) - HOPEC_START_TIME;
+        $executionTime = microtime(true) - younglabor_START_TIME;
         $memoryUsage = memory_get_peak_usage(true) / 1024 / 1024;
         error_log(sprintf('[PERFORMANCE] Time: %.4fs, Memory: %.2fMB', $executionTime, $memoryUsage));
     });
@@ -277,7 +277,7 @@ if (env('PERFORMANCE_DEBUG', false)) {
 require_once __DIR__ . '/../includes/organization_helper.php';
 
 // 전역 템플릿 변수 설정
-$GLOBALS['hopec_app'] = [
+$GLOBALS['younglabor_app'] = [
     'name' => env('APP_NAME', '희망씨'),
     'url' => env('APP_URL'),
     'version' => '2.0.0',

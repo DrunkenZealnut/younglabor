@@ -57,10 +57,10 @@ $globalThemeIntegration = new GlobalThemeIntegration($pdo);
 
 // 테이블이 없는 경우 생성
 try {
-  $pdo->query("SELECT 1 FROM hopec_site_settings LIMIT 1");
+  $pdo->query("SELECT 1 FROM " . get_table_name('site_settings') . " LIMIT 1");
 } catch (PDOException $e) {
   // 테이블이 없으면 생성
-  $sql = "CREATE TABLE hopec_site_settings (
+  $sql = "CREATE TABLE " . get_table_name('site_settings') . " (
     id INT(11) NOT NULL AUTO_INCREMENT,
     setting_key VARCHAR(100) NOT NULL COMMENT '설정 키',
     setting_value TEXT COMMENT '설정 값',
@@ -114,7 +114,7 @@ try {
     
   ];
   
-  $sql = "INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
+  $sql = "INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
   $stmt = $pdo->prepare($sql);
   
   foreach ($default_settings as $setting) {
@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'admin_email' => isset($_POST['admin_email']) ? trim($_POST['admin_email']) : ''
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($general_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -207,7 +207,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'font_size_base' => isset($_POST['font_size_base']) ? trim($_POST['font_size_base']) : '1rem'
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($font_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -226,7 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'container_width' => isset($_POST['container_width']) ? trim($_POST['container_width']) : 'standard'
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($layout_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -246,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'kakaotalk_url' => isset($_POST['kakaotalk_url']) ? trim($_POST['kakaotalk_url']) : ''
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE " . get_table_name('site_settings') . " SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($social_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -320,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           }
           
           $logo_path = 'uploads/settings/' . $unique_name;
-          $stmt = $pdo->prepare("INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES ('site_logo', ?, 'general') ON DUPLICATE KEY UPDATE setting_value = ?");
+          $stmt = $pdo->prepare("INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group) VALUES ('site_logo', ?, 'general') ON DUPLICATE KEY UPDATE setting_value = ?");
           $stmt->execute([$logo_path, $logo_path]);
           
           $success_message = '로고가 성공적으로 업로드되었습니다.';
@@ -366,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           }
           
           $favicon_path = 'uploads/settings/' . $unique_name;
-          $stmt = $pdo->prepare("INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES ('site_favicon', ?, 'general') ON DUPLICATE KEY UPDATE setting_value = ?");
+          $stmt = $pdo->prepare("INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group) VALUES ('site_favicon', ?, 'general') ON DUPLICATE KEY UPDATE setting_value = ?");
           $stmt->execute([$favicon_path, $favicon_path]);
           
           $success_message = '파비콘이 성공적으로 업로드되었습니다.';
@@ -389,7 +389,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           unlink($old_logo);
         }
         
-        $stmt = $pdo->prepare("INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES ('site_logo', '', 'general') ON DUPLICATE KEY UPDATE setting_value = ''");
+        $stmt = $pdo->prepare("INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group) VALUES ('site_logo', '', 'general') ON DUPLICATE KEY UPDATE setting_value = ''");
         $stmt->execute();
         
         $success_message = '로고가 성공적으로 삭제되었습니다.';
@@ -410,7 +410,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           unlink($old_favicon);
         }
         
-        $stmt = $pdo->prepare("INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES ('site_favicon', '', 'general') ON DUPLICATE KEY UPDATE setting_value = ''");
+        $stmt = $pdo->prepare("INSERT INTO " . get_table_name('site_settings') . " (setting_key, setting_value, setting_group) VALUES ('site_favicon', '', 'general') ON DUPLICATE KEY UPDATE setting_value = ''");
         $stmt->execute();
         
         $success_message = '파비콘이 성공적으로 삭제되었습니다.';

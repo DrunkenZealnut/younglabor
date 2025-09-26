@@ -7,7 +7,7 @@ $admin_id = $_SESSION['admin_user_id'] ?? null;
 if (!$admin_id && isset($_SESSION['admin_username'])) {
     // 사용자 이름으로 ID를 조회
     try {
-        $stmt = $pdo->prepare("SELECT id FROM hopec_admin_user WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT id FROM " . get_table_name('admin_user') . " WHERE username = ?");
         $stmt->execute([$_SESSION['admin_username']]);
         $result = $stmt->fetch();
         if ($result) {
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     else {
         try {
             // 현재 비밀번호 확인
-            $stmt = $pdo->prepare("SELECT password_hash FROM hopec_admin_user WHERE id = ?");
+            $stmt = $pdo->prepare("SELECT password_hash FROM " . get_table_name('admin_user') . " WHERE id = ?");
             $stmt->execute([$admin_id]);
             $admin = $stmt->fetch();
             
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($new_password, PASSWORD_DEFAULT);
                 
                 // 비밀번호 업데이트
-                $updateStmt = $pdo->prepare("UPDATE hopec_admin_user SET password_hash = ? WHERE id = ?");
+                $updateStmt = $pdo->prepare("UPDATE " . get_table_name('admin_user') . " SET password_hash = ? WHERE id = ?");
                 $updateStmt->execute([$hash, $admin_id]);
                 
                 $success = true;

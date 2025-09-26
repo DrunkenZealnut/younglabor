@@ -43,7 +43,7 @@ class ThemeService
     {
         $stmt = $this->pdo->prepare("
             SELECT setting_key, setting_value 
-            FROM hopec_site_settings 
+            FROM " . get_table_name('site_settings') . " 
             WHERE setting_group IN ('theme', 'font', 'layout')
         ");
         $stmt->execute();
@@ -553,7 +553,7 @@ a:hover {
     public function updateTheme($settings)
     {
         $stmt = $this->pdo->prepare("
-            UPDATE hopec_site_settings 
+            UPDATE " . get_table_name('site_settings') . " 
             SET setting_value = ?, updated_at = CURRENT_TIMESTAMP 
             WHERE setting_key = ?
         ");
@@ -650,7 +650,7 @@ a:hover {
     public function saveThemePreset($name, $colors, $description = null, $createdBy = 'admin')
     {
         // 이름 중복 확인
-        $stmt = $this->pdo->prepare("SELECT id FROM hopec_theme_presets WHERE preset_name = ?");
+        $stmt = $this->pdo->prepare("SELECT id FROM " . get_table_name('theme_presets') . " WHERE preset_name = ?");
         $stmt->execute([$name]);
         
         if ($stmt->fetch()) {
@@ -671,13 +671,13 @@ a:hover {
         }
         
         // 다음 sort_order 값 계산
-        $stmt = $this->pdo->query("SELECT MAX(sort_order) as max_order FROM hopec_theme_presets");
+        $stmt = $this->pdo->query("SELECT MAX(sort_order) as max_order FROM " . get_table_name('theme_presets') . "");
         $maxOrder = $stmt->fetchColumn() ?: 0;
         $nextOrder = $maxOrder + 1;
         
         // 프리셋 저장
         $stmt = $this->pdo->prepare("
-            INSERT INTO hopec_theme_presets 
+            INSERT INTO " . get_table_name('theme_presets') . " 
             (preset_name, preset_colors, preset_description, created_by, sort_order) 
             VALUES (?, ?, ?, ?, ?)
         ");
@@ -703,7 +703,7 @@ a:hover {
     public function getThemePresets($activeOnly = true)
     {
         $sql = "SELECT id, preset_name, preset_colors, preset_description, created_by, created_at, is_active, sort_order 
-                FROM hopec_theme_presets";
+                FROM " . get_table_name('theme_presets') . "";
         
         if ($activeOnly) {
             $sql .= " WHERE is_active = 1";
@@ -730,7 +730,7 @@ a:hover {
     {
         $stmt = $this->pdo->prepare("
             SELECT id, preset_name, preset_colors, preset_description, created_by, created_at, is_active, sort_order 
-            FROM hopec_theme_presets 
+            FROM " . get_table_name('theme_presets') . " 
             WHERE id = ? AND is_active = 1
         ");
         
@@ -778,7 +778,7 @@ a:hover {
         
         if ($name !== null) {
             // 이름 중복 확인 (자신 제외)
-            $stmt = $this->pdo->prepare("SELECT id FROM hopec_theme_presets WHERE preset_name = ? AND id != ?");
+            $stmt = $this->pdo->prepare("SELECT id FROM " . get_table_name('theme_presets') . " WHERE preset_name = ? AND id != ?");
             $stmt->execute([$name, $presetId]);
             
             if ($stmt->fetch()) {
@@ -818,7 +818,7 @@ a:hover {
         $updates[] = "updated_at = CURRENT_TIMESTAMP";
         $params[] = $presetId;
         
-        $sql = "UPDATE hopec_theme_presets SET " . implode(', ', $updates) . " WHERE id = ?";
+        $sql = "UPDATE " . get_table_name('theme_presets') . " SET " . implode(', ', $updates) . " WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         
         if (!$stmt->execute($params)) {
@@ -842,7 +842,7 @@ a:hover {
         }
         
         $stmt = $this->pdo->prepare("
-            UPDATE hopec_theme_presets 
+            UPDATE " . get_table_name('theme_presets') . " 
             SET is_active = 0, updated_at = CURRENT_TIMESTAMP 
             WHERE id = ?
         ");
@@ -860,7 +860,7 @@ a:hover {
     public function updatePresetOrder($presetId, $newOrder)
     {
         $stmt = $this->pdo->prepare("
-            UPDATE hopec_theme_presets 
+            UPDATE " . get_table_name('theme_presets') . " 
             SET sort_order = ?, updated_at = CURRENT_TIMESTAMP 
             WHERE id = ? AND is_active = 1
         ");

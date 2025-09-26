@@ -37,7 +37,7 @@
     );
     
     // 디버깅 정보 (개발 환경에서만)
-    if (defined('HOPEC_DEBUG') && HOPEC_DEBUG) {
+    if (defined('younglabor_DEBUG') && younglabor_DEBUG) {
         error_log("Popup Debug - REQUEST_URI: {$requestUri}, SCRIPT_NAME: {$scriptName}, currentPath: {$currentPath}, isHomePage: " . ($isHomePage ? 'true' : 'false'));
     }
     

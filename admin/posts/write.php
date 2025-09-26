@@ -29,22 +29,35 @@ foreach ($board_types as $id => $info) {
 
 // 환경 변수 로드 (파일 업로드용)
 require_once '../env_loader.php';
-error_log("attachment_helpers.php 파일을 로드하기 전");
-require_once __DIR__ . '/../attachment_helpers.php';
-error_log("attachment_helpers.php 파일을 로드한 후");
 
-// 디버그: 함수 존재 여부 확인
-if (!function_exists('get_bt_upload_path')) {
-    error_log("get_bt_upload_path 함수가 정의되지 않았습니다!");
-    error_log("attachment_helpers.php 파일 경로: " . __DIR__ . '/attachment_helpers.php');
-    error_log("파일 존재 여부: " . (file_exists(__DIR__ . '/attachment_helpers.php') ? 'YES' : 'NO'));
-} else {
-    error_log("get_bt_upload_path 함수가 정상적으로 로드되었습니다.");
+if (defined('APP_ENV') && APP_ENV === 'development') {
+    error_log("attachment_helpers.php 파일을 로드하기 전");
+}
+
+// 경로 헬퍼 함수 로드 (get_bt_upload_path 함수 포함)
+require_once __DIR__ . '/../../includes/path_helper.php';
+
+// 첨부파일 헬퍼 함수 로드
+require_once __DIR__ . '/../../attachment_helpers.php';
+
+if (defined('APP_ENV') && APP_ENV === 'development') {
+    error_log("attachment_helpers.php 파일을 로드한 후");
+
+    // 디버그: 함수 존재 여부 확인
+    if (!function_exists('get_bt_upload_path')) {
+        error_log("get_bt_upload_path 함수가 정의되지 않았습니다!");
+        error_log("attachment_helpers.php 파일 경로: " . __DIR__ . '/attachment_helpers.php');
+        error_log("파일 존재 여부: " . (file_exists(__DIR__ . '/attachment_helpers.php') ? 'YES' : 'NO'));
+    } else {
+        error_log("get_bt_upload_path 함수가 정상적으로 로드되었습니다.");
+    }
 }
 
 // 게시글 저장 처리
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    error_log("Write.php POST 처리 시작");
+    if (defined('APP_ENV') && APP_ENV === 'development') {
+        error_log("Write.php POST 처리 시작");
+    }
     // 폼 데이터 가져오기
     $board_id = (int)$_POST['board_id'];
     $title = trim($_POST['title']);
@@ -107,8 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $option_string = implode(',', $filtered_options);
             }
             
-            // hopec_posts 테이블에 board_type으로 데이터 삽입
-            $sql = "INSERT INTO hopec_posts (
+            // posts 테이블에 board_type으로 데이터 삽입
+            $tableName = get_table_name('posts');
+            $sql = "INSERT INTO {$tableName} (
                 board_type, wr_subject, wr_content, wr_name, wr_datetime, wr_ip, 
                 wr_num, wr_reply, wr_parent, wr_is_comment, wr_comment, wr_comment_reply, 
                 ca_name, wr_option, wr_link1, wr_link2, wr_link1_hit, wr_link2_hit, 
@@ -140,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $post_id = $pdo->lastInsertId();
                 
                 // wr_parent를 새로 생성된 게시글의 ID로 업데이트 (첨부파일 연결을 위해)
-                $update_parent_sql = "UPDATE hopec_posts SET wr_parent = ? WHERE wr_id = ?";
+                $update_parent_sql = "UPDATE {$tableName} SET wr_parent = ? WHERE wr_id = ?";
                 $update_parent_stmt = $pdo->prepare($update_parent_sql);
                 $update_parent_stmt->execute([$post_id, $post_id]);
                 
@@ -152,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 // 첨부파일 개수 업데이트
                 if ($attachment_count > 0) {
-                    $update_sql = "UPDATE hopec_posts SET wr_file = ? WHERE wr_id = ?";
+                    $update_sql = "UPDATE {$tableName} SET wr_file = ? WHERE wr_id = ?";
                     $update_stmt = $pdo->prepare($update_sql);
                     $update_stmt->execute([$attachment_count, $post_id]);
                 }
@@ -199,18 +213,8 @@ function processAttachments($post_id, $board_type, $files, $pdo) {
         'nepal_travel' => 'nepal_travel'
     ];
     
-    // 날짜 기반 폴더 생성 (년도+월 형식, 예: 2509)
-    $date_folder = date('ym'); // 현재 년도 2자리 + 월 2자리
-    
     $folder_name = $folder_mapping[$board_type] ?? $board_type;
-    $upload_dir = "{$upload_path}/{$folder_name}/{$date_folder}/";
-    
-    // 디렉토리 생성 (재귀적으로 생성)
-    if (!is_dir($upload_dir)) {
-        if (!mkdir($upload_dir, 0755, true)) {
-            throw new Exception("업로드 디렉토리 생성 실패: {$upload_dir}");
-        }
-    }
+    $upload_dir = "{$upload_path}/{$folder_name}/";
     
     // 각 파일 처리
     for ($i = 0; $i < count($files['name']); $i++) {
@@ -243,12 +247,19 @@ function processAttachments($post_id, $board_type, $files, $pdo) {
         $file_size = $files['size'][$i];
         $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
         
+        // 디렉토리 생성 (파일이 실제로 업로드될 때만)
+        if (!is_dir($upload_dir)) {
+            if (!mkdir($upload_dir, 0755, true)) {
+                throw new Exception("업로드 디렉토리 생성 실패: {$upload_dir}");
+            }
+        }
+        
         // 안전한 파일명 생성 (타임스탬프 포함)
         $new_filename = generateSafeFilename($original_name);
         $file_path = $upload_dir . $new_filename;
         
-        // 상대 경로 계산 (board_type/날짜/파일명)
-        $relative_path = "{$folder_name}/{$date_folder}/{$new_filename}";
+        // 상대 경로 계산 (board_type/파일명)
+        $relative_path = "{$folder_name}/{$new_filename}";
         
         // 파일 이동
         if (move_uploaded_file($tmp_name, $file_path)) {
@@ -265,14 +276,15 @@ function processAttachments($post_id, $board_type, $files, $pdo) {
                 }
             }
             
-            $file_sql = "INSERT INTO hopec_post_files (
+            $fileTableName = get_table_name('post_files');
+            $file_sql = "INSERT INTO {$fileTableName} (
                 wr_id, board_type, bf_source, bf_file, bf_content, bf_filesize, 
                 bf_width, bf_height, bf_type, bf_download, bf_datetime
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
             
             $file_stmt = $pdo->prepare($file_sql);
             $file_result = $file_stmt->execute([
-                $post_id, $board_type, $original_name, $relative_path, 
+                $post_id, $board_type, $original_name, $new_filename, 
                 '', $file_size, $width, $height, $bf_type, 0
             ]);
             

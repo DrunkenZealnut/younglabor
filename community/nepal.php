@@ -64,7 +64,7 @@ if (!function_exists('extract_first_image_src')) {
     if (!empty($rows)) {
         $ids = array_map(fn($r)=>(int)$r['wr_id'], $rows);
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $params = array_merge(['hopec_nepal_travel'], $ids);
+        $params = array_merge(['younglabor_nepal_travel'], $ids);
         // wr_file 필드 사용으로 변경
         foreach ($rows as $r) {
             $attachmentCounts[(int)$r['wr_id']] = (int)$r['wr_file'];

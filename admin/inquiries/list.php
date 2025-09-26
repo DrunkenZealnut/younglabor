@@ -20,7 +20,7 @@ $date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 
 // 카테고리 목록 가져오기 (필터링용)
 try {
-    $stmt = $pdo->query("SELECT id, name FROM hopec_inquiry_categories WHERE is_active = 1 ORDER BY name");
+    $stmt = $pdo->query("SELECT id, name FROM " . get_table_name('inquiry_categories') . " WHERE is_active = 1 ORDER BY name");
     $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $categories = [];
@@ -29,11 +29,11 @@ try {
 // 쿼리 빌더 시작
 $query = "
     SELECT i.*, c.name as category_name 
-    FROM hopec_inquiries i
-    LEFT JOIN hopec_inquiry_categories c ON i.category_id = c.id
+    FROM " . get_table_name('inquiries') . " i
+    LEFT JOIN " . get_table_name('inquiry_categories') . " c ON i.category_id = c.id
     WHERE 1=1
 ";
-$count_query = "SELECT COUNT(*) FROM hopec_inquiries i WHERE 1=1";
+$count_query = "SELECT COUNT(*) FROM " . get_table_name('inquiries') . " i WHERE 1=1";
 $params = [];
 $count_params = [];
 

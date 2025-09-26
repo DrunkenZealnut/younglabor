@@ -7,6 +7,7 @@
 
 // 데이터베이스 연결
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../includes/config_helpers.php';
 
 // 진행상황 출력을 위한 HTML 헤더
 echo "<!DOCTYPE html>\n";
@@ -29,30 +30,30 @@ try {
     // 1단계: 현재 테이블 상태 확인
     echo "<h2>1단계: 데이터베이스 테이블 상태 확인</h2>\n";
     
-    // hopec_admin_user 테이블 존재 여부 확인
-    $stmt = $pdo->query("SHOW TABLES LIKE 'hopec_admin_user'");
+    // admin_user 테이블 존재 여부 확인
+    $stmt = $pdo->query("SHOW TABLES LIKE '" . get_table_name('admin_user') . "'");
     $hasAdminUser = $stmt->rowCount() > 0;
     
-    // hopec_admin_users 테이블 존재 여부 확인
-    $stmt = $pdo->query("SHOW TABLES LIKE 'hopec_admin_users'");
+    // admin_users 테이블 존재 여부 확인
+    $stmt = $pdo->query("SHOW TABLES LIKE '" . get_table_name('admin_users') . "'");
     $hasAdminUsers = $stmt->rowCount() > 0;
     
     echo "<div class='info'>\n";
     echo "<strong>테이블 존재 상태:</strong><br>\n";
-    echo "• <code>hopec_admin_user</code>: " . ($hasAdminUser ? "✅ 존재" : "❌ 없음") . "<br>\n";
-    echo "• <code>hopec_admin_users</code>: " . ($hasAdminUsers ? "✅ 존재" : "❌ 없음") . "<br>\n";
+    echo "• <code>" . get_table_name('admin_user') . "</code>: " . ($hasAdminUser ? "✅ 존재" : "❌ 없음") . "<br>\n";
+    echo "• <code>" . get_table_name('admin_users') . "</code>: " . ($hasAdminUsers ? "✅ 존재" : "❌ 없음") . "<br>\n";
     echo "</div>\n";
     
     // 2단계: 올바른 테이블 생성 또는 이름 변경
     echo "<h2>2단계: 테이블명 불일치 해결</h2>\n";
     
     if ($hasAdminUsers && !$hasAdminUser) {
-        // hopec_admin_users가 있고 hopec_admin_user가 없는 경우
-        // 로그인 코드가 hopec_admin_user를 참조하므로 테이블명을 변경
-        echo "<div class='info'>테이블명 변경: <code>hopec_admin_users</code> → <code>hopec_admin_user</code></div>\n";
+        // admin_users가 있고 admin_user가 없는 경우
+        // 로그인 코드가 admin_user를 참조하므로 테이블명을 변경
+        echo "<div class='info'>테이블명 변경: <code>" . get_table_name('admin_users') . "</code> → <code>" . get_table_name('admin_user') . "</code></div>\n";
         
         // 기존 데이터 백업 및 테이블명 변경
-        $pdo->exec("RENAME TABLE hopec_admin_users TO hopec_admin_user");
+        $pdo->exec("RENAME TABLE " . get_table_name('admin_users') . " TO " . get_table_name('admin_user'));
         echo "<div class='success'>✅ 테이블명이 성공적으로 변경되었습니다.</div>\n";
         
     } elseif (!$hasAdminUsers && !$hasAdminUser) {
@@ -60,7 +61,7 @@ try {
         echo "<div class='info'>새 관리자 테이블 생성 중...</div>\n";
         
         $createTable = "
-        CREATE TABLE IF NOT EXISTS `hopec_admin_user` (
+        CREATE TABLE IF NOT EXISTS `" . get_table_name('admin_user') . "` (
             `id` int(11) NOT NULL AUTO_INCREMENT,
             `username` varchar(50) NOT NULL,
             `email` varchar(100) NOT NULL,
@@ -78,13 +79,13 @@ try {
         ";
         
         $pdo->exec($createTable);
-        echo "<div class='success'>✅ <code>hopec_admin_user</code> 테이블이 생성되었습니다.</div>\n";
+        echo "<div class='success'>✅ <code>" . get_table_name('admin_user') . "</code> 테이블이 생성되었습니다.</div>\n";
         
     } elseif ($hasAdminUser) {
-        echo "<div class='success'>✅ <code>hopec_admin_user</code> 테이블이 이미 존재합니다.</div>\n";
+        echo "<div class='success'>✅ <code>" . get_table_name('admin_user') . "</code> 테이블이 이미 존재합니다.</div>\n";
         
         // password 컬럼이 password_hash로 되어 있는지 확인
-        $stmt = $pdo->query("DESCRIBE hopec_admin_user");
+        $stmt = $pdo->query("DESCRIBE " . get_table_name('admin_user'));
         $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $hasPasswordHash = false;
         
@@ -108,10 +109,10 @@ try {
                 }
                 
                 if ($hasPassword) {
-                    $pdo->exec("ALTER TABLE hopec_admin_user CHANGE COLUMN password password_hash VARCHAR(255) NOT NULL");
+                    $pdo->exec("ALTER TABLE " . get_table_name('admin_user') . " CHANGE COLUMN password password_hash VARCHAR(255) NOT NULL");
                     echo "<div class='success'>✅ password 컬럼이 password_hash로 변경되었습니다.</div>\n";
                 } else {
-                    $pdo->exec("ALTER TABLE hopec_admin_user ADD COLUMN password_hash VARCHAR(255) NOT NULL AFTER email");
+                    $pdo->exec("ALTER TABLE " . get_table_name('admin_user') . " ADD COLUMN password_hash VARCHAR(255) NOT NULL AFTER email");
                     echo "<div class='success'>✅ password_hash 컬럼이 추가되었습니다.</div>\n";
                 }
             } catch (PDOException $e) {
@@ -124,7 +125,7 @@ try {
     echo "<h2>3단계: 기본 관리자 계정 설정</h2>\n";
     
     // 기존 admin 계정 확인
-    $stmt = $pdo->prepare("SELECT * FROM hopec_admin_user WHERE username = 'admin'");
+    $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('admin_user') . " WHERE username = 'admin'");
     $stmt->execute();
     $adminUser = $stmt->fetch();
     
@@ -133,7 +134,7 @@ try {
         
         // 패스워드 업데이트 (admin123으로 설정)
         $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare("UPDATE hopec_admin_user SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = 'admin'");
+        $stmt = $pdo->prepare("UPDATE " . get_table_name('admin_user') . " SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE username = 'admin'");
         $stmt->execute([$hashedPassword]);
         
         echo "<div class='success'>✅ admin 계정의 패스워드가 'admin123'으로 업데이트되었습니다.</div>\n";
@@ -144,7 +145,7 @@ try {
         
         $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
         $stmt = $pdo->prepare("
-            INSERT INTO hopec_admin_user (username, email, password_hash, name, role, status) 
+            INSERT INTO " . get_table_name('admin_user') . " (username, email, password_hash, name, role, status) 
             VALUES ('admin', 'admin@hopec.local', ?, '관리자', 'admin', 'active')
         ");
         $stmt->execute([$hashedPassword]);
@@ -156,7 +157,7 @@ try {
     echo "<h2>4단계: 로그인 시스템 검증</h2>\n";
     
     // 생성된 계정 정보 확인
-    $stmt = $pdo->prepare("SELECT username, email, name, role, status, created_at FROM hopec_admin_user WHERE username = 'admin'");
+    $stmt = $pdo->prepare("SELECT username, email, name, role, status, created_at FROM " . get_table_name('admin_user') . " WHERE username = 'admin'");
     $stmt->execute();
     $adminInfo = $stmt->fetch();
     
@@ -173,7 +174,7 @@ try {
         echo "</div>\n";
         
         // 패스워드 해시 검증 테스트
-        $stmt = $pdo->prepare("SELECT password_hash FROM hopec_admin_user WHERE username = 'admin'");
+        $stmt = $pdo->prepare("SELECT password_hash FROM " . get_table_name('admin_user') . " WHERE username = 'admin'");
         $stmt->execute();
         $storedHash = $stmt->fetchColumn();
         

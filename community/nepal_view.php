@@ -72,8 +72,6 @@ try {
     $config = [
         'list_url' => app_url('community/nepal.php'),
         'enable_comments' => false, // 댓글 기능 비활성화
-        // GNUBOARD 원댓글 폴백 소스 지정 (wr_parent=post_id)
-        'gnuboard_bo_table' => 'nepal',
         'show_navigation_buttons' => false, // 네비게이션 버튼 숨김 (하단에 직접 구현)
     ];
 } catch (Exception $e) {
@@ -225,8 +223,8 @@ if (preg_match_all('/<img[^>]+src=["\'](([^"\']++))["\'][^>]*>/i', $row['wr_cont
 // 통합 라이트박스 시스템 초기화
 const images = <?= json_encode($images) ?>;
 document.addEventListener('DOMContentLoaded', function() {
-  // HopecLightbox 인스턴스 생성
-  initHopecLightbox(images, {
+  // younglaborLightbox 인스턴스 생성
+  inityounglaborLightbox(images, {
     enableKeyboard: true,
     enableNavigation: true,
     showCounter: true

@@ -2,7 +2,12 @@
 
 class SettingsModel extends BaseModel 
 {
-    protected $table = 'hopec_site_settings';
+    protected $table;
+    
+    public function __construct($db) {
+        parent::__construct($db);
+        $this->table = get_table_name('site_settings');
+    }
     
     protected $fillable = [
         'setting_key',

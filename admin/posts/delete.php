@@ -35,7 +35,8 @@ try {
     $post_id = (int)$post_id;
 
     // 게시글 정보 가져오기 (첨부파일 및 이미지 삭제를 위해)
-    $stmt = $pdo->prepare("SELECT * FROM hopec_posts WHERE wr_id = ?");
+    $tableName = get_table_name('posts');
+    $stmt = $pdo->prepare("SELECT * FROM {$tableName} WHERE wr_id = ?");
     $stmt->execute([$post_id]);
     $post = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -64,7 +65,8 @@ try {
     }
     
     // 게시글 첨부파일 삭제
-    $stmt = $pdo->prepare("SELECT * FROM hopec_post_attachments WHERE post_id = ?");
+    $attachmentTableName = get_table_name('post_attachments');
+    $stmt = $pdo->prepare("SELECT * FROM {$attachmentTableName} WHERE post_id = ?");
     $stmt->execute([$post_id]);
     $attachments = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -78,11 +80,11 @@ try {
     $pdo->beginTransaction();
     
     // 첨부파일 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_post_attachments WHERE post_id = ?");
+    $stmt = $pdo->prepare("DELETE FROM {$attachmentTableName} WHERE post_id = ?");
     $stmt->execute([$post_id]);
     
     // 게시글 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE wr_id = ?");
+    $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE wr_id = ?");
     $stmt->execute([$post_id]);
     
     // 트랜잭션 완료

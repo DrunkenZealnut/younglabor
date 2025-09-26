@@ -136,7 +136,7 @@ try {
 
         $comment_id = 0;
         if ($bo_table) {
-            @include_once __DIR__ . '/comments_drivers/hopec_posts.php';
+            @include_once __DIR__ . '/comments_drivers/younglabor_posts.php';
             if (function_exists('comments_driver_gn_create')) {
                 try {
                     $comment_id = comments_driver_gn_create($pdo, [

@@ -402,7 +402,7 @@ class MenuController extends BaseController
         try {
             $stmt = $this->db->prepare("
                 SELECT id, board_name 
-                FROM hopec_boards 
+                FROM " . get_table_name('boards') 
                 WHERE is_active = 1 
                 ORDER BY board_name
             ");

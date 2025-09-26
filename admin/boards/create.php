@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // 게시판 코드 생성 (이름의 영문화 또는 현재 시간 기반)
       $board_code = 'board_' . time();
       
-      $stmt = $pdo->prepare("INSERT INTO hopec_boards 
+      $tableName = get_table_name('boards');
+      $stmt = $pdo->prepare("INSERT INTO {$tableName} 
                               (board_name, board_code, board_type, description, use_category, category_list, is_active, allow_attachments, write_level, reply_level) 
                               VALUES 
                               (:name, :code, :board_type, :description, :use_category, :category_list, :is_active, :allow_attachments, :write_level, :reply_level)");

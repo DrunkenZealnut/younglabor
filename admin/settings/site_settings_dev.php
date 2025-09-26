@@ -10,20 +10,21 @@ $_SESSION['last_activity'] = time();
 $_SESSION['user_ip'] = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
 require_once '../db.php';
+require_once '../../includes/config_helpers.php';
 require_once '../services/ThemeManager.php';
 
 $themeManager = new ThemeManager($pdo);
 
 // 테이블이 없는 경우 생성 (기존 코드 유지)
 try {
-  $pdo->query("SELECT 1 FROM hopec_site_settings LIMIT 1");
+  $pdo->query("SELECT 1 FROM " . get_table_name('site_settings') . " LIMIT 1");
 } catch (PDOException $e) {
   // ... existing table creation code would go here ...
 }
 
 // 설정 가져오기 함수
 function getSiteSettings($pdo, $group = null) {
-  $sql = "SELECT setting_key, setting_value, setting_group FROM hopec_site_settings";
+  $sql = "SELECT setting_key, setting_value, setting_group FROM " . get_table_name('site_settings');
   $params = [];
   
   if ($group) {

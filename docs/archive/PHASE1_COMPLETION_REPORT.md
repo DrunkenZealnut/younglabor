@@ -25,8 +25,8 @@
 
 ### ✅ 3. 기본 DI Container 도입 (기존 코드 호환성 유지)
 - **컨테이너 클래스**: `SimpleContainer.php` 구현
-- **서비스 등록**: 3개 기본 서비스 (hopec_adapter, config, logger)
-- **호환성**: 기존 `getHopecAdapter()` 함수 100% 호환
+- **서비스 등록**: 3개 기본 서비스 (younglabor_adapter, config, logger)
+- **호환성**: 기존 `getyounglaborAdapter()` 함수 100% 호환
 - **테스트 결과**: 8개 테스트 모두 통과 (100% 성공률)
 - **상태**: ✅ 완료
 
@@ -44,7 +44,7 @@
 ### 환경변수 시스템
 ```bash
 # 지원하는 환경변수
-BT_USE_HOPEC_POSTS=true
+BT_USE_younglabor_POSTS=true
 BT_UPLOAD_PATH=/var/www/uploads
 BT_UPLOAD_URL=/uploads
 BT_DOWNLOAD_OPEN=true
@@ -55,12 +55,12 @@ BT_LOG_LEVEL=ERROR
 ### DI Container 아키텍처
 ```php
 // 사용 예시
-$adapter = service('hopec_adapter');
+$adapter = service('younglabor_adapter');
 $logger = service('advanced_logger');
 $config = service('config');
 
 // 기존 방식도 계속 작동
-$adapter = getHopecAdapter(); // 100% 호환
+$adapter = getyounglaborAdapter(); // 100% 호환
 ```
 
 ### 고급 로깅 기능
@@ -135,7 +135,7 @@ board_templates/
 ## 🔄 기존 코드 호환성
 
 ### 100% 호환 함수들
-- `getHopecAdapter()` → DI Container 우선, 기존 방식 폴백
+- `getyounglaborAdapter()` → DI Container 우선, 기존 방식 폴백
 - `getBoardType()` → 기존 동작 유지
 - `executeCompatQuery()` → 기존 동작 유지
 - `btLog()` → 고급 로깅 우선, 기존 방식 폴백

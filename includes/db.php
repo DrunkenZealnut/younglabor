@@ -41,7 +41,7 @@ if (file_exists($config_path)) {
     $db_host = env('DB_HOST', 'localhost');
     $db_user = env('DB_USERNAME', 'root');
     $db_pass = env('DB_PASSWORD', '');
-    $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+    $db_name = env('DB_DATABASE', '');
     $db_charset = env('DB_CHARSET', 'utf8mb4');
 
     // PDO 연결 생성

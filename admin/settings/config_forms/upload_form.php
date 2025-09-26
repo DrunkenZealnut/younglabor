@@ -59,10 +59,10 @@ $upload_max_size_mb = round($upload_max_size / 1048576, 2);
                 <div class="card-body py-2">
                     <small class="text-muted">
                         <strong>새로운 파일 저장 경로:</strong><br>
-                        • 게시판 파일: <code>data/file/hopec_posts/</code><br>
-                        • 이벤트 파일: <code>data/file/hopec_events/</code><br>
-                        • 갤러리 파일: <code>data/file/hopec_gallery/</code><br>
-                        • 공지사항 파일: <code>data/file/hopec_notices/</code><br>
+                        • 게시판 파일: <code>data/file/{prefix}posts/</code><br>
+                        • 이벤트 파일: <code>data/file/{prefix}events/</code><br>
+                        • 갤러리 파일: <code>data/file/{prefix}gallery/</code><br>
+                        • 공지사항 파일: <code>data/file/{prefix}notices/</code><br>
                         • 관리자 파일: <code>data/file/admin_files/</code>
                     </small>
                 </div>

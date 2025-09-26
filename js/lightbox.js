@@ -1,12 +1,12 @@
 /**
- * HOPEC 통합 라이트박스 시스템
+ * younglabor 통합 라이트박스 시스템
  * gallery_view.php, nepal_view.php, newsletter_view.php 공용 모듈
  * 
  * @version 1.0.0
- * @author HOPEC Development Team
+ * @author younglabor Development Team
  */
 
-class HopecLightbox {
+class younglaborLightbox {
   constructor(images, options = {}) {
     this.images = images || [];
     this.currentIndex = 0;
@@ -199,44 +199,44 @@ class HopecLightbox {
 }
 
 // 전역 함수들 (기존 코드 호환성을 위해)
-let hopecLightbox = null;
+let younglaborLightbox = null;
 
 function openLightbox(index) {
-  if (hopecLightbox) {
-    hopecLightbox.open(index);
+  if (younglaborLightbox) {
+    younglaborLightbox.open(index);
   }
 }
 
 function closeLightbox() {
-  if (hopecLightbox) {
-    hopecLightbox.close();
+  if (younglaborLightbox) {
+    younglaborLightbox.close();
   }
 }
 
 function prevImage() {
-  if (hopecLightbox) {
-    hopecLightbox.prev();
+  if (younglaborLightbox) {
+    younglaborLightbox.prev();
   }
 }
 
 function nextImage() {
-  if (hopecLightbox) {
-    hopecLightbox.next();
+  if (younglaborLightbox) {
+    younglaborLightbox.next();
   }
 }
 
 // 전역 인스턴스 생성 함수
-function initHopecLightbox(images, options = {}) {
-  hopecLightbox = new HopecLightbox(images, options);
-  return hopecLightbox;
+function inityounglaborLightbox(images, options = {}) {
+  younglaborLightbox = new younglaborLightbox(images, options);
+  return younglaborLightbox;
 }
 
 // AMD/CommonJS/Global 지원
 if (typeof define === 'function' && define.amd) {
-  define(function() { return HopecLightbox; });
+  define(function() { return younglaborLightbox; });
 } else if (typeof module !== 'undefined' && module.exports) {
-  module.exports = HopecLightbox;
+  module.exports = younglaborLightbox;
 } else {
-  window.HopecLightbox = HopecLightbox;
-  window.initHopecLightbox = initHopecLightbox;
+  window.younglaborLightbox = younglaborLightbox;
+  window.inityounglaborLightbox = inityounglaborLightbox;
 }

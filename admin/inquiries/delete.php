@@ -1,6 +1,7 @@
 <?php
 // 문의사항 삭제 처리
 require_once '../bootstrap.php';
+require_once '../../includes/config_helpers.php';
 
 // 한글 깨짐 방지를 위한 문자셋 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -17,7 +18,7 @@ $inquiry_id = (int)$_GET['id'];
 
 try {
     // 문의사항 존재 여부 확인
-    $stmt = $pdo->prepare("SELECT id, name FROM hopec_inquiries WHERE id = ?");
+    $stmt = $pdo->prepare("SELECT id, name FROM " . get_table_name('inquiries') . " WHERE id = ?");
     $stmt->execute([$inquiry_id]);
     $inquiry = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -28,7 +29,7 @@ try {
     }
     
     // 문의사항 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_inquiries WHERE id = ?");
+    $stmt = $pdo->prepare("DELETE FROM " . get_table_name('inquiries') . " WHERE id = ?");
     $result = $stmt->execute([$inquiry_id]);
     
     if ($result) {

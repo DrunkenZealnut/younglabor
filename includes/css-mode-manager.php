@@ -17,9 +17,9 @@ class CSSModeManager {
     public function __construct() {
         $this->config = [
             'default_mode' => self::MODE_LEGACY,  // Legacy 모드를 기본값으로 설정
-            'cookie_name' => 'hopec_css_mode',
+            'cookie_name' => 'younglabor_css_mode',
             'cookie_lifetime' => 86400 * 7,      // 7일
-            'debug_enabled' => defined('HOPEC_DEBUG') && HOPEC_DEBUG,
+            'debug_enabled' => defined('younglabor_DEBUG') && younglabor_DEBUG,
             'emergency_mode' => self::MODE_LEGACY
         ];
         

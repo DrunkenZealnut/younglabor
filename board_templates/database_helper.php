@@ -1,7 +1,7 @@
 <?php
 /**
  * 데이터베이스 연결 및 호환성 헬퍼 함수
- * hopec_posts 통합 테이블과 기존 board_templates의 호환성 제공
+ * younglabor_posts 통합 테이블과 기존 board_templates의 호환성 제공
  */
 
 require_once __DIR__ . '/config.php';
@@ -38,7 +38,7 @@ function getBoardDatabase() {
     // 기본 연결 설정 (환경변수 기반)
     try {
         $host = defined('DB_HOST') ? DB_HOST : (function_exists('env') ? env('DB_HOST', 'localhost') : 'localhost');
-        $dbname = defined('DB_NAME') ? DB_NAME : (function_exists('env') ? env('DB_DATABASE', env('PROJECT_SLUG', 'hopec')) : env('PROJECT_SLUG', 'hopec'));
+        $dbname = defined('DB_NAME') ? DB_NAME : (function_exists('env') ? env('DB_DATABASE', '') : '');
         $username = defined('DB_USER') ? DB_USER : (function_exists('env') ? env('DB_USERNAME', 'root') : 'root');
         $password = defined('DB_PASS') ? DB_PASS : (function_exists('env') ? env('DB_PASSWORD', '') : '');
         $charset = defined('DB_CHARSET') ? DB_CHARSET : (function_exists('env') ? env('DB_CHARSET', 'utf8mb4') : 'utf8mb4');
@@ -67,8 +67,8 @@ function getBoardPosts($categoryType = 'FREE', $page = 1, $perPage = 15, $search
     $boardType = getBoardType($categoryType);
     $offset = ($page - 1) * $perPage;
     
-    // hopec_posts 통합 테이블 사용
-    if (USE_HOPEC_POSTS) {
+    // younglabor_posts 통합 테이블 사용
+    if (USE_younglabor_POSTS) {
         $query = "SELECT wr_id as post_id, 0 as category_id, wr_subject as title, wr_content as content, 
                          wr_name as author_name, wr_hit as view_count, 0 as is_notice, wr_datetime as created_at 
                   FROM " . get_table_name('posts') . " 
@@ -165,8 +165,8 @@ function getBoardPostsCount($categoryType = 'FREE', $searchType = '', $searchKey
     
     $boardType = getBoardType($categoryType);
     
-    // hopec_posts 통합 테이블 사용
-    if (USE_HOPEC_POSTS) {
+    // younglabor_posts 통합 테이블 사용
+    if (USE_younglabor_POSTS) {
         $query = "SELECT COUNT(*) FROM " . get_table_name('posts') . " WHERE board_type = ? AND wr_is_comment = 0";
         $params = [$boardType];
         
@@ -263,7 +263,7 @@ function createBoardPost($categoryType, $data) {
     
     // 기본값 설정
     $postData = [
-        'category_id' => 1, // 임시값, hopec에서는 board_type으로 처리
+        'category_id' => 1, // 임시값, younglabor에서는 board_type으로 처리
         'user_id' => $data['user_id'] ?? 0,
         'title' => $data['title'],
         'content' => $data['content'],
@@ -319,7 +319,7 @@ function incrementViewCount($postId) {
     $pdo = getBoardDatabase();
     if (!$pdo) return false;
     
-    if (USE_HOPEC_POSTS) {
+    if (USE_younglabor_POSTS) {
         $boardType = null; // 전체 검색이므로 board_type 제한 없음
         $query = "UPDATE " . get_table_name('posts') . " SET wr_hit = wr_hit + 1 WHERE wr_id = ?";
         $stmt = $pdo->prepare($query);
@@ -338,8 +338,8 @@ function getBoardAttachments($postId) {
     $pdo = getBoardDatabase();
     if (!$pdo) return [];
     
-    if (USE_HOPEC_POSTS) {
-        // hopec_post_files 통합 테이블에서 조회
+    if (USE_younglabor_POSTS) {
+        // younglabor_post_files 통합 테이블에서 조회
         try {
             $query = "SELECT bf_no as attachment_id, bf_source as original_name, bf_file as stored_name, 
                              bf_filesize as file_size, 'FILE' as file_type, bf_download as download_count
@@ -362,7 +362,7 @@ function getBoardAttachments($postId) {
                 ];
             }, $results);
         } catch (Exception $e) {
-            error_log("hopec_post_files 첨부파일 조회 실패: " . $e->getMessage());
+            error_log("younglabor_post_files 첨부파일 조회 실패: " . $e->getMessage());
             return [];
         }
     } else {
@@ -408,8 +408,8 @@ function getBoardComments($postId) {
     $pdo = getBoardDatabase();
     if (!$pdo) return [];
     
-    if (USE_HOPEC_POSTS) {
-        // hopec_posts 통합 테이블에서 댓글 조회
+    if (USE_younglabor_POSTS) {
+        // younglabor_posts 통합 테이블에서 댓글 조회
         try {
             $query = "SELECT wr_id as comment_id, 0 as user_id, wr_name as author_name, 
                              wr_content as content, 0 as parent_id, wr_datetime as created_at
@@ -432,7 +432,7 @@ function getBoardComments($postId) {
                 ];
             }, $results);
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 조회 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 조회 실패: " . $e->getMessage());
             return [];
         }
     } else {
@@ -458,8 +458,8 @@ function addBoardComment($postId, $commentData) {
     $pdo = getBoardDatabase();
     if (!$pdo) return false;
     
-    if (USE_HOPEC_POSTS) {
-        // hopec_posts 통합 테이블에 댓글 추가
+    if (USE_younglabor_POSTS) {
+        // younglabor_posts 통합 테이블에 댓글 추가
         try {
             // 새로운 wr_id 생성
             $next_id_stmt = $pdo->query("SELECT IFNULL(MAX(wr_id),0)+1 AS next_id FROM " . get_table_name('posts') . "");
@@ -492,7 +492,7 @@ function addBoardComment($postId, $commentData) {
                 ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
             ]);
         } catch (Exception $e) {
-            error_log("hopec_posts 댓글 추가 실패: " . $e->getMessage());
+            error_log("younglabor_posts 댓글 추가 실패: " . $e->getMessage());
             return false;
         }
     } else {
@@ -514,15 +514,15 @@ function addBoardComment($postId, $commentData) {
  * 카테고리 목록 조회 
  */
 function getBoardCategories() {
-    if (USE_HOPEC_POSTS) {
-        // hopec_board_config에서 조회 (board_skin 포함)
+    if (USE_younglabor_POSTS) {
+        // younglabor_board_config에서 조회 (board_skin 포함)
         $pdo = getBoardDatabase();
         if (!$pdo) return [];
         
         $query = "SELECT board_type as category_id, board_name as category_name, 
                          board_type, board_description as description, is_active,
                          board_skin, posts_per_page, use_category, use_file
-                  FROM hopec_board_config 
+                  FROM younglabor_board_config 
                   WHERE is_active = 1
                   ORDER BY sort_order, board_type";
         
@@ -548,7 +548,7 @@ function getBoardCategories() {
  * 특정 게시판의 설정 조회 (board_skin 포함)
  */
 function getBoardConfig($categoryType) {
-    if (USE_HOPEC_POSTS) {
+    if (USE_younglabor_POSTS) {
         $pdo = getBoardDatabase();
         if (!$pdo) return null;
         
@@ -557,7 +557,7 @@ function getBoardConfig($categoryType) {
         $query = "SELECT board_type, board_name, board_skin, board_description,
                          posts_per_page, use_category, use_file, use_comment,
                          gallery_cols, gallery_rows, thumbnail_width, thumbnail_height
-                  FROM hopec_board_config 
+                  FROM younglabor_board_config 
                   WHERE board_type = ? AND is_active = 1";
         
         $stmt = $pdo->prepare($query);

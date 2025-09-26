@@ -82,7 +82,7 @@ _ot_log('rate_limit_ok', $bucket);
 // 대상 게시판: B22R (일시후원)
 // ------------------------------------------------------------------
 
-// 0) 후원 테이블 준비 (hopec_donate 테이블 직접 사용)
+// 0) 후원 테이블 준비 (younglabor_donate 테이블 직접 사용)
 $bo_table = isset($_POST['bo_table']) ? preg_replace('/[^A-Za-z0-9_]/', '', $_POST['bo_table']) : '';
 if ($bo_table !== 'B22R') {
     _ot_log('bo_table_block', ['bo_table'=>$bo_table]);
@@ -90,8 +90,8 @@ if ($bo_table !== 'B22R') {
     exit;
 }
 
-// hopec_donate 테이블을 직접 사용 (게시판 설정 불필요)
-$write_table = 'hopec_donate';
+// younglabor_donate 테이블을 직접 사용 (게시판 설정 불필요)
+$write_table = 'younglabor_donate';
 $board = ['bo_category_list' => '개인후원|단체후원|기업후원']; // 일시후원 카테고리
 
 // 1) 입력값 검증/정리
@@ -240,7 +240,7 @@ try {
     DatabaseManager::execute("UPDATE {$write_table} SET wr_parent = :wr_id WHERE wr_id = :wr_id", 
                             [':wr_id' => $wr_id]);
     
-    // hopec_donate 테이블 사용 시 추가 처리 불필요 (단순화)
+    // younglabor_donate 테이블 사용 시 추가 처리 불필요 (단순화)
                             
 } catch (Exception $e) {
     error_log('일시후원 후처리 오류: ' . $e->getMessage());

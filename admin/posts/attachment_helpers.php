@@ -2,6 +2,7 @@
 /**
  * 첨부파일 관련 헬퍼 함수들
  */
+require_once __DIR__ . '/../../includes/path_helper.php';
 
 /**
  * 게시글의 첨부파일 목록 조회
@@ -23,8 +24,8 @@ function getPostAttachments($post_id, $pdo, $board_type = null) {
                     pf.bf_datetime,
                     pf.board_type as file_board_type,
                     p.board_type as post_board_type
-                FROM hopec_post_files pf
-                INNER JOIN hopec_posts p ON pf.wr_id = p.wr_parent
+                FROM " . get_table_name('post_files') . " pf
+                INNER JOIN " . get_table_name('posts') . " p ON pf.wr_id = p.wr_parent
                 WHERE p.board_type = ? 
                   AND pf.board_type = ? 
                   AND p.wr_id = ?
@@ -36,7 +37,7 @@ function getPostAttachments($post_id, $pdo, $board_type = null) {
             $stmt = $pdo->prepare("
                 SELECT bf_no, bf_source, bf_file, bf_filesize, bf_download, 
                        bf_type, bf_width, bf_height, bf_datetime, board_type
-                FROM hopec_post_files 
+                FROM " . get_table_name('post_files') 
                 WHERE wr_id = ? 
                 ORDER BY bf_no ASC
             ");
@@ -158,11 +159,16 @@ function validateFileUpload($file) {
     }
     
     // MIME 타입 검증 (실제 파일 내용과 확장자 일치 확인)
+    $ext = strtolower(trim($ext));
+
     if (function_exists('finfo_open')) {
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $detected_mime = finfo_file($finfo, $file['tmp_name']);
         finfo_close($finfo);
-        
+
+        // Normalize detected MIME type (strip parameters like charset)
+        $detected_mime = explode(';', $detected_mime)[0];
+
         $expected_mimes = [
             'pdf' => ['application/pdf'],
             'doc' => ['application/msword'],
@@ -175,11 +181,17 @@ function validateFileUpload($file) {
             'gif' => ['image/gif'],
             'webp' => ['image/webp']
         ];
-        
+
         if (isset($expected_mimes[$ext])) {
-            if (!in_array($detected_mime, $expected_mimes[$ext])) {
-                $errors[] = '파일 내용과 확장자가 일치하지 않습니다.';
+            $expected_mime_list = $expected_mimes[$ext];
+
+            // Strict comparison using in_array after normalization
+            if (!in_array($detected_mime, $expected_mime_list, true)) {
+                $errors[] = "파일 내용과 확장자가 일치하지 않습니다. (감지된 MIME: $detected_mime)";
             }
+        } else {
+            // Handle missing mapping
+            $errors[] = "지원되지 않는 파일 확장자입니다: $ext";
         }
     }
     
@@ -206,7 +218,7 @@ function generateSafeFilename($original_name) {
 function deleteAttachment($file_id, $pdo) {
     try {
         // 파일 정보 조회 (board_type도 함께 가져오기)
-        $stmt = $pdo->prepare("SELECT bf_file, board_type FROM hopec_post_files WHERE bf_no = ?");
+        $stmt = $pdo->prepare("SELECT bf_file, board_type FROM " . get_table_name('post_files') . " WHERE bf_no = ?");
         $stmt->execute([$file_id]);
         $file_info = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -243,7 +255,7 @@ function deleteAttachment($file_id, $pdo) {
             }
             
             // DB 레코드 삭제
-            $delete_stmt = $pdo->prepare("DELETE FROM hopec_post_files WHERE bf_no = ?");
+            $delete_stmt = $pdo->prepare("DELETE FROM " . get_table_name('post_files') . " WHERE bf_no = ?");
             return $delete_stmt->execute([$file_id]);
         }
         

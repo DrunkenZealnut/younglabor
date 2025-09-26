@@ -18,7 +18,7 @@ return [
     'file_sub_path' => $_ENV['UPLOAD_FILE_SUB_PATH'] ?? 'file',
     
     // 전체 업로드 경로: {base_path}/{file_sub_path}/{table_name}/
-    // 예: data/file/hopec_posts/
+    // 예: data/file/younglabor_posts/
     
     // 최대 파일 크기 (바이트)
     'max_file_size' => (int)($_ENV['UPLOAD_MAX_SIZE'] ?? 10485760), // 10MB
@@ -44,19 +44,19 @@ return [
     
     // 테이블별 허용 확장자 (없으면 기본 설정 사용)
     'table_extensions' => [
-        'hopec_posts' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif'],
-        'hopec_library' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx'],
-        'hopec_gallery' => ['jpg', 'jpeg', 'png', 'gif', 'webp'],
-        'hopec_events' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif'],
-        'hopec_notices' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif'],
+        'younglabor_posts' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif'],
+        'younglabor_library' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx'],
+        'younglabor_gallery' => ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+        'younglabor_events' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif'],
+        'younglabor_notices' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'jpeg', 'png', 'gif'],
         'admin_files' => ['pdf', 'hwp', 'hwpx', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png', 'gif', 'zip', 'rar', 'txt'],
-        'hopec_editor_images' => ['jpg', 'jpeg', 'png', 'gif', 'webp']
+        'younglabor_editor_images' => ['jpg', 'jpeg', 'png', 'gif', 'webp']
     ],
     
     // 테이블별 최대 파일 크기 (바이트, 없으면 기본값 사용)
     'table_max_sizes' => [
-        'hopec_gallery' => 20971520, // 20MB (이미지 갤러리)
-        'hopec_editor_images' => 5242880, // 5MB (에디터 이미지)
+        'younglabor_gallery' => 20971520, // 20MB (이미지 갤러리)
+        'younglabor_editor_images' => 5242880, // 5MB (에디터 이미지)
         'admin_files' => 52428800, // 50MB (관리자 파일)
     ],
     
@@ -92,13 +92,13 @@ return [
     'legacy_support' => true,
     'legacy_base_path' => 'uploads',
     'legacy_path_mapping' => [
-        'hopec_posts' => 'board_documents',
-        'hopec_library' => 'board_documents', 
-        'hopec_gallery' => 'gallery',
-        'hopec_events' => 'events',
-        'hopec_notices' => 'notices',
+        'younglabor_posts' => 'board_documents',
+        'younglabor_library' => 'board_documents', 
+        'younglabor_gallery' => 'gallery',
+        'younglabor_events' => 'events',
+        'younglabor_notices' => 'notices',
         'admin_files' => 'admin_files',
-        'hopec_editor_images' => 'editor_images'
+        'younglabor_editor_images' => 'editor_images'
     ]
 ];
 ?>

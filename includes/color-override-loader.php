@@ -23,14 +23,14 @@ try {
         echo $colorOverride->generateOverrideCSS();
         
         // 디버그 모드에서 상태 정보 출력
-        if (defined('HOPEC_DEBUG') && HOPEC_DEBUG) {
+        if (defined('younglabor_DEBUG') && younglabor_DEBUG) {
             echo $colorOverride->renderDebugInfo();
         }
         
     } else {
         // SimpleColorOverride.php가 없으면 조용히 무시
         // → globals.css만 적용되어 Natural Green 기본 테마 유지
-        if (defined('HOPEC_DEBUG') && HOPEC_DEBUG) {
+        if (defined('younglabor_DEBUG') && younglabor_DEBUG) {
             echo "<!-- Color Override System: Not Available -->\n";
         }
     }
@@ -39,13 +39,13 @@ try {
     // 어떤 에러가 발생해도 조용히 무시
     // → 사용자는 아무 문제없이 Legacy Mode 사용 가능
     
-    if (defined('HOPEC_DEBUG') && HOPEC_DEBUG) {
+    if (defined('younglabor_DEBUG') && younglabor_DEBUG) {
         echo "<!-- Color Override System Error: " . htmlspecialchars($e->getMessage()) . " -->\n";
         error_log("Color Override Loader Error: " . $e->getMessage());
     }
 } catch (Error $e) {
     // PHP Fatal Error도 캐치하여 안전성 보장
-    if (defined('HOPEC_DEBUG') && HOPEC_DEBUG) {
+    if (defined('younglabor_DEBUG') && younglabor_DEBUG) {
         echo "<!-- Color Override System Fatal Error: " . htmlspecialchars($e->getMessage()) . " -->\n";
         error_log("Color Override Loader Fatal Error: " . $e->getMessage());
     }

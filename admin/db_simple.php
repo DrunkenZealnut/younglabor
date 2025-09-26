@@ -7,7 +7,7 @@
 try {
     // 직접적인 데이터베이스 연결 설정
     $host = 'localhost';
-    $dbname = function_exists('env') ? env('PROJECT_SLUG', 'hopec') : 'hopec';
+    $dbname = 'hopec';
     $username = 'root';
     $password = '';
     $charset = 'utf8mb4';

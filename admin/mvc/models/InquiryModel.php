@@ -2,7 +2,12 @@
 
 class InquiryModel extends BaseModel 
 {
-    protected $table = 'hopec_inquiries';
+    protected $table;
+    
+    public function __construct($db) {
+        parent::__construct($db);
+        $this->table = get_table_name('inquiries');
+    }
     
     protected $fillable = [
         'category_id',
@@ -27,7 +32,7 @@ class InquiryModel extends BaseModel
      */
     public function createTable()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS {$this->table} (
+        $sql = "CREATE TABLE IF NOT EXISTS " . get_table_name('inquiries') . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             category_id INT(11) DEFAULT NULL COMMENT '문의 카테고리 ID',
             name VARCHAR(100) NOT NULL COMMENT '문의자 이름',
@@ -50,7 +55,7 @@ class InquiryModel extends BaseModel
             KEY idx_priority (priority),
             KEY idx_email (email),
             KEY idx_created_at (created_at),
-            FOREIGN KEY (category_id) REFERENCES hopec_inquiry_categories(id) ON DELETE SET NULL
+            FOREIGN KEY (category_id) REFERENCES " . get_table_name('inquiry_categories') . "(id) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
         
         return $this->db->exec($sql);
@@ -65,7 +70,7 @@ class InquiryModel extends BaseModel
         
         $query = "SELECT i.*, c.name as category_name 
                  FROM {$this->table} i
-                 LEFT JOIN hopec_inquiry_categories c ON i.category_id = c.id
+                 LEFT JOIN " . get_table_name('inquiry_categories') . " c ON i.category_id = c.id
                  WHERE 1=1";
         $params = [];
         
@@ -286,7 +291,7 @@ class InquiryModel extends BaseModel
     {
         $sql = "SELECT i.*, c.name as category_name 
                 FROM {$this->table} i
-                LEFT JOIN hopec_inquiry_categories c ON i.category_id = c.id
+                LEFT JOIN " . get_table_name('inquiry_categories') . " c ON i.category_id = c.id
                 WHERE i.status IN ('접수', '처리중')
                 ORDER BY 
                     CASE i.priority 

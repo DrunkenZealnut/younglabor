@@ -1,7 +1,7 @@
 <?php
 /**
  * 공지사항 상세보기 페이지
- * hopec_posts 테이블 사용 (board_type = 'notices')
+ * younglabor_posts 테이블 사용 (board_type = 'notices')
  */
 
 // 모던 부트스트랩 시스템 로드
@@ -98,7 +98,7 @@ include __DIR__ . '/../includes/header.php';
 $config = [
     'list_url' => app_url('community/notices.php'),
     'enable_comments' => false,
-    'gnuboard_bo_table' => 'hopec_notices',
+    'show_edit_delete' => false, // 수정/삭제 버튼 숨김
 ];
 
 echo '<div class="page-spacing" style="padding-top:24px;padding-bottom:48px">';

@@ -41,10 +41,10 @@ if (!in_array($order, $valid_order_values)) {
 
 // 테이블이 없는 경우 생성
 try {
-  $pdo->query("SELECT 1 FROM hopec_events LIMIT 1");
+  $pdo->query("SELECT 1 FROM " . get_table_name('events') . " LIMIT 1");
 } catch (PDOException $e) {
   // 테이블이 없으면 생성
-  $sql = "CREATE TABLE hopec_events (
+  $sql = "CREATE TABLE " . get_table_name('events') . " (
     id INT(11) NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL COMMENT '행사 제목',
     description TEXT COMMENT '행사 설명',
@@ -62,7 +62,7 @@ try {
   $pdo->exec($sql);
   
   // 참가자 테이블도 함께 생성
-  $sql = "CREATE TABLE hopec_event_participants (
+  $sql = "CREATE TABLE " . get_table_name('event_participants') . " (
     id INT(11) NOT NULL AUTO_INCREMENT,
     event_id INT(11) NOT NULL COMMENT '행사 ID',
     name VARCHAR(50) NOT NULL COMMENT '참가자 이름',
@@ -72,14 +72,14 @@ try {
     status ENUM('대기', '승인', '취소') NOT NULL DEFAULT '대기' COMMENT '참가 상태',
     PRIMARY KEY (id),
     KEY event_id (event_id),
-    CONSTRAINT event_participants_fk_1 FOREIGN KEY (event_id) REFERENCES hopec_events (id) ON DELETE CASCADE
+    CONSTRAINT event_participants_fk_1 FOREIGN KEY (event_id) REFERENCES " . get_table_name('events') . " (id) ON DELETE CASCADE
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
   
   $pdo->exec($sql);
 }
 
 // 총 행사 수 조회
-$count_sql = "SELECT COUNT(*) FROM hopec_events" . $search_sql;
+$count_sql = "SELECT COUNT(*) FROM " . get_table_name('events') . $search_sql;
 $stmt = $pdo->prepare($count_sql);
 
 if (!empty($params)) {
@@ -93,7 +93,7 @@ $total_records = $stmt->fetchColumn();
 $total_pages = ceil($total_records / $records_per_page);
 
 // 행사 목록 조회
-$event_sql = "SELECT id, title, start_date, end_date, location, status FROM hopec_events" . 
+$event_sql = "SELECT id, title, start_date, end_date, location, status FROM " . get_table_name('events') . 
              $search_sql . " ORDER BY " . $sort . " " . $order . 
              " LIMIT " . $offset . ", " . $records_per_page;
 
@@ -116,11 +116,11 @@ if (isset($_POST['delete']) && isset($_POST['event_id'])) {
     $pdo->beginTransaction();
     
     // 참가자 데이터 삭제 (외래키 제약조건으로 인해 자동으로 삭제되지만, 명시적으로 처리)
-    $stmt = $pdo->prepare("DELETE FROM hopec_event_participants WHERE event_id = ?");
+    $stmt = $pdo->prepare("DELETE FROM " . get_table_name('event_participants') . " WHERE event_id = ?");
     $stmt->execute([$event_id]);
     
     // 행사 데이터 삭제
-    $stmt = $pdo->prepare("DELETE FROM hopec_events WHERE id = ?");
+    $stmt = $pdo->prepare("DELETE FROM " . get_table_name('events') . " WHERE id = ?");
     $stmt->execute([$event_id]);
     
     $pdo->commit();

@@ -28,7 +28,7 @@ $where_sql = implode(' AND ', $where_clauses);
 
 try {
     $total_posts = DatabaseManager::selectOne(
-        'SELECT COUNT(*) as total FROM hopec_press WHERE ' . $where_sql,
+        'SELECT COUNT(*) as total FROM younglabor_press WHERE ' . $where_sql,
         $bind_params
     )['total'] ?? 0;
     $total_pages = (int)max(1, ceil($total_posts / $per_page));
@@ -39,7 +39,7 @@ try {
 
 try {
     $rows = DatabaseManager::select(
-        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit FROM hopec_press WHERE ' . $where_sql . ' ORDER BY wr_datetime DESC LIMIT ' . (int)$per_page . ' OFFSET ' . (int)$offset,
+        'SELECT wr_id, wr_subject, wr_name, wr_datetime, wr_hit FROM younglabor_press WHERE ' . $where_sql . ' ORDER BY wr_datetime DESC LIMIT ' . (int)$per_page . ' OFFSET ' . (int)$offset,
         $bind_params
     );
 } catch (Exception $e) {
@@ -52,7 +52,7 @@ if (!empty($rows)) {
         $ids = array_map(fn($r)=>(int)$r['wr_id'], $rows);
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $af_results = DatabaseManager::select(
-            'SELECT wr_id, COUNT(*) AS cnt FROM hopec_board_files WHERE bo_table = ? AND wr_id IN (' . $placeholders . ') GROUP BY wr_id',
+            'SELECT wr_id, COUNT(*) AS cnt FROM younglabor_board_files WHERE bo_table = ? AND wr_id IN (' . $placeholders . ') GROUP BY wr_id',
             array_merge(['B32'], $ids)
         );
         foreach ($af_results as $r) { 

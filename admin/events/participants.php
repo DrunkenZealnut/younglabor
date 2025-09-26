@@ -16,7 +16,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 // 행사 정보 조회
 try {
-  $stmt = $pdo->prepare("SELECT * FROM hopec_events WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('events') . " WHERE id = ?");
   $stmt->execute([$event_id]);
   $event = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // 에러가 없으면 DB에 저장
     if (empty($errors)) {
       try {
-        $sql = "INSERT INTO hopec_event_participants (event_id, name, email, phone, status) 
+        $sql = "INSERT INTO " . get_table_name('event_participants') . " (event_id, name, email, phone, status) 
                 VALUES (?, ?, ?, ?, ?)";
         
         $stmt = $pdo->prepare($sql);
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($participant_id > 0 && !empty($new_status)) {
       try {
-        $sql = "UPDATE hopec_event_participants SET status = ? WHERE id = ? AND event_id = ?";
+        $sql = "UPDATE " . get_table_name('event_participants') . " SET status = ? WHERE id = ? AND event_id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$new_status, $participant_id, $event_id]);
         
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($participant_id > 0) {
       try {
-        $sql = "DELETE FROM hopec_event_participants WHERE id = ? AND event_id = ?";
+        $sql = "DELETE FROM " . get_table_name('event_participants') . " WHERE id = ? AND event_id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$participant_id, $event_id]);
         
@@ -158,7 +158,7 @@ if (!in_array($order, $valid_order_values)) {
 }
 
 // 총 참가자 수 조회
-$count_sql = "SELECT COUNT(*) FROM hopec_event_participants WHERE event_id = ?" . $search_sql . $status_sql;
+$count_sql = "SELECT COUNT(*) FROM " . get_table_name('event_participants') . " WHERE event_id = ?" . $search_sql . $status_sql;
 $stmt = $pdo->prepare($count_sql);
 
 foreach ($params as $index => $param) {
@@ -170,7 +170,7 @@ $total_records = $stmt->fetchColumn();
 $total_pages = ceil($total_records / $records_per_page);
 
 // 참가자 목록 조회
-$participant_sql = "SELECT * FROM hopec_event_participants 
+$participant_sql = "SELECT * FROM " . get_table_name('event_participants') 
                     WHERE event_id = ?" . $search_sql . $status_sql . 
                     " ORDER BY " . $sort . " " . $order . 
                     " LIMIT " . $offset . ", " . $records_per_page;
@@ -185,7 +185,7 @@ $stmt->execute();
 $participants = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // 상태별 참가자 수 조회
-$status_count_sql = "SELECT status, COUNT(*) as count FROM hopec_event_participants WHERE event_id = ? GROUP BY status";
+$status_count_sql = "SELECT status, COUNT(*) as count FROM " . get_table_name('event_participants') . " WHERE event_id = ? GROUP BY status";
 $stmt = $pdo->prepare($status_count_sql);
 $stmt->execute([$event_id]);
 $status_counts = $stmt->fetchAll(PDO::FETCH_ASSOC);

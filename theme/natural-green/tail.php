@@ -1,4 +1,4 @@
-<?php if (!defined('_HOPEC_')) exit; ?>
+<?php if (!defined('_younglabor_')) exit; ?>
 
     </div>
   </div>

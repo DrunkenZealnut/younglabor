@@ -1,7 +1,7 @@
 <?php
 /**
  * 재정보고 상세보기 페이지
- * hopec_posts 테이블 사용 (board_type = 'finance_reports')
+ * posts 테이블 사용 (board_type = 'finance_reports')
  */
 
 // 모던 부트스트랩 시스템 로드
@@ -98,7 +98,6 @@ include __DIR__ . '/../includes/header.php';
 $config = [
     'list_url' => app_url('about/finance.php'),
     'enable_comments' => false,
-    'gnuboard_bo_table' => 'hopec_finance_reports',
 ];
 
 echo '<div class="page-spacing" style="padding-top:24px;padding-bottom:48px">';

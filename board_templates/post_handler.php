@@ -1,10 +1,10 @@
 <?php
 /**
- * 게시글 등록/수정 처리기 - hopec_posts 통합 테이블 호환
+ * 게시글 등록/수정 처리기 - younglabor_posts 통합 테이블 호환
  * 자유게시판과 자료실 모두 지원
  */
 
-// hopec_posts 호환성 레이어 먼저 로드
+// younglabor_posts 호환성 레이어 먼저 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -59,7 +59,7 @@ try {
     
     // 기본 변수 설정
     $category_type = $_POST['category_type'] ?? 'FREE';
-    $board_type = getBoardType($category_type); // hopec_posts용 board_type
+    $board_type = getBoardType($category_type); // younglabor_posts용 board_type
     
     // 리다이렉트 경로(폼에서 전달 가능)
     $redirect_detail_url = isset($_POST['redirect_detail_url']) ? trim((string)$_POST['redirect_detail_url']) : '';
@@ -81,10 +81,10 @@ try {
         throw new Exception('로그인이 필요합니다.');
     }
 
-    // 카테고리/게시판 타입 확인 (hopec_posts 호환)
-    if (USE_HOPEC_POSTS) {
-        // hopec_board_config에서 게시판 타입 확인
-        $category_stmt = $conn->prepare("SELECT board_type FROM hopec_board_config WHERE board_type = ?");
+    // 카테고리/게시판 타입 확인 (younglabor_posts 호환)
+    if (USE_younglabor_POSTS) {
+        // younglabor_board_config에서 게시판 타입 확인
+        $category_stmt = $conn->prepare("SELECT board_type FROM younglabor_board_config WHERE board_type = ?");
         $category_stmt->execute([$board_type]);
         $category_row = $category_stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -98,10 +98,10 @@ try {
                 $board_name = $category_type . ' 게시판';
             }
             
-            $create_stmt = $conn->prepare("INSERT INTO hopec_board_config (board_type, board_name, is_active) VALUES (?, ?, 1)");
+            $create_stmt = $conn->prepare("INSERT INTO younglabor_board_config (board_type, board_name, is_active) VALUES (?, ?, 1)");
             $create_stmt->execute([$board_type, $board_name]);
         }
-        $category_id = getHopecAdapter()->getBoardTypeId($board_type); // 임시 ID
+        $category_id = getyounglaborAdapter()->getBoardTypeId($board_type); // 임시 ID
     } else {
         // 기존 board_categories 방식
         $category_stmt = $conn->prepare("SELECT category_id FROM board_categories WHERE category_type = ?");
@@ -214,8 +214,8 @@ try {
             throw new Exception('게시글 등록에 실패했습니다.');
         }
         
-        // 새로 생성된 게시글 ID 가져오기 (hopec_posts 호환)
-        if (USE_HOPEC_POSTS) {
+        // 새로 생성된 게시글 ID 가져오기 (younglabor_posts 호환)
+        if (USE_younglabor_POSTS) {
             $final_post_id = (int)$conn->lastInsertId();
         } else {
             $final_post_id = (int)$conn->lastInsertId();

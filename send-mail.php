@@ -34,7 +34,7 @@ function sendEmailWithGmail($to, $subject, $body, $from_name = null, $reply_to =
     error_log($log_message, 3, __DIR__ . '/logs/email.log');
     
     // 실제 이메일 발송 시도 (간단한 방법)
-    $from_email = env('MAIL_FROM_EMAIL', 'noreply@' . env('PRODUCTION_DOMAIN', 'hopec.co.kr'));
+    $from_email = env('MAIL_FROM_EMAIL', 'noreply@' . env('PRODUCTION_DOMAIN', 'younglabor.co.kr'));
     $headers = "From: {$from_name} <{$from_email}>\r\n";
     if ($reply_to) {
         $headers .= "Reply-To: {$reply_to}\r\n";

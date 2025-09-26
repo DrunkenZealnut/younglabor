@@ -49,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (!empty($title)) {
         try {
-            $sql = "UPDATE hopec_posts SET 
+            $tableName = get_table_name('posts');
+            $sql = "UPDATE {$tableName} SET 
                     wr_subject = ?, wr_content = ?, wr_name = ?, wr_is_notice = ?
                     WHERE wr_id = ? AND board_type = ?";
             
@@ -69,7 +70,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
-    // 게시글 정보 조회 (hopec_posts 테이블에서 board_type으로)
+    // 게시글 정보 조회 (posts 테이블에서 board_type으로)
+    $tableName = get_table_name('posts');
     $sql = "SELECT 
                 wr_id as id,
                 wr_subject as title,
@@ -79,7 +81,7 @@ try {
                 wr_datetime as created_at,
                 wr_ip as ip_address,
                 wr_is_notice as is_notice
-            FROM hopec_posts 
+            FROM {$tableName} 
             WHERE wr_id = ? AND board_type = ?";
     
     $stmt = $pdo->prepare($sql);
@@ -499,13 +501,13 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 현재 테이블 정보 가져오기 (URL에서 추출)
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentTable = urlParams.get('table') || 'general';
+        // 현재 board_type 정보 가져오기 (PHP에서 전달받은 값 사용)
+        const currentBoardType = '<?= $board_type ?>';
+        
         
         var formData = new FormData();
         formData.append('image', file);  // 'file'에서 'image'로 수정
-        formData.append('board_table', currentTable);  // 게시판 테이블 정보 추가
+        formData.append('board_table', currentBoardType);  // 올바른 board_type 전달
         formData.append('csrf_token', csrfToken);
         
         // 로딩 표시
@@ -522,10 +524,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingToast.remove();
                 try {
                     var data = typeof response === 'string' ? JSON.parse(response) : response;
+                    
+                    
                     if (data && data.success && data.url) {
                         $('#content').summernote('insertImage', data.url);
                     } else {
-                        alert('이미지 업로드 실패: ' + (data.error || '알 수 없는 오류'));
+                        alert('이미지 업로드 실패: ' + (data.message || data.error || '알 수 없는 오류'));
                     }
                 } catch (e) {
                     console.error('Response parsing error:', e);

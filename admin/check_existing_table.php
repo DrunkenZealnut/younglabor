@@ -1,6 +1,6 @@
 <?php
 /**
- * 기존 hopec_theme_presets 테이블 구조 확인
+ * 기존 heme_presets 테이블 구조 확인
  */
 
 error_reporting(E_ALL);
@@ -16,23 +16,23 @@ try {
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
     
-    echo "<h3>현재 hopec_theme_presets 테이블 정보</h3>";
+    echo "<h3>현재 theme_presets 테이블 정보</h3>";
     
     // 테이블 존재 확인
-    $stmt = $pdo->query("SHOW TABLES LIKE 'hopec_theme_presets'");
+    $stmt = $pdo->query("SHOW TABLES LIKE 'theme_presets'");
     if (!$stmt->fetch()) {
-        echo "<div style='color: orange;'>❌ hopec_theme_presets 테이블이 존재하지 않습니다. manual_theme_setup.sql을 그대로 실행하세요.</div>";
+        echo "<div style='color: orange;'>❌ theme_presets 테이블이 존재하지 않습니다. manual_theme_setup.sql을 그대로 실행하세요.</div>";
         exit;
     }
     
-    echo "<div style='color: green;'>✅ hopec_theme_presets 테이블 존재</div><br>";
+    echo "<div style='color: green;'>✅ theme_presets 테이블 존재</div><br>";
     
     // 테이블 구조 확인
     echo "<h4>1. 현재 테이블 구조:</h4>";
     echo "<table border='1' style='border-collapse: collapse;'>";
     echo "<tr><th>컬럼명</th><th>타입</th><th>NULL</th><th>기본값</th><th>Extra</th></tr>";
     
-    $stmt = $pdo->query("DESCRIBE hopec_theme_presets");
+    $stmt = $pdo->query("DESCRIBE theme_presets");
     $currentColumns = [];
     
     while ($row = $stmt->fetch()) {

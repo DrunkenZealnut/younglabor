@@ -58,7 +58,7 @@ class NaturalGreenThemeLoader {
         ];
         
         echo "<script>\n";
-        echo "window.HOPEC_THEME = " . json_encode($safeConfig) . ";\n";
+        echo "window.younglabor_THEME = " . json_encode($safeConfig) . ";\n";
         echo "</script>\n";
     }
     

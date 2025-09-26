@@ -1,7 +1,7 @@
 <?php
 /**
  * board_templates 전역 설정 파일 (Phase 1 Enhanced)
- * - hopec_posts 통합 테이블 호환성 레이어 설정
+ * - younglabor_posts 통합 테이블 호환성 레이어 설정
  * - 첨부파일 저장 경로/URL 설정 (GNUBOARD 의존성 제거)
  * - 환경변수 기반 설정 지원 추가
  * - 롤백 가능한 점진적 개선
@@ -43,13 +43,13 @@ if (!function_exists('env')) {
 // 환경변수 로드
 loadEnvironmentConfig();
 
-// hopec_posts 통합 모드 활성화 (환경변수로 제어 가능)
-if (!defined('USE_HOPEC_POSTS')) {
-    define('USE_HOPEC_POSTS', env('BT_USE_HOPEC_POSTS', true));
+// younglabor_posts 통합 모드 활성화 (환경변수로 제어 가능)
+if (!defined('USE_younglabor_POSTS')) {
+    define('USE_younglabor_POSTS', env('BT_USE_younglabor_POSTS', true));
 }
 
-// HopecPostsAdapter 자동 로드
-if (!class_exists('HopecPostsAdapter')) {
+// younglaborPostsAdapter 자동 로드
+if (!class_exists('younglaborPostsAdapter')) {
     require_once __DIR__ . '/HopecPostsAdapter.php';
 }
 
@@ -64,11 +64,11 @@ if (!class_exists('BoardTemplatesLogger')) {
 }
 
 // 전역 어댑터 인스턴스 (기존 호환성 유지)
-if (!isset($GLOBALS['hopec_adapter'])) {
-    $GLOBALS['hopec_adapter'] = new HopecPostsAdapter();
+if (!isset($GLOBALS['younglabor_adapter'])) {
+    $GLOBALS['younglabor_adapter'] = new younglaborPostsAdapter();
     
     // 컨테이너에도 등록 (점진적 마이그레이션)
-    container()->register('hopec_adapter', $GLOBALS['hopec_adapter']);
+    container()->register('younglabor_adapter', $GLOBALS['younglabor_adapter']);
     
     // 고급 로거를 컨테이너에 등록
     if (function_exists('getBoardTemplatesLogger')) {
@@ -106,7 +106,7 @@ if (!defined('BOARD_TEMPLATES_LOG_LEVEL')) {
 }
 
 /**
- * hopec_posts 통합 테이블 설정
+ * younglabor_posts 통합 테이블 설정
  */
 
 // 기본 게시판 타입 정의
@@ -165,7 +165,7 @@ function validateAndCreateDirectories() {
  */
 function getBoardTemplatesConfig() {
     return [
-        'use_hopec_posts' => USE_HOPEC_POSTS,
+        'use_younglabor_posts' => USE_younglabor_POSTS,
         'file_base_path' => BOARD_TEMPLATES_FILE_BASE_PATH,
         'file_base_url' => BOARD_TEMPLATES_FILE_BASE_URL,
         'download_open' => BOARD_TEMPLATES_DOWNLOAD_OPEN,
@@ -228,34 +228,34 @@ validateAndCreateDirectories();
 /**
  * 어댑터 인스턴스 반환 (컨테이너 우선, 기존 호환성 유지)
  */
-function getHopecAdapter() {
+function getyounglaborAdapter() {
     // 1차: 컨테이너에서 조회
     if (function_exists('service')) {
-        $adapter = service('hopec_adapter');
+        $adapter = service('younglabor_adapter');
         if ($adapter) {
             return $adapter;
         }
     }
     
     // 2차: 전역 변수에서 조회 (기존 방식)
-    if (isset($GLOBALS['hopec_adapter'])) {
-        return $GLOBALS['hopec_adapter'];
+    if (isset($GLOBALS['younglabor_adapter'])) {
+        return $GLOBALS['younglabor_adapter'];
     }
     
     // 3차: 새로 생성
-    if (class_exists('HopecPostsAdapter')) {
-        $adapter = new HopecPostsAdapter();
-        $GLOBALS['hopec_adapter'] = $adapter;
+    if (class_exists('younglaborPostsAdapter')) {
+        $adapter = new younglaborPostsAdapter();
+        $GLOBALS['younglabor_adapter'] = $adapter;
         
         // 컨테이너에도 등록
         if (function_exists('container')) {
-            container()->register('hopec_adapter', $adapter);
+            container()->register('younglabor_adapter', $adapter);
         }
         
         return $adapter;
     }
     
-    btLog('HopecPostsAdapter를 로드할 수 없습니다', 'ERROR');
+    btLog('younglaborPostsAdapter를 로드할 수 없습니다', 'ERROR');
     return null;
 }
 
@@ -263,16 +263,16 @@ function getHopecAdapter() {
  * 게시판 타입 확인/변환
  */
 function getBoardType($categoryType) {
-    return getHopecAdapter()->mapBoardType($categoryType);
+    return getyounglaborAdapter()->mapBoardType($categoryType);
 }
 
 /**
  * 호환성 쿼리 실행 헬퍼
- * 기존 board_templates 쿼리를 hopec_posts 형식으로 자동 변환
+ * 기존 board_templates 쿼리를 younglabor_posts 형식으로 자동 변환
  */
 function executeCompatQuery($pdo, $query, $params = [], $boardType = null) {
-    if (USE_HOPEC_POSTS) {
-        $adapter = getHopecAdapter();
+    if (USE_younglabor_POSTS) {
+        $adapter = getyounglaborAdapter();
         $query = $adapter->transformSelectQuery($query, $boardType);
     }
     
@@ -285,16 +285,16 @@ function executeCompatQuery($pdo, $query, $params = [], $boardType = null) {
  * 호환성 INSERT 헬퍼
  */
 function executeCompatInsert($pdo, $table, $data, $boardType = null) {
-    if (USE_HOPEC_POSTS) {
-        $adapter = getHopecAdapter();
-        list($hopecTable, $hopecData) = $adapter->transformInsertQuery($table, $data, $boardType);
+    if (USE_younglabor_POSTS) {
+        $adapter = getyounglaborAdapter();
+        list($younglaborTable, $younglaborData) = $adapter->transformInsertQuery($table, $data, $boardType);
         
-        $fields = array_keys($hopecData);
+        $fields = array_keys($younglaborData);
         $placeholders = array_fill(0, count($fields), '?');
         
-        $query = "INSERT INTO $hopecTable (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
+        $query = "INSERT INTO $younglaborTable (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
         $stmt = $pdo->prepare($query);
-        return $stmt->execute(array_values($hopecData));
+        return $stmt->execute(array_values($younglaborData));
     } else {
         // 기존 방식
         $fields = array_keys($data);
@@ -310,24 +310,24 @@ function executeCompatInsert($pdo, $table, $data, $boardType = null) {
  * 호환성 UPDATE 헬퍼  
  */
 function executeCompatUpdate($pdo, $table, $data, $where, $boardType = null) {
-    if (USE_HOPEC_POSTS) {
-        $adapter = getHopecAdapter();
-        list($hopecTable, $hopecData, $hopecWhere) = $adapter->transformUpdateQuery($table, $data, $where, $boardType);
+    if (USE_younglabor_POSTS) {
+        $adapter = getyounglaborAdapter();
+        list($younglaborTable, $younglaborData, $younglaborWhere) = $adapter->transformUpdateQuery($table, $data, $where, $boardType);
         
         $setClause = [];
         $values = [];
-        foreach ($hopecData as $field => $value) {
+        foreach ($younglaborData as $field => $value) {
             $setClause[] = "$field = ?";
             $values[] = $value;
         }
         
         $whereClause = [];
-        foreach ($hopecWhere as $field => $value) {
+        foreach ($younglaborWhere as $field => $value) {
             $whereClause[] = "$field = ?";
             $values[] = $value;
         }
         
-        $query = "UPDATE $hopecTable SET " . implode(', ', $setClause) . " WHERE " . implode(' AND ', $whereClause);
+        $query = "UPDATE $younglaborTable SET " . implode(', ', $setClause) . " WHERE " . implode(' AND ', $whereClause);
         $stmt = $pdo->prepare($query);
         return $stmt->execute($values);
     } else {
@@ -355,8 +355,8 @@ function executeCompatUpdate($pdo, $table, $data, $where, $boardType = null) {
  * 결과 데이터 변환 헬퍼
  */
 function transformResultRow($row, $table = 'board_posts') {
-    if (USE_HOPEC_POSTS && is_array($row)) {
-        return getHopecAdapter()->transformResultData($row, $table);
+    if (USE_younglabor_POSTS && is_array($row)) {
+        return getyounglaborAdapter()->transformResultData($row, $table);
     }
     return $row;
 }

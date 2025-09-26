@@ -14,7 +14,7 @@ return [
     // 기본 사이트 설정
     'defaults' => [
         'site_name' => env('DEFAULT_SITE_NAME', '청년노동자인권센터'),
-        'site_description' => env('DEFAULT_SITE_DESCRIPTION', '청년노동자는 평등하다'),
+        'site_description' => env('DEFAULT_SITE_DESCRIPTION', 'Administrative Management System'),
         'admin_email' => env('DEFAULT_ADMIN_EMAIL', 'admin@younglabor.kr'),
     ],
     

@@ -94,7 +94,7 @@ $db_socket = $current_env['DB_SOCKET'] ?? '';
             </label>
             <input type="text" class="form-control" id="db_prefix" name="settings[DB_PREFIX]" 
                    value="<?php echo htmlspecialchars($db_prefix); ?>">
-            <small class="form-text text-muted">테이블명 앞에 붙을 프리픽스 (예: admin_, hopec_)</small>
+            <small class="form-text text-muted">테이블명 앞에 붙을 프리픽스 (예: admin_, yl_)</small>
         </div>
         
         <div class="mb-3">

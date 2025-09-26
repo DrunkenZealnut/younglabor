@@ -86,7 +86,7 @@
 🚀 GitHub Push Agent v1.0
 =======================================================================
 
-[INFO] 원격 저장소: https://github.com/username/hopec.git
+[INFO] 원격 저장소: https://github.com/username/younglabor.git
 [INFO] 대상 브랜치: fresh-start
 
 [INFO] 현재 Git 상태를 확인합니다...
@@ -112,11 +112,11 @@
 🎉 성공적으로 GitHub에 업로드되었습니다!
 
 📍 저장소 정보:
-  - URL: https://github.com/username/hopec.git
+  - URL: https://github.com/username/younglabor.git
   - 브랜치: fresh-start
   - 커밋: a1b2c3d
 
-🔗 GitHub에서 확인: https://github.com/username/hopec/tree/fresh-start
+🔗 GitHub에서 확인: https://github.com/username/younglabor/tree/fresh-start
 ```
 
 ## 🔄 CI/CD 통합

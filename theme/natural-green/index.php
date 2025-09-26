@@ -3,8 +3,8 @@
 // 테마 bootstrap 로드 (DatabaseManager, 헬퍼 함수 등 초기화)
 require_once __DIR__ . '/bootstrap.php';
 
-// HOPEC 프레임워크 초기화
-if (!defined('_HOPEC_')) {
+// younglabor 프레임워크 초기화
+if (!defined('_younglabor_')) {
   $frameworkBootstrap = __DIR__ . '/../../includes/bootstrap.php';
   if (file_exists($frameworkBootstrap)) {
     include_once $frameworkBootstrap;

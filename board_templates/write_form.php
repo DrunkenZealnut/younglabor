@@ -1,5 +1,5 @@
 <?php
-// hopec_posts 호환성 레이어 로드
+// younglabor_posts 호환성 레이어 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -33,7 +33,7 @@ if (function_exists('renderBoardTheme')) {
     renderBoardTheme();
 } else {
     // 폴백: 기본 board-theme.css 로드
-    echo '<link rel="stylesheet" href="/hopec/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
+    echo '<link rel="stylesheet" href="/younglabor/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
 }
 ?>
 
@@ -90,7 +90,7 @@ if (function_exists('renderBoardTheme')) {
               style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 2rem;">
             <input type="hidden" name="category_type" value="<?php echo htmlspecialchars($config['category_type'] ?? 'FREE'); ?>">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-            <input type="hidden" name="table_name" value="<?php echo $config['category_type'] === 'LIBRARY' ? 'hopec_library' : 'hopec_posts'; ?>">
+            <input type="hidden" name="table_name" value="<?php echo $config['category_type'] === 'LIBRARY' ? 'younglabor_library' : 'younglabor_posts'; ?>">
             
             <!-- 작성자 -->
             <div style="margin-bottom: 1.5rem;">
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var formData = new FormData();
         formData.append('file', file);
         formData.append('csrf_token', '<?php echo htmlspecialchars($csrf_token); ?>');
-        formData.append('table_name', '<?php echo $config['category_type'] === 'LIBRARY' ? 'hopec_library' : 'hopec_posts'; ?>');
+        formData.append('table_name', '<?php echo $config['category_type'] === 'LIBRARY' ? 'younglabor_library' : 'younglabor_posts'; ?>');
         
         $.ajax({
             url: IMAGE_UPLOAD_URL,

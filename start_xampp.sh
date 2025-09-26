@@ -15,7 +15,7 @@ echo "✅ XAMPP 설치 확인됨"
 
 # VirtualHost 설정 확인
 VHOST_FILE="/Applications/XAMPP/etc/extra/httpd-vhosts.conf"
-if ! grep -q "hopec.local" "$VHOST_FILE" 2>/dev/null; then
+if ! grep -q "younglabor.local" "$VHOST_FILE" 2>/dev/null; then
     echo "⚠️  VirtualHost 설정이 필요합니다."
     echo "   XAMPP_SETUP_GUIDE.md 파일을 참조하여 설정을 완료하세요."
     echo ""
@@ -41,12 +41,12 @@ fi
 
 echo ""
 echo "📍 접속 주소:"
-echo "   - 메인 사이트: http://hopec.local:8012"
+echo "   - 메인 사이트: http://younglabor.local:8012"
 echo "   - XAMPP 대시보드: http://localhost:8012"
 echo "   - phpMyAdmin: http://localhost/phpmyadmin (기본 포트 80)"
-echo "   - 데이터베이스 관리: http://hopec.local:8012/db_manager.php"
+echo "   - 데이터베이스 관리: http://younglabor.local:8012/db_manager.php"
 echo ""
-echo "💡 관리자 비밀번호: hopec2024!"
+echo "💡 관리자 비밀번호: younglabor2024!"
 echo ""
 echo "🔧 XAMPP Control Panel을 열려면:"
 echo "   open /Applications/XAMPP/manager-osx.app"

@@ -67,7 +67,7 @@ admin/mvc/
 - ✅ `pagination.php` - 페이지네이션
 - ✅ `search_form.php` - 검색 폼
 - ✅ `breadcrumb.php` - 브레드크럼
-- ✅ `hopec_card.php` - 노동권 카드
+- ✅ `younglabor_card.php` - 노동권 카드
 - ✅ `education_progress.php` - 교육 진행도
 - ✅ `quick_actions.php` - 퀵 액션
 - ✅ `performance_debug.php` - 성능 디버그
@@ -196,7 +196,7 @@ admin/mvc/views/components/alerts.php                  # 통합된 알림 시스
 admin/mvc/views/components/pagination.php              # 통합된 페이지네이션
 admin/mvc/views/components/search_form.php             # 통합된 검색 폼
 admin/mvc/views/components/breadcrumb.php              # 브레드크럼 컴포넌트
-admin/mvc/views/components/hopec_card.php       # 노동권 카드 컴포넌트
+admin/mvc/views/components/younglabor_card.php       # 노동권 카드 컴포넌트
 admin/mvc/views/components/education_progress.php      # 교육 진행도 컴포넌트
 admin/mvc/views/components/quick_actions.php           # 퀵 액션 컴포넌트
 admin/mvc/views/components/performance_debug.php       # 성능 디버그 컴포넌트

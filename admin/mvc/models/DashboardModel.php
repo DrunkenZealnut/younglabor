@@ -40,7 +40,7 @@ class DashboardModel
     private function getTotalBoards()
     {
         try {
-            $stmt = $this->pdo->query("SELECT COUNT(*) FROM hopec_boards");
+            $stmt = $this->pdo->query("SELECT COUNT(*) FROM " . get_table_name('boards'));
             return $stmt->fetchColumn();
         } catch (PDOException $e) {
             return 0;
@@ -53,7 +53,7 @@ class DashboardModel
     private function getTotalPosts()
     {
         try {
-            $stmt = $this->pdo->query("SELECT COUNT(*) FROM hopec_posts");
+            $stmt = $this->pdo->query("SELECT COUNT(*) FROM " . get_table_name('posts'));
             return $stmt->fetchColumn();
         } catch (PDOException $e) {
             return 0;
@@ -66,7 +66,7 @@ class DashboardModel
     private function getTotalInquiries()
     {
         try {
-            $stmt = $this->pdo->query("SELECT COUNT(*) FROM hopec_inquiries");
+            $stmt = $this->pdo->query("SELECT COUNT(*) FROM " . get_table_name('inquiries'));
             return $stmt->fetchColumn();
         } catch (PDOException $e) {
             return 0;
@@ -81,8 +81,8 @@ class DashboardModel
         try {
             $stmt = $this->pdo->prepare("
                 SELECT p.id, p.title, p.created_at, b.board_name, b.board_code, p.author, p.view_count
-                FROM hopec_posts p 
-                LEFT JOIN hopec_boards b ON p.board_id = b.id 
+                FROM " . get_table_name('posts') . " p 
+                LEFT JOIN " . get_table_name('boards') . " b ON p.board_id = b.id 
                 WHERE p.is_published = 1
                 ORDER BY p.created_at DESC 
                 LIMIT ?
@@ -143,7 +143,7 @@ class DashboardModel
     {
         $stmt = $this->pdo->query("
             SELECT COUNT(DISTINCT ip_address) 
-            FROM hopec_visitor_log 
+            FROM " . get_table_name('visitor_log') 
             WHERE DATE(visit_date) = CURDATE()
         ");
         return $stmt->fetchColumn();
@@ -156,7 +156,7 @@ class DashboardModel
     {
         $stmt = $this->pdo->query("
             SELECT COUNT(DISTINCT ip_address) 
-            FROM hopec_visitor_log 
+            FROM " . get_table_name('visitor_log') 
             WHERE YEARWEEK(visit_date, 1) = YEARWEEK(NOW(), 1)
         ");
         return $stmt->fetchColumn();
@@ -169,7 +169,7 @@ class DashboardModel
     {
         $stmt = $this->pdo->query("
             SELECT COUNT(DISTINCT ip_address) 
-            FROM hopec_visitor_log 
+            FROM " . get_table_name('visitor_log') 
             WHERE YEAR(visit_date) = YEAR(NOW()) 
             AND MONTH(visit_date) = MONTH(NOW())
         ");
@@ -183,7 +183,7 @@ class DashboardModel
     {
         $stmt = $this->pdo->query("
             SELECT COUNT(DISTINCT ip_address) 
-            FROM hopec_visitor_log
+            FROM " . get_table_name('visitor_log')
         ");
         return $stmt->fetchColumn();
     }
@@ -195,7 +195,7 @@ class DashboardModel
     {
         $stmt = $this->pdo->query("
             SELECT DATE(visit_date) as visit_date, COUNT(DISTINCT ip_address) as visitors 
-            FROM hopec_visitor_log 
+            FROM " . get_table_name('visitor_log') 
             WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
             GROUP BY DATE(visit_date)
             ORDER BY visit_date ASC

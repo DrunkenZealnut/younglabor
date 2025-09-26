@@ -113,7 +113,6 @@ include __DIR__ . '/../includes/header.php';
 $config = [
     'list_url' => app_url('community/resources.php'),
     'enable_comments' => false,
-    'gnuboard_bo_table' => 'hopec_resources',
 ];
 
 echo '<div class="page-spacing" style="padding-top:24px;padding-bottom:48px">';

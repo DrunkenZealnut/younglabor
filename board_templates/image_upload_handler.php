@@ -52,7 +52,7 @@ try {
     $file = $_FILES['file'];
     
     // 테이블명 결정 (POST 파라미터 또는 기본값)
-    $table_name = $_POST['table_name'] ?? 'hopec_editor_images';
+    $table_name = $_POST['table_name'] ?? 'younglabor_editor_images';
 
     // 실제 이미지 파일인지 확인 (getimagesize + MIME 확인)
     $image_info = @getimagesize($file['tmp_name']);

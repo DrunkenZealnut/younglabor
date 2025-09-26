@@ -65,7 +65,7 @@
                 <div>
                   <span class="font-medium text-forest-700">이메일</span><br>
                   <span class="text-gray-600">
-                    <a href="mailto:hopec09131105@hopec.co.kr" class="text-forest-600 hover:text-lime-600 underline">hopec09131105@hopec.co.kr</a>
+                    <a href="mailto:younglabor09131105@younglabor.co.kr" class="text-forest-600 hover:text-lime-600 underline">younglabor09131105@younglabor.co.kr</a>
                   </span>
                 </div>
               </div>

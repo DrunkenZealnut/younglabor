@@ -1,7 +1,6 @@
 <?php
 // /admin/boards/delete.php
-require '../auth.php';
-require '../db.php';
+require '../bootstrap.php';
 
 // 한글 깨짐 방지를 위한 문자셋 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -19,7 +18,8 @@ $id = (int)$_GET['id'];
 if (!isset($_GET['confirm']) || $_GET['confirm'] !== 'yes') {
   // 게시판 정보 조회
   try {
-    $stmt = $pdo->prepare("SELECT board_name FROM hopec_boards WHERE id = ?");
+    $tableName = get_table_name('boards');
+    $stmt = $pdo->prepare("SELECT board_name FROM {$tableName} WHERE id = ?");
     $stmt->execute([$id]);
     $board = $stmt->fetch(PDO::FETCH_ASSOC);
     
@@ -82,7 +82,8 @@ try {
   $pdo->beginTransaction();
   
   // 게시판 정보 조회 (삭제 메시지용)
-  $stmt = $pdo->prepare("SELECT board_name FROM hopec_boards WHERE id = ?");
+  $tableName = get_table_name('boards');
+  $stmt = $pdo->prepare("SELECT board_name FROM {$tableName} WHERE id = ?");
   $stmt->execute([$id]);
   $board = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -93,11 +94,11 @@ try {
   }
   
   // TODO: 게시글 삭제 로직 추가 (게시글 테이블이 구현되면)
-  // $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE board_id = ?");
+  // $stmt = $pdo->prepare("DELETE FROM " . get_table_name('posts') . " WHERE board_id = ?");
   // $stmt->execute([$id]);
   
   // 게시판 삭제
-  $stmt = $pdo->prepare("DELETE FROM hopec_boards WHERE id = ?");
+  $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE id = ?");
   $result = $stmt->execute([$id]);
   
   if ($result) {

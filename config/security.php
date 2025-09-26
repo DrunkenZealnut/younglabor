@@ -14,7 +14,7 @@ return [
     'session' => [
         'driver' => $_ENV['SESSION_DRIVER'] ?? 'file',
         'lifetime' => (int)($_ENV['SESSION_LIFETIME'] ?? 7200), // 2시간
-        'name' => $_ENV['SESSION_NAME'] ?? 'HOPEC_SESSION',
+        'name' => $_ENV['SESSION_NAME'] ?? 'younglabor_SESSION',
         'secure' => filter_var($_ENV['SESSION_SECURE'] ?? false, FILTER_VALIDATE_BOOLEAN),
         'http_only' => filter_var($_ENV['SESSION_HTTP_ONLY'] ?? true, FILTER_VALIDATE_BOOLEAN),
         'same_site' => $_ENV['SESSION_SAME_SITE'] ?? 'strict',
@@ -33,7 +33,7 @@ return [
     */
     'csrf' => [
         'enabled' => filter_var($_ENV['CSRF_ENABLED'] ?? true, FILTER_VALIDATE_BOOLEAN),
-        'token_name' => $_ENV['CSRF_TOKEN_NAME'] ?? 'hopec_csrf_token',
+        'token_name' => $_ENV['CSRF_TOKEN_NAME'] ?? 'younglabor_csrf_token',
         'lifetime' => (int)($_ENV['CSRF_LIFETIME'] ?? 3600), // 1시간
         'regenerate_on_use' => false,
         'auto_include' => true, // 폼에 자동으로 토큰 추가

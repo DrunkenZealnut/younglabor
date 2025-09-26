@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // DB 연결
 require_once '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // ThemeManager 서비스 로드
 require_once '../services/ThemeManager.php';
@@ -13,10 +14,10 @@ $themeManager = new ThemeManager($pdo);
 
 // 테이블이 없는 경우 생성
 try {
-  $pdo->query("SELECT 1 FROM hopec_site_settings LIMIT 1");
+  $pdo->query("SELECT 1 FROM " . get_table_name('site_settings') . " LIMIT 1");
 } catch (PDOException $e) {
   // 테이블이 없으면 생성
-  $sql = "CREATE TABLE hopec_site_settings (
+  $sql = "CREATE TABLE " . get_table_name('site_settings') . " (
     id INT(11) NOT NULL AUTO_INCREMENT,
     setting_key VARCHAR(100) NOT NULL COMMENT '설정 키',
     setting_value TEXT COMMENT '설정 값',
@@ -76,7 +77,7 @@ try {
     ['custom_js', '', 'other']
   ];
   
-  $sql = "INSERT INTO hopec_site_settings (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
+  $sql = "INSERT INTO \" . get_table_name('site_settings') . \" (setting_key, setting_value, setting_group) VALUES (?, ?, ?)";
   $stmt = $pdo->prepare($sql);
   
   foreach ($default_settings as $setting) {
@@ -86,7 +87,7 @@ try {
 
 // 설정 가져오기
 function getSiteSettings($pdo, $group = null) {
-  $sql = "SELECT setting_key, setting_value, setting_group FROM hopec_site_settings";
+  $sql = "SELECT setting_key, setting_value, setting_group FROM \" . get_table_name('site_settings') . \"";
   $params = [];
   
   if ($group) {
@@ -125,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'admin_email' => isset($_POST['admin_email']) ? trim($_POST['admin_email']) : ''
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($general_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -148,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'dark_color' => isset($_POST['dark_color']) ? trim($_POST['dark_color']) : '#212529'
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($theme_settings as $key => $value) {
         $result = $stmt->execute([$value, $key]);
@@ -169,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'font_size_base' => isset($_POST['font_size_base']) ? trim($_POST['font_size_base']) : '1rem'
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($font_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -188,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'container_width' => isset($_POST['container_width']) ? trim($_POST['container_width']) : 'standard'
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($layout_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -208,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'kakaotalk_url' => isset($_POST['kakaotalk_url']) ? trim($_POST['kakaotalk_url']) : ''
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($social_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -226,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'custom_js' => isset($_POST['custom_js']) ? trim($_POST['custom_js']) : ''
       ];
       
-      $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = ?");
+      $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = ?");
       
       foreach ($other_settings as $key => $value) {
         $stmt->execute([$value, $key]);
@@ -297,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           }
           
           $logo_path = 'uploads/settings/' . $unique_name;
-          $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = 'site_logo'");
+          $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = 'site_logo'");
           $stmt->execute([$logo_path]);
           
           $success_message = '로고가 성공적으로 업로드되었습니다.';
@@ -340,7 +341,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           }
           
           $favicon_path = 'uploads/settings/' . $unique_name;
-          $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = ? WHERE setting_key = 'site_favicon'");
+          $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = ? WHERE setting_key = 'site_favicon'");
           $stmt->execute([$favicon_path]);
           
           $success_message = '파비콘이 성공적으로 업로드되었습니다.';
@@ -360,7 +361,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           unlink($old_logo);
         }
         
-        $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = '' WHERE setting_key = 'site_logo'");
+        $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = '' WHERE setting_key = 'site_logo'");
         $stmt->execute();
         
         $success_message = '로고가 성공적으로 삭제되었습니다.';
@@ -378,7 +379,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           unlink($old_favicon);
         }
         
-        $stmt = $pdo->prepare("UPDATE hopec_site_settings SET setting_value = '' WHERE setting_key = 'site_favicon'");
+        $stmt = $pdo->prepare("UPDATE \" . get_table_name('site_settings') . \" SET setting_value = '' WHERE setting_key = 'site_favicon'");
         $stmt->execute();
         
         $success_message = '파비콘이 성공적으로 삭제되었습니다.';

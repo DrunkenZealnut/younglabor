@@ -12,10 +12,10 @@ $currentSlug = 'donate/one-time';
 // Legacy mode only - CSS vars mode removed
 $useCSSVars = false;
 
-// 일시후원 카테고리 설정 (hopec_donate 테이블 기반)
+// 일시후원 카테고리 설정 (younglabor_donate 테이블 기반)
 $bo_table = 'B22R'; // 호환성을 위한 변수 유지
 $categories = ['개인후원', '단체후원', '기업후원']; // 일시후원 카테고리
-$board = null; // hopec_donate 테이블을 직접 사용
+$board = null; // younglabor_donate 테이블을 직접 사용
 
 // 카드 → 실제 카테고리 매핑 (DB 카테고리 명칭과 매칭)
 $catMap = [
@@ -98,7 +98,7 @@ include_once __DIR__ . '/../includes/header.php';
       <hr class="my-8" />
 
       <?php
-      // one-time 폼을 페이지 내에 직접 구성 (hopec_donate 테이블 직접 사용)
+      // one-time 폼을 페이지 내에 직접 구성 (younglabor_donate 테이블 직접 사용)
       // 게시판 설정 불필요, 직접 처리
       
       // monthly.php와 동일한 가드(허니팟/시간트랩/토큰) 세팅

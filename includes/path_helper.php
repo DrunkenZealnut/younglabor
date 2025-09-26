@@ -33,8 +33,8 @@ function get_project_root() {
             if (!file_exists($project_root . '/' . $key_file)) {
                 // Fallback to common paths if auto-detection fails
                 $fallback_paths = [
-                    '/Applications/XAMPP/xamppfiles/htdocs/hopec',
-                    '/var/www/html/hopec',
+                    '/Applications/XAMPP/xamppfiles/htdocs/younglabor',
+                    '/var/www/html/younglabor',
                     dirname(dirname(__DIR__))
                 ];
                 

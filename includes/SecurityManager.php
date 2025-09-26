@@ -19,7 +19,7 @@ class SecurityManager
             return;
         }
         
-        self::$config = $GLOBALS['hopec_config']['security'] ?? [];
+        self::$config = $GLOBALS['younglabor_config']['security'] ?? [];
         
         // 보안 헤더 설정
         self::setSecurityHeaders();
@@ -104,7 +104,7 @@ class SecurityManager
     {
         $sessionConfig = self::$config['session'] ?? [];
         
-        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['hopec_user'])) {
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['younglabor_user'])) {
             // 세션 하이재킹 방지
             self::validateSession();
         }
@@ -117,26 +117,26 @@ class SecurityManager
     {
         $sessionConfig = self::$config['session'] ?? [];
         
-        if (!isset($_SESSION['hopec_created_at'])) {
-            $_SESSION['hopec_created_at'] = time();
+        if (!isset($_SESSION['younglabor_created_at'])) {
+            $_SESSION['younglabor_created_at'] = time();
         }
         
-        if (!isset($_SESSION['hopec_last_activity'])) {
-            $_SESSION['hopec_last_activity'] = time();
+        if (!isset($_SESSION['younglabor_last_activity'])) {
+            $_SESSION['younglabor_last_activity'] = time();
         }
         
         // 비활성 세션 만료 체크
         $inactivityTimeout = $sessionConfig['inactivity_timeout'] ?? 1800;
-        if (time() - $_SESSION['hopec_last_activity'] > $inactivityTimeout) {
+        if (time() - $_SESSION['younglabor_last_activity'] > $inactivityTimeout) {
             self::destroySession();
             return false;
         }
         
         // IP 주소 변경 감지
         if ($sessionConfig['ip_check'] ?? true) {
-            if (!isset($_SESSION['hopec_user_ip'])) {
-                $_SESSION['hopec_user_ip'] = $_SERVER['REMOTE_ADDR'] ?? '';
-            } elseif ($_SESSION['hopec_user_ip'] !== ($_SERVER['REMOTE_ADDR'] ?? '')) {
+            if (!isset($_SESSION['younglabor_user_ip'])) {
+                $_SESSION['younglabor_user_ip'] = $_SERVER['REMOTE_ADDR'] ?? '';
+            } elseif ($_SESSION['younglabor_user_ip'] !== ($_SERVER['REMOTE_ADDR'] ?? '')) {
                 self::logSecurityEvent('SESSION_IP_CHANGE', 'IP 주소 변경 감지');
                 self::destroySession();
                 return false;
@@ -145,9 +145,9 @@ class SecurityManager
         
         // User Agent 변경 감지
         if ($sessionConfig['user_agent_check'] ?? true) {
-            if (!isset($_SESSION['hopec_user_agent'])) {
-                $_SESSION['hopec_user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
-            } elseif ($_SESSION['hopec_user_agent'] !== ($_SERVER['HTTP_USER_AGENT'] ?? '')) {
+            if (!isset($_SESSION['younglabor_user_agent'])) {
+                $_SESSION['younglabor_user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? '';
+            } elseif ($_SESSION['younglabor_user_agent'] !== ($_SERVER['HTTP_USER_AGENT'] ?? '')) {
                 self::logSecurityEvent('SESSION_AGENT_CHANGE', 'User Agent 변경 감지');
                 self::destroySession();
                 return false;
@@ -157,13 +157,13 @@ class SecurityManager
         // 세션 재생성 (2시간마다)
         if ($sessionConfig['regenerate_id'] ?? true) {
             $lifetime = $sessionConfig['lifetime'] ?? 7200;
-            if (time() - $_SESSION['hopec_created_at'] > $lifetime) {
+            if (time() - $_SESSION['younglabor_created_at'] > $lifetime) {
                 session_regenerate_id(true);
-                $_SESSION['hopec_created_at'] = time();
+                $_SESSION['younglabor_created_at'] = time();
             }
         }
         
-        $_SESSION['hopec_last_activity'] = time();
+        $_SESSION['younglabor_last_activity'] = time();
         
         return true;
     }
@@ -179,7 +179,7 @@ class SecurityManager
             return '';
         }
         
-        $tokenName = $csrfConfig['token_name'] ?? 'hopec_csrf_token';
+        $tokenName = $csrfConfig['token_name'] ?? 'younglabor_csrf_token';
         $lifetime = $csrfConfig['lifetime'] ?? 3600;
         
         if (!isset($_SESSION[$tokenName]) || 
@@ -204,7 +204,7 @@ class SecurityManager
             return true;
         }
         
-        $tokenName = $csrfConfig['token_name'] ?? 'hopec_csrf_token';
+        $tokenName = $csrfConfig['token_name'] ?? 'younglabor_csrf_token';
         $lifetime = $csrfConfig['lifetime'] ?? 3600;
         
         if (!isset($_SESSION[$tokenName]) || !isset($_SESSION[$tokenName . '_time'])) {
@@ -234,7 +234,7 @@ class SecurityManager
         }
         
         $token = self::generateCSRFToken();
-        $tokenName = $csrfConfig['token_name'] ?? 'hopec_csrf_token';
+        $tokenName = $csrfConfig['token_name'] ?? 'younglabor_csrf_token';
         
         return '<input type="hidden" name="' . $tokenName . '" value="' . htmlspecialchars($token, ENT_QUOTES, 'UTF-8') . '">';
     }

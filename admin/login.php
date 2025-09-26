@@ -1,9 +1,25 @@
 <?php 
 // 로그인 처리
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_POST['password'])) {
-    // 세션 시작
+    // 세션 시작 (bootstrap.php와 동일한 보안 설정)
     if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        // 헤더가 전송되지 않은 경우에만 세션 설정 변경
+        if (!headers_sent()) {
+            // 세션 보안 설정
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
+            ini_set('session.use_strict_mode', 1);
+            ini_set('session.cookie_samesite', 'Strict');
+            
+            // 세션 만료 시간 설정 (2시간)
+            ini_set('session.gc_maxlifetime', 7200);
+            ini_set('session.cookie_lifetime', 7200);
+            
+            session_start();
+        } else {
+            // 헤더가 이미 전송된 경우 기본 설정으로 세션 시작
+            session_start();
+        }
     }
     
     // 데이터베이스 연결만 로드
@@ -47,9 +63,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         exit;
     }
 } else {
-    // 로그인 폼 표시 시에는 단순 세션 시작만
+    // 로그인 폼 표시 시에도 동일한 세션 보안 설정
     if (session_status() === PHP_SESSION_NONE) {
-        session_start();
+        // 헤더가 전송되지 않은 경우에만 세션 설정 변경
+        if (!headers_sent()) {
+            // 세션 보안 설정
+            ini_set('session.cookie_httponly', 1);
+            ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
+            ini_set('session.use_strict_mode', 1);
+            ini_set('session.cookie_samesite', 'Strict');
+            
+            // 세션 만료 시간 설정 (2시간)
+            ini_set('session.gc_maxlifetime', 7200);
+            ini_set('session.cookie_lifetime', 7200);
+            
+            session_start();
+        } else {
+            // 헤더가 이미 전송된 경우 기본 설정으로 세션 시작
+            session_start();
+        }
     }
 }
 ?>

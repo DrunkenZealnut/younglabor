@@ -8,7 +8,7 @@
 
 ### 2. 파일 경로 문제 해결  
 - **문제**: header.php에서 CSS 파일 경로가 잘못되어 로드되지 않음
-- **해결**: `/hopec/css/theme/theme.css` 경로로 수정
+- **해결**: `/younglabor/css/theme/theme.css` 경로로 수정
 
 ### 3. 캐시 문제 해결
 - **문제**: 브라우저 캐시로 인해 새로운 색상이 적용되지 않음
@@ -30,7 +30,7 @@
 
 ### header.php
 ```php
-$themeCssUrl = '/hopec/css/theme/theme.css?v=' . filemtime($themeCssPath);
+$themeCssUrl = '/younglabor/css/theme/theme.css?v=' . filemtime($themeCssPath);
 // 디버그 정보 포함으로 로딩 상태 확인 가능
 ```
 
@@ -66,7 +66,7 @@ $themeCssUrl = '/hopec/css/theme/theme.css?v=' . filemtime($themeCssPath);
    - `--lime-600` → **#65A30D** (Admin success_color)
 
 ### 3. 테스트 페이지로 확인
-- `http://localhost/hopec/test_css_loading.php` 접속
+- `http://localhost/younglabor/test_css_loading.php` 접속
 - CSS 변수값 실시간 확인 및 색상 적용 테스트
 
 ## 🚨 문제 발생시 해결법
@@ -78,7 +78,7 @@ $themeCssUrl = '/hopec/css/theme/theme.css?v=' . filemtime($themeCssPath);
    
 2. **CSS 파일 생성 확인**:
    ```bash
-   ls -la /Users/zealnutkim/Documents/개발/hopec/css/theme/
+   ls -la /Users/zealnutkim/Documents/개발/younglabor/css/theme/
    # theme.css 파일이 존재하고 최신 수정시간인지 확인
    ```
 
@@ -97,7 +97,7 @@ mysql -u zealnutkim -p woodong615
 
 ## 🎯 Admin에서 색상 변경 테스트
 
-1. **Admin 페이지 접속**: `/hopec/admin/settings/site_settings.php`
+1. **Admin 페이지 접속**: `/younglabor/admin/settings/site_settings.php`
 2. **테마 탭** 클릭
 3. **Primary Color**를 다른 색상으로 변경 (예: #ff0000)
 4. **저장** 클릭
@@ -108,7 +108,7 @@ mysql -u zealnutkim -p woodong615
 문제가 지속되면 다음을 확인해주세요:
 - 브라우저 콘솔에서 CSS 로딩 에러 확인
 - Network 탭에서 theme.css 파일 로딩 상태 확인  
-- `/hopec/test_css_loading.php`에서 실시간 변수값 확인
+- `/younglabor/test_css_loading.php`에서 실시간 변수값 확인
 
 ---
 **수정 완료일**: 2025년 9월 7일  

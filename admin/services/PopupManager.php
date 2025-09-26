@@ -24,7 +24,7 @@ class PopupManager {
         }
         
         $sql = "
-            SELECT * FROM hopec_popup_settings 
+            SELECT * FROM " . get_table_name('popup_settings') . " 
             WHERE is_active = 1 
             AND (start_date IS NULL OR start_date <= NOW())
             AND (end_date IS NULL OR end_date >= NOW())
@@ -122,7 +122,7 @@ class PopupManager {
         }
         
         // 24시간 안보이기 쿠키 확인
-        $noShow24hCookie = "hopec_popup_{$popupId}_no_show_24h";
+        $noShow24hCookie = "popup_{$popupId}_no_show_24h";
         if (isset($_COOKIE[$noShow24hCookie]) && $_COOKIE[$noShow24hCookie] === '1') {
             error_log("Popup {$popupId} blocked by 24-hour no-show cookie");
             return false; // 24시간 동안 안보이기 설정됨
@@ -132,7 +132,7 @@ class PopupManager {
         
         // 테이블 존재 확인
         try {
-            $stmt = $this->pdo->query("SHOW TABLES LIKE 'hopec_popup_logs'");
+            $stmt = $this->pdo->query("SHOW TABLES LIKE '" . get_table_name('popup_logs') . "'");
             if ($stmt->rowCount() == 0) {
                 // 테이블이 없으면 기본적으로 표시
                 return true;
@@ -143,7 +143,7 @@ class PopupManager {
         
         $sql = "
             SELECT MAX(created_at) as last_viewed 
-            FROM hopec_popup_logs 
+            FROM " . get_table_name('popup_logs') . " 
             WHERE popup_id = ? AND user_ip = ? AND action_type = 'viewed'
         ";
         
@@ -184,7 +184,7 @@ class PopupManager {
     public function recordPopupView($popupId, $userIP, $sessionId, $action = 'viewed', $pageUrl = '') {
         // 테이블 존재 확인
         try {
-            $stmt = $this->pdo->query("SHOW TABLES LIKE 'hopec_popup_logs'");
+            $stmt = $this->pdo->query("SHOW TABLES LIKE '" . get_table_name('popup_logs') . "'");
             if ($stmt->rowCount() == 0) {
                 // 테이블이 없으면 로그 기록하지 않음
                 return true;
@@ -196,7 +196,7 @@ class PopupManager {
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
         
         $sql = "
-            INSERT INTO hopec_popup_logs 
+            INSERT INTO " . get_table_name('popup_logs') . " 
             (popup_id, user_ip, session_id, action_type, page_url, user_agent) 
             VALUES (?, ?, ?, ?, ?, ?)
         ";
@@ -220,7 +220,7 @@ class PopupManager {
      * 팝업 카운터 업데이트
      */
     private function updatePopupCounter($popupId, $counterType) {
-        $sql = "UPDATE hopec_popup_settings SET {$counterType} = {$counterType} + 1 WHERE id = ?";
+        $sql = "UPDATE " . get_table_name('popup_settings') . " SET {$counterType} = {$counterType} + 1 WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         return $stmt->execute([$popupId]);
     }
@@ -245,7 +245,7 @@ class PopupManager {
      */
     public function createPopup($data) {
         $sql = "
-            INSERT INTO hopec_popup_settings 
+            INSERT INTO " . get_table_name('popup_settings') . " 
             (title, content, popup_type, display_condition, style_settings, 
              show_frequency, start_date, end_date, priority, is_active) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -278,7 +278,7 @@ class PopupManager {
      */
     public function updatePopup($id, $data) {
         $sql = "
-            UPDATE hopec_popup_settings SET 
+            UPDATE " . get_table_name('popup_settings') . " SET 
             title = ?, content = ?, popup_type = ?, display_condition = ?, 
             style_settings = ?, show_frequency = ?, start_date = ?, end_date = ?, 
             priority = ?, is_active = ?, updated_at = NOW()
@@ -311,7 +311,7 @@ class PopupManager {
      * 팝업 삭제
      */
     public function deletePopup($id) {
-        $sql = "DELETE FROM hopec_popup_settings WHERE id = ?";
+        $sql = "DELETE FROM " . get_table_name('popup_settings') . " WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         $result = $stmt->execute([$id]);
         
@@ -326,7 +326,7 @@ class PopupManager {
      * 팝업 활성화/비활성화 토글
      */
     public function togglePopup($id) {
-        $sql = "UPDATE hopec_popup_settings SET is_active = NOT is_active WHERE id = ?";
+        $sql = "UPDATE " . get_table_name('popup_settings') . " SET is_active = NOT is_active WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         $result = $stmt->execute([$id]);
         
@@ -341,7 +341,7 @@ class PopupManager {
      * 팝업 상세 정보 조회
      */
     public function getPopup($id) {
-        $sql = "SELECT * FROM hopec_popup_settings WHERE id = ?";
+        $sql = "SELECT * FROM " . get_table_name('popup_settings') . " WHERE id = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -359,7 +359,7 @@ class PopupManager {
                 WHEN end_date < NOW() THEN 'expired'
                 ELSE 'active'
             END as status
-            FROM hopec_popup_settings 
+            FROM " . get_table_name('popup_settings') . " 
             ORDER BY created_at DESC 
             LIMIT ? OFFSET ?
         ";
@@ -380,7 +380,7 @@ class PopupManager {
                 COUNT(CASE WHEN action = 'clicked' THEN 1 END) as clicks,
                 COUNT(CASE WHEN action = 'closed' THEN 1 END) as closes,
                 COUNT(DISTINCT user_ip) as unique_users
-            FROM hopec_popup_views 
+            FROM " . get_table_name('popup_views') . " 
             WHERE popup_id = ? AND viewed_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
             GROUP BY DATE(viewed_at)
             ORDER BY date DESC

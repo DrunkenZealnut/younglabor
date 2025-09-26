@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // DB 연결
 require_once '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 행사 ID 확인
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -21,7 +22,7 @@ if (!file_exists($upload_dir)) {
 
 // 행사 정보 조회
 try {
-  $stmt = $pdo->prepare("SELECT * FROM hopec_events WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('events') . " WHERE id = ?");
   $stmt->execute([$event_id]);
   $event = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -111,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // 에러가 없으면 DB에 저장
   if (empty($errors)) {
     try {
-      $sql = "UPDATE hopec_events SET 
+      $sql = "UPDATE " . get_table_name('events') . " SET 
               title = ?, 
               description = ?, 
               start_date = ?, 
@@ -139,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $success_message = '행사 정보가 성공적으로 수정되었습니다.';
       
       // 정보 다시 조회
-      $stmt = $pdo->prepare("SELECT * FROM hopec_events WHERE id = ?");
+      $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('events') . " WHERE id = ?");
       $stmt->execute([$event_id]);
       $event = $stmt->fetch(PDO::FETCH_ASSOC);
       

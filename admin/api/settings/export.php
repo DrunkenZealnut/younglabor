@@ -39,7 +39,7 @@ try {
         
         'project' => [
             'name' => env('PROJECT_NAME', ''),
-            'slug' => env('PROJECT_SLUG', ''),
+            'slug' => rtrim(env('DB_PREFIX', ''), '_'),
             'version' => env('PROJECT_VERSION', '1.0.0')
         ],
         

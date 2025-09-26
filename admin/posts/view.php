@@ -12,7 +12,7 @@ if ($post_id <= 0 || empty($board_type)) {
     exit;
 }
 
-// 허용된 board_type 확인 - hopec_posts 테이블의 board_type과 일치
+// 허용된 board_type 확인 - posts 테이블의 board_type과 일치
 $allowed_board_types = [
     'finance_reports' => '재정보고',
     'notices' => '공지사항',
@@ -29,7 +29,8 @@ if (!array_key_exists($board_type, $allowed_board_types)) {
 }
 
 try {
-    // hopec_posts 테이블에서 게시글 정보 조회
+    // posts 테이블에서 게시글 정보 조회
+    $tableName = get_table_name('posts');
     $sql = "SELECT 
                 wr_id as id,
                 board_type,
@@ -38,7 +39,7 @@ try {
                 wr_name as author,
                 wr_hit as hit_count,
                 wr_datetime as created_at
-            FROM hopec_posts 
+            FROM {$tableName} 
             WHERE wr_id = ? AND board_type = ?";
     
     $stmt = $pdo->prepare($sql);
@@ -51,7 +52,7 @@ try {
     }
     
     // 조회수 증가
-    $update_sql = "UPDATE hopec_posts SET wr_hit = wr_hit + 1 WHERE wr_id = ? AND board_type = ?";
+    $update_sql = "UPDATE {$tableName} SET wr_hit = wr_hit + 1 WHERE wr_id = ? AND board_type = ?";
     $update_stmt = $pdo->prepare($update_sql);
     $update_stmt->execute([$post_id, $board_type]);
     

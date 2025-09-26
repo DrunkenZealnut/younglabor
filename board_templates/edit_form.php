@@ -1,6 +1,6 @@
-<!-- 게시글 편집 폼 템플릿 - hopec_posts 통합 호환 -->
+<!-- 게시글 편집 폼 템플릿 - younglabor_posts 통합 호환 -->
 <?php
-// hopec_posts 호환성 레이어 로드
+// younglabor_posts 호환성 레이어 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -18,7 +18,7 @@ if (!isset($post)) {
         die('잘못된 게시글 ID입니다.');
     }
     
-    // hopec_posts 호환 데이터 로드
+    // younglabor_posts 호환 데이터 로드
     $post = getBoardPost($post_id);
     if (!$post) {
         die('존재하지 않는 게시글입니다.');
@@ -57,7 +57,7 @@ if (function_exists('renderBoardTheme')) {
     renderBoardTheme();
 } else {
     // 폴백: 기본 board-theme.css 로드
-    echo '<link rel="stylesheet" href="/hopec/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
+    echo '<link rel="stylesheet" href="/younglabor/board_templates/assets/board-theme-enhanced.css?v=' . time() . '" />' . "\n";
 }
 ?>
 

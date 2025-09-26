@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // DB 연결
 require_once '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 파일 업로드 설정
 $upload_dir = '../../uploads/events/';
@@ -69,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   // 에러가 없으면 DB에 저장
   if (empty($errors)) {
     try {
-      $sql = "INSERT INTO hopec_events (title, description, start_date, end_date, location, max_participants, status, thumbnail)
+      $sql = "INSERT INTO " . get_table_name('events') . " (title, description, start_date, end_date, location, max_participants, status, thumbnail)
               VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
       
       $stmt = $pdo->prepare($sql);

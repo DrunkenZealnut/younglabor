@@ -17,7 +17,7 @@ $useCustomHero = false;
 try {
     // 환경변수 기반 데이터베이스 연결
     $host = env('DB_HOST', 'localhost');
-    $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+    $dbname = env('DB_DATABASE', '');
     $username = env('DB_USERNAME', 'root');
     $password = env('DB_PASSWORD', '');
     $charset = env('DB_CHARSET', 'utf8mb4');
@@ -140,7 +140,7 @@ try {
                         if (preg_match('/^https?:\/\//', $src)) {
                             // 절대 URL인 경우 - 프로덕션 도메인을 로컬 주소로 변환
                             if (env('APP_ENV') !== 'production') {
-                                $production_domain = env('PRODUCTION_DOMAIN', 'hopec.co.kr');
+                                $production_domain = env('PRODUCTION_DOMAIN', 'younglabor.co.kr');
                                 $pattern = '/^https?:\/\/(www\.)?' . preg_quote($production_domain, '/') . '/';
                                 $src = preg_replace($pattern, env('APP_URL', 'http://localhost'), $src);
                             }
@@ -148,7 +148,7 @@ try {
                         } else {
                             // 상대 경로인 경우 절대 경로로 변환
                             $baseUrl = env('APP_ENV') === 'production' 
-                                ? env('PRODUCTION_URL', 'https://' . env('PRODUCTION_DOMAIN', 'hopec.co.kr')) 
+                                ? env('PRODUCTION_URL', 'https://' . env('PRODUCTION_DOMAIN', 'younglabor.co.kr')) 
                                 : env('APP_URL', 'http://localhost');
                             
                             if (strpos($src, '/') === 0) {
@@ -201,13 +201,13 @@ try {
                 $imageUrl = 'data:image/svg+xml;base64,' . base64_encode(
                     '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500">
                       <defs>
-                        <linearGradient id="hopecGrad' . $index . '" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <linearGradient id="younglaborGrad' . $index . '" x1="0%" y1="0%" x2="100%" y2="100%">
                           <stop offset="0%" style="stop-color:#84cc16;stop-opacity:1" />
                           <stop offset="50%" style="stop-color:#22c55e;stop-opacity:1" />
                           <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
                         </linearGradient>
                       </defs>
-                      <rect width="1200" height="500" fill="url(#hopecGrad' . $index . ')"/>
+                      <rect width="1200" height="500" fill="url(#younglaborGrad' . $index . ')"/>
                       <text x="600" y="250" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white" opacity="0.8">' . env('ORG_NAME', '희망씨') . '</text>
                       <text x="600" y="300" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white" opacity="0.6">' . env('ORG_FULL_NAME', '사단법인 희망씨') . '</text>
                     </svg>'

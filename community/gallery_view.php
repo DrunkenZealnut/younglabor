@@ -1,7 +1,7 @@
 <?php
 /**
  * 갤러리 상세보기 페이지
- * hopec_gallery 테이블 사용
+ * younglabor_gallery 테이블 사용
  */
 
 // 모던 부트스트랩 시스템 로드
@@ -195,8 +195,8 @@ if (preg_match_all('/<img[^>]+src=["\']([^"\']+)["\']/i', $gallery_item['wr_cont
 // 통합 라이트박스 시스템 초기화
 const images = <?= json_encode($images) ?>;
 document.addEventListener('DOMContentLoaded', function() {
-  // HopecLightbox 인스턴스 생성
-  initHopecLightbox(images, {
+  // younglaborLightbox 인스턴스 생성
+  inityounglaborLightbox(images, {
     enableKeyboard: true,
     enableNavigation: true,
     showCounter: true

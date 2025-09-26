@@ -2,7 +2,7 @@
 /**
  * 메뉴 매니저
  * 
- * hopec_menu와 hopec_boards 테이블을 연동하여 동적 메뉴 생성
+ * younglabor_menu와 younglabor_boards 테이블을 연동하여 동적 메뉴 생성
  */
 
 class MenuManager

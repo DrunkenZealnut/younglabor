@@ -214,13 +214,13 @@ try {
             require_once __DIR__ . '/admin/env_loader.php';
             loadEnv();
             $host = env('DB_HOST', 'localhost');
-            $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+            $dbname = env('DB_DATABASE', '');
             $username = env('DB_USERNAME', 'root');
             $password = env('DB_PASSWORD', '');
             $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
         } else {
             $host = env('DB_HOST', 'localhost');
-            $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+            $dbname = env('DB_DATABASE', '');
             $username = env('DB_USERNAME', 'root');
             $password = env('DB_PASSWORD', '');
             $pdo = new PDO("mysql:host={$host};dbname={$dbname};charset=utf8mb4", $username, $password);
@@ -253,7 +253,7 @@ try {
         
         // 이메일 발송 (오류가 발생해도 문의 접수는 성공)
         try {
-            $admin_email = env('DEFAULT_ADMIN_EMAIL', 'admin@hopec.co.kr');
+            $admin_email = env('DEFAULT_ADMIN_EMAIL', 'admin@younglabor.co.kr');
             $stmt = $pdo->prepare("SELECT name FROM " . get_table_name('inquiry_categories') . " WHERE id = ?");
             $stmt->execute([$category_id]);
             $category_result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -287,7 +287,7 @@ try {
 ";
             
             // SMTP 이메일 발송 시도
-            $from_email = env('MAIL_FROM_EMAIL', env('MAIL_SMTP_USERNAME', 'noreply@hopec.co.kr'));
+            $from_email = env('MAIL_FROM_EMAIL', env('MAIL_SMTP_USERNAME', 'noreply@younglabor.co.kr'));
             $from_name = env('MAIL_FROM_NAME', '희망씨 웹사이트');
             
             $mail_result = sendEmailWithSMTP($admin_email, $mail_subject, $mail_body, $from_email, $from_name, $email);

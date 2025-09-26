@@ -1,7 +1,7 @@
-# HOPEC 프로젝트 G5_ 상수 사용 분석 및 삭제 가능 상수 목록
+# younglabor 프로젝트 G5_ 상수 사용 분석 및 삭제 가능 상수 목록
 
 ## 🎯 분석 목적
-HOPEC 프로젝트에서 정의된 모든 G5_ 상수들의 실제 사용 여부를 분석하여 삭제 가능한 상수들을 식별
+younglabor 프로젝트에서 정의된 모든 G5_ 상수들의 실제 사용 여부를 분석하여 삭제 가능한 상수들을 식별
 
 ---
 
@@ -233,7 +233,7 @@ G5_SET_TIME_LIMIT       // 0 - 실행시간 제한
 G5_DIR_PERMISSION       // 0755 - 디렉토리 권한
 G5_FILE_PERMISSION      // 0644 - 파일 권한
 G5_COOKIE_DOMAIN        // '' - 쿠키 도메인
-G5_DOMAIN               // 'http://hopec.local:8012'
+G5_DOMAIN               // 'http://younglabor.local:8012'
 G5_HTTPS_DOMAIN         // ''
 ```
 

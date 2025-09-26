@@ -3,19 +3,54 @@
  * 관리자 인증 검증 - 보안 강화 버전
  */
 
-// 세션 시작 (중복된 경우도 처리)
+// 디버깅 로그 함수
+function debug_log_auth($message, $data = null) {
+    $log_file = __DIR__ . '/../logs/auth_debug.log';
+    $log_dir = dirname($log_file);
+    if (!is_dir($log_dir)) {
+        @mkdir($log_dir, 0755, true);
+    }
+    $entry = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'message' => $message,
+        'data' => $data,
+        'session_id' => session_id() ?: 'NO_SESSION'
+    ];
+    @file_put_contents($log_file, json_encode($entry) . "\n", FILE_APPEND);
+}
+
+// 보안 강화된 세션 관리 (bootstrap.php와 동일한 설정)
 if (session_status() === PHP_SESSION_NONE) {
     if (!headers_sent()) {
+        // 세션 보안 설정 (bootstrap.php와 동일)
         ini_set('session.cookie_httponly', 1);
         ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
+        ini_set('session.use_strict_mode', 1);
+        ini_set('session.cookie_samesite', 'Strict');
+        
+        // 세션 만료 시간 설정 (2시간)
+        ini_set('session.gc_maxlifetime', 7200);
+        ini_set('session.cookie_lifetime', 7200);
+        
         session_start();
     } else {
         session_start();
     }
 }
 
+debug_log_auth("auth.php 시작 - 세션 검증 중", [
+    'admin_logged_in' => $_SESSION['admin_logged_in'] ?? 'NOT_SET',
+    'session_data' => array_keys($_SESSION),
+    'last_activity' => $_SESSION['last_activity'] ?? 'NOT_SET'
+]);
+
 // 기본 세션 검증
 if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
+    debug_log_auth("세션 검증 실패 - 로그인 페이지로 리다이렉트", [
+        'admin_logged_in' => $_SESSION['admin_logged_in'] ?? 'NOT_SET',
+        'session_keys' => array_keys($_SESSION)
+    ]);
+    
     if (!headers_sent()) {
         header("Location: login.php?expired=1");
         exit;

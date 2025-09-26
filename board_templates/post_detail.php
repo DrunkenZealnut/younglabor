@@ -1,5 +1,5 @@
 <?php
-// hopec_posts 호환성 레이어 로드
+// younglabor_posts 호환성 레이어 로드
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/database_helper.php';
 
@@ -13,7 +13,7 @@ if (!isset($post)) {
         die('잘못된 게시글 ID입니다.');
     }
     
-    // hopec_posts 호환 데이터 로드
+    // younglabor_posts 호환 데이터 로드
     $post = getBoardPost($post_id);
     if (!$post) {
         die('존재하지 않는 게시글입니다.');

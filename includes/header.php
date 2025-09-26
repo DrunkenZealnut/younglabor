@@ -76,7 +76,7 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <!-- JavaScript - 동기 로딩 (라이브러리 로딩 순서 보장) -->
     <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="<?= $siteUrl ?>/js/remodal/remodal.js"></script>
-    <script async src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- Tailwind CSS 로딩 시스템 -->
     <?php
@@ -133,12 +133,31 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
             console.log('🎨 Natural Green 테마 CSS 로드됨:', themeCSS.href);
         }
         
-        // 테마 정보 확인
-        if (window.HOPEC_THEME) {
-            console.log('🎨 테마 정보:', window.HOPEC_THEME);
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+        // 테마 색상 정보 확인
+        const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+        if (primaryColor) {
             console.log('🎯 Primary 색상:', primaryColor);
         }
+        
+        // Lucide 아이콘 안정적 초기화
+        function initializeLucideIcons() {
+            if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+                try {
+                    lucide.createIcons();
+                    console.log('🎨 Lucide 아이콘 초기화 완료');
+                } catch (error) {
+                    console.error('❌ Lucide 초기화 오류:', error);
+                    // 폴백: 100ms 후 재시도
+                    setTimeout(initializeLucideIcons, 100);
+                }
+            } else {
+                // Lucide가 아직 로드되지 않은 경우 50ms 후 재시도
+                setTimeout(initializeLucideIcons, 50);
+            }
+        }
+        
+        // 초기화 실행
+        initializeLucideIcons();
     });
     </script>
     

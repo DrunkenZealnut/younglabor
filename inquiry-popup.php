@@ -32,7 +32,7 @@ try {
         
         // 데이터베이스 연결 정보
         $host = env('DB_HOST', 'localhost');
-        $dbname = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+        $dbname = env('DB_DATABASE', '');
         $username = env('DB_USERNAME', 'root');
         $password = env('DB_PASSWORD', '');
         $charset = env('DB_CHARSET', 'utf8mb4');
@@ -48,7 +48,7 @@ try {
     } else {
         // 직접 연결 시도 (fallback) - 환경변수 기본값 사용
         $host = 'localhost';
-        $dbname = env('PROJECT_SLUG', 'hopec');
+        $dbname = env('DB_DATABASE', '');
         $username = 'root';
         $password = '';
         $charset = 'utf8mb4';
@@ -76,20 +76,20 @@ try {
 ?>
 
 <!-- 문의하기 팝업 모달 -->
-<div class="remodal hopec-inquiry-popup" 
+<div class="remodal younglabor-inquiry-popup" 
      data-remodal-id="inquiry-modal"
      data-remodal-options="hashTracking: false, closeOnOutsideClick: true">
      
     <!-- 팝업 헤더 -->
-    <div class="hopec-inquiry-header">
-        <h3 class="hopec-inquiry-title">문의하기</h3>
-        <button data-remodal-action="close" class="remodal-close hopec-inquiry-close">
+    <div class="younglabor-inquiry-header">
+        <h3 class="younglabor-inquiry-title">문의하기</h3>
+        <button data-remodal-action="close" class="remodal-close younglabor-inquiry-close">
             <i data-lucide="x"></i>
         </button>
     </div>
     
     <!-- 팝업 내용 -->
-    <div class="hopec-inquiry-content">
+    <div class="younglabor-inquiry-content">
         <form id="inquiryForm" onsubmit="submitInquiry(event)">
             <!-- CSRF 토큰 -->
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8') ?>" id="csrf_token_field">
@@ -204,7 +204,7 @@ try {
     </div>
     
     <!-- 팝업 액션 버튼 -->
-    <div class="hopec-inquiry-actions">
+    <div class="younglabor-inquiry-actions">
         <div class="flex gap-3 justify-end">
             <button type="button" 
                     data-remodal-action="close" 
@@ -226,10 +226,10 @@ try {
 </div>
 
 <!-- 성공/실패 메시지 모달 -->
-<div class="remodal hopec-message-popup" 
+<div class="remodal younglabor-message-popup" 
      data-remodal-id="message-modal"
      data-remodal-options="hashTracking: false, closeOnOutsideClick: true">
-    <div class="hopec-message-content">
+    <div class="younglabor-message-content">
         <div class="text-center py-6">
             <div class="message-icon mb-4">
                 <i data-lucide="check-circle" class="w-16 h-16 text-green-500 mx-auto hidden success-icon"></i>
@@ -248,7 +248,7 @@ try {
 
 <!-- 문의하기 팝업 스타일 -->
 <style>
-.hopec-inquiry-popup {
+.younglabor-inquiry-popup {
     max-width: 600px;
     width: 90%;
     background-color: #ffffff;
@@ -259,21 +259,21 @@ try {
     font-family: "Noto Sans KR", Arial, sans-serif;
 }
 
-.hopec-inquiry-header {
+.younglabor-inquiry-header {
     background: linear-gradient(135deg, #84cc16, #22c55e);
     color: white;
     padding: 20px 30px;
     position: relative;
 }
 
-.hopec-inquiry-title {
+.younglabor-inquiry-title {
     margin: 0;
     font-size: 1.3em;
     font-weight: 600;
     padding-right: 40px;
 }
 
-.hopec-inquiry-close {
+.younglabor-inquiry-close {
     position: absolute;
     top: 15px;
     right: 20px;
@@ -290,11 +290,11 @@ try {
     transition: background-color 0.2s;
 }
 
-.hopec-inquiry-close:hover {
+.younglabor-inquiry-close:hover {
     background: rgba(255, 255, 255, 0.3);
 }
 
-.hopec-inquiry-content {
+.younglabor-inquiry-content {
     padding: 25px 30px;
     max-height: 72vh;
     overflow-y: auto;
@@ -413,7 +413,7 @@ textarea.form-control {
     margin: 0;
 }
 
-.hopec-inquiry-actions {
+.younglabor-inquiry-actions {
     padding: 20px 30px;
     border-top: 1px solid #e5e7eb;
     background-color: #f9fafb;
@@ -485,7 +485,7 @@ textarea.form-control {
 }
 
 /* 메시지 모달 스타일 */
-.hopec-message-popup {
+.younglabor-message-popup {
     max-width: 400px;
     width: 90%;
     background-color: #ffffff;
@@ -495,23 +495,23 @@ textarea.form-control {
     overflow: hidden;
 }
 
-.hopec-message-content {
+.younglabor-message-content {
     padding: 20px;
 }
 
 /* 모바일 최적화 */
 @media (max-width: 768px) {
-    .hopec-inquiry-popup {
+    .younglabor-inquiry-popup {
         margin: 20px;
         max-width: calc(100vw - 40px);
     }
     
-    .hopec-inquiry-content {
+    .younglabor-inquiry-content {
         padding: 20px;
         max-height: 65vh;
     }
     
-    .hopec-inquiry-actions {
+    .younglabor-inquiry-actions {
         padding: 15px 20px;
     }
     
@@ -627,8 +627,8 @@ textarea.form-control {
     background-color: rgba(0, 0, 0, 0.5) !important;
 }
 
-.remodal.hopec-inquiry-popup.remodal-is-opened,
-.remodal.hopec-message-popup.remodal-is-opened {
+.remodal.younglabor-inquiry-popup.remodal-is-opened,
+.remodal.younglabor-message-popup.remodal-is-opened {
     opacity: 1 !important;
     visibility: visible !important;
     transform: scale(1) !important;
@@ -637,13 +637,13 @@ textarea.form-control {
 
 /* 반응형 디자인 개선 */
 @media (max-width: 480px) {
-    .hopec-inquiry-popup {
+    .younglabor-inquiry-popup {
         margin: 10px;
         max-width: calc(100vw - 20px);
         max-height: calc(100vh - 20px);
     }
     
-    .hopec-inquiry-content {
+    .younglabor-inquiry-content {
         padding: 15px;
         max-height: calc(62vh - 40px);
     }

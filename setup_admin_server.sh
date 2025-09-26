@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# HOPEC Admin Server Setup Script
-# This script configures XAMPP to serve the admin panel at hopec.local:8012/admin
+# younglabor Admin Server Setup Script
+# This script configures XAMPP to serve the admin panel at younglabor.local:8012/admin
 
-echo "🚀 HOPEC Admin Server Setup"
+echo "🚀 younglabor Admin Server Setup"
 echo "=========================="
 
 # Load environment variables
@@ -67,16 +67,16 @@ fi
 echo "🔧 Virtual Host 설정 중..."
 VHOST_CONFIG="
 ##
-# HOPEC Local Development Server (Port 8012)
+# younglabor Local Development Server (Port 8012)
 ##
 <VirtualHost *:8012>
-    ServerName hopec.local
-    ServerAlias www.hopec.local
-    DocumentRoot \"/Users/zealnutkim/Documents/개발/hopec\"
-    ErrorLog \"logs/hopec-error_log\"
-    CustomLog \"logs/hopec-access_log\" common
+    ServerName younglabor.local
+    ServerAlias www.younglabor.local
+    DocumentRoot \"/Users/zealnutkim/Documents/개발/younglabor\"
+    ErrorLog \"logs/younglabor-error_log\"
+    CustomLog \"logs/younglabor-access_log\" common
     
-    <Directory \"/Users/zealnutkim/Documents/개발/hopec\">
+    <Directory \"/Users/zealnutkim/Documents/개발/younglabor\">
         Options Indexes FollowSymLinks Includes ExecCGI
         AllowOverride All
         Require all granted
@@ -93,20 +93,20 @@ VHOST_CONFIG="
 "
 
 # Check if virtual host already exists
-if ! grep -q "HOPEC Local Development Server" /Applications/XAMPP/etc/extra/httpd-vhosts.conf 2>/dev/null; then
+if ! grep -q "younglabor Local Development Server" /Applications/XAMPP/etc/extra/httpd-vhosts.conf 2>/dev/null; then
     echo "$VHOST_CONFIG" | sudo tee -a /Applications/XAMPP/etc/extra/httpd-vhosts.conf >/dev/null
     echo "✅ Virtual Host 설정 완료"
 else
     echo "✅ Virtual Host가 이미 설정되어 있습니다."
 fi
 
-# 5. Update hosts file for hopec.local
-if ! grep -q "hopec.local" /etc/hosts; then
-    echo "🔧 /etc/hosts 파일에 hopec.local 추가 중..."
-    echo "127.0.0.1    hopec.local" | sudo tee -a /etc/hosts >/dev/null
+# 5. Update hosts file for younglabor.local
+if ! grep -q "younglabor.local" /etc/hosts; then
+    echo "🔧 /etc/hosts 파일에 younglabor.local 추가 중..."
+    echo "127.0.0.1    younglabor.local" | sudo tee -a /etc/hosts >/dev/null
     echo "✅ hosts 파일 업데이트 완료"
 else
-    echo "✅ hopec.local이 이미 hosts 파일에 있습니다."
+    echo "✅ younglabor.local이 이미 hosts 파일에 있습니다."
 fi
 
 # 6. Check XAMPP status and restart if needed
@@ -124,8 +124,8 @@ echo "🎉 설정 완료!"
 echo "=========================="
 echo "이제 다음 주소로 접속하실 수 있습니다:"
 echo ""
-echo "🌐 메인 사이트: http://hopec.local:8012"
-echo "⚙️  관리자 페이지: http://hopec.local:8012/admin"
+echo "🌐 메인 사이트: http://younglabor.local:8012"
+echo "⚙️  관리자 페이지: http://younglabor.local:8012/admin"
 echo ""
 echo "📝 참고사항:"
 echo "   - 관리자 페이지는 로그인이 필요할 수 있습니다"

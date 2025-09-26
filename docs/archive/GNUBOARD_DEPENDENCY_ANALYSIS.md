@@ -1,7 +1,7 @@
-# HOPEC 프로젝트 그누보드 의존성 분석 보고서
+# younglabor 프로젝트 그누보드 의존성 분석 보고서
 
 ## 🎯 분석 목적
-HOPEC 프로젝트에서 그누보드5와 관련된 모든 코드를 식별하고 의존성을 분석하여 재사용성 향상 방안을 도출
+younglabor 프로젝트에서 그누보드5와 관련된 모든 코드를 식별하고 의존성을 분석하여 재사용성 향상 방안을 도출
 
 ---
 
@@ -134,7 +134,7 @@ $new_skin_path = get_skin_path('new', $config['cf_new_skin']);
 #### A. 게시판 템플릿 시스템
 - **`board_templates/`** 폴더 전체
 - 그누보드 게시판 구조와 밀접하게 연관
-- `hopec_posts` 테이블 어댑터 사용
+- `younglabor_posts` 테이블 어댑터 사용
 
 #### B. 관리자 시스템 연동
 - **`admin/posts/`** - 게시물 관리
@@ -218,12 +218,12 @@ get_search_string()
 ```php
 // 현재 (그누보드 의존)
 define('G5_PATH', __DIR__);
-define('G5_URL', 'http://hopec.local:8012');
+define('G5_URL', 'http://younglabor.local:8012');
 
 // 목표 (독립적 설정)
-class HopecConfig {
+class younglaborConfig {
     const BASE_PATH = __DIR__;
-    const BASE_URL = 'http://hopec.local:8012';
+    const BASE_URL = 'http://younglabor.local:8012';
 }
 ```
 
@@ -233,7 +233,7 @@ class HopecConfig {
 sql_query("SELECT * FROM {$g5['member_table']}");
 
 // 목표 (독립적 DB 클래스)
-$db = new HopecDatabase();
+$db = new younglaborDatabase();
 $db->query("SELECT * FROM members");
 ```
 
@@ -243,7 +243,7 @@ $db->query("SELECT * FROM members");
 include G5_THEME_PATH.'/head.php';
 
 // 목표 (독립적 테마)
-$theme = new HopecTheme('natural-green');
+$theme = new younglaborTheme('natural-green');
 $theme->renderHeader();
 ```
 
@@ -253,7 +253,7 @@ $theme->renderHeader();
 $escaped = sql_escape_string($input);
 
 // 목표 (독립적 보안)
-$security = new HopecSecurity();
+$security = new younglaborSecurity();
 $escaped = $security->escapeString($input);
 ```
 
@@ -282,7 +282,7 @@ $escaped = $security->escapeString($input);
 
 ### 1. 설정 클래스 생성
 ```php
-class HopecConfig {
+class younglaborConfig {
     // 경로 설정
     const BASE_PATH = __DIR__;
     const THEME_PATH = self::BASE_PATH . '/themes';
@@ -290,7 +290,7 @@ class HopecConfig {
     
     // 데이터베이스 설정
     const DB_HOST = 'localhost';
-    const DB_NAME = 'hopec';
+    const DB_NAME = 'younglabor';
     
     // 보안 설정
     const ENCRYPT_METHOD = 'password_hash';
@@ -300,7 +300,7 @@ class HopecConfig {
 
 ### 2. 데이터베이스 추상화 레이어
 ```php
-class HopecDatabase {
+class younglaborDatabase {
     private $pdo;
     
     public function query($sql, $params = []) {
@@ -317,7 +317,7 @@ class HopecDatabase {
 
 ### 3. 테마 엔진 독립화
 ```php
-class HopecTheme {
+class younglaborTheme {
     private $themeName;
     private $templatePath;
     
@@ -377,10 +377,10 @@ graph TD
     D --> E[Phase 4: 보안 모듈화]
     E --> F[최종: 독립적 프레임워크]
     
-    B --> B1[HopecConfig 클래스]
-    C --> C1[HopecDatabase 클래스]
-    D --> D1[HopecTheme 엔진]
-    E --> E1[HopecSecurity 모듈]
+    B --> B1[younglaborConfig 클래스]
+    C --> C1[younglaborDatabase 클래스]
+    D --> D1[younglaborTheme 엔진]
+    E --> E1[younglaborSecurity 모듈]
 ```
 
 이 분석을 바탕으로 체계적으로 그누보드 의존성을 제거하여 재사용 가능한 독립적인 프레임워크로 변환할 수 있습니다.

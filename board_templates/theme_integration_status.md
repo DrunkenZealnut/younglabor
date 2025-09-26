@@ -4,7 +4,7 @@
 
 ### 1. 핵심 통합 시스템 구축
 - **SafeBoardThemeIntegration 클래스**: 안전한 테마 통합 시스템 구현
-- **자동 DB 연동**: Admin의 `hopec_site_settings` 테이블과 자동 연동
+- **자동 DB 연동**: Admin의 `younglabor_site_settings` 테이블과 자동 연동
 - **폴백 시스템**: DB 연결 실패 시 Natural-Green 기본 테마로 폴백
 
 ### 2. CSS 변수 기반 테마 시스템
@@ -60,9 +60,9 @@ board_templates/
 
 ## 🚀 테스트 방법
 
-1. **기본 동작 확인**: `http://hopec.local:8012/board_templates/simple_demo.php`
-2. **전체 테스트**: `http://hopec.local:8012/board_templates/theme_test.php`
-3. **실제 게시판**: `http://hopec.local:8012/board_templates/board_list.php`
+1. **기본 동작 확인**: `http://younglabor.local:8012/board_templates/simple_demo.php`
+2. **전체 테스트**: `http://younglabor.local:8012/board_templates/theme_test.php`
+3. **실제 게시판**: `http://younglabor.local:8012/board_templates/board_list.php`
 
 ## 🎯 결과
 

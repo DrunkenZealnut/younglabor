@@ -3,7 +3,7 @@
  * Simple Color Override System
  * Legacy Mode용 독립적 색상 오버라이드 시스템
  * 
- * - hopec_site_settings의 8개 Bootstrap 색상을 CSS 변수로 매핑
+ * - younglabor_site_settings의 8개 Bootstrap 색상을 CSS 변수로 매핑
  * - globals.css를 fallback으로 사용
  * - 완전 독립적이며 언제든 비활성화 가능
  * 
@@ -286,7 +286,7 @@ class SimpleColorOverride {
      * 디버그 정보 출력 (개발용)
      */
     public function renderDebugInfo() {
-        if (!defined('HOPEC_DEBUG') || !HOPEC_DEBUG) {
+        if (!defined('younglabor_DEBUG') || !younglabor_DEBUG) {
             return '';
         }
         

@@ -2,6 +2,7 @@
 // /admin/inquiry_categories/create.php
 require '../auth.php';
 require '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 한글 깨짐 방지를 위한 문자셋 설정
 header('Content-Type: text/html; charset=utf-8');
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 명시적으로 UTF-8 설정
             $pdo->exec("SET NAMES utf8mb4");
             
-            $stmt = $pdo->prepare("INSERT INTO hopec_inquiry_categories (name, description, is_active) VALUES (:name, :description, :is_active)");
+            $stmt = $pdo->prepare("INSERT INTO " . get_table_name('inquiry_categories') . " (name, description, is_active) VALUES (:name, :description, :is_active)");
             
             $result = $stmt->execute([
                 ':name' => $name,

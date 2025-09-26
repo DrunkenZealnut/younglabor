@@ -8,7 +8,7 @@ return [
     'name' => [
         'short' => $_ENV['ORG_NAME_SHORT'] ?? '희망씨',
         'full' => $_ENV['ORG_NAME_FULL'] ?? '사단법인 희망씨',
-        'english' => $_ENV['ORG_NAME_EN'] ?? 'HOPEC',
+        'english' => $_ENV['ORG_NAME_EN'] ?? 'younglabor',
     ],
     
     'description' => $_ENV['ORG_DESCRIPTION'] ?? '지역사회와 함께 아래로 향한 연대 일터와 삶터를 바꾸기 위한 활동에 함께 합니다',

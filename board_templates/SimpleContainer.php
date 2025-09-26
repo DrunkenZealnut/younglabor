@@ -139,10 +139,10 @@ class SimpleContainer {
      * 기본 서비스들 등록
      */
     private function registerDefaultServices() {
-        // HopecPostsAdapter를 서비스로 등록
-        $this->register('hopec_adapter', function() {
-            if (class_exists('HopecPostsAdapter')) {
-                return new HopecPostsAdapter();
+        // younglaborPostsAdapter를 서비스로 등록
+        $this->register('younglabor_adapter', function() {
+            if (class_exists('younglaborPostsAdapter')) {
+                return new younglaborPostsAdapter();
             }
             return null;
         });
@@ -222,11 +222,11 @@ function service($name) {
 }
 
 /**
- * 기존 getHopecAdapter() 함수와 호환성 유지
+ * 기존 getyounglaborAdapter() 함수와 호환성 유지
  */
-function getHopecAdapterViaContainer() {
-    $adapter = service('hopec_adapter');
-    return $adapter ?: (isset($GLOBALS['hopec_adapter']) ? $GLOBALS['hopec_adapter'] : null);
+function getyounglaborAdapterViaContainer() {
+    $adapter = service('younglabor_adapter');
+    return $adapter ?: (isset($GLOBALS['younglabor_adapter']) ? $GLOBALS['younglabor_adapter'] : null);
 }
 
 /**

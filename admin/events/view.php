@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // DB 연결
 require_once '../db.php';
+require_once '../../includes/config_helpers.php';
 
 // 행사 ID 확인
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -15,7 +16,7 @@ $event_id = (int)$_GET['id'];
 
 // 행사 정보 조회
 try {
-  $stmt = $pdo->prepare("SELECT * FROM hopec_events WHERE id = ?");
+  $stmt = $pdo->prepare("SELECT * FROM " . get_table_name('events') . " WHERE id = ?");
   $stmt->execute([$event_id]);
   $event = $stmt->fetch(PDO::FETCH_ASSOC);
   
@@ -26,12 +27,12 @@ try {
   }
   
   // 참가자 수 조회
-  $stmt = $pdo->prepare("SELECT COUNT(*) FROM hopec_event_participants WHERE event_id = ?");
+  $stmt = $pdo->prepare("SELECT COUNT(*) FROM " . get_table_name('event_participants') . " WHERE event_id = ?");
   $stmt->execute([$event_id]);
   $participant_count = $stmt->fetchColumn();
   
   // 참가자 상태별 수 조회
-  $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM hopec_event_participants WHERE event_id = ? GROUP BY status");
+  $stmt = $pdo->prepare("SELECT status, COUNT(*) as count FROM " . get_table_name('event_participants') . " WHERE event_id = ? GROUP BY status");
   $stmt->execute([$event_id]);
   $participant_status = $stmt->fetchAll(PDO::FETCH_ASSOC);
   
@@ -52,7 +53,7 @@ try {
 // 참가자 목록 조회 (최대 5명)
 try {
   $stmt = $pdo->prepare("
-    SELECT * FROM hopec_event_participants 
+    SELECT * FROM " . get_table_name('event_participants') . " 
     WHERE event_id = ? 
     ORDER BY registration_date DESC 
     LIMIT 5

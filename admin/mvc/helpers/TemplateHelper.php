@@ -213,7 +213,7 @@ class TemplateHelper
     public static function renderLaborRightsCard($data = [])
     {
         $view = self::getView();
-        return $view->renderComponent('hopec_card', $data);
+        return $view->renderComponent('admin_card', $data);
     }
     
     /**

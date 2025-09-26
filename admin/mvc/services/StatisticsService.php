@@ -20,7 +20,7 @@ class StatisticsService
      */
     public function createVisitorLogTable()
     {
-        $sql = "CREATE TABLE IF NOT EXISTS hopec_visitor_log (
+        $sql = "CREATE TABLE IF NOT EXISTS " . get_table_name('visitor_log') . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             ip_address VARCHAR(45) NOT NULL COMMENT '방문자 IP',
             user_agent TEXT DEFAULT NULL COMMENT '브라우저 정보',
@@ -60,7 +60,7 @@ class StatisticsService
         ];
         
         // 중복 방문 체크 (같은 IP, 같은 세션, 같은 날짜)
-        $checkSql = "SELECT id FROM hopec_visitor_log 
+        $checkSql = "SELECT id FROM " . get_table_name('visitor_log') . " 
                      WHERE ip_address = ? AND session_id = ? AND visit_date = ?";
         $stmt = $this->db->prepare($checkSql);
         $stmt->execute([$logData['ip_address'], $logData['session_id'], $logData['visit_date']]);
@@ -74,7 +74,7 @@ class StatisticsService
         $fields = array_keys($logData);
         $placeholders = array_map(function($field) { return ":$field"; }, $fields);
         
-        $sql = "INSERT INTO hopec_visitor_log (" . implode(', ', $fields) . ") 
+        $sql = "INSERT INTO " . get_table_name('visitor_log') . " (" . implode(', ', $fields) . ") 
                 VALUES (" . implode(', ', $placeholders) . ")";
         
         $stmt = $this->db->prepare($sql);
@@ -101,7 +101,7 @@ class StatisticsService
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     COUNT(DISTINCT session_id) as sessions,
                     COUNT(*) as page_views
-                FROM hopec_visitor_log 
+                FROM " . get_table_name('visitor_log') . " 
                 WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
                 GROUP BY visit_date 
                 ORDER BY visit_date DESC";
@@ -137,7 +137,7 @@ class StatisticsService
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     COUNT(DISTINCT session_id) as sessions,
                     COUNT(*) as page_views
-                FROM hopec_visitor_log 
+                FROM " . get_table_name('visitor_log') . " 
                 WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL ? MONTH)
                 GROUP BY DATE_FORMAT(visit_date, '%Y-%m')
                 ORDER BY month DESC";
@@ -172,7 +172,7 @@ class StatisticsService
                     HOUR(visit_time) as hour,
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     COUNT(*) as page_views
-                FROM hopec_visitor_log 
+                FROM " . get_table_name('visitor_log') . " 
                 WHERE visit_date = ?
                 GROUP BY HOUR(visit_time)
                 ORDER BY hour";
@@ -206,7 +206,7 @@ class StatisticsService
                     page_url,
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     COUNT(*) as page_views
-                FROM hopec_visitor_log 
+                FROM " . get_table_name('visitor_log') . " 
                 WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
                 AND page_url IS NOT NULL
                 GROUP BY page_url
@@ -252,7 +252,7 @@ class StatisticsService
                     referer,
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     COUNT(*) as visits
-                FROM hopec_visitor_log 
+                FROM " . get_table_name('visitor_log') . " 
                 WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
                 GROUP BY referer_type, referer
                 ORDER BY visits DESC
@@ -287,7 +287,7 @@ class StatisticsService
                     user_agent,
                     COUNT(DISTINCT ip_address) as unique_visitors,
                     COUNT(*) as visits
-                FROM hopec_visitor_log 
+                FROM " . get_table_name('visitor_log') . " 
                 WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
                 AND user_agent IS NOT NULL
                 GROUP BY user_agent
@@ -353,7 +353,7 @@ class StatisticsService
                     COUNT(*) as total_posts,
                     COUNT(CASE WHEN status = 'published' THEN 1 END) as published_posts,
                     COUNT(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 END) as recent_posts
-                FROM hopec_posts
+                FROM " . get_table_name('posts') . "
             ");
             $stats['posts'] = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
@@ -367,7 +367,7 @@ class StatisticsService
                     COUNT(*) as total_events,
                     COUNT(CASE WHEN status = '진행중' THEN 1 END) as active_events,
                     COUNT(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 END) as recent_events
-                FROM hopec_events
+                FROM " . get_table_name('events') . "
             ");
             $stats['events'] = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
@@ -381,7 +381,7 @@ class StatisticsService
                     COUNT(*) as total_inquiries,
                     COUNT(CASE WHEN status = '접수' THEN 1 END) as pending_inquiries,
                     COUNT(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 1 MONTH) THEN 1 END) as recent_inquiries
-                FROM hopec_inquiries
+                FROM " . get_table_name('inquiries') . "
             ");
             $stats['inquiries'] = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
@@ -416,7 +416,7 @@ class StatisticsService
             SELECT 
                 COUNT(DISTINCT ip_address) as today_visitors,
                 COUNT(*) as today_page_views
-            FROM hopec_visitor_log 
+            FROM " . get_table_name('visitor_log') . " 
             WHERE visit_date = CURDATE()
         ");
         $stmt->execute();
@@ -427,7 +427,7 @@ class StatisticsService
             SELECT 
                 COUNT(DISTINCT ip_address) as month_visitors,
                 COUNT(*) as month_page_views
-            FROM hopec_visitor_log 
+            FROM " . get_table_name('visitor_log') . " 
             WHERE visit_date >= DATE_FORMAT(NOW(), '%Y-%m-01')
         ");
         $stmt->execute();
@@ -498,7 +498,7 @@ class StatisticsService
      */
     public function cleanupOldLogs($daysToKeep = 365)
     {
-        $sql = "DELETE FROM hopec_visitor_log WHERE visit_date < DATE_SUB(CURDATE(), INTERVAL ? DAY)";
+        $sql = "DELETE FROM " . get_table_name('visitor_log') . " WHERE visit_date < DATE_SUB(CURDATE(), INTERVAL ? DAY)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$daysToKeep]);
         

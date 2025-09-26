@@ -91,13 +91,13 @@ try {
     }
     
     // 데이터베이스 설정 구성
-    $GLOBALS['hopec_config'] = [
+    $GLOBALS['younglabor_config'] = [
         'database' => [
             'connections' => [
                 'mysql' => [
                     'host' => env('DB_HOST', 'localhost'),
                     'port' => env('DB_PORT', 3306),
-                    'database' => env('DB_DATABASE', env('PROJECT_SLUG', 'hopec')),
+                    'database' => env('DB_DATABASE', ''),
                     'username' => env('DB_USERNAME', 'root'),
                     'password' => env('DB_PASSWORD', ''),
                     'charset' => 'utf8mb4',
@@ -116,7 +116,7 @@ try {
         ],
         'app' => [
             'name' => '사단법인 희망씨',
-            'url' => env('APP_URL', 'http://hopec.local:8012'),
+            'url' => env('APP_URL', 'http://younglabor.local:8012'),
             'env' => env('APP_ENV', 'local'),
             'debug' => env('APP_DEBUG', true)
         ]

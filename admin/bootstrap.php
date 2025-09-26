@@ -9,9 +9,10 @@ if (strpos($requestUri, '${PROJECT_SLUG}') !== false ||
     strpos($requestUri, '%7BPROJECT_SLUG%7D') !== false ||
     strpos($requestUri, '$%7BPROJECT_SLUG%7D') !== false) {
     
+    $projectSlug = env('PROJECT_SLUG', '');
     $fixedUri = str_replace(
         ['${PROJECT_SLUG}', '%7BPROJECT_SLUG%7D', '$%7BPROJECT_SLUG%7D'],
-        'hopec',
+        $projectSlug,
         $requestUri
     );
     
@@ -376,7 +377,7 @@ if (!function_exists('admin_url')) {
         // 더 안전한 방법으로 BASE_PATH 가져오기
         $base_path = getenv('BASE_PATH');
         if ($base_path === false) {
-            $base_path = $_ENV['BASE_PATH'] ?? '/hopec';
+            $base_path = $_ENV['BASE_PATH'] ?? '';
         }
         
         $path = ltrim($path, '/');
@@ -393,7 +394,7 @@ if (!function_exists('get_base_path')) {
         // 더 안전한 방법으로 BASE_PATH 가져오기
         $base_path = getenv('BASE_PATH');
         if ($base_path === false) {
-            $base_path = $_ENV['BASE_PATH'] ?? '/hopec';
+            $base_path = $_ENV['BASE_PATH'] ?? '';
         }
         return $base_path;
     }
@@ -448,15 +449,19 @@ $admin_title = $app_name . ' 관리자';
 // PROJECT_SLUG 정리용 JavaScript 함수 추가
 if (!defined('PROJECT_SLUG_JS_ADDED')) {
     define('PROJECT_SLUG_JS_ADDED', true);
-    $project_slug_value = env('PROJECT_SLUG', 'hopec');
+    $projectSlugValue = env('PROJECT_SLUG', '');
+    if (empty($projectSlugValue)) {
+        $projectSlugValue = ''; // 빈 값일 때만 기본값 사용
+    }
     $project_slug_js = '
 <script>
 // PROJECT_SLUG 패턴을 정리하는 전역 함수
 function cleanProjectSlugFromUrl(url) {
     if (!url) return url;
-    return url.replace(/\$\{PROJECT_SLUG\}/g, "' . $project_slug_value . '")
-              .replace(/%7BPROJECT_SLUG%7D/g, "' . $project_slug_value . '") 
-              .replace(/\$%7BPROJECT_SLUG%7D/g, "' . $project_slug_value . '");
+    var projectSlug = "' . $projectSlugValue . '";
+    return url.replace(/\$\{PROJECT_SLUG\}/g, projectSlug)
+              .replace(/%7BPROJECT_SLUG%7D/g, projectSlug) 
+              .replace(/\$%7BPROJECT_SLUG%7D/g, projectSlug);
 }
 
 // 현재 페이지 URL이 PROJECT_SLUG를 포함하고 있다면 즉시 리디렉트
@@ -479,10 +484,10 @@ if (!function_exists('get_admin_menu_urls')) {
      * @return array 메뉴 ID와 URL 매핑
      */
     function get_admin_menu_urls() {
-        $base_path = get_base_path(); // /hopec
+        $base_path = get_base_path(); // 
         
         return [
-            'dashboard' => $base_path . '/admin/',
+            'dashboard' => $base_path . '/admin/index.php',
             'posts' => $base_path . '/admin/posts/list.php',
             'boards' => $base_path . '/admin/boards/list.php', 
             'menu' => $base_path . '/admin/menu/list.php',
@@ -508,6 +513,18 @@ if (!function_exists('get_admin_url')) {
     function get_admin_url($menu_id) {
         $urls = get_admin_menu_urls();
         return $urls[$menu_id] ?? '#';
+    }
+}
+
+if (!function_exists('get_table_name')) {
+    /**
+     * 동적 테이블명 생성 함수
+     * @param string $table_name 기본 테이블명 (prefix 없이)
+     * @return string DB_PREFIX가 적용된 완전한 테이블명
+     */
+    function get_table_name($table_name) {
+        $prefix = env('DB_PREFIX', '');
+        return $prefix . $table_name;
     }
 }
 ?>

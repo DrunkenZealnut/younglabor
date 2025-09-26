@@ -52,8 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pdo->exec("SET NAMES utf8mb4");
     
     // 준비된 명령문 사용
-    $stmt = $pdo->prepare("INSERT INTO " . table('menu') . " (parent_id, title, slug, position, sort_order, is_active, board_id, created_at, updated_at)
-                          VALUES (:parent_id, :title, :slug, :position, :sort_order, :is_active, :board_id, NOW(), NOW())");
+    $stmt = $pdo->prepare("INSERT INTO " . table('menu') . " (parent_id, title, slug, position, sort_order, is_active, board_id)
+                          VALUES (:parent_id, :title, :slug, :position, :sort_order, :is_active, :board_id)");
     
     $result = $stmt->execute([
       ':parent_id' => $parent_id,

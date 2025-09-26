@@ -6,10 +6,10 @@
  */
 
 // 팝업 시스템이 이미 로드되었는지 확인
-if (defined('HOPEC_POPUP_ENGINE_LOADED')) {
+if (defined('younglabor_POPUP_ENGINE_LOADED')) {
     return;
 }
-define('HOPEC_POPUP_ENGINE_LOADED', true);
+define('younglabor_POPUP_ENGINE_LOADED', true);
 
 // 필요한 파일들 로드
 require_once __DIR__ . '/../../admin/services/PopupManager.php';
@@ -47,7 +47,7 @@ try {
             $db_host = env('DB_HOST', 'localhost');
             $db_user = env('DB_USERNAME', 'root');
             $db_pass = env('DB_PASSWORD', '');
-            $db_name = env('DB_DATABASE', env('PROJECT_SLUG', 'hopec'));
+            $db_name = env('DB_DATABASE', '');
             
             // 빈 비밀번호를 null로 변환
             $password = empty($db_pass) ? null : $db_pass;
@@ -128,38 +128,38 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
     }
     
     $html = '
-    <!-- Hopec 팝업 시스템 -->
-    <div class="remodal hopec-popup ' . $animationClass . '" 
-         data-remodal-id="hopec-popup-' . $popupId . '"
+    <!-- younglabor 팝업 시스템 -->
+    <div class="remodal younglabor-popup ' . $animationClass . '" 
+         data-remodal-id="younglabor-popup-' . $popupId . '"
          data-remodal-options="hashTracking: false, closeOnOutsideClick: true, modifier: fade"
          style="max-width: ' . $width . 'px; background-color: ' . $bgColor . '; border-radius: ' . $borderRadius . 'px;">
          
         <!-- 팝업 헤더 -->
-        <div class="hopec-popup-header">
-            <h3 class="hopec-popup-title">' . $title . '</h3>
-            <button data-remodal-action="close" class="remodal-close hopec-popup-close" 
-                    onclick="hopecPopupClosed(' . $popupId . ')">
+        <div class="younglabor-popup-header">
+            <h3 class="younglabor-popup-title">' . $title . '</h3>
+            <button data-remodal-action="close" class="remodal-close younglabor-popup-close" 
+                    onclick="younglaborPopupClosed(' . $popupId . ')">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
         
         <!-- 팝업 내용 -->
-        <div class="hopec-popup-content">
+        <div class="younglabor-popup-content">
             ' . $content . '
         </div>
         
         <!-- 팝업 액션 -->
-        <div class="hopec-popup-actions">
-            <div class="hopec-popup-checkbox">
+        <div class="younglabor-popup-actions">
+            <div class="younglabor-popup-checkbox">
                 <label class="checkbox-label">
-                    <input type="checkbox" id="hopec-popup-no-show-' . $popupId . '" 
-                           onchange="hopecPopupCheckboxChanged(' . $popupId . ', this.checked)">
+                    <input type="checkbox" id="younglabor-popup-no-show-' . $popupId . '" 
+                           onchange="younglaborPopupCheckboxChanged(' . $popupId . ', this.checked)">
                     <span class="checkbox-text">24시간 동안 안보이기</span>
                 </label>
             </div>
-            <div class="hopec-popup-buttons">
+            <div class="younglabor-popup-buttons">
                 <button data-remodal-action="close" class="btn btn-secondary btn-sm" 
-                        onclick="hopecPopupClosed(' . $popupId . ')">
+                        onclick="younglaborPopupClosed(' . $popupId . ')">
                     닫기
                 </button>
             </div>
@@ -168,7 +168,7 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
     
     <!-- 팝업 스타일 -->
     <style>
-    .hopec-popup {
+    .younglabor-popup {
         font-family: "Noto Sans KR", Arial, sans-serif;
         padding: 0;
         overflow: hidden;
@@ -176,7 +176,7 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
         transition: opacity 0.3s ease-out, transform 0.3s ease-out;
     }
     
-    .hopec-popup-header {
+    .younglabor-popup-header {
         background: linear-gradient(135deg, #84cc16, #22c55e);
         color: white;
         padding: 20px;
@@ -184,14 +184,14 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
         border-radius: ' . $borderRadius . 'px ' . $borderRadius . 'px 0 0;
     }
     
-    .hopec-popup-title {
+    .younglabor-popup-title {
         margin: 0;
         font-size: 1.2em;
         font-weight: 600;
         padding-right: 40px;
     }
     
-    .hopec-popup-close {
+    .younglabor-popup-close {
         position: absolute;
         top: 15px;
         right: 15px;
@@ -208,32 +208,32 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
         transition: background-color 0.2s;
     }
     
-    .hopec-popup-close:hover {
+    .younglabor-popup-close:hover {
         background: rgba(255, 255, 255, 0.3);
     }
     
-    .hopec-popup-content {
+    .younglabor-popup-content {
         padding: 30px;
         line-height: 1.6;
         color: #333;
     }
     
-    .hopec-popup-content h1,
-    .hopec-popup-content h2,
-    .hopec-popup-content h3,
-    .hopec-popup-content h4,
-    .hopec-popup-content h5,
-    .hopec-popup-content h6 {
+    .younglabor-popup-content h1,
+    .younglabor-popup-content h2,
+    .younglabor-popup-content h3,
+    .younglabor-popup-content h4,
+    .younglabor-popup-content h5,
+    .younglabor-popup-content h6 {
         margin-top: 0;
         margin-bottom: 15px;
         color: #84cc16;
     }
     
-    .hopec-popup-content p {
+    .younglabor-popup-content p {
         margin-bottom: 15px;
     }
     
-    .hopec-popup-actions {
+    .younglabor-popup-actions {
         padding: 20px 30px;
         border-top: 1px solid #e5e7eb;
         background-color: #f9fafb;
@@ -243,12 +243,12 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
         border-radius: 0 0 ' . $borderRadius . 'px ' . $borderRadius . 'px;
     }
     
-    .hopec-popup-checkbox {
+    .younglabor-popup-checkbox {
         display: flex;
         align-items: center;
     }
     
-    .hopec-popup-checkbox .checkbox-label {
+    .younglabor-popup-checkbox .checkbox-label {
         display: flex;
         align-items: center;
         cursor: pointer;
@@ -257,7 +257,7 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
         margin: 0;
     }
     
-    .hopec-popup-checkbox input[type="checkbox"] {
+    .younglabor-popup-checkbox input[type="checkbox"] {
         width: 16px;
         height: 16px;
         margin-right: 8px;
@@ -265,31 +265,31 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
         cursor: pointer;
     }
     
-    .hopec-popup-checkbox .checkbox-text {
+    .younglabor-popup-checkbox .checkbox-text {
         user-select: none;
     }
     
-    .hopec-popup-buttons {
+    .younglabor-popup-buttons {
         display: flex;
         gap: 10px;
     }
     
     /* 애니메이션 효과 - 깜빡임 방지 개선 */
-    .hopec-popup.popup-fade-in {
+    .younglabor-popup.popup-fade-in {
         opacity: 0;
         visibility: hidden;
         transform: scale(0.95);
         transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s 0.3s;
     }
     
-    .hopec-popup.popup-slide-in {
+    .younglabor-popup.popup-slide-in {
         opacity: 0;
         visibility: hidden;
         transform: translateY(-20px);
         transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s 0.3s;
     }
     
-    .hopec-popup.popup-bounce-in {
+    .younglabor-popup.popup-bounce-in {
         opacity: 0;
         visibility: hidden;
         transform: scale(0.9);
@@ -297,20 +297,20 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
     }
     
     /* Remodal 상태별 스타일 - 깜빡임 방지 */
-    .remodal.hopec-popup.remodal-is-opened {
+    .remodal.younglabor-popup.remodal-is-opened {
         opacity: 1 !important;
         visibility: visible !important;
         transform: scale(1) !important;
         transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0s;
     }
     
-    .remodal.hopec-popup.remodal-is-opening {
+    .remodal.younglabor-popup.remodal-is-opening {
         animation: none !important;
         opacity: 1 !important;
         visibility: visible !important;
     }
     
-    .remodal.hopec-popup.remodal-is-closing {
+    .remodal.younglabor-popup.remodal-is-closing {
         animation: none !important;
         transition: opacity 0.2s ease-in, transform 0.2s ease-in, visibility 0s 0.2s;
     }
@@ -330,16 +330,16 @@ function generatePopupHtml($popupId, $title, $content, $styles) {
     
     /* 모바일 최적화 */
     @media (max-width: 768px) {
-        .hopec-popup {
+        .younglabor-popup {
             margin: 20px;
             max-width: calc(100vw - 40px) !important;
         }
         
-        .hopec-popup-content {
+        .younglabor-popup-content {
             padding: 20px;
         }
         
-        .hopec-popup-actions {
+        .younglabor-popup-actions {
             padding: 15px 20px;
         }
     }
@@ -389,22 +389,22 @@ function generatePopupScript($popupId, $styles) {
     }
     
     // 24시간 안보이기 체크박스 변경 이벤트
-    function hopecPopupCheckboxChanged(popupId, checked) {
+    function younglaborPopupCheckboxChanged(popupId, checked) {
         if (checked) {
             // 24시간 동안 안보이기 쿠키 설정
-            setCookie("hopec_popup_" + popupId + "_no_show_24h", "1", 1);
+            setCookie("younglabor_popup_" + popupId + "_no_show_24h", "1", 1);
             console.log("24시간 동안 팝업 " + popupId + " 안보이기 설정됨");
         } else {
             // 쿠키 삭제
-            setCookie("hopec_popup_" + popupId + "_no_show_24h", "", -1);
+            setCookie("younglabor_popup_" + popupId + "_no_show_24h", "", -1);
             console.log("24시간 안보이기 설정 해제됨");
         }
     }
     
     // 팝업 닫기 이벤트
-    function hopecPopupClosed(popupId) {
+    function younglaborPopupClosed(popupId) {
         // 24시간 안보이기가 체크되어 있는지 확인
-        var noShowCheckbox = document.getElementById("hopec-popup-no-show-" + popupId);
+        var noShowCheckbox = document.getElementById("younglabor-popup-no-show-" + popupId);
         var noShow24h = noShowCheckbox && noShowCheckbox.checked;
         
         // 조회 기록 전송
@@ -424,15 +424,15 @@ function generatePopupScript($popupId, $styles) {
         
         if (noShow24h) {
             // 24시간 동안 안보이기 쿠키 설정
-            setCookie("hopec_popup_" + popupId + "_no_show_24h", "1", 1);
+            setCookie("younglabor_popup_" + popupId + "_no_show_24h", "1", 1);
         } else {
             // 일반 닫기 - 현재 세션 동안 안보이기 (세션 쿠키)
-            setSessionCookie("hopec_popup_" + popupId + "_closed_session", "1");
+            setSessionCookie("younglabor_popup_" + popupId + "_closed_session", "1");
         }
     }
     
     // 팝업 클릭 이벤트
-    function hopecPopupClicked(popupId) {
+    function younglaborPopupClicked(popupId) {
         // 조회 기록 전송
         fetch("/admin/settings/popup/api/record-action.php", {
             method: "POST",
@@ -451,23 +451,23 @@ function generatePopupScript($popupId, $styles) {
     // 팝업 표시 로직 - 개선된 초기화 (깜빡임 방지)
     function initializePopup() {
         // 24시간 안보이기 쿠키 확인
-        if (getCookie("hopec_popup_' . $popupId . '_no_show_24h")) {
+        if (getCookie("younglabor_popup_' . $popupId . '_no_show_24h")) {
             console.log("팝업 ' . $popupId . ' - 24시간 안보이기 설정으로 인해 차단됨");
             return;
         }
         
         // 세션 중 닫기 쿠키 확인 (현재 세션 동안 안보이기)
-        if (getCookie("hopec_popup_' . $popupId . '_closed_session")) {
+        if (getCookie("younglabor_popup_' . $popupId . '_closed_session")) {
             console.log("팝업 ' . $popupId . ' - 현재 세션에서 이미 닫혔음");
             return;
         }
         
         // 중복 실행 방지
-        if (window.hopecPopupInitialized_' . $popupId . ') {
+        if (window.younglaborPopupInitialized_' . $popupId . ') {
             console.log("팝업 ' . $popupId . ' - 이미 초기화됨");
             return;
         }
-        window.hopecPopupInitialized_' . $popupId . ' = true;
+        window.younglaborPopupInitialized_' . $popupId . ' = true;
         
         // Remodal 라이브러리 확인
         if (typeof $ === "undefined" || typeof $.fn.remodal === "undefined") {
@@ -476,7 +476,7 @@ function generatePopupScript($popupId, $styles) {
         }
         
         // 팝업 요소가 DOM에 있는지 확인
-        var popupElement = $("[data-remodal-id=hopec-popup-' . $popupId . ']");
+        var popupElement = $("[data-remodal-id=younglabor-popup-' . $popupId . ']");
         if (popupElement.length === 0) {
             console.warn("팝업 요소를 찾을 수 없습니다.");
             return;
@@ -501,7 +501,7 @@ function generatePopupScript($popupId, $styles) {
             try {
                 // 팝업 내 링크 클릭 이벤트 추가
                 popupElement.find("a").on("click", function() {
-                    hopecPopupClicked(' . $popupId . ');
+                    younglaborPopupClicked(' . $popupId . ');
                 });
                 
                 // 부드러운 표시를 위한 사전 설정
@@ -516,7 +516,7 @@ function generatePopupScript($popupId, $styles) {
                 console.log("팝업 ' . $popupId . ' 성공적으로 표시됨");
             } catch(error) {
                 console.error("팝업 표시 중 오류:", error);
-                window.hopecPopupInitialized_' . $popupId . ' = false;
+                window.younglaborPopupInitialized_' . $popupId . ' = false;
             }
         }, ' . $delay . ');
     }

@@ -13,7 +13,7 @@ if (strpos($request_uri, '${PROJECT_SLUG}') !== false ||
     
     $fixedUri = str_replace(
         ['${PROJECT_SLUG}', '%7BPROJECT_SLUG%7D', '$%7BPROJECT_SLUG%7D'],
-        'hopec',
+        'younglabor',
         $request_uri
     );
     
@@ -25,9 +25,9 @@ if (strpos($request_uri, '${PROJECT_SLUG}') !== false ||
 $parsed_url = parse_url($request_uri);
 $path = $parsed_url['path'] ?? '';
 
-// /hopec/ 접두사 제거 (로컬 환경)
-if (strpos($path, '/hopec/') === 0) {
-    $path = substr($path, 6); // "/hopec/" 제거
+// /younglabor/ 접두사 제거 (로컬 환경)
+if (strpos($path, '/younglabor/') === 0) {
+    $path = substr($path, 6); // "/younglabor/" 제거
 }
 
 // board/list/{id} 패턴 매칭

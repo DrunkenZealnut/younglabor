@@ -50,15 +50,15 @@ if ($bucket['count'] > 3) {
 // 대상 게시판: B21 (정기후원)
 // ------------------------------------------------------------------
 
-// 0) 후원 테이블 준비 (hopec_donate 테이블 직접 사용)
+// 0) 후원 테이블 준비 (younglabor_donate 테이블 직접 사용)
 $bo_table = isset($_POST['bo_table']) ? preg_replace('/[^A-Za-z0-9_]/', '', $_POST['bo_table']) : '';
 if ($bo_table !== 'B21') {
     redirect_with_message('/donate/monthly.php', '허용되지 않은 후원 유형입니다.', 'error');
     exit;
 }
 
-// hopec_donate 테이블을 직접 사용 (게시판 설정 불필요)
-$write_table = 'hopec_donate';
+// younglabor_donate 테이블을 직접 사용 (게시판 설정 불필요)
+$write_table = 'younglabor_donate';
 $board = ['bo_category_list' => '정회원|준회원|후원회원']; // 임시 설정
 
 // 1) 입력값 검증/정리
@@ -199,7 +199,7 @@ try {
     DatabaseManager::execute("UPDATE {$write_table} SET wr_parent = :wr_id WHERE wr_id = :wr_id", 
                             [':wr_id' => $wr_id]);
     
-    // hopec_donate 테이블 사용 시 추가 처리 불필요 (단순화)
+    // younglabor_donate 테이블 사용 시 추가 처리 불필요 (단순화)
                             
 } catch (Exception $e) {
     error_log('정기후원 후처리 오류: ' . $e->getMessage());

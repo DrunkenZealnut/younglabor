@@ -31,7 +31,8 @@ try {
         $boards[] = ['id' => $id, 'board_name' => $info['name'], 'board_type' => $info['board_type']];
     }
     
-    // hopec_posts 테이블에서 board_type으로 통합 조회
+    // posts 테이블에서 board_type으로 통합 조회
+    $tableName = get_table_name('posts');
     $where_clause = "WHERE wr_is_comment = 0";
     $params = [];
     
@@ -65,7 +66,7 @@ try {
                 wr_hit as hit_count,
                 wr_datetime as created_at,
                 wr_is_notice as is_notice
-            FROM hopec_posts 
+            FROM {$tableName} 
             {$where_clause}
             ORDER BY 
                 wr_is_notice DESC,
@@ -98,7 +99,7 @@ try {
     }
     
     // 총 게시글 수 계산 - 단순 카운트
-    $count_sql = "SELECT COUNT(*) FROM hopec_posts {$where_clause}";
+    $count_sql = "SELECT COUNT(*) FROM {$tableName} {$where_clause}";
     $count_stmt = $pdo->prepare($count_sql);
     $count_stmt->execute($params);
     $total_records = $count_stmt->fetchColumn();
@@ -120,7 +121,7 @@ if (isset($_GET['delete']) && isset($_GET['id']) && isset($_GET['board_type'])) 
     
     if (in_array($board_type, $allowed_board_types)) {
         try {
-            $stmt = $pdo->prepare("DELETE FROM hopec_posts WHERE wr_id = ? AND board_type = ?");
+            $stmt = $pdo->prepare("DELETE FROM {$tableName} WHERE wr_id = ? AND board_type = ?");
             $stmt->execute([$post_id, $board_type]);
             
             header("Location: list.php?deleted=1");

@@ -21,7 +21,7 @@ return [
                 'driver' => 'mysql',
                 'host' => '127.0.0.1',
                 'port' => 3306,
-                'database' => $_ENV['DB_DATABASE'] ?? ($_ENV['PROJECT_SLUG'] ?? 'hopec'),
+                'database' => 'hopec',
                 'username' => 'root',
                 'password' => '',
                 'charset' => 'utf8mb4',
@@ -95,8 +95,8 @@ return [
         'username' => '',
         'password' => '',
         'from' => [
-            'address' => 'admin@younglabor.kr',
-            'name' => '청년노동자인권센터'
+            'address' => 'noreply@hopec.org',
+            'name' => '사단법인 희망씨'
         ]
     ],
     

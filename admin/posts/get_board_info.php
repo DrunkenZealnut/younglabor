@@ -20,7 +20,8 @@ if ($board_id <= 0) {
 
 try {
     // 게시판 정보 가져오기
-    $stmt = $pdo->prepare("SELECT use_category, category_list, allow_attachments, write_level FROM hopec_boards WHERE id = ? AND board_type != 'calendar'");
+    $tableName = get_table_name('boards');
+    $stmt = $pdo->prepare("SELECT use_category, category_list, allow_attachments, write_level FROM {$tableName} WHERE id = ? AND board_type != 'calendar'");
     $stmt->execute([$board_id]);
     $board = $stmt->fetch(PDO::FETCH_ASSOC);
     

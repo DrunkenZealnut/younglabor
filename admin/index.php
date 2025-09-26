@@ -1,10 +1,39 @@
 <?php
 // 완전한 대시보드 시스템
-require_once 'bootstrap.php';
 
-// 방문자 로그 테이블 생성 (존재하지 않는 경우)
+// 디버깅 로그 함수
+function debug_log_index($message, $data = null) {
+    $log_file = __DIR__ . '/../logs/index_debug.log';
+    $log_dir = dirname($log_file);
+    if (!is_dir($log_dir)) {
+        @mkdir($log_dir, 0755, true);
+    }
+    $entry = [
+        'timestamp' => date('Y-m-d H:i:s'),
+        'message' => $message,
+        'data' => $data,
+        'session_id' => session_id() ?: 'NO_SESSION'
+    ];
+    @file_put_contents($log_file, json_encode($entry) . "\n", FILE_APPEND);
+}
+
+debug_log_index("index.php 시작");
+
 try {
-    $pdo->exec("CREATE TABLE IF NOT EXISTS hopec_visitor_log (
+    require_once 'bootstrap.php';
+    debug_log_index("bootstrap.php 로드 성공");
+} catch (Exception $e) {
+    debug_log_index("bootstrap.php 로드 실패", $e->getMessage());
+    die("시스템 오류가 발생했습니다.");
+}
+
+// 방문자 로그 테이블 생성 (임시로 비활성화)
+debug_log_index("테이블 생성 로직 건너뜀 (임시 비활성화)");
+/*
+debug_log_index("데이터베이스 테이블 생성 시작");
+try {
+    $tableName = get_table_name('visitor_log');
+    $pdo->exec("CREATE TABLE IF NOT EXISTS {$tableName} (
         id INT AUTO_INCREMENT PRIMARY KEY,
         ip_address VARCHAR(45) NOT NULL,
         user_agent TEXT,
@@ -15,9 +44,12 @@ try {
         INDEX idx_visit_date (visit_date),
         INDEX idx_ip_address (ip_address)
     )");
+    debug_log_index("방문자 로그 테이블 생성 성공");
 } catch (Exception $e) {
+    debug_log_index("방문자 로그 테이블 생성 실패", $e->getMessage());
     error_log("방문자 로그 테이블 생성 실패: " . $e->getMessage());
 }
+*/
 
 // 통계 데이터 수집 함수
 function getStatistics($pdo) {
@@ -38,7 +70,8 @@ function getStatistics($pdo) {
     
     try {
         // 게시판 수 계산
-        $stmt = $pdo->query("SELECT COUNT(*) FROM hopec_boards");
+        $tableName = get_table_name('boards');
+        $stmt = $pdo->query("SELECT COUNT(*) FROM {$tableName}");
         $statistics['total_boards'] = $stmt->fetchColumn();
     } catch (Exception $e) {
         // 테이블이 없으면 0으로 유지
@@ -54,7 +87,8 @@ function getStatistics($pdo) {
     
     try {
         // 문의 수 계산
-        $stmt = $pdo->query("SELECT COUNT(*) FROM hopec_inquiries");
+        $tableName = get_table_name('inquiries');
+        $stmt = $pdo->query("SELECT COUNT(*) FROM {$tableName}");
         $statistics['total_inquiries'] = $stmt->fetchColumn();
     } catch (Exception $e) {
         // 테이블이 없으면 0으로 유지
@@ -62,19 +96,20 @@ function getStatistics($pdo) {
     
     try {
         // 방문자 통계
-        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM hopec_visitor_log");
+        $tableName = get_table_name('visitor_log');
+        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM {$tableName}");
         $statistics['total_visitors'] = $stmt->fetchColumn();
         
         // 오늘 방문자
-        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM hopec_visitor_log WHERE visit_date = CURDATE()");
+        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM {$tableName} WHERE visit_date = CURDATE()");
         $statistics['visitor_stats']['today'] = $stmt->fetchColumn();
         
         // 이번 주 방문자
-        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM hopec_visitor_log WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)");
+        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM {$tableName} WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)");
         $statistics['visitor_stats']['this_week'] = $stmt->fetchColumn();
         
         // 이번 달 방문자
-        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM hopec_visitor_log WHERE visit_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')");
+        $stmt = $pdo->query("SELECT COUNT(DISTINCT ip_address) FROM {$tableName} WHERE visit_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')");
         $statistics['visitor_stats']['this_month'] = $stmt->fetchColumn();
         
         $statistics['visitor_stats']['total'] = $statistics['total_visitors'];
@@ -82,7 +117,7 @@ function getStatistics($pdo) {
         // 최근 7일 일별 방문자 차트 데이터
         $stmt = $pdo->query("
             SELECT visit_date, COUNT(DISTINCT ip_address) as visitors 
-            FROM hopec_visitor_log 
+            FROM {$tableName} 
             WHERE visit_date >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
             GROUP BY visit_date 
             ORDER BY visit_date ASC
@@ -192,25 +227,11 @@ $base_path = get_base_path();
 </head>
 <body>
 
-<!-- 사이드바 -->
-<div class="sidebar">
-  <div class="logo">
-    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
-  </div>
-  <a href="<?= admin_url('index.php') ?>" class="active">📊 대시보드</a>
-  <a href="<?= admin_url('posts/list.php') ?>">📝 게시글 관리</a>
-  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
-  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
-  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
-  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
-  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
-  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
-  <a href="<?= admin_url('settings/simple-color-settings.php') ?>">🎨 테마 설정</a>
-  <a href="<?= admin_url('settings/hero_settings.php') ?>">🖼️ 히어로 섹션</a>
-  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
-  <a href="<?= admin_url('change_password.php') ?>">🔐 비밀번호 변경</a>
-  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
-</div>
+<?php
+// 현재 메뉴 설정 (사이드바에서 대시보드 활성화)
+$current_menu = 'dashboard';
+include __DIR__ . '/includes/sidebar.php';
+?>
 
 <!-- 메인 컨텐츠 -->
 <div class="main-content">
