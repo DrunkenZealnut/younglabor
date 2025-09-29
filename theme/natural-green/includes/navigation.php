@@ -228,29 +228,31 @@ $communityLinks = [
 <header class="bg-white border-bottom shadow-sm backdrop-blur-md" id="main-header" style="background-color: rgba(255, 255, 255, 0.95); border-color: var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1050;" role="banner">
   <div class="container-xl px-3">
     <div class="d-flex align-items-center h-100" style="min-height: 5rem;">
-      <!-- 로고 -->
-      <div class="me-4">
-        <a href="<?php echo app_url(''); ?>" 
-           class="d-flex align-items-center text-decoration-none"
-           aria-label="홈페이지 메인으로 이동">
-          <?php 
-            debug_log('NAVIGATION: 로고 이미지 렌더링 시작');
-            $logo_url = logo_url();
-            debug_log('NAVIGATION: 로고 URL 생성됨', ['url' => $logo_url]);
-            $logo_alt = org_logo_alt('로고');
-            debug_log('NAVIGATION: 로고 alt 텍스트', ['alt' => $logo_alt]);
-          ?>
-          <img
-            src="<?php echo $logo_url; ?>"
-            alt="<?php echo htmlspecialchars($logo_alt); ?>"
-            class="object-fit-contain"
-            style="height: 3.5rem; width: auto; max-width: 14rem;"
-            onerror="this.style.display='none'; console.log('NAVIGATION: 로고 이미지 로딩 실패 - <?php echo $logo_url; ?>');" />
-        </a>
-      </div>
+      <!-- 로고와 메뉴바 그룹 (가운데 정렬) -->
+      <div class="d-flex align-items-center gap-4 mx-auto">
+        <!-- 로고 -->
+        <div class="flex-shrink-0">
+          <a href="<?php echo app_url(''); ?>"
+             class="d-flex align-items-center text-decoration-none"
+             aria-label="홈페이지 메인으로 이동">
+            <?php
+              debug_log('NAVIGATION: 로고 이미지 렌더링 시작');
+              $logo_url = logo_url();
+              debug_log('NAVIGATION: 로고 URL 생성됨', ['url' => $logo_url]);
+              $logo_alt = org_logo_alt('로고');
+              debug_log('NAVIGATION: 로고 alt 텍스트', ['alt' => $logo_alt]);
+            ?>
+            <img
+              src="<?php echo $logo_url; ?>"
+              alt="<?php echo htmlspecialchars($logo_alt); ?>"
+              class="object-fit-contain"
+              style="height: 3.5rem; width: auto; max-width: 14rem;"
+              onerror="this.style.display='none'; console.log('NAVIGATION: 로고 이미지 로딩 실패 - <?php echo $logo_url; ?>');" />
+          </a>
+        </div>
 
-      <!-- 데스크톱 메뉴 -->
-      <nav class="d-none d-md-flex gap-1 overflow-auto overflow-md-visible ms-auto" role="navigation" aria-label="주요 메뉴">
+        <!-- 데스크톱 메뉴 -->
+        <nav class="d-none d-md-flex gap-1 overflow-auto overflow-md-visible" role="navigation" aria-label="주요 메뉴">
         <?php foreach ($menus as $mi => $menu): ?>
           <div class="nav-item dropdown position-relative">
             <button class="d-flex align-items-center gap-1 text-forest-600 hover:text-lime-600 py-2 px-3 rounded nav-button-hover transition-all" 
@@ -303,11 +305,12 @@ $communityLinks = [
             </div>
           </div>
         <?php endforeach; ?>
-      </nav>
+        </nav>
+      </div>
 
       <!-- 모바일 메뉴 토글 -->
-      <div class="ms-auto d-md-none">
-        <button type="button" 
+      <div class="position-absolute end-0 top-50 translate-middle-y d-md-none" style="right: 1rem;">
+        <button type="button"
                 id="mobileMenuToggle"
                 class="d-inline-flex align-items-center justify-content-center rounded text-forest-600 bg-transparent border-0"
                 style="width: 2.5rem; height: 2.5rem;"

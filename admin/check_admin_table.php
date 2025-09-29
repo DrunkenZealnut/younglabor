@@ -4,7 +4,6 @@
  */
 
 require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/../includes/config_helpers.php';
 
 echo "<!DOCTYPE html>\n";
 echo "<html lang='ko'>\n";
@@ -27,8 +26,8 @@ try {
     echo "<h1>관리자 테이블 구조 확인</h1>\n";
     
     // 현재 테이블 구조 확인
-    echo "<h2>현재 " . get_table_name('admin_user') . " 테이블 구조</h2>\n";
-    $stmt = $pdo->query("DESCRIBE " . get_table_name('admin_user'));
+    echo "<h2>현재 admin_user 테이블 구조</h2>\n";
+    $stmt = $pdo->query("DESCRIBE admin_user");
     $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     echo "<table>\n";
@@ -90,7 +89,7 @@ try {
         
         // 컬럼 추가 실행
         foreach ($alterStatements as $statement) {
-            $pdo->exec("ALTER TABLE " . get_table_name('admin_user') . " " . $statement);
+            $pdo->exec("ALTER TABLE hopec_admin_user " . $statement);
             echo "<div class='success'>✅ 컬럼 추가: " . htmlspecialchars($statement) . "</div>\n";
         }
         
@@ -100,7 +99,7 @@ try {
     
     // 현재 데이터 확인
     echo "<h2>현재 관리자 계정 데이터</h2>\n";
-    $stmt = $pdo->query("SELECT * FROM " . get_table_name('admin_user'));
+    $stmt = $pdo->query("SELECT * FROM hopec_admin_user");
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     if (!empty($users)) {

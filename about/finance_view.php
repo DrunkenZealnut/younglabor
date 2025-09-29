@@ -1,7 +1,7 @@
 <?php
 /**
  * 재정보고 상세보기 페이지
- * posts 테이블 사용 (board_type = 'finance_reports')
+ * osts 테이블 사용 (board_type = 'finance_reports')
  */
 
 // 모던 부트스트랩 시스템 로드
