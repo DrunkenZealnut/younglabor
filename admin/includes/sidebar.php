@@ -91,7 +91,7 @@ if (!function_exists('admin_url')) {
         }
         
         // 기본 fallback
-        $base_path = get_base_path() ?? '/hopec';
+        $base_path = get_base_path() ?? '/';
         return $base_path . '/admin/' . ltrim($path, '/');
     }
 }

@@ -65,7 +65,7 @@ class TemplateHelper
         // BASE_PATH를 사용하여 올바른 admin URL 생성
         $base_path = getenv('BASE_PATH');
         if ($base_path === false) {
-            $base_path = $_ENV['BASE_PATH'] ?? '/hopec';
+            $base_path = $_ENV['BASE_PATH'] ?? '/';
         }
         
         $base_url = rtrim($base_path . '/admin', '/');

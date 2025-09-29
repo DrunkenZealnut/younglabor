@@ -46,6 +46,18 @@ $metaDescription = isset($pageDescription) ? $pageDescription : $theme->getSiteD
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>" />
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>" />
+    
+    <?php 
+    debug_log('HEADER: 파비콘 렌더링 시작');
+    if (function_exists('favicon_url')): 
+        $favicon_url = favicon_url();
+        debug_log('HEADER: 파비콘 URL 생성됨', ['url' => $favicon_url]);
+    ?>
+    <link rel="icon" type="image/x-icon" href="<?= $favicon_url ?>" />
+    <link rel="shortcut icon" type="image/x-icon" href="<?= $favicon_url ?>" />
+    <?php else: 
+        debug_log('HEADER: favicon_url 함수를 찾을 수 없음');
+    endif; ?>
     <!-- Critical CSS - 우선 로딩 -->
     <?php
     // Natural Green 단일 테마 CSS 로드 (Critical CSS)

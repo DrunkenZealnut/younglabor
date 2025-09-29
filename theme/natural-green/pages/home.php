@@ -166,10 +166,10 @@
 
         <!-- 후원 안내 -->
         <div class="gradient-brand rounded-lg shadow-md p-6 text-white hover-lift transition-all duration-300">
-          <h3 class="text-2xl font-bold mb-4">함께하는 희망씨</h3>
+          <h3 class="text-2xl font-bold mb-4">청년노동자 모두가 평등하게 일할 수 있게</h3>
           <p class="mb-4">
-            희망씨와 함께 더불어 사는 삶을 만들어가요.<br>
-            여러분의 작은 관심이 큰 희망이 됩니다.
+            노동할 권리, 안전할 권리를 위해 함께 갑니다<br>
+            연대와 응원을 기다립니다
           </p>
           
           <div class="space-y-3">
@@ -185,8 +185,8 @@
           
           <div class="mt-4 text-sm">
             <p class="font-semibold mb-1">후원계좌</p>
-            <p>우리은행 1005-502-430760</p>
-            <p>(예금주: 사단법인 희망씨)</p>
+            <p>우리은행 -502-430760</p>
+            <p>(예금주: 사단법인 청년노동자인권센터)</p>
           </div>
         </div>
       </div>
@@ -194,7 +194,7 @@
   </section>
 
   <!-- 소식지 섹션 -->
-  <section class="py-12" style="background: var(--background); min-height: 600px;">
+  <section class="pt-12 pb-2" style="background: var(--background);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center text-forest-700 mb-4">
         <a href="<?= app_url('community/newsletter.php') ?>" class="hover:text-lime-600 transition-colors cursor-pointer underline decoration-transparent hover:decoration-lime-600 hover:underline-offset-4">희망씨 소식지</a>

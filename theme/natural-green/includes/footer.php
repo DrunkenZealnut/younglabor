@@ -1,6 +1,6 @@
 <!-- 하단 시작 { -->
 <div id="ft" role="contentinfo" class="bg-white border-t border-lime-200 mt-auto">
-  <div id="ft_wr" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-gray-600">
+  <div id="ft_wr" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-10 text-gray-600">
     <div class="flex flex-col h-full">
       <!-- 메인 콘텐츠 영역 -->
       <div class="flex-1">
@@ -29,7 +29,7 @@
                 <i data-lucide="map-pin" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
                   <span class="font-medium text-forest-700">소재지</span><br>
-                  <span class="text-gray-600">서울특별시 종로구 성균관로12 5층</span>
+                  <span class="text-gray-600">서울특별시 동대문구 휘경로7길 3, 지하</span>
                 </div>
               </div>
               
@@ -37,7 +37,7 @@
                 <i data-lucide="users" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
                   <span class="font-medium text-forest-700">이사장</span><br>
-                  <span class="text-gray-600">김진규, 이남신</span>
+                  <span class="text-gray-600">김창수</span>
                 </div>
               </div>
             </div>
@@ -48,7 +48,7 @@
                 <i data-lucide="phone" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
                   <span class="font-medium text-forest-700">전화</span><br>
-                  <span class="text-gray-600">02-2236-1105</span>
+                  <span class="text-gray-600">02-6081-1700</span>
                 </div>
               </div>
               
@@ -65,7 +65,7 @@
                 <div>
                   <span class="font-medium text-forest-700">이메일</span><br>
                   <span class="text-gray-600">
-                    <a href="mailto:younglabor09131105@younglabor.co.kr" class="text-forest-600 hover:text-lime-600 underline">younglabor09131105@younglabor.co.kr</a>
+                    <a href="mailto:younglabor09131105@younglabor.co.kr" class="text-forest-600 hover:text-lime-600 underline">admin@younglabor.kr</a>
                   </span>
                 </div>
               </div>
@@ -77,7 +77,7 @@
                 <i data-lucide="credit-card" class="w-4 h-4 text-lime-500 mt-0.5 flex-shrink-0"></i>
                 <div>
                   <span class="font-medium text-forest-700">후원계좌</span><br>
-                  <span class="text-gray-600">우리은행 1005-502-430760<br><?= get_org_name(true) ?></span>
+                  <span class="text-gray-600">우리은행 <br><?= get_org_name(true) ?></span>
                 </div>
               </div>
             </div>

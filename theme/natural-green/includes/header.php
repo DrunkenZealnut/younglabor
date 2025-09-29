@@ -117,8 +117,29 @@ $communityLinks = [
     <div class="d-flex justify-content-between align-items-center h-16">
       <div class="d-flex align-items-center">
         <a href="/" class="d-flex align-items-center text-decoration-none" style="outline: none;">
-          <?php if (function_exists('logo_url')): ?>
-            <img src="<?= logo_url() ?>" alt="<?= getOrgName('short') ?> 로고" class="h-9" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+          <?php 
+          $logo_src = '';
+          if (function_exists('logo_url')) {
+            $logo_src = logo_url();
+          }
+          
+          // Fallback: 직접 데이터베이스에서 가져오기
+          if (empty($logo_src) && $pdo) {
+            try {
+              $stmt = $pdo->prepare("SELECT setting_value FROM " . get_table_name('site_settings') . " WHERE setting_key = 'site_logo' AND setting_value != ''");
+              $stmt->execute();
+              $result = $stmt->fetch(PDO::FETCH_ASSOC);
+              if ($result && !empty($result['setting_value'])) {
+                $base_path = env('BASE_PATH', '');
+                $logo_src = $base_path . '/' . ltrim($result['setting_value'], '/');
+              }
+            } catch (Exception $e) {
+              error_log("Logo fetch error: " . $e->getMessage());
+            }
+          }
+          
+          if (!empty($logo_src)): ?>
+            <img src="<?= htmlspecialchars($logo_src) ?>" alt="<?= getOrgName('short') ?> 로고" class="h-9" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i data-lucide="leaf" class="w-7 h-7" style="display: none; color: var(--primary);"></i>
           <?php else: ?>
             <i data-lucide="leaf" class="w-7 h-7" style="color: var(--primary);"></i>

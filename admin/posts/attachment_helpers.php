@@ -37,7 +37,7 @@ function getPostAttachments($post_id, $pdo, $board_type = null) {
             $stmt = $pdo->prepare("
                 SELECT bf_no, bf_source, bf_file, bf_filesize, bf_download, 
                        bf_type, bf_width, bf_height, bf_datetime, board_type
-                FROM " . get_table_name('post_files') 
+                FROM " . get_table_name('post_files') . "
                 WHERE wr_id = ? 
                 ORDER BY bf_no ASC
             ");

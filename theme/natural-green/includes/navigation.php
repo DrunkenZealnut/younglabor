@@ -63,6 +63,28 @@ if (!function_exists('app_url')) {
 
 if (!function_exists('logo_url')) {
     function logo_url($fallback = 'logo.png') {
+        // 데이터베이스에서 site_logo 설정을 가져오기 시도
+        try {
+            global $pdo;
+            
+            // PDO 연결이 있는 경우 데이터베이스에서 로고 경로 확인
+            if ($pdo) {
+                $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = 'site_logo' AND setting_value != ''");
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($result && !empty($result['setting_value'])) {
+                    // 관리자에서 업로드한 로고가 있는 경우
+                    $logo_path = $result['setting_value'];
+                    return app_url($logo_path);
+                }
+            }
+        } catch (Exception $e) {
+            // 데이터베이스 오류 시 기본 로고 사용
+            error_log("logo_url DB error: " . $e->getMessage());
+        }
+        
+        // 기본 로고 반환
         return app_url('assets/images/' . $fallback);
     }
 }
@@ -75,11 +97,11 @@ try {
     if (!isset($pdo)) {
         // 기본 데이터베이스 연결이 없는 경우 생성
         $host = env('DB_HOST', 'localhost');
-        $dbname = env('DB_DATABASE', 'hopec');
+        $dbname = env('DB_DATABASE', 'kcsvictory');
         $username = env('DB_USERNAME', 'root');
         $password = env('DB_PASSWORD', '');
         
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4;unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock", $username, $password);
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
@@ -211,12 +233,19 @@ $communityLinks = [
         <a href="<?php echo app_url(''); ?>" 
            class="d-flex align-items-center text-decoration-none"
            aria-label="홈페이지 메인으로 이동">
+          <?php 
+            debug_log('NAVIGATION: 로고 이미지 렌더링 시작');
+            $logo_url = logo_url();
+            debug_log('NAVIGATION: 로고 URL 생성됨', ['url' => $logo_url]);
+            $logo_alt = org_logo_alt('로고');
+            debug_log('NAVIGATION: 로고 alt 텍스트', ['alt' => $logo_alt]);
+          ?>
           <img
-            src="<?php echo app_url('assets/images/logo.png'); ?>"
-            alt="<?php echo htmlspecialchars(org_logo_alt('로고')); ?>"
+            src="<?php echo $logo_url; ?>"
+            alt="<?php echo htmlspecialchars($logo_alt); ?>"
             class="object-fit-contain"
             style="height: 3.5rem; width: auto; max-width: 14rem;"
-            onerror="this.style.display='none';" />
+            onerror="this.style.display='none'; console.log('NAVIGATION: 로고 이미지 로딩 실패 - <?php echo $logo_url; ?>');" />
         </a>
       </div>
 
@@ -361,12 +390,12 @@ $communityLinks = [
 <style>
 /* Fixed 헤더를 위한 body padding 조정 */
 body {
-    padding-top: 5rem !important; /* 헤더 높이만큼 padding 추가 */
+    padding-top: 1.7rem !important; /* 헤더 높이만큼 padding 추가 */
 }
 
 @media (max-width: 767px) {
     body {
-        padding-top: 4rem !important; /* 모바일에서는 헤더 높이가 작으므로 4rem */
+        padding-top: 1.3rem !important; /* 모바일에서는 헤더 높이가 작으므로 1.3rem */
     }
 }
 
@@ -402,6 +431,18 @@ body {
     background-color: rgba(132, 204, 22, 0.1) !important;
     outline: 2px solid rgba(132, 204, 22, 0.5) !important;
     outline-offset: 2px !important;
+}
+
+/* 메인 컨텐츠가 메뉴 뒤로 가지 않도록 강제 설정 */
+body > main,
+body > #main,
+body > .main-content,
+body > .container,
+body > .container-fluid,
+.flex-1 {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 1.7rem !important; /* 헤더 높이만큼 여백 확보 */
 }
 
 /* 드롭다운 메뉴 기본 스타일 - CSS 변수 활용 */

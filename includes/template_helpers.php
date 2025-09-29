@@ -185,17 +185,25 @@ if (!function_exists('logo_url')) {
      * 로고 이미지 URL 생성 - admin 설정에서 가져오기
      */
     function logo_url($fallback_filename = 'logo.png') {
+        debug_function('logo_url', ['fallback' => $fallback_filename]);
+        
         // admin 설정에서 site_logo 값 가져오기
         try {
+            debug_log('LOGO: 데이터베이스에서 로고 URL 조회 시작');
+            
             // 우선 전역 $pdo 사용 시도
             global $pdo;
             $db_connection = null;
             
             if (isset($pdo)) {
+                debug_log('LOGO: 전역 PDO 연결 사용');
                 $db_connection = $pdo;
             } else {
-                // DB 연결이 없는 경우 직접 연결
+                debug_log('LOGO: 전역 PDO 없음, 직접 연결 시도');
+                // DB 연결이 없는 경우 직접 연결 (XAMPP MySQL 소켓 포함)
                 $basePath = $_SERVER['DOCUMENT_ROOT'];
+                debug_file_check('LOGO: dbconfig.php 파일 체크', $basePath . '/data/dbconfig.php');
+                
                 if (file_exists($basePath . '/data/dbconfig.php')) {
                     include_once $basePath . '/data/dbconfig.php';
                     $db_host = env('DB_HOST', 'localhost');
@@ -205,7 +213,7 @@ if (!function_exists('logo_url')) {
                     $password = empty($db_pass) ? null : $db_pass;
                     
                     $db_connection = new PDO(
-                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4;unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock",
                         $db_user,
                         $password,
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -220,7 +228,7 @@ if (!function_exists('logo_url')) {
                     $password = empty($db_pass) ? null : $db_pass;
                     
                     $db_connection = new PDO(
-                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4;unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock",
                         $db_user,
                         $password,
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -230,36 +238,74 @@ if (!function_exists('logo_url')) {
             
             if ($db_connection) {
                 $table_prefix = env('DB_PREFIX', '');
-                $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_logo'");
+                $full_table_name = $table_prefix . 'site_settings';
+                $query = "SELECT setting_value FROM {$full_table_name} WHERE setting_key = 'site_logo' AND setting_value IS NOT NULL AND setting_value != '' ORDER BY updated_at DESC, id DESC LIMIT 1";
+                
+                debug_log('LOGO: 테이블 정보', [
+                    'db_prefix' => $table_prefix,
+                    'full_table_name' => $full_table_name,
+                    'query' => $query
+                ]);
+                
+                debug_db_query('LOGO: 로고 설정 조회', $query);
+                
+                $stmt = $db_connection->prepare($query);
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                debug_log('LOGO: 데이터베이스 쿼리 결과', ['result' => $result]);
                 
                 if ($result && !empty($result['setting_value'])) {
                     // 상대 경로로 저장된 경우 절대 URL로 변환
                     $logo_path = $result['setting_value'];
+                    debug_log('LOGO: DB에서 가져온 로고 경로', ['path' => $logo_path]);
+                    
                     if (!preg_match('/^https?:\/\//', $logo_path)) {
                         // BASE_PATH를 고려한 URL 생성
                         $base_path = env('BASE_PATH', '');
                         $logo_url = $base_path . '/' . ltrim($logo_path, '/');
                         
+                        debug_log('LOGO: 상대 경로를 절대 URL로 변환', [
+                            'base_path' => $base_path,
+                            'logo_url' => $logo_url
+                        ]);
+                        
                         // 브라우저 캐시 방지를 위해 파일 수정 시간을 쿼리 파라미터로 추가
                         $file_path = $_SERVER['DOCUMENT_ROOT'] . $logo_url;
+                        debug_file_check('LOGO: 로고 파일 존재 여부 확인', $file_path);
+                        
                         if (file_exists($file_path)) {
                             $logo_url .= '?v=' . filemtime($file_path);
+                            debug_log('LOGO: 캐시 버스터 추가', ['final_url' => $logo_url]);
                         }
                         
+                        debug_asset_load('logo', $file_path, $logo_url);
                         return $logo_url;
                     }
+                    debug_log('LOGO: 절대 URL 반환', ['url' => $logo_path]);
                     return $logo_path;
+                } else {
+                    debug_log('LOGO: 데이터베이스에서 로고 설정을 찾을 수 없음');
                 }
+            } else {
+                debug_log('LOGO: 데이터베이스 연결 실패');
             }
         } catch (Exception $e) {
             // DB 오류 시 fallback 사용
+            debug_log('LOGO: 예외 발생, fallback 사용', ['error' => $e->getMessage()]);
             error_log("logo_url() DB error: " . $e->getMessage());
         }
         
         // fallback: 기본 이미지 경로
-        return img_url($fallback_filename);
+        $app_url = env('APP_URL', '');
+        $fallback_url = img_url($fallback_filename);
+        debug_log('LOGO: fallback URL 생성', [
+            'app_url_env' => $app_url,
+            'fallback_filename' => $fallback_filename,
+            'img_url_result' => $fallback_url,
+            'asset_url_test' => asset_url('images/' . $fallback_filename)
+        ]);
+        return $fallback_url;
     }
 }
 
@@ -268,15 +314,21 @@ if (!function_exists('favicon_url')) {
      * 파비콘 이미지 URL 생성 - admin 설정에서 가져오기
      */
     function favicon_url($fallback_filename = 'favicon.ico') {
+        debug_function('favicon_url', ['fallback' => $fallback_filename]);
+        
         // admin 설정에서 site_favicon 값 가져오기
         try {
+            debug_log('FAVICON: 데이터베이스에서 파비콘 URL 조회 시작');
+            
             // 우선 전역 $pdo 사용 시도
             global $pdo;
             $db_connection = null;
             
             if (isset($pdo)) {
+                debug_log('FAVICON: 전역 PDO 연결 사용');
                 $db_connection = $pdo;
             } else {
+                debug_log('FAVICON: 전역 PDO 없음, 직접 연결 시도');
                 // DB 연결이 없는 경우 직접 연결
                 if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/config.php')) {
                     include_once $_SERVER['DOCUMENT_ROOT'] . '/config.php';
@@ -290,7 +342,7 @@ if (!function_exists('favicon_url')) {
                     $password = empty($db_pass) ? null : $db_pass;
                     
                     $db_connection = new PDO(
-                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4",
+                        "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4;unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock",
                         $db_user,
                         $password,
                         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
@@ -300,36 +352,68 @@ if (!function_exists('favicon_url')) {
             
             if ($db_connection) {
                 $table_prefix = env('DB_PREFIX', '');
-                $stmt = $db_connection->prepare("SELECT setting_value FROM {$table_prefix}site_settings WHERE setting_key = 'site_favicon'");
+                $full_table_name = $table_prefix . 'site_settings';
+                $query = "SELECT setting_value FROM {$full_table_name} WHERE setting_key = 'site_favicon' AND setting_value IS NOT NULL AND setting_value != '' ORDER BY updated_at DESC, id DESC LIMIT 1";
+                
+                debug_log('FAVICON: 테이블 정보', [
+                    'db_prefix' => $table_prefix,
+                    'full_table_name' => $full_table_name,
+                    'query' => $query
+                ]);
+                
+                debug_db_query('FAVICON: 파비콘 설정 조회', $query);
+                
+                $stmt = $db_connection->prepare($query);
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                debug_log('FAVICON: 데이터베이스 쿼리 결과', ['result' => $result]);
                 
                 if ($result && !empty($result['setting_value'])) {
                     // 상대 경로로 저장된 경우 절대 URL로 변환
                     $favicon_path = $result['setting_value'];
+                    debug_log('FAVICON: DB에서 가져온 파비콘 경로', ['path' => $favicon_path]);
+                    
                     if (!preg_match('/^https?:\/\//', $favicon_path)) {
                         // BASE_PATH를 고려한 URL 생성
                         $base_path = env('BASE_PATH', '');
                         $favicon_url = $base_path . '/' . ltrim($favicon_path, '/');
                         
+                        debug_log('FAVICON: 상대 경로를 절대 URL로 변환', [
+                            'base_path' => $base_path,
+                            'favicon_url' => $favicon_url
+                        ]);
+                        
                         // 브라우저 캐시 방지를 위해 파일 수정 시간을 쿼리 파라미터로 추가
                         $file_path = $_SERVER['DOCUMENT_ROOT'] . $favicon_url;
+                        debug_file_check('FAVICON: 파비콘 파일 존재 여부 확인', $file_path);
+                        
                         if (file_exists($file_path)) {
                             $favicon_url .= '?v=' . filemtime($file_path);
+                            debug_log('FAVICON: 캐시 버스터 추가', ['final_url' => $favicon_url]);
                         }
                         
+                        debug_asset_load('favicon', $file_path, $favicon_url);
                         return $favicon_url;
                     }
+                    debug_log('FAVICON: 절대 URL 반환', ['url' => $favicon_path]);
                     return $favicon_path;
+                } else {
+                    debug_log('FAVICON: 데이터베이스에서 파비콘 설정을 찾을 수 없음');
                 }
+            } else {
+                debug_log('FAVICON: 데이터베이스 연결 실패');
             }
         } catch (Exception $e) {
             // DB 오류 시 fallback 사용
+            debug_log('FAVICON: 예외 발생, fallback 사용', ['error' => $e->getMessage()]);
             error_log("favicon_url() DB error: " . $e->getMessage());
         }
         
         // fallback: 기본 파비콘 경로
-        return '/' . $fallback_filename;
+        $fallback_url = '/' . $fallback_filename;
+        debug_log('FAVICON: fallback URL 사용', ['url' => $fallback_url]);
+        return $fallback_url;
     }
 }
 

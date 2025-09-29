@@ -171,6 +171,14 @@ if (class_exists('SecurityManager')) {
     SecurityManager::initialize();
 }
 
+// 디버그 로거 초기화 (헬퍼 로드 전에)
+$debugLoggerFile = PROJECT_BASE_PATH . '/includes/DebugLogger.php';
+if (file_exists($debugLoggerFile)) {
+    require_once $debugLoggerFile;
+    $debugLogger = DebugLogger::getInstance();
+    debug_log('Bootstrap: Debug Logger 초기화 완료');
+}
+
 // 유틸리티 함수 로드
 $helperFiles = [
     'config_helpers.php',
@@ -180,22 +188,33 @@ $helperFiles = [
     'menu_helpers.php',
 ];
 
+debug_log('Bootstrap: 헬퍼 파일 로드 시작', ['files' => $helperFiles]);
+
 foreach ($helperFiles as $helper) {
     $helperFile = PROJECT_BASE_PATH . '/includes/' . $helper;
     if (file_exists($helperFile)) {
+        debug_log("Bootstrap: 헬퍼 파일 로드 중 - $helper");
         require_once $helperFile;
+        debug_log("Bootstrap: 헬퍼 파일 로드 완료 - $helper");
+    } else {
+        debug_log("Bootstrap: 헬퍼 파일 없음 - $helper", ['path' => $helperFile]);
     }
 }
 
 // 레거시 호환성 코드 제거 완료 - 모던 아키텍처 사용
 
 // 데이터베이스 연결 초기화
+debug_log('Bootstrap: 데이터베이스 연결 시작');
+
 if (class_exists('DatabaseManager')) {
     try {
+        debug_log('Bootstrap: DatabaseManager 사용하여 연결 초기화');
         DatabaseManager::initialize();
         // 전역 PDO 변수 설정 (레거시 호환성)
         $GLOBALS['pdo'] = DatabaseManager::getConnection();
+        debug_log('Bootstrap: DatabaseManager 연결 성공');
     } catch (Exception $e) {
+        debug_log('Bootstrap: DatabaseManager 연결 실패', ['error' => $e->getMessage()]);
         if (env('APP_DEBUG')) {
             die('데이터베이스 연결 실패: ' . $e->getMessage());
         } else {

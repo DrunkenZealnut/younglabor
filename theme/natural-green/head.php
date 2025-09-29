@@ -26,6 +26,11 @@ $theme = getNaturalGreenTheme();
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>" />
     <meta property="og:description" content="<?= htmlspecialchars($metaDescription, ENT_QUOTES, 'UTF-8') ?>" />
+    
+    <?php if (function_exists('favicon_url')): ?>
+    <link rel="icon" type="image/x-icon" href="<?= favicon_url() ?>" />
+    <link rel="shortcut icon" type="image/x-icon" href="<?= favicon_url() ?>" />
+    <?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />

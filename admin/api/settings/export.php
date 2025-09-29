@@ -34,9 +34,9 @@ try {
             'version' => '1.0',
             'export_date' => date('Y-m-d H:i:s'),
             'source_url' => env('APP_URL', ''),
-            'generator' => 'HOPEC Website Setup Wizard'
+            'generator' => ' Website Setup Wizard'
         ],
-        
+
         'project' => [
             'name' => env('PROJECT_NAME', ''),
             'slug' => rtrim(env('DB_PREFIX', ''), '_'),

@@ -38,7 +38,7 @@ if (defined('APP_ENV') && APP_ENV === 'development') {
 require_once __DIR__ . '/../../includes/path_helper.php';
 
 // 첨부파일 헬퍼 함수 로드
-require_once __DIR__ . '/../../attachment_helpers.php';
+require_once __DIR__ . '/attachment_helpers.php';
 
 if (defined('APP_ENV') && APP_ENV === 'development') {
     error_log("attachment_helpers.php 파일을 로드한 후");
