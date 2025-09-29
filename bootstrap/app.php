@@ -179,6 +179,18 @@ if (file_exists($debugLoggerFile)) {
     debug_log('Bootstrap: Debug Logger 초기화 완료');
 }
 
+// 페이지 로딩 디버그 로거 초기화
+$pageDebugLoggerFile = PROJECT_BASE_PATH . '/includes/page_debug_logger.php';
+if (file_exists($pageDebugLoggerFile)) {
+    require_once $pageDebugLoggerFile;
+    page_debug_log('BOOTSTRAP_START', [
+        'file' => basename(__FILE__),
+        'app_env' => env('APP_ENV', 'unknown'),
+        'app_debug' => env('APP_DEBUG', false),
+        'php_version' => PHP_VERSION
+    ]);
+}
+
 // 유틸리티 함수 로드
 $helperFiles = [
     'config_helpers.php',
@@ -194,10 +206,13 @@ foreach ($helperFiles as $helper) {
     $helperFile = PROJECT_BASE_PATH . '/includes/' . $helper;
     if (file_exists($helperFile)) {
         debug_log("Bootstrap: 헬퍼 파일 로드 중 - $helper");
+        page_debug_include($helperFile);
         require_once $helperFile;
         debug_log("Bootstrap: 헬퍼 파일 로드 완료 - $helper");
+        page_debug_log('HELPER_LOADED', ['file' => $helper]);
     } else {
         debug_log("Bootstrap: 헬퍼 파일 없음 - $helper", ['path' => $helperFile]);
+        page_debug_log('HELPER_MISSING', ['file' => $helper, 'path' => $helperFile]);
     }
 }
 
@@ -209,12 +224,15 @@ debug_log('Bootstrap: 데이터베이스 연결 시작');
 if (class_exists('DatabaseManager')) {
     try {
         debug_log('Bootstrap: DatabaseManager 사용하여 연결 초기화');
+        page_debug_log('DB_CONNECTION_START', ['method' => 'DatabaseManager']);
         DatabaseManager::initialize();
         // 전역 PDO 변수 설정 (레거시 호환성)
         $GLOBALS['pdo'] = DatabaseManager::getConnection();
         debug_log('Bootstrap: DatabaseManager 연결 성공');
+        page_debug_log('DB_CONNECTION_SUCCESS', ['method' => 'DatabaseManager']);
     } catch (Exception $e) {
         debug_log('Bootstrap: DatabaseManager 연결 실패', ['error' => $e->getMessage()]);
+        page_debug_error('DB_CONNECTION_FAILED', ['method' => 'DatabaseManager', 'error' => $e->getMessage()]);
         if (env('APP_DEBUG')) {
             die('데이터베이스 연결 실패: ' . $e->getMessage());
         } else {
@@ -304,3 +322,15 @@ $GLOBALS['younglabor_app'] = [
     'timezone' => 'Asia/Seoul',
     'debug' => env('APP_DEBUG', false),
 ];
+
+// Bootstrap 완료 로그
+page_debug_log('BOOTSTRAP_COMPLETE', [
+    'included_files_count' => count(get_included_files()),
+    'memory_usage' => memory_get_usage(),
+    'classes_loaded' => get_declared_classes()
+]);
+
+// 페이지 종료 시 자동으로 로그 출력
+register_shutdown_function(function() {
+    page_debug_finish();
+});

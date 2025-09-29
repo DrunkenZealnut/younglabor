@@ -36,29 +36,56 @@ class DatabaseManager
      * SELECT 쿼리 실행
      */
     public static function select($sql, $params = []) {
+        $start_time = microtime(true);
         $pdo = self::getConnection();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $execution_time = microtime(true) - $start_time;
+        
+        // 페이지 로딩 로그 기록
+        if (function_exists('page_debug_db_query')) {
+            page_debug_db_query($sql, $params, $execution_time);
+        }
+        
+        return $result;
     }
     
     /**
      * INSERT/UPDATE/DELETE 쿼리 실행
      */
     public static function execute($sql, $params = []) {
+        $start_time = microtime(true);
         $pdo = self::getConnection();
         $stmt = $pdo->prepare($sql);
-        return $stmt->execute($params);
+        $result = $stmt->execute($params);
+        $execution_time = microtime(true) - $start_time;
+        
+        // 페이지 로딩 로그 기록
+        if (function_exists('page_debug_db_query')) {
+            page_debug_db_query($sql, $params, $execution_time);
+        }
+        
+        return $result;
     }
     
     /**
      * 단일 행 조회
      */
     public static function fetch($sql, $params = []) {
+        $start_time = microtime(true);
         $pdo = self::getConnection();
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $execution_time = microtime(true) - $start_time;
+        
+        // 페이지 로딩 로그 기록
+        if (function_exists('page_debug_db_query')) {
+            page_debug_db_query($sql, $params, $execution_time);
+        }
+        
+        return $result;
     }
     
     /**
