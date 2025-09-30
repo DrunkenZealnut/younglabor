@@ -140,8 +140,17 @@ class PageDebugLogger {
             $log_entry['memory_peak'],
             json_encode($log_entry['data'], JSON_UNESCAPED_UNICODE)
         );
-        
-        file_put_contents($this->log_file_path, $formatted_log, FILE_APPEND | LOCK_EX);
+
+        // 로그 디렉토리 존재 확인 (안전장치)
+        $log_dir = dirname($this->log_file_path);
+        if (!is_dir($log_dir)) {
+            @mkdir($log_dir, 0755, true);
+        }
+
+        // 파일 쓰기 가능 여부 확인
+        if (is_writable($log_dir) || is_writable($this->log_file_path)) {
+            @file_put_contents($this->log_file_path, $formatted_log, FILE_APPEND | LOCK_EX);
+        }
     }
     
     

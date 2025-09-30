@@ -19,11 +19,11 @@ return [
         'connections' => [
             'mysql' => [
                 'driver' => 'mysql',
-                'host' => '127.0.0.1',
-                'port' => 3306,
-                'database' => 'hopec',
-                'username' => 'root',
-                'password' => '',
+                'host' => $_ENV['DB_HOST'] ?? '127.0.0.1',
+                'port' => $_ENV['DB_PORT'] ?? 3306,
+                'database' => $_ENV['DB_DATABASE'] ?? 'hopec',
+                'username' => $_ENV['DB_USERNAME'] ?? 'root',
+                'password' => $_ENV['DB_PASSWORD'] ?? '',
                 'charset' => 'utf8mb4',
                 'collation' => 'utf8mb4_unicode_ci',
                 'options' => [

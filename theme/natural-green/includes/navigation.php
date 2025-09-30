@@ -197,6 +197,35 @@ try {
     ];
 }
 
+// 로그인 상태 확인
+$is_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'];
+$user_name = '';
+$user_id = '';
+$user_profile_image = '';
+
+if ($is_logged_in) {
+    $user_name = $_SESSION['mb_name'] ?? '사용자';
+    $user_id = $_SESSION['mb_id'] ?? '';
+
+    // 프로필 이미지 조회 (소셜 로그인 대비)
+    if (isset($_SESSION['mb_no']) && $pdo) {
+        try {
+            $stmt = $pdo->prepare("
+                SELECT mb_profile_image
+                FROM " . get_table_name('members') . "
+                WHERE mb_no = ?
+            ");
+            $stmt->execute([$_SESSION['mb_no']]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result && !empty($result['mb_profile_image'])) {
+                $user_profile_image = $result['mb_profile_image'];
+            }
+        } catch (Exception $e) {
+            error_log('Profile image loading error: ' . $e->getMessage());
+        }
+    }
+}
+
 // 링크 매핑 정의 - app_url() 함수 사용으로 환경별 자동 처리
 $introBoardLinks = [
   '희망씨는' => app_url('about/about.php'),
@@ -227,7 +256,7 @@ $communityLinks = [
 
 <header class="bg-white border-bottom shadow-sm backdrop-blur-md" id="main-header" style="background-color: rgba(255, 255, 255, 0.95); border-color: var(--border); position: fixed; top: 0; left: 0; right: 0; z-index: 1050;" role="banner">
   <div class="container-xl px-3">
-    <div class="d-flex align-items-center h-100" style="min-height: 5rem;">
+    <div class="d-flex align-items-center justify-content-between h-100" style="min-height: 5rem;">
       <!-- 로고와 메뉴바 그룹 (가운데 정렬) -->
       <div class="d-flex align-items-center gap-4 mx-auto">
         <!-- 로고 -->
@@ -255,21 +284,21 @@ $communityLinks = [
         <nav class="d-none d-md-flex gap-1 overflow-auto overflow-md-visible" role="navigation" aria-label="주요 메뉴">
         <?php foreach ($menus as $mi => $menu): ?>
           <div class="nav-item dropdown position-relative">
-            <button class="d-flex align-items-center gap-1 text-forest-600 hover:text-lime-600 py-2 px-3 rounded nav-button-hover transition-all" 
+            <button class="d-flex align-items-center gap-1 text-forest-600 hover:text-lime-600 py-2 px-3 rounded nav-button-hover transition-all"
                     style="border: none; outline: none; background: transparent;"
                     aria-haspopup="true" aria-expanded="false">
               <span><?php echo htmlspecialchars($menu['title']); ?></span>
               <i data-lucide="chevron-down" class="w-4 h-4 text-forest-500"></i>
             </button>
-            
-            <div class="dropdown-menu position-absolute rounded shadow-lg border py-2 z-50" 
+
+            <div class="dropdown-menu position-absolute rounded shadow-lg border py-2 z-50"
                  style="top: 100%; left: 0; min-width: 10rem; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease; pointer-events: none; border-color: var(--border);">
               <?php foreach ($menu['items'] as $item): ?>
                 <?php
                   $itemTitle = is_array($item) ? $item['title'] : $item;
                   $itemSlug = is_array($item) ? $item['slug'] : null;
                   $boardId = is_array($item) && isset($item['board_id']) ? $item['board_id'] : null;
-                  
+
                   if ($boardId) {
                     // 게시판 ID를 실제 목록 페이지로 매핑
                     $board_routes = [
@@ -297,7 +326,7 @@ $communityLinks = [
                     }
                   }
                 ?>
-                <a href="<?php echo htmlspecialchars($href); ?>" 
+                <a href="<?php echo htmlspecialchars($href); ?>"
                    class="d-block px-3 py-2 text-decoration-none text-forest-600 hover:text-lime-600 dropdown-item transition-colors">
                   <?php echo htmlspecialchars($itemTitle); ?>
                 </a>
@@ -308,8 +337,57 @@ $communityLinks = [
         </nav>
       </div>
 
+      <!-- 데스크톱 로그인/사용자 영역 -->
+      <div class="d-none d-md-flex align-items-center gap-2 ms-3">
+        <?php if ($is_logged_in): ?>
+          <!-- 로그인 상태: 사용자 드롭다운 -->
+          <div class="nav-item dropdown position-relative">
+            <button class="d-flex align-items-center gap-2 text-forest-600 hover:text-lime-600 py-2 px-3 rounded nav-button-hover transition-all border-0"
+                    style="background: transparent;"
+                    aria-haspopup="true" aria-expanded="false">
+              <?php if (!empty($user_profile_image)): ?>
+                <img src="<?php echo htmlspecialchars($user_profile_image); ?>"
+                     alt="프로필"
+                     class="rounded-circle"
+                     style="width: 28px; height: 28px; object-fit: cover;">
+              <?php else: ?>
+                <i data-lucide="user-circle" class="w-5 h-5"></i>
+              <?php endif; ?>
+              <span class="fw-medium"><?php echo htmlspecialchars($user_name); ?></span>
+              <i data-lucide="chevron-down" class="w-4 h-4"></i>
+            </button>
+
+            <div class="dropdown-menu position-absolute rounded shadow-lg border py-2 z-50"
+                 style="top: 100%; right: 0; min-width: 10rem; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease; pointer-events: none; border-color: var(--border);">
+              <a href="<?php echo app_url('member/mypage.php'); ?>"
+                 class="d-block px-3 py-2 text-decoration-none text-forest-600 hover:text-lime-600 dropdown-item transition-colors">
+                <i data-lucide="user" class="w-4 h-4 me-2" style="display: inline-block; vertical-align: middle;"></i>
+                마이페이지
+              </a>
+              <a href="<?php echo app_url('auth/logout.php'); ?>"
+                 class="d-block px-3 py-2 text-decoration-none text-forest-600 hover:text-lime-600 dropdown-item transition-colors">
+                <i data-lucide="log-out" class="w-4 h-4 me-2" style="display: inline-block; vertical-align: middle;"></i>
+                로그아웃
+              </a>
+            </div>
+          </div>
+        <?php else: ?>
+          <!-- 로그아웃 상태: 로그인/회원가입 버튼 -->
+          <a href="<?php echo app_url('auth/login.php'); ?>"
+             class="btn btn-outline-success btn-sm px-3 py-2 rounded text-decoration-none transition-all"
+             style="font-size: 0.875rem; font-weight: 500; border-color: var(--primary); color: var(--primary);">
+            로그인
+          </a>
+          <a href="<?php echo app_url('auth/register.php'); ?>"
+             class="btn btn-success btn-sm px-3 py-2 rounded text-decoration-none transition-all"
+             style="font-size: 0.875rem; font-weight: 500; background-color: var(--primary); border-color: var(--primary); color: white;">
+            회원가입
+          </a>
+        <?php endif; ?>
+      </div>
+
       <!-- 모바일 메뉴 토글 -->
-      <div class="position-absolute end-0 top-50 translate-middle-y d-md-none" style="right: 1rem;">
+      <div class="d-md-none">
         <button type="button"
                 id="mobileMenuToggle"
                 class="d-inline-flex align-items-center justify-content-center rounded text-forest-600 bg-transparent border-0"
@@ -336,7 +414,55 @@ $communityLinks = [
       <span class="close-fallback" style="display: none; font-size: 20px; line-height: 1;">×</span>
     </button>
   </div>
-  <nav class="px-2 py-2 overflow-y-auto max-h-[calc(100svh-56px)]" role="navigation" aria-label="모바일 메뉴">
+
+  <!-- 모바일 로그인 상태 영역 -->
+  <div class="px-4 py-3 bg-light border-bottom" style="border-color: var(--border);">
+    <?php if ($is_logged_in): ?>
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <?php if (!empty($user_profile_image)): ?>
+            <img src="<?php echo htmlspecialchars($user_profile_image); ?>"
+                 alt="프로필"
+                 class="rounded-circle"
+                 style="width: 40px; height: 40px; object-fit: cover;">
+          <?php else: ?>
+            <div class="rounded-circle bg-success d-flex align-items-center justify-content-center"
+                 style="width: 40px; height: 40px; color: white; font-weight: 600;">
+              <?php echo mb_substr($user_name, 0, 1); ?>
+            </div>
+          <?php endif; ?>
+          <div>
+            <div class="fw-medium text-forest-600"><?php echo htmlspecialchars($user_name); ?></div>
+            <div class="text-sm text-muted"><?php echo htmlspecialchars($user_id); ?></div>
+          </div>
+        </div>
+        <a href="<?php echo app_url('auth/logout.php'); ?>"
+           class="btn btn-sm btn-outline-danger">
+          로그아웃
+        </a>
+      </div>
+      <div class="mt-2">
+        <a href="<?php echo app_url('member/mypage.php'); ?>"
+           class="btn btn-sm btn-outline-success w-100">
+          <i data-lucide="user" class="w-4 h-4 me-1" style="display: inline-block; vertical-align: middle;"></i>
+          마이페이지
+        </a>
+      </div>
+    <?php else: ?>
+      <div class="d-flex gap-2">
+        <a href="<?php echo app_url('auth/login.php'); ?>"
+           class="btn btn-outline-success btn-sm flex-fill">
+          로그인
+        </a>
+        <a href="<?php echo app_url('auth/register.php'); ?>"
+           class="btn btn-success btn-sm flex-fill">
+          회원가입
+        </a>
+      </div>
+    <?php endif; ?>
+  </div>
+
+  <nav class="px-2 py-2 overflow-y-auto" style="max-height: calc(100vh - 180px);" role="navigation" aria-label="모바일 메뉴">
     <?php foreach ($menus as $mi => $menu): ?>
       <div class="border-b border-lime-200">
         <button
@@ -622,6 +748,77 @@ body > .container-fluid,
 [data-lucide]:not(:empty) + .hamburger-fallback,
 [data-lucide]:not(:empty) + .close-fallback {
     display: none !important;
+}
+
+/* 로그인/회원가입 버튼 스타일 */
+.btn-outline-success:hover {
+    background-color: var(--primary) !important;
+    color: white !important;
+    border-color: var(--primary) !important;
+}
+
+.btn-success:hover {
+    background-color: var(--success) !important;
+    border-color: var(--success) !important;
+    opacity: 0.9;
+}
+
+/* 사용자 드롭다운 메뉴 호버 효과 */
+.nav-item.dropdown:hover .dropdown-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+}
+
+/* 사용자 드롭다운 메뉴 위치 조정 (오른쪽 정렬) */
+.nav-item.dropdown .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+/* 모바일 로그인 영역 스타일 */
+.bg-light {
+    background-color: rgba(248, 249, 250, 0.8) !important;
+}
+
+/* 버튼 전환 효과 */
+.transition-all {
+    transition: all 0.2s ease !important;
+}
+
+/* 텍스트 크기 유틸리티 */
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+/* 반응형: 태블릿 */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .btn-sm {
+        font-size: 0.8rem !important;
+        padding: 0.35rem 0.7rem !important;
+    }
+
+    .nav-item.dropdown button {
+        font-size: 0.9rem !important;
+    }
+}
+
+/* 반응형: 모바일 로그인 영역 */
+@media (max-width: 767px) {
+    .btn-sm {
+        font-size: 0.85rem !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    .rounded-circle {
+        width: 36px !important;
+        height: 36px !important;
+    }
 }
 </style>
 
