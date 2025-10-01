@@ -136,16 +136,6 @@ function get_file_icon($file_type) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <style>
-    body { min-height: 100vh; display: flex; font-family: 'Segoe UI', sans-serif; }
-    .sidebar { width: 220px; background-color: #343a40; color: white; min-height: 100vh; }
-    .sidebar a { color: white; padding: 12px 16px; display: block; text-decoration: none; transition: background-color 0.2s; }
-    .sidebar a:hover { background-color: #495057; }
-    .sidebar a.active { background-color: #0d6efd; }
-    .main-content { flex-grow: 1; padding: 30px; background-color: #f8f9fa; }
-    .sidebar .logo { font-weight: bold; font-size: 1.3rem; padding: 16px; border-bottom: 1px solid #495057; }
-    .table th { border-top: none; }
-  </style>
 </head>
 <body>
 <?php 

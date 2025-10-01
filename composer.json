@@ -1,0 +1,14 @@
+{
+    "name": "younglabor/website",
+    "description": "청년노동자인권센터 웹사이트",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}

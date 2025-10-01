@@ -350,35 +350,101 @@ function validateUserData($data) {
 }
 
 /**
- * 이메일 인증 메일 발송
+ * 이메일 인증 메일 발송 (PHPMailer 사용)
  */
 function sendVerificationEmail($email, $name, $token) {
+    require_once __DIR__ . '/../includes/email_helpers.php';
+
     try {
-        // 기본적인 이메일 발송 설정
+        // 인증 URL 생성
         $site_url = $_ENV['APP_URL'] ?? 'http://localhost';
         $verification_url = $site_url . '/auth/verify.php?token=' . $token;
 
-        $subject = '[청년노동자인권센터] 이메일 인증을 완료해주세요';
+        $mail = getMailer();
+        if (!$mail) {
+            error_log('Failed to initialize PHPMailer');
+            return false;
+        }
 
-        $message = "
-        안녕하세요, {$name}님!
+        $mail->addAddress($email, $name);
+        $mail->isHTML(true);
+        $mail->Subject = '[청년노동자인권센터] 이메일 인증을 완료해주세요';
 
-        청년노동자인권센터에 가입해주셔서 감사합니다.
+        $orgName = $_ENV['ORG_NAME_FULL'] ?? '청년노동자인권센터';
+        $contactEmail = $_ENV['CONTACT_EMAIL'] ?? 'admin@younglabor.kr';
 
-        아래 링크를 클릭하여 이메일 인증을 완료해주세요:
-        {$verification_url}
+        $mail->Body = "
+        <html>
+        <head>
+            <style>
+                body { font-family: 'Malgun Gothic', sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #84cc16; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+                .content { background: #f9f9f9; padding: 30px; border: 1px solid #ddd; border-top: none; }
+                .button { display: inline-block; padding: 15px 30px; background: #84cc16; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; }
+                .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>{$orgName}</h1>
+                    <p>회원가입 이메일 인증</p>
+                </div>
+                <div class='content'>
+                    <p>안녕하세요, <strong>{$name}</strong>님!</p>
+                    <p>{$orgName}에 가입해주셔서 감사합니다.</p>
+                    <p>아래 버튼을 클릭하여 이메일 인증을 완료해주세요:</p>
 
-        이 링크는 24시간 동안 유효합니다.
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='{$verification_url}' class='button'>이메일 인증하기</a>
+                    </div>
 
-        감사합니다.
-        청년노동자인권센터
+                    <p style='text-align: center; color: #666; font-size: 14px;'>
+                        또는 아래 링크를 복사하여 브라우저에 붙여넣으세요:<br>
+                        <a href='{$verification_url}' style='color: #84cc16;'>{$verification_url}</a>
+                    </p>
+
+                    <p style='text-align: center; color: #999; font-size: 12px; margin-top: 20px;'>
+                        이 인증 링크는 <strong>24시간</strong> 동안 유효합니다.
+                    </p>
+
+                    <hr style='margin: 30px 0; border: none; border-top: 1px solid #ddd;'>
+
+                    <p style='font-size: 12px; color: #999;'>
+                        본인이 가입하지 않았다면 이 메일을 무시하세요.<br>
+                        문의사항이 있으시면 {$contactEmail}로 연락주세요.
+                    </p>
+                </div>
+                <div class='footer'>
+                    <p>{$orgName}</p>
+                    <p>{$site_url}</p>
+                </div>
+            </div>
+        </body>
+        </html>
         ";
 
-        $headers = "From: noreply@younglabor.org\r\n";
-        $headers .= "Reply-To: support@younglabor.org\r\n";
-        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+        $mail->AltBody = "
+{$orgName} 회원가입 이메일 인증
 
-        return mail($email, $subject, $message, $headers);
+안녕하세요, {$name}님!
+
+{$orgName}에 가입해주셔서 감사합니다.
+
+아래 링크를 클릭하여 이메일 인증을 완료해주세요:
+{$verification_url}
+
+이 인증 링크는 24시간 동안 유효합니다.
+본인이 가입하지 않았다면 이 메일을 무시하세요.
+
+{$orgName}
+{$site_url}
+        ";
+
+        $mail->send();
+        return true;
+
     } catch (Exception $e) {
         error_log('Email sending error: ' . $e->getMessage());
         return false;

@@ -448,56 +448,15 @@ $active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'general';
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <!-- Admin 반응형 CSS -->
+  <link rel="stylesheet" href="<?= get_base_path() ?>/admin/assets/css/admin-responsive.css">
   <!-- 컬러 피커 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css">
   <!-- 코드 에디터 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/lib/codemirror.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.3/theme/dracula.min.css">
   <style>
-    body {
-      min-height: 100vh;
-      display: flex;
-      font-family: 'Segoe UI', sans-serif;
-    }
-    .sidebar {
-      width: 220px;
-      min-width: 220px;
-      max-width: 220px;
-      flex-shrink: 0;
-      background-color: #343a40;
-      color: white;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .sidebar a {
-      color: white;
-      padding: 12px 16px;
-      display: block;
-      text-decoration: none;
-      transition: background-color 0.2s;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-    .sidebar a:hover {
-      background-color: #495057;
-    }
-    .main-content {
-      flex-grow: 1;
-      flex-basis: 0;
-      padding: 30px;
-      background-color: #f8f9fa;
-      min-width: 0;
-    }
-    .sidebar .logo {
-      font-weight: bold;
-      font-size: 1.3rem;
-      padding: 16px;
-      border-bottom: 1px solid #495057;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
+    /* 페이지별 추가 스타일 */
     .nav-tabs .nav-link {
       border: none;
       border-bottom: 2px solid transparent;

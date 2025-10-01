@@ -312,34 +312,15 @@ $page_title = '새 게시글 작성';
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <style>
-    body { min-height: 100vh; display: flex; font-family: 'Segoe UI', sans-serif; }
-    .sidebar { width: 220px; background-color: #343a40; color: white; min-height: 100vh; }
-    .sidebar a { color: white; padding: 12px 16px; display: block; text-decoration: none; transition: background-color 0.2s; }
-    .sidebar a:hover { background-color: #495057; }
-    .sidebar a.active { background-color: #0d6efd; }
-    .main-content { flex-grow: 1; padding: 30px; background-color: #f8f9fa; }
-    .sidebar .logo { font-weight: bold; font-size: 1.3rem; padding: 16px; border-bottom: 1px solid #495057; }
-  </style>
+  <link rel="stylesheet" href="<?= get_base_path() ?>/admin/assets/css/admin-responsive.css">
 </head>
 <body>
 
-<!-- 사이드바 -->
-<div class="sidebar">
-  <div class="logo">
-    <a href="<?= admin_url('index.php') ?>" class="text-white text-decoration-none"><?= htmlspecialchars($admin_title) ?></a>
-  </div>
-  <a href="<?= admin_url('index.php') ?>">📊 대시보드</a>
-  <a href="<?= admin_url('posts/list.php') ?>" class="active">📝 게시글 관리</a>
-  <a href="<?= admin_url('boards/list.php') ?>">📋 게시판 관리</a>
-  <a href="<?= admin_url('menu/list.php') ?>">🧭 메뉴 관리</a>
-  <a href="<?= admin_url('inquiries/list.php') ?>">📬 문의 관리</a>
-  <a href="<?= admin_url('events/list.php') ?>">📅 행사 관리</a>
-  <a href="<?= admin_url('files/list.php') ?>">📎 자료실 관리</a>
-  <a href="<?= admin_url('settings/site_settings.php') ?>">🎨 디자인 설정</a>
-  <a href="<?= admin_url('system/performance.php') ?>">⚡ 성능 모니터링</a>
-  <a href="<?= admin_url('logout.php') ?>">🚪 로그아웃</a>
-</div>
+<?php
+// 현재 메뉴 설정 (게시글 관리 활성화)
+$current_menu = 'posts';
+include '../includes/sidebar.php';
+?>
 
 <!-- 메인 컨텐츠 -->
 <div class="main-content">

@@ -134,41 +134,10 @@ $colorInfo = [
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    
+    <!-- Admin 반응형 CSS -->
+    <link rel="stylesheet" href="<?= get_base_path() ?>/admin/assets/css/admin-responsive.css">
+
     <style>
-        /* 표준 사이드바 스타일 */
-        body { min-height: 100vh; display: flex; font-family: 'Segoe UI', sans-serif; }
-        .sidebar { 
-            width: 220px; 
-            min-width: 220px; 
-            background-color: #343a40; 
-            color: white; 
-            min-height: 100vh; 
-            position: fixed;
-            top: 0;
-            left: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-        .sidebar a { 
-            color: white; 
-            padding: 12px 16px; 
-            display: block; 
-            text-decoration: none; 
-            transition: background-color 0.2s;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .sidebar a:hover { background-color: #495057; }
-        .sidebar a.active { background-color: #0d6efd; }
-        .main-content { flex-grow: 1; flex-basis: 0; padding: 30px; background-color: #f8f9fa; min-width: 0; margin-left: 220px; }
-        .sidebar .logo { 
-            font-weight: bold; 
-            font-size: 1.3rem; 
-            padding: 16px; 
-            border-bottom: 1px solid #495057; 
-        }
-        
         /* 색상 설정 전용 스타일 */
         .color-preview {
             width: 40px;

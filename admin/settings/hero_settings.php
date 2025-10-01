@@ -26,49 +26,14 @@ foreach ($heroSections as $section) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>히어로 섹션 관리 - 관리자</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Admin 반응형 CSS -->
+    <link rel="stylesheet" href="<?= get_base_path() ?>/admin/assets/css/admin-responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
     <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        
-        .sidebar {
-            width: 220px;
-            min-width: 220px;
-            max-width: 220px;
-            flex-shrink: 0;
-            background-color: #343a40;
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .sidebar a {
-            color: white;
-            padding: 12px 16px;
-            display: block;
-            text-decoration: none;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-        }
-        
-        .sidebar a:hover {
-            background-color: #495057;
-        }
-        
-        .sidebar a.active {
-            background-color: #0d6efd;
-        }
-        
+        /* 페이지별 추가 스타일 */
         .main-content {
-            flex-grow: 1;
             flex-basis: 0;
-            padding: 30px;
             background-color: #f8f9fa;
             min-width: 0;
         }
