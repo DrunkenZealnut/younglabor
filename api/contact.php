@@ -24,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // 설정 로드
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../includes/Database.php';
 require_once __DIR__ . '/../includes/Mailer.php';
 
 /**
@@ -66,6 +67,29 @@ if (empty($message)) {
 $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 $email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
 $message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
+
+// 데이터베이스에 문의 저장 (이스케이프 전 원문 사용)
+$dbSaved = false;
+try {
+    $rawName = trim($data['name'] ?? '');
+    $rawEmail = trim($data['email'] ?? '');
+    $rawMessage = trim($data['message'] ?? '');
+    $db = Database::getInstance()->getConnection();
+    $stmt = $db->prepare("
+        INSERT INTO inquiries (name, email, message, status, ip_address, user_agent, created_at)
+        VALUES (:name, :email, :message, 'new', :ip, :ua, NOW())
+    ");
+    $stmt->execute([
+        ':name' => $rawName,
+        ':email' => $rawEmail,
+        ':message' => $rawMessage,
+        ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ':ua' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 512),
+    ]);
+    $dbSaved = true;
+} catch (\Throwable $e) {
+    error_log('Contact DB save error: ' . $e->getMessage());
+}
 
 // 수신자 이메일 (SITE_EMAIL)
 $toEmail = env('SITE_EMAIL', '');

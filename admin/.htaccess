@@ -1,0 +1,32 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /younglabor/admin/
+
+    # api 폴더는 직접 접근 허용
+    RewriteRule ^api/ - [L]
+
+    # .php 확장자 숨김
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.+)$ $1.php [L,QSA]
+</IfModule>
+
+# 내부 파일 직접 접근 차단
+<Files "config.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
+
+<Files "auth.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
+
+<Files "helpers.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
