@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../includes/Database.php';
+require_once __DIR__ . '/../includes/PageTracker.php';
+PageTracker::track('청소년노동안전동아리 신청');
 ?>
 <!DOCTYPE html>
 <html lang="ko">

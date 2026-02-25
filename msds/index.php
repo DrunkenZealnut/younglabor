@@ -5,6 +5,9 @@
  */
 
 require_once __DIR__ . '/config.php';
+require_once dirname(__DIR__) . '/includes/Database.php';
+require_once dirname(__DIR__) . '/includes/PageTracker.php';
+PageTracker::track('MSDS 화학물질 검색');
 require_once __DIR__ . '/MsdsApiClient.php';
 
 $client = new MsdsApiClient();

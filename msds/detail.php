@@ -5,6 +5,9 @@
  */
 
 require_once __DIR__ . '/config.php';
+require_once dirname(__DIR__) . '/includes/Database.php';
+require_once dirname(__DIR__) . '/includes/PageTracker.php';
+PageTracker::track('MSDS 상세정보');
 require_once __DIR__ . '/MsdsApiClient.php';
 
 $client = new MsdsApiClient();

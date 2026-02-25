@@ -1,5 +1,8 @@
 <?php
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/Database.php';
+require_once __DIR__ . '/includes/PageTracker.php';
+PageTracker::track('메인페이지');
 ?>
 <!DOCTYPE html>
 <html lang="ko">
