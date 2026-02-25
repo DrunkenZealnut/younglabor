@@ -1,7 +1,7 @@
 <?php
 /**
  * 청년노동자인권센터 설정 파일
- * .env 파일에서 테마 색상 및 사이트 정보 로드
+ * .env → .env.local / .env.production 환경별 설정 로드
  */
 
 // .env 파일 로드
