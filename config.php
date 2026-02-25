@@ -49,8 +49,20 @@ if (!function_exists('env')) {
     }
 }
 
-// .env 파일 로드
+// .env 파일 로드 (공통 → 환경별 순서로 로드, 환경별이 공통을 오버라이드)
 loadEnv(__DIR__ . '/.env');
+
+// 환경별 .env 로드 (자동 감지)
+$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
+$isLocalHost = (
+    strpos($host, 'localhost') !== false ||
+    strpos($host, '127.0.0.1') !== false ||
+    strpos($host, '.local') !== false ||
+    strpos($host, '192.168.') !== false ||
+    strpos($host, '10.0.') !== false
+);
+$envFile = $isLocalHost ? '/.env.local' : '/.env.production';
+loadEnv(__DIR__ . $envFile);
 
 /**
  * 환경 감지 함수

@@ -193,6 +193,10 @@ class Mailer
      */
     public static function buildContactEmailBody(string $name, string $email, string $message): string
     {
+        $primary = env('THEME_PRIMARY', '#5BC0DE');
+        $primaryDark = env('THEME_PRIMARY_DARK', '#3498DB');
+        $siteName = env('SITE_NAME', '청년노동자인권센터');
+
         $html = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -201,10 +205,10 @@ class Mailer
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #5BC0DE, #3498DB); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .header { background: linear-gradient(135deg, {$primary}, {$primaryDark}); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
         .content { background: #f9f9f9; padding: 20px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px; }
         .field { margin-bottom: 15px; }
-        .label { font-weight: bold; color: #5BC0DE; margin-bottom: 5px; }
+        .label { font-weight: bold; color: {$primary}; margin-bottom: 5px; }
         .value { background: white; padding: 10px; border-radius: 4px; border: 1px solid #e0e0e0; }
         .message-box { white-space: pre-wrap; }
         .footer { margin-top: 20px; font-size: 12px; color: #888; text-align: center; }
@@ -213,7 +217,7 @@ class Mailer
 <body>
     <div class="container">
         <div class="header">
-            <h2 style="margin: 0;">청년노동자인권센터 문의</h2>
+            <h2 style="margin: 0;">{$siteName} 문의</h2>
         </div>
         <div class="content">
             <div class="field">
@@ -230,7 +234,7 @@ class Mailer
             </div>
         </div>
         <div class="footer">
-            이 메일은 청년노동자인권센터 웹사이트 문의 폼에서 발송되었습니다.
+            이 메일은 {$siteName} 웹사이트 문의 폼에서 발송되었습니다.
         </div>
     </div>
 </body>
@@ -245,6 +249,10 @@ HTML;
      */
     public static function buildCommitteeEmailBody(string $name, string $school, string $grade, string $major, string $phone, string $email, string $motivation): string
     {
+        $primary = env('THEME_PRIMARY', '#5BC0DE');
+        $primaryDark = env('THEME_PRIMARY_DARK', '#3498DB');
+        $siteName = env('SITE_NAME', '청년노동자인권센터');
+
         $emailDisplay = $email ? "<a href=\"mailto:{$email}\">{$email}</a>" : '<span style="color:#999;">미입력</span>';
         $html = <<<HTML
 <!DOCTYPE html>
@@ -254,10 +262,10 @@ HTML;
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: linear-gradient(135deg, #5BC0DE, #3498DB); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+        .header { background: linear-gradient(135deg, {$primary}, {$primaryDark}); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
         .content { background: #f9f9f9; padding: 20px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 8px 8px; }
         .field { margin-bottom: 15px; }
-        .label { font-weight: bold; color: #5BC0DE; margin-bottom: 5px; }
+        .label { font-weight: bold; color: {$primary}; margin-bottom: 5px; }
         .value { background: white; padding: 10px; border-radius: 4px; border: 1px solid #e0e0e0; }
         .row { display: flex; gap: 15px; }
         .row .field { flex: 1; }
@@ -307,7 +315,7 @@ HTML;
             </div>
         </div>
         <div class="footer">
-            이 메일은 청년노동자인권센터 웹사이트 참견위원회 신청 폼에서 발송되었습니다.
+            이 메일은 {$siteName} 웹사이트 참견위원회 신청 폼에서 발송되었습니다.
         </div>
     </div>
 </body>

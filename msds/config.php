@@ -4,9 +4,15 @@
  * 산업안전보건공단 물질안전보건자료 API 설정
  */
 
-// API 설정
-define('MSDS_API_ENDPOINT', 'https://msds.kosha.or.kr/openapi/service/msdschem');
-define('MSDS_API_KEY', '3da39a9ef6e7aa6040a2446bf81662f67b368ddc20ae75b8d86ce3622a288418');
+// 메인 config.php 로드 (env() 헬퍼 및 .env 환경변수 사용)
+$mainConfigPath = dirname(__DIR__) . '/config.php';
+if (file_exists($mainConfigPath)) {
+    require_once $mainConfigPath;
+}
+
+// MSDS API 설정 (.env에서 로드)
+define('MSDS_API_ENDPOINT', env('MSDS_API_ENDPOINT', 'https://msds.kosha.or.kr/openapi/service/msdschem'));
+define('MSDS_API_KEY', env('MSDS_API_KEY', ''));
 
 // 검색 조건 코드
 define('MSDS_SEARCH_BY_NAME', 0);      // 국문명
@@ -44,37 +50,31 @@ $MSDS_DETAIL_SECTIONS = [
     '16' => '그 밖의 참고사항'
 ];
 
-// 메인 config.php 로드 (BASE_URL 및 .env 환경변수 사용)
-$mainConfigPath = dirname(__DIR__) . '/config.php';
-if (file_exists($mainConfigPath)) {
-    require_once $mainConfigPath;
-}
-
 // Vision API Provider 설정 (claude 또는 openai)
 if (!defined('VISION_API_PROVIDER')) {
-    define('VISION_API_PROVIDER', function_exists('env') ? env('VISION_API_PROVIDER', 'openai') : (getenv('VISION_API_PROVIDER') ?: 'openai'));
+    define('VISION_API_PROVIDER', env('VISION_API_PROVIDER', 'openai'));
 }
 
 // Claude Vision API 설정
 if (!defined('CLAUDE_API_KEY')) {
-    define('CLAUDE_API_KEY', function_exists('env') ? env('CLAUDE_API_KEY', '') : (getenv('CLAUDE_API_KEY') ?: ''));
+    define('CLAUDE_API_KEY', env('CLAUDE_API_KEY', ''));
 }
 if (!defined('CLAUDE_API_URL')) {
-    define('CLAUDE_API_URL', 'https://api.anthropic.com/v1/messages');
+    define('CLAUDE_API_URL', env('CLAUDE_API_URL', 'https://api.anthropic.com/v1/messages'));
 }
 if (!defined('CLAUDE_MODEL')) {
-    define('CLAUDE_MODEL', 'claude-sonnet-4-20250514');
+    define('CLAUDE_MODEL', env('CLAUDE_MODEL', 'claude-sonnet-4-20250514'));
 }
 
 // OpenAI Vision API 설정
 if (!defined('OPENAI_API_KEY')) {
-    define('OPENAI_API_KEY', function_exists('env') ? env('OPENAI_API_KEY', '') : (getenv('OPENAI_API_KEY') ?: ''));
+    define('OPENAI_API_KEY', env('OPENAI_API_KEY', ''));
 }
 if (!defined('OPENAI_API_URL')) {
-    define('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions');
+    define('OPENAI_API_URL', env('OPENAI_API_URL', 'https://api.openai.com/v1/chat/completions'));
 }
 if (!defined('OPENAI_MODEL')) {
-    define('OPENAI_MODEL', 'gpt-4o-mini'); // 비용 효율적인 Vision 모델
+    define('OPENAI_MODEL', env('OPENAI_MODEL', 'gpt-4o-mini'));
 }
 
 // 환경별 URL 생성 헬퍼 (메인 config.php와 통합)
@@ -84,9 +84,10 @@ if (!function_exists('getMsdsUrl')) {
         if (function_exists('url')) {
             $msdsBase = url('msds');
         } else {
-            // 폴백: 직접 환경 감지
+            // 폴백: 환경변수 기반 감지
             $isProduction = (strpos($_SERVER['HTTP_HOST'] ?? '', '.kr') !== false);
-            $msdsBase = $isProduction ? 'https://younglabor.kr/msds' : 'http://localhost:8080/younglabor/msds';
+            $base = $isProduction ? env('BASE_URL_PRODUCTION', 'https://younglabor.kr') : env('BASE_URL_LOCAL', 'http://localhost:8080/younglabor');
+            $msdsBase = rtrim($base, '/') . '/msds';
         }
 
         // 페이지 경로 처리 (index, detail 등)

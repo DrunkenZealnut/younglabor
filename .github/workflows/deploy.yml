@@ -1,0 +1,42 @@
+name: Deploy to Cafe24
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: FTP Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Sync files to Cafe24 FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .gitignore
+            CLAUDE.md
+            .claude/**
+            .env
+            .env.local
+            .DS_Store
+            **/.DS_Store
+            msds/.expo/**
+            consult/**
+            data/**
+            **/*.log
+            msds/logs/**
+            test-config.php
+            msds/TROUBLESHOOTING.md
+            msds/OPENAPI_MSDS_20240603.pdf

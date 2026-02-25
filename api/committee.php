@@ -33,10 +33,20 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input = json_decode(file_get_contents('php://input'), true);
 
-if (!$input) {
+if (!is_array($input)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => '잘못된 요청 데이터입니다.']);
     exit;
+}
+
+// 문자열 필드 타입 검증
+$stringFields = ['name', 'school', 'grade', 'major', 'phone', 'motivation', 'email'];
+foreach ($stringFields as $field) {
+    if (array_key_exists($field, $input) && !is_string($input[$field])) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => '올바른 요청 데이터 형식이 아닙니다.']);
+        exit;
+    }
 }
 
 // 필수 필드 검증
@@ -65,13 +75,15 @@ if (!in_array($input['grade'], $allowedGrades, true)) {
     exit;
 }
 
-// 연락처 형식 검증
-$phone = preg_replace('/[^0-9\-]/', '', $input['phone']);
-if (strlen($phone) < 10) {
+// 연락처 형식 검증 (숫자 기준 10~11자리)
+$phoneRaw = trim($input['phone']);
+$phoneDigits = preg_replace('/\D/', '', $phoneRaw);
+if (strlen($phoneDigits) < 10 || strlen($phoneDigits) > 11) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => '올바른 연락처를 입력해주세요.']);
     exit;
 }
+$phone = preg_replace('/[^0-9\-]/', '', $phoneRaw);
 
 // 이메일 검증 (입력된 경우만)
 $email = trim($input['email'] ?? '');
@@ -110,7 +122,7 @@ try {
     if ($toEmail) {
         $mailer = new Mailer();
         if ($mailer->isConfigured()) {
-            $subject = "[청년노동자인권센터] 참견위원회 신청 - {$safeName}";
+            $subject = "[{$site['name']}] 참견위원회 신청 - {$safeName}";
             $body = Mailer::buildCommitteeEmailBody(
                 htmlspecialchars($safeName, ENT_QUOTES, 'UTF-8'),
                 htmlspecialchars($safeSchool, ENT_QUOTES, 'UTF-8'),

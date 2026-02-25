@@ -82,7 +82,7 @@ if (!$mailer->isConfigured()) {
     sendResponse(['success' => false, 'message' => '메일 서버 설정이 완료되지 않았습니다.'], 500);
 }
 
-$subject = "[청년노동자인권센터] {$name}님의 문의";
+$subject = "[{$site['name']}] {$name}님의 문의";
 $body = Mailer::buildContactEmailBody($name, $email, $message);
 
 $result = $mailer->send($toEmail, $subject, $body, $email);
