@@ -12,38 +12,63 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Deploy via FTP
+      - name: Get changed files
+        id: changes
+        run: |
+          # 변경된 파일 목록 추출 (제외 패턴 적용)
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- \
+            ':!.github' ':!.gitignore' ':!CLAUDE.md' ':!.claude' \
+            ':!.env' ':!.env.local' ':!.DS_Store' \
+            ':!msds/.expo' ':!consult' ':!data' \
+            ':!test-config.php' ':!msds/TROUBLESHOOTING.md' \
+            ':!msds/OPENAPI_MSDS_20240603.pdf' \
+            2>/dev/null || echo "")
+
+          if [ -z "$CHANGED" ]; then
+            echo "No deployable files changed."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changed files:"
+            echo "$CHANGED"
+            echo "$CHANGED" > /tmp/changed_files.txt
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy changed files via FTP
+        if: steps.changes.outputs.has_changes == 'true'
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_USER: ${{ secrets.FTP_USERNAME }}
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          lftp -c "
-            set ftp:passive-mode yes
-            set ftp:ssl-allow no
-            set mirror:use-pget-n 5
-            open -u $FTP_USER,$FTP_PASS $FTP_HOST
-            lcd $GITHUB_WORKSPACE
-            cd /www
-            mirror --reverse --only-newer --verbose \
-              --exclude-glob .git/ \
-              --exclude-glob .github/ \
-              --exclude-glob .gitignore \
-              --exclude-glob .DS_Store \
-              --exclude-glob CLAUDE.md \
-              --exclude-glob .claude/ \
-              --exclude-glob .env \
-              --exclude-glob .env.local \
-              --exclude-glob 'msds/.expo/' \
-              --exclude-glob consult/ \
-              --exclude-glob data/ \
-              --exclude-glob '*.log' \
-              --exclude-glob test-config.php \
-              --exclude-glob 'msds/TROUBLESHOOTING.md' \
-              --exclude-glob 'msds/OPENAPI_MSDS_20240603.pdf'
-            bye
-          "
+          # 변경된 파일만 개별 업로드
+          CMDS="set ftp:passive-mode yes; set ftp:ssl-allow no; open -u $FTP_USER,$FTP_PASS $FTP_HOST; cd /www"
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+
+            # 파일이 삭제된 경우
+            if [ ! -f "$file" ]; then
+              echo "Deleting: $file"
+              CMDS="$CMDS; rm -f \"$file\" 2>/dev/null"
+              continue
+            fi
+
+            # 디렉토리 생성 후 파일 업로드
+            DIR=$(dirname "$file")
+            if [ "$DIR" != "." ]; then
+              CMDS="$CMDS; mkdir -p \"$DIR\""
+            fi
+            echo "Uploading: $file"
+            CMDS="$CMDS; put \"$file\" -o \"$file\""
+          done < /tmp/changed_files.txt
+
+          CMDS="$CMDS; bye"
+          lftp -c "$CMDS"
+          echo "Deploy complete!"
