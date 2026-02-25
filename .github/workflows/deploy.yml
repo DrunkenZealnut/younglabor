@@ -21,7 +21,6 @@ jobs:
       - name: Get changed files
         id: changes
         run: |
-          # 변경된 파일 목록 추출 (제외 패턴 적용)
           CHANGED=$(git diff --name-only HEAD~1 HEAD -- \
             ':!.github' ':!.gitignore' ':!CLAUDE.md' ':!.claude' \
             ':!.env' ':!.env.local' ':!.DS_Store' \
@@ -47,18 +46,34 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USERNAME }}
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          # 변경된 파일만 개별 업로드 (FTP 홈 디렉토리 = /www)
+          # lftp 스크립트 생성
+          SCRIPT=$(mktemp)
+          cat > "$SCRIPT" << 'LFTP_HEADER'
+          set ftp:passive-mode yes
+          set ftp:ssl-allow no
+          LFTP_HEADER
+
+          echo "open -u $FTP_USER,$FTP_PASS $FTP_HOST" >> "$SCRIPT"
+
           while IFS= read -r file; do
             [ -z "$file" ] && continue
 
             if [ ! -f "$file" ]; then
               echo "Deleting: $file"
-              lftp -c "set ftp:passive-mode yes; set ftp:ssl-allow no; open -u $FTP_USER,$FTP_PASS $FTP_HOST; rm -f \"$file\"" 2>/dev/null || true
+              echo "rm -f \"$file\"" >> "$SCRIPT"
             else
               DIR=$(dirname "$file")
               echo "Uploading: $file"
-              lftp -c "set ftp:passive-mode yes; set ftp:ssl-allow no; open -u $FTP_USER,$FTP_PASS $FTP_HOST; mkdir -p -f \"$DIR\"; put \"$file\" -o \"$file\""
+              if [ "$DIR" != "." ]; then
+                echo "mkdir -p -f \"$DIR\"" >> "$SCRIPT"
+              fi
+              echo "put \"$file\" -o \"$file\"" >> "$SCRIPT"
             fi
           done < /tmp/changed_files.txt
 
+          echo "bye" >> "$SCRIPT"
+
+          # 실행
+          lftp -f "$SCRIPT"
+          rm -f "$SCRIPT"
           echo "Deploy complete!"
