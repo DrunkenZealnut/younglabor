@@ -590,14 +590,14 @@ require_once __DIR__ . '/config.php';
                     </p>
                 </a>
 
-                <div class="service-card fade-in">
+                <a href="<?php echo url('committee'); ?>" class="service-card clickable fade-in">
                     <div class="service-icon">👥</div>
                     <h3 class="service-title">청소년 참견위원회</h3>
                     <p class="service-desc">
                         청소년 당사자가 직접 참여합니다<br>
                         노동안전보건을 공부하고 알리는 활동
                     </p>
-                </div>
+                </a>
             </div>
         </div>
     </section>
