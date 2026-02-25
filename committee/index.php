@@ -459,17 +459,17 @@ require_once __DIR__ . '/../config.php';
                     document.getElementById('applyForm').style.display = 'none';
                     document.getElementById('successMessage').classList.add('show');
                     window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return false;
                 } else {
                     alert(result.message || '오류가 발생했습니다.');
                 }
             } catch (error) {
                 console.error('신청 오류:', error);
                 alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = originalText;
             }
 
+            btn.disabled = false;
+            btn.textContent = originalText;
             return false;
         }
     </script>

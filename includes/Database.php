@@ -6,6 +6,12 @@ class Database {
     private static $instance = null;
     private $pdo;
 
+    private function __clone() {}
+
+    public function __wakeup() {
+        throw new \RuntimeException('Cannot unserialize singleton');
+    }
+
     private function __construct() {
         $host = env('DB_HOST', 'localhost');
         $dbname = env('DB_NAME', 'younglabor');
