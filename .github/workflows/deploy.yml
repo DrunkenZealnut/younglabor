@@ -12,33 +12,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
-      - name: Sync files to Cafe24 FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /www/
-          protocol: ftp
-          dangerous-clean-slate: true
-          exclude: |
-            **/.git*
-            **/.git*/**
-            .gitignore
-            CLAUDE.md
-            .claude/**
-            .env
-            .env.local
-            .DS_Store
-            **/.DS_Store
-            msds/.expo/**
-            consult/**
-            data/**
-            **/*.log
-            msds/logs/**
-            test-config.php
-            msds/TROUBLESHOOTING.md
-            msds/OPENAPI_MSDS_20240603.pdf
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      - name: Deploy via FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          lftp -c "
+            set ftp:passive-mode yes
+            set ftp:ssl-allow no
+            set mirror:use-pget-n 5
+            open -u $FTP_USER,$FTP_PASS $FTP_HOST
+            lcd $GITHUB_WORKSPACE
+            cd /www
+            mirror --reverse --only-newer --verbose \
+              --exclude-glob .git/ \
+              --exclude-glob .github/ \
+              --exclude-glob .gitignore \
+              --exclude-glob .DS_Store \
+              --exclude-glob CLAUDE.md \
+              --exclude-glob .claude/ \
+              --exclude-glob .env \
+              --exclude-glob .env.local \
+              --exclude-glob 'msds/.expo/' \
+              --exclude-glob consult/ \
+              --exclude-glob data/ \
+              --exclude-glob '*.log' \
+              --exclude-glob test-config.php \
+              --exclude-glob 'msds/TROUBLESHOOTING.md' \
+              --exclude-glob 'msds/OPENAPI_MSDS_20240603.pdf'
+            bye
+          "
