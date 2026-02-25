@@ -47,28 +47,18 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USERNAME }}
           FTP_PASS: ${{ secrets.FTP_PASSWORD }}
         run: |
-          # 변경된 파일만 개별 업로드
-          CMDS="set ftp:passive-mode yes; set ftp:ssl-allow no; open -u $FTP_USER,$FTP_PASS $FTP_HOST; cd /www"
-
+          # 변경된 파일만 개별 업로드 (FTP 홈 디렉토리 = /www)
           while IFS= read -r file; do
             [ -z "$file" ] && continue
 
-            # 파일이 삭제된 경우
             if [ ! -f "$file" ]; then
               echo "Deleting: $file"
-              CMDS="$CMDS; rm -f \"$file\" 2>/dev/null"
-              continue
+              lftp -c "set ftp:passive-mode yes; set ftp:ssl-allow no; open -u $FTP_USER,$FTP_PASS $FTP_HOST; rm -f \"$file\"" 2>/dev/null || true
+            else
+              DIR=$(dirname "$file")
+              echo "Uploading: $file"
+              lftp -c "set ftp:passive-mode yes; set ftp:ssl-allow no; open -u $FTP_USER,$FTP_PASS $FTP_HOST; mkdir -p -f \"$DIR\"; put \"$file\" -o \"$file\""
             fi
-
-            # 디렉토리 생성 후 파일 업로드
-            DIR=$(dirname "$file")
-            if [ "$DIR" != "." ]; then
-              CMDS="$CMDS; mkdir -p \"$DIR\""
-            fi
-            echo "Uploading: $file"
-            CMDS="$CMDS; put \"$file\" -o \"$file\""
           done < /tmp/changed_files.txt
 
-          CMDS="$CMDS; bye"
-          lftp -c "$CMDS"
           echo "Deploy complete!"
