@@ -6,8 +6,8 @@ require_once __DIR__ . '/../config.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="청소년 참견위원회 신청 - <?php echo htmlspecialchars($site['name']); ?>">
-    <title>청소년 참견위원회 신청 - <?php echo htmlspecialchars($site['name']); ?></title>
+    <meta name="description" content="청소년노동안전동아리 신청 - <?php echo htmlspecialchars($site['name']); ?>">
+    <title>청소년노동안전동아리 신청 - <?php echo htmlspecialchars($site['name']); ?></title>
     <base href="<?php echo htmlspecialchars($site['base_url']); ?>/">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <style>
@@ -342,7 +342,7 @@ require_once __DIR__ . '/../config.php';
         <!-- Hero -->
         <div class="page-hero">
             <div class="page-hero-icon">👥</div>
-            <h1 class="page-title">청소년 참견위원회</h1>
+            <h1 class="page-title">청소년노동안전동아리</h1>
             <p class="page-desc">
                 청소년 당사자가 직접 참여하여<br>
                 노동안전보건을 공부하고 알리는 활동에 함께해주세요.
@@ -351,7 +351,7 @@ require_once __DIR__ . '/../config.php';
 
         <!-- Info -->
         <div class="info-box">
-            <h3>참견위원회란?</h3>
+            <h3>청소년노동안전동아리란?</h3>
             <ul>
                 <li>청소년이 노동안전보건 현장에 직접 참여합니다</li>
                 <li>안전한 일터를 만들기 위한 공부와 활동을 합니다</li>
@@ -402,7 +402,7 @@ require_once __DIR__ . '/../config.php';
 
                 <div class="form-group">
                     <label for="motivation">참여동기 <span class="required">*</span></label>
-                    <textarea id="motivation" name="motivation" placeholder="참견위원회에 참여하고 싶은 이유를 자유롭게 작성해주세요." required maxlength="2000"></textarea>
+                    <textarea id="motivation" name="motivation" placeholder="청소년노동안전동아리에 참여하고 싶은 이유를 자유롭게 작성해주세요." required maxlength="2000"></textarea>
                 </div>
 
                 <button type="submit" class="btn-submit" id="submitBtn">신청하기</button>

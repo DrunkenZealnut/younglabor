@@ -245,7 +245,7 @@ HTML;
     }
 
     /**
-     * HTML 이메일 본문 생성 (참견위원회 신청용)
+     * HTML 이메일 본문 생성 (청소년노동안전동아리 신청용)
      */
     public static function buildCommitteeEmailBody(string $name, string $school, string $grade, string $major, string $phone, string $email, string $motivation): string
     {
@@ -276,7 +276,7 @@ HTML;
 <body>
     <div class="container">
         <div class="header">
-            <h2 style="margin: 0;">청소년 참견위원회 신청</h2>
+            <h2 style="margin: 0;">청소년 청소년노동안전동아리 신청</h2>
         </div>
         <div class="content">
             <div class="row">
@@ -315,7 +315,7 @@ HTML;
             </div>
         </div>
         <div class="footer">
-            이 메일은 {$siteName} 웹사이트 참견위원회 신청 폼에서 발송되었습니다.
+            이 메일은 {$siteName} 웹사이트 청소년노동안전동아리 신청 폼에서 발송되었습니다.
         </div>
     </div>
 </body>

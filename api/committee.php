@@ -1,6 +1,6 @@
 <?php
 /**
- * 청소년 참견위원회 신청 API
+ * 청소년 청소년노동안전동아리 신청 API
  */
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/Database.php';
@@ -122,7 +122,7 @@ try {
     if ($toEmail) {
         $mailer = new Mailer();
         if ($mailer->isConfigured()) {
-            $subject = "[{$site['name']}] 참견위원회 신청 - {$safeName}";
+            $subject = "[{$site['name']}] 청소년노동안전동아리 신청 - {$safeName}";
             $body = Mailer::buildCommitteeEmailBody(
                 htmlspecialchars($safeName, ENT_QUOTES, 'UTF-8'),
                 htmlspecialchars($safeSchool, ENT_QUOTES, 'UTF-8'),
@@ -142,7 +142,7 @@ try {
 
     echo json_encode([
         'success' => true,
-        'message' => '참견위원회 신청이 완료되었습니다! 검토 후 연락드리겠습니다.',
+        'message' => '청소년노동안전동아리 신청이 완료되었습니다! 검토 후 연락드리겠습니다.',
     ]);
 
 } catch (\Throwable $e) {
