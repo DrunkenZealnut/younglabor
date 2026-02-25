@@ -1,7 +1,7 @@
 <?php
 /**
  * 청년노동자인권센터 설정 파일
- * .env → .env.local / .env.production 환경별 설정 로드
+ * .env(공통) → .env.local / .env.production(환경별) 순서로 로드
  */
 
 // .env 파일 로드
