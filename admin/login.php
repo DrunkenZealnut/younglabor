@@ -31,8 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $remaining = ceil((strtotime($user['locked_until']) - time()) / 60);
             $error = "계정이 잠겨있습니다. {$remaining}분 후 다시 시도해주세요.";
         } elseif (!password_verify($password, $user['password_hash'])) {
-            // 로그인 실패 횟수 증가
-            $attempts = $user['login_attempts'] + 1;
+            // 잠금 만료 후 첫 시도면 카운터 리셋
+            $attempts = $user['login_attempts'];
+            if ($user['locked_until'] && strtotime($user['locked_until']) <= time()) {
+                $attempts = 0;
+            }
+            $attempts += 1;
             $lockUntil = null;
             if ($attempts >= ADMIN_MAX_LOGIN_ATTEMPTS) {
                 $lockUntil = date('Y-m-d H:i:s', time() + ADMIN_LOCKOUT_DURATION);
@@ -41,10 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([':attempts' => $attempts, ':lock' => $lockUntil, ':id' => $user['id']]);
 
             if ($lockUntil) {
-                $error = '로그인 시도 횟수를 초과하여 계정이 15분간 잠겼습니다.';
+                $lockMinutes = (int)(ADMIN_LOCKOUT_DURATION / 60);
+                $error = "로그인 시도 횟수를 초과하여 계정이 {$lockMinutes}분간 잠겼습니다.";
             } else {
-                $remaining = ADMIN_MAX_LOGIN_ATTEMPTS - $attempts;
-                $error = "사용자명 또는 비밀번호가 올바르지 않습니다. (남은 시도: {$remaining}회)";
+                $error = '사용자명 또는 비밀번호가 올바르지 않습니다.';
             }
         } else {
             // 로그인 성공

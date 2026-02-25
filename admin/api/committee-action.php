@@ -14,7 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 // CSRF 검증
 $csrfToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-if (!hash_equals($_SESSION[ADMIN_CSRF_TOKEN_NAME] ?? '', $csrfToken)) {
+$sessionToken = $_SESSION[ADMIN_CSRF_TOKEN_NAME] ?? '';
+if ($sessionToken === '' || $csrfToken === '' || !hash_equals($sessionToken, $csrfToken)) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'CSRF 토큰이 유효하지 않습니다.'], JSON_UNESCAPED_UNICODE);
     exit;
@@ -44,6 +45,12 @@ try {
         ':note' => $note ?: null,
         ':id' => $id,
     ]);
+
+    if ($stmt->rowCount() === 0) {
+        http_response_code(404);
+        echo json_encode(['success' => false, 'message' => '해당 신청을 찾을 수 없습니다.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 
     $statusLabels = ['reviewed' => '검토됨', 'accepted' => '승인', 'rejected' => '거절', 'pending' => '대기중'];
     echo json_encode([

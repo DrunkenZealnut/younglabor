@@ -19,8 +19,12 @@ function csrfField(): string {
 }
 
 function verifyCsrfToken(): bool {
+    $sessionToken = $_SESSION[ADMIN_CSRF_TOKEN_NAME] ?? '';
     $token = $_POST[ADMIN_CSRF_TOKEN_NAME] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    return hash_equals($_SESSION[ADMIN_CSRF_TOKEN_NAME] ?? '', $token);
+    if ($sessionToken === '' || $token === '') {
+        return false;
+    }
+    return hash_equals($sessionToken, $token);
 }
 
 function getUnreadContactCount(): int {

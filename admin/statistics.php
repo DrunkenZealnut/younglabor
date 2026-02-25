@@ -147,6 +147,7 @@ async function loadChart(days) {
 
     try {
         const res = await fetch(`<?php echo url('admin/api/stats-data.php'); ?>?period=${days}`);
+        if (!res.ok) throw new Error('서버 응답 오류');
         const data = await res.json();
         if (data.success) drawChart(data.data);
     } catch (e) {

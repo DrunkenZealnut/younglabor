@@ -15,6 +15,12 @@ class PageTracker {
             return;
         }
 
+        // pageTitle이 있으면 URL에 추가 정보로 기록
+        $pageUrl = $uri;
+        if ($pageTitle !== '') {
+            $pageUrl = $uri . ' [' . $pageTitle . ']';
+        }
+
         try {
             $db = Database::getInstance()->getConnection();
             $stmt = $db->prepare("
@@ -24,7 +30,7 @@ class PageTracker {
             $stmt->execute([
                 ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
                 ':ua' => substr($ua, 0, 500),
-                ':url' => substr($uri, 0, 500),
+                ':url' => substr($pageUrl, 0, 500),
                 ':ref' => substr($_SERVER['HTTP_REFERER'] ?? '', 0, 500),
             ]);
         } catch (\Throwable $e) {

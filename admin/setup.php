@@ -4,6 +4,7 @@
  * admin_user 테이블이 비어있을 때만 접근 가능
  */
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/helpers.php';
 
 $db = Database::getInstance()->getConnection();
 
@@ -18,16 +19,20 @@ $error = '';
 $success = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken()) {
+        $error = '잘못된 요청입니다. 페이지를 새로고침 후 다시 시도해주세요.';
+    }
+
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $passwordConfirm = $_POST['password_confirm'] ?? '';
     $name = trim($_POST['name'] ?? '');
 
-    if (empty($username) || empty($password) || empty($name)) {
+    if (!$error && (empty($username) || empty($password) || empty($name))) {
         $error = '모든 필드를 입력해주세요.';
-    } elseif (strlen($password) < 8) {
+    } elseif (!$error && strlen($password) < 8) {
         $error = '비밀번호는 8자 이상이어야 합니다.';
-    } elseif ($password !== $passwordConfirm) {
+    } elseif (!$error && $password !== $passwordConfirm) {
         $error = '비밀번호가 일치하지 않습니다.';
     } else {
         $stmt = $db->prepare("
@@ -118,6 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="error"><?php echo htmlspecialchars($error); ?></div>
             <?php endif; ?>
             <form method="POST">
+                <?php echo csrfField(); ?>
                 <div class="form-group">
                     <label>사용자명</label>
                     <input type="text" name="username" required autocomplete="username" value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>">

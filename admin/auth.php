@@ -33,8 +33,8 @@ if (!isset($_SESSION['admin_session_regenerated'])) {
 
 // 관리자 정보 로드
 $adminUser = [
-    'id' => $_SESSION['admin_user_id'],
-    'username' => $_SESSION['admin_username'],
+    'id' => $_SESSION['admin_user_id'] ?? null,
+    'username' => $_SESSION['admin_username'] ?? '',
     'name' => $_SESSION['admin_name'] ?? '',
     'role' => $_SESSION['admin_role'] ?? 'admin',
 ];

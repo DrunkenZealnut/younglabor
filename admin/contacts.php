@@ -170,6 +170,7 @@ function openDetail(id) {
     // 자동 읽음 처리
     if (inq.status === 'new') {
         markAs(id, 'processing', true);
+        inq.status = 'processing';
     }
 
     document.getElementById('modalTitle').textContent = inq.name + '님의 문의';
