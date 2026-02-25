@@ -1,0 +1,52 @@
+# 환경 설정 파일 (API 키, DB 비밀번호 포함)
+.env
+.env.*
+.env.local
+.env.*.local
+
+# 로그 파일
+*.log
+msds/logs/
+logs/
+
+# 업로드 파일 (사용자 데이터)
+data/file/notices/*
+!data/file/notices/.gitkeep
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# IDE / 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 임시 파일
+*.tmp
+*.temp
+
+# 테스트 / 디버그 파일
+test-*.php
+*-test.php
+msds/test-post-request.html
+msds/api/test.php
+msds/api/test-post.php
+
+# API 체크 (운영에서 노출 위험)
+msds/api-check.php
+
+# Expo 개발 설정
+msds/.expo/
+
+# PDF 문서 (용량 큼)
+*.pdf
+
+# Claude Code 설정
+.claude/

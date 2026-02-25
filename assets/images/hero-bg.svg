@@ -1,0 +1,58 @@
+<svg width="1920" height="1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#5BC0DE;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#87CEEB;stop-opacity:0.15" />
+    </linearGradient>
+
+    <pattern id="circuit" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <!-- 회로 패턴 - 반도체 이미지 -->
+      <circle cx="10" cy="10" r="2" fill="#5BC0DE" opacity="0.15"/>
+      <circle cx="90" cy="10" r="2" fill="#5BC0DE" opacity="0.15"/>
+      <circle cx="10" cy="90" r="2" fill="#5BC0DE" opacity="0.15"/>
+      <circle cx="90" cy="90" r="2" fill="#5BC0DE" opacity="0.15"/>
+      <circle cx="50" cy="50" r="3" fill="#3498DB" opacity="0.2"/>
+
+      <line x1="10" y1="10" x2="50" y2="50" stroke="#5BC0DE" stroke-width="1" opacity="0.1"/>
+      <line x1="90" y1="10" x2="50" y2="50" stroke="#5BC0DE" stroke-width="1" opacity="0.1"/>
+      <line x1="10" y1="90" x2="50" y2="50" stroke="#5BC0DE" stroke-width="1" opacity="0.1"/>
+      <line x1="90" y1="90" x2="50" y2="50" stroke="#5BC0DE" stroke-width="1" opacity="0.1"/>
+
+      <!-- 작은 사각형들 - 칩 이미지 -->
+      <rect x="30" y="30" width="8" height="8" fill="#87CEEB" opacity="0.12" rx="1"/>
+      <rect x="62" y="30" width="8" height="8" fill="#87CEEB" opacity="0.12" rx="1"/>
+      <rect x="30" y="62" width="8" height="8" fill="#87CEEB" opacity="0.12" rx="1"/>
+      <rect x="62" y="62" width="8" height="8" fill="#87CEEB" opacity="0.12" rx="1"/>
+    </pattern>
+
+    <pattern id="grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#5BC0DE" stroke-width="0.5" opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <!-- 배경 그라디언트 -->
+  <rect width="1920" height="1080" fill="url(#grad1)"/>
+
+  <!-- 회로 패턴 -->
+  <rect width="1920" height="1080" fill="url(#circuit)"/>
+
+  <!-- 그리드 패턴 -->
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+
+  <!-- 추상적인 도형들 - 역동성 표현 -->
+  <circle cx="200" cy="150" r="120" fill="#5BC0DE" opacity="0.05"/>
+  <circle cx="1720" cy="930" r="150" fill="#3498DB" opacity="0.06"/>
+  <circle cx="1600" cy="200" r="100" fill="#87CEEB" opacity="0.05"/>
+  <circle cx="300" cy="900" r="130" fill="#5BC0DE" opacity="0.05"/>
+
+  <!-- 보호 방패 형태 - 안전 상징 -->
+  <path d="M 1400 100 L 1500 100 L 1500 250 Q 1450 300 1400 250 Z"
+        fill="#3498DB" opacity="0.08" stroke="#5BC0DE" stroke-width="2" opacity="0.05"/>
+
+  <path d="M 400 800 L 500 800 L 500 950 Q 450 1000 400 950 Z"
+        fill="#87CEEB" opacity="0.08" stroke="#5BC0DE" stroke-width="2" opacity="0.05"/>
+
+  <!-- 연결선 - 네트워크/커뮤니티 -->
+  <path d="M 100 300 Q 500 200 900 400" stroke="#5BC0DE" stroke-width="2" opacity="0.06" fill="none"/>
+  <path d="M 1800 700 Q 1400 600 1000 800" stroke="#3498DB" stroke-width="2" opacity="0.06" fill="none"/>
+</svg>

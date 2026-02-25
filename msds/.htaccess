@@ -1,0 +1,28 @@
+# MSDS 디렉토리 설정
+# PHP 파일 확장자 숨기기
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # api 폴더는 rewrite 제외 (직접 접근 허용)
+    RewriteCond %{REQUEST_URI} ^/younglabor/msds/api/ [OR]
+    RewriteCond %{REQUEST_URI} api/
+    RewriteRule ^ - [L]
+
+    # 이미 존재하는 파일이나 디렉토리는 건드리지 않음
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # .php 확장자가 없는 요청에 .php 추가
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.+)$ $1.php [L,QSA]
+
+    # index.php를 기본 파일로 설정
+    DirectoryIndex index.php
+</IfModule>
+
+# UTF-8 인코딩 설정
+AddDefaultCharset UTF-8
+
+# 에러 페이지 설정
+ErrorDocument 404 /younglabor/msds/index.php
