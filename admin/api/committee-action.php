@@ -29,6 +29,11 @@ $note = trim($input['note'] ?? '');
 // 선택 삭제
 if ($action === 'bulk_delete') {
     $ids = $input['ids'] ?? [];
+    if (!is_array($ids)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'ids는 배열이어야 합니다.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
     $ids = array_filter(array_map('intval', $ids), fn($v) => $v > 0);
     if (empty($ids)) {
         http_response_code(400);

@@ -149,7 +149,7 @@ PageTracker::track('청소년노동안전동아리 신청');
             font-weight: 700;
         }
 
-        /* Sponsor */
+        /* 후원 안내 */
         .sponsor-box {
             display: flex;
             align-items: center;
@@ -157,14 +157,14 @@ PageTracker::track('청소년노동안전동아리 신청');
             gap: 0.7rem;
             margin-bottom: 2.5rem;
             padding: 1rem 1.5rem;
-            background: #fafafa;
+            background: var(--color-background-alt);
             border-radius: 12px;
-            border: 1px solid #eee;
+            border: 1px solid var(--color-border, #eee);
         }
 
         .sponsor-box span {
             font-size: 0.95rem;
-            color: #666;
+            color: var(--color-text-muted, #666);
         }
 
         .sponsor-box img {
@@ -392,7 +392,7 @@ PageTracker::track('청소년노동안전동아리 신청');
             <p style="margin-top: 1rem; font-size: 0.9rem; color: #888; font-style: italic;">* 신청자가 많을 경우 어쩔 수 없이 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
         </div>
 
-        <!-- Sponsor -->
+        <!-- 후원 안내 -->
         <div class="sponsor-box">
             <span>이 사업은</span>
             <img src="<?php echo url('assets/images/beautiful-foundation-ci.png'); ?>" alt="아름다운재단">

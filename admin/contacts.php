@@ -80,7 +80,7 @@ adminHeader();
         <table class="data-table">
             <thead>
                 <tr>
-                    <th style="width:40px"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+                    <th style="width:40px"><input type="checkbox" id="checkAll" aria-label="전체 문의 선택" onchange="toggleAll(this)"></th>
                     <th>#</th>
                     <th>이름</th>
                     <th class="hide-mobile">이메일</th>
@@ -93,7 +93,7 @@ adminHeader();
             <tbody>
             <?php foreach ($inquiries as $inq): ?>
                 <tr style="cursor:pointer;<?php echo $inq['status'] === 'new' ? 'font-weight:600' : ''; ?>" onclick="openDetail(<?php echo $inq['id']; ?>)">
-                    <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" value="<?php echo $inq['id']; ?>" onchange="updateSelection()"></td>
+                    <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" value="<?php echo $inq['id']; ?>" aria-label="<?php echo e($inq['name']); ?> 문의 선택" onchange="updateSelection()"></td>
                     <td style="color:#94a3b8"><?php echo $inq['id']; ?></td>
                     <td><?php echo e($inq['name']); ?></td>
                     <td class="hide-mobile" style="font-size:13px"><?php echo e($inq['email']); ?></td>

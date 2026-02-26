@@ -101,7 +101,7 @@ adminHeader();
         <table class="data-table">
             <thead>
                 <tr>
-                    <th style="width:40px"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
+                    <th style="width:40px"><input type="checkbox" id="checkAll" aria-label="전체 신청 선택" onchange="toggleAll(this)"></th>
                     <th>#</th>
                     <th>이름</th>
                     <th>학교</th>
@@ -116,7 +116,7 @@ adminHeader();
             <tbody>
             <?php foreach ($applications as $app): ?>
                 <tr style="cursor:pointer" onclick="openDetail(<?php echo $app['id']; ?>)">
-                    <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" value="<?php echo $app['id']; ?>" onchange="updateSelection()"></td>
+                    <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" value="<?php echo $app['id']; ?>" aria-label="<?php echo e($app['name']); ?> 신청 선택" onchange="updateSelection()"></td>
                     <td style="color:#94a3b8"><?php echo $app['id']; ?></td>
                     <td><strong><?php echo e($app['name']); ?></strong></td>
                     <td><?php echo e($app['school']); ?></td>
