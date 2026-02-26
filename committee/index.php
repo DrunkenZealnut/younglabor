@@ -81,18 +81,24 @@ PageTracker::track('청소년노동안전동아리 신청');
         .page-hero {
             text-align: center;
             margin-bottom: 3rem;
+            position: relative;
+            background: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80') center center / cover no-repeat;
+            border-radius: 20px;
+            overflow: hidden;
+            padding: 4rem 2rem;
         }
 
-        .page-hero-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2.5rem;
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(2px);
+        }
+
+        .page-hero > * {
+            position: relative;
+            z-index: 1;
         }
 
         .page-title {
@@ -344,7 +350,6 @@ PageTracker::track('청소년노동안전동아리 신청');
     <div class="page-content">
         <!-- Hero -->
         <div class="page-hero">
-            <div class="page-hero-icon">👥</div>
             <h1 class="page-title">청소년노동안전동아리</h1>
             <p class="page-desc">
                 청소년 당사자가 직접 참여하여<br>
@@ -356,10 +361,12 @@ PageTracker::track('청소년노동안전동아리 신청');
         <div class="info-box">
             <h3>청소년노동안전동아리란?</h3>
             <ul>
-                <li>청소년이 노동안전보건 현장에 직접 참여합니다</li>
-                <li>안전한 일터를 만들기 위한 공부와 활동을 합니다</li>
-                <li>또래 청소년에게 노동권리를 알리는 역할을 합니다</li>
+                <li>반도체산업현장에서 일할 때 필요한 산업안전보건지식을 자격증준비를 통해 공부합니다.</li>
+                <li>즐거운 동아리프로그램을 직접 기획하고 참여하면서 슬기로운 사회생활을 준비합니다.</li>
+                <li>방학에는 반도체관련 특강, 관련시설 견학등 특별프로그램에 참여할 수 있습니다.</li>
+                <li>모임운영에 들어가는 식사비나 음료비등을 지원합니다.</li>
             </ul>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #888; font-style: italic;">* 최대한 함께 하려 합니다만, 신청자가 많을 경우 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
         </div>
 
         <!-- Application Form -->
