@@ -93,10 +93,15 @@ adminHeader();
     <?php if (empty($applications)): ?>
         <p style="text-align:center;padding:40px 0;color:#94a3b8">신청 내역이 없습니다.</p>
     <?php else: ?>
+        <div style="display:flex;align-items:center;gap:8px;padding:0 0 12px">
+            <button class="btn btn-danger btn-sm" id="bulkDeleteBtn" style="display:none" onclick="bulkDelete()">선택 삭제</button>
+            <span id="selectedCount" style="font-size:13px;color:#64748b;display:none"></span>
+        </div>
         <div style="overflow-x:auto">
         <table class="data-table">
             <thead>
                 <tr>
+                    <th style="width:40px"><input type="checkbox" id="checkAll" onchange="toggleAll(this)"></th>
                     <th>#</th>
                     <th>이름</th>
                     <th>학교</th>
@@ -111,6 +116,7 @@ adminHeader();
             <tbody>
             <?php foreach ($applications as $app): ?>
                 <tr style="cursor:pointer" onclick="openDetail(<?php echo $app['id']; ?>)">
+                    <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" value="<?php echo $app['id']; ?>" onchange="updateSelection()"></td>
                     <td style="color:#94a3b8"><?php echo $app['id']; ?></td>
                     <td><strong><?php echo e($app['name']); ?></strong></td>
                     <td><?php echo e($app['school']); ?></td>
@@ -225,6 +231,49 @@ function closeModal() {
 document.getElementById('detailModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
 });
+
+function toggleAll(el) {
+    document.querySelectorAll('.row-check').forEach(cb => cb.checked = el.checked);
+    updateSelection();
+}
+
+function updateSelection() {
+    const checked = document.querySelectorAll('.row-check:checked');
+    const btn = document.getElementById('bulkDeleteBtn');
+    const count = document.getElementById('selectedCount');
+    if (checked.length > 0) {
+        btn.style.display = '';
+        count.style.display = '';
+        count.textContent = checked.length + '건 선택됨';
+    } else {
+        btn.style.display = 'none';
+        count.style.display = 'none';
+    }
+    const allChecks = document.querySelectorAll('.row-check');
+    document.getElementById('checkAll').checked = allChecks.length > 0 && checked.length === allChecks.length;
+}
+
+async function bulkDelete() {
+    const ids = [...document.querySelectorAll('.row-check:checked')].map(cb => Number(cb.value));
+    if (ids.length === 0) return;
+    if (!confirm(ids.length + '건의 신청을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.')) return;
+    try {
+        const res = await fetch('<?php echo url('admin/api/committee-action.php'); ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': getCsrfToken() },
+            body: JSON.stringify({ action: 'bulk_delete', ids })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast(data.message);
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showToast(data.message, 'error');
+        }
+    } catch (e) {
+        showToast('삭제 중 오류가 발생했습니다.', 'error');
+    }
+}
 
 async function updateStatus(id, action) {
     const note = document.getElementById('adminNote_' + id)?.value || '';

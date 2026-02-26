@@ -26,6 +26,30 @@ $id = (int)($input['id'] ?? 0);
 $action = $input['action'] ?? '';
 $note = trim($input['note'] ?? '');
 
+// 선택 삭제
+if ($action === 'bulk_delete') {
+    $ids = $input['ids'] ?? [];
+    $ids = array_filter(array_map('intval', $ids), fn($v) => $v > 0);
+    if (empty($ids)) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => '삭제할 항목을 선택해주세요.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    try {
+        $db = Database::getInstance()->getConnection();
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $stmt = $db->prepare("DELETE FROM inquiries WHERE id IN ({$placeholders})");
+        $stmt->execute(array_values($ids));
+        $deleted = $stmt->rowCount();
+        echo json_encode(['success' => true, 'message' => "{$deleted}건이 삭제되었습니다."], JSON_UNESCAPED_UNICODE);
+    } catch (\Throwable $e) {
+        error_log('Contact bulk delete error: ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => '삭제 중 오류가 발생했습니다.'], JSON_UNESCAPED_UNICODE);
+    }
+    exit;
+}
+
 $validActions = ['new', 'processing', 'done', 'closed'];
 if ($id <= 0 || !in_array($action, $validActions, true)) {
     http_response_code(400);
