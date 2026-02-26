@@ -1,9 +1,9 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /younglabor/admin/
 
     # api 폴더는 직접 접근 허용
-    RewriteRule ^api/ - [L]
+    RewriteCond %{REQUEST_URI} api/
+    RewriteRule ^ - [L]
 
     # .php 확장자 숨김
     RewriteCond %{REQUEST_FILENAME} !-f
