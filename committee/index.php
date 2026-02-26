@@ -366,7 +366,7 @@ PageTracker::track('청소년노동안전동아리 신청');
                 <li>방학에는 반도체관련 특강, 관련시설 견학등 특별프로그램에 참여할 수 있습니다.</li>
                 <li>모임운영에 들어가는 식사비나 음료비등을 지원합니다.</li>
             </ul>
-            <p style="margin-top: 1rem; font-size: 0.9rem; color: #888; font-style: italic;">* 최대한 함께 하려 합니다만, 신청자가 많을 경우 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: #888; font-style: italic;">* 신청자가 많을 경우 어쩔 수 없이 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
         </div>
 
         <!-- Application Form -->
