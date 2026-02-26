@@ -149,6 +149,29 @@ PageTracker::track('청소년노동안전동아리 신청');
             font-weight: 700;
         }
 
+        /* Sponsor */
+        .sponsor-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 2.5rem;
+            padding: 1rem 1.5rem;
+            background: #fafafa;
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+
+        .sponsor-box span {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .sponsor-box img {
+            height: 28px;
+            width: auto;
+        }
+
         /* Form */
         .apply-form {
             background: var(--color-background-alt);
@@ -367,6 +390,13 @@ PageTracker::track('청소년노동안전동아리 신청');
                 <li>모임운영에 들어가는 식사비나 음료비등을 지원합니다.</li>
             </ul>
             <p style="margin-top: 1rem; font-size: 0.9rem; color: #888; font-style: italic;">* 신청자가 많을 경우 어쩔 수 없이 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
+        </div>
+
+        <!-- Sponsor -->
+        <div class="sponsor-box">
+            <span>이 사업은</span>
+            <img src="<?php echo url('assets/images/beautiful-foundation-ci.png'); ?>" alt="아름다운재단">
+            <span>지원으로 운영합니다.</span>
         </div>
 
         <!-- Application Form -->
