@@ -411,7 +411,7 @@ PageTracker::track('청소년노동안전동아리 신청');
                 </div>
 
                 <div class="form-group">
-                    <label for="motivation">참여동기 <span class="required">*</span></label>
+                    <label for="motivation">참여동기(질문, 요청사항, 하고싶은 말 가능) <span class="required">*</span></label>
                     <textarea id="motivation" name="motivation" placeholder="청소년노동안전동아리에 참여하고 싶은 이유를 자유롭게 작성해주세요." required maxlength="2000"></textarea>
                 </div>
 
