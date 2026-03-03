@@ -541,37 +541,10 @@ PageTracker::track('메인페이지');
         </div>
     </section>
 
-    <!-- Mission Section -->
-    <section id="mission" class="section section-alt">
-
-            <h2 class="section-title fade-in">현장기반 노동안전보건 전문단체</h2>
-
-            <h3 class="section-title fade-in" style="font-size: 1.8rem; margin-top: 3rem; color: red;">반도체는안전하지 않다</h3>
-
-            <div class="stats-grid">
-                <div class="stat-card fade-in">
-                    <div class="stat-number">59%</div>
-                    <div class="stat-label">산재피해자 중 2030 비율</div>
-                </div>
-                <div class="stat-card fade-in">
-                    <div class="stat-number">4.24배</div>
-                    <div class="stat-label">일반인대비 20대 유방암 유병률</div>
-                </div>
-                <div class="stat-card fade-in">
-                    <div class="stat-number">70%</div>
-                    <div class="stat-label">암/희귀질환 2030 비율</div>
-                </div>
-                <div class="stat-card fade-in">
-                    <div class="stat-number">0.1%</div>
-                    <div class="stat-label">30인 미만 기업 노조조직률</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Services Section -->
     <section id="services" class="section">
         <div class="container">
+            <h2 class="section-title fade-in">현장기반 노동안전보건 전문단체</h2>
             <h2 class="section-title fade-in">핵심사업</h2>
 
             <div class="services-grid">
