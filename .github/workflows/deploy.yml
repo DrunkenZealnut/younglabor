@@ -6,21 +6,18 @@ on:
 
 jobs:
   deploy:
-    name: FTP Deploy
+    name: SFTP Deploy
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via LFTP
+      - name: Deploy via LFTP (SFTP)
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
           lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" \
             -e "
-              set ftp:passive-mode yes;
-              set ftp:ssl-allow yes;
-              set ssl:verify-certificate no;
+              set sftp:auto-confirm yes;
               set net:timeout 30;
               set net:max-retries 3;
               mirror --reverse --delete --verbose \
@@ -34,4 +31,4 @@ jobs:
                 ./ /www/younglabor/;
               bye
             " \
-            "${{ secrets.FTP_SERVER }}"
+            sftp://${{ secrets.FTP_SERVER }}
