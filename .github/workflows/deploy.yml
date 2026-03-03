@@ -13,21 +13,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /www/younglabor/
-          exclude: |
-            **/.git*
-            **/.git*/**
-            .env
-            .env.*
-            .gitignore
-            CLAUDE.md
-            admin-panel-migration.sql
-            **/logs/**
-            **/.DS_Store
-            **/node_modules/**
+      - name: Deploy via LFTP
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          lftp -u "${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }}" \
+            -e "
+              set ftp:passive-mode yes;
+              set ftp:ssl-allow yes;
+              set ssl:verify-certificate no;
+              set net:timeout 30;
+              set net:max-retries 3;
+              mirror --reverse --delete --verbose \
+                --exclude ^\.git/ \
+                --exclude ^\.env \
+                --exclude ^\.gitignore$ \
+                --exclude ^CLAUDE\.md$ \
+                --exclude ^admin-panel-migration\.sql$ \
+                --exclude ^\.DS_Store$ \
+                --exclude logs/ \
+                ./ /www/younglabor/;
+              bye
+            " \
+            "${{ secrets.FTP_SERVER }}"
