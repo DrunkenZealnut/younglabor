@@ -3,72 +3,15 @@ require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/Database.php';
 require_once __DIR__ . '/../includes/PageTracker.php';
 PageTracker::track('청소년노동안전동아리 신청');
+
+$currentPage = 'committee';
+$pageTitle = '청소년노동안전동아리 신청 - ' . $site['name'];
+$pageDescription = '청소년노동안전동아리 신청 - ' . $site['name'];
+require_once __DIR__ . '/../includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="청소년노동안전동아리 신청 - <?php echo htmlspecialchars($site['name']); ?>">
-    <title>청소년노동안전동아리 신청 - <?php echo htmlspecialchars($site['name']); ?></title>
-    <base href="<?php echo htmlspecialchars($site['base_url']); ?>/">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <style>
-        :root {
-            <?php echo getThemeCSSVariables($theme); ?>
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--color-text-dark);
-            line-height: 1.6;
             background: var(--color-background);
-            min-height: 100vh;
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            text-decoration: none;
-        }
-
-        .back-link {
-            text-decoration: none;
-            color: var(--color-primary);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: color 0.3s;
-        }
-
-        .back-link:hover {
-            color: var(--color-primary-dark);
         }
 
         /* Page Content */
@@ -361,14 +304,6 @@ PageTracker::track('청소년노동안전동아리 신청');
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-inner">
-            <a href="<?php echo url(''); ?>" class="logo"><?php echo htmlspecialchars($site['name']); ?></a>
-            <a href="<?php echo url(''); ?>#services" class="back-link">← 돌아가기</a>
-        </div>
-    </header>
-
     <!-- Page Content -->
     <div class="page-content">
         <!-- Hero -->
@@ -458,13 +393,6 @@ PageTracker::track('청소년노동안전동아리 신청');
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p class="footer-copyright">
-            &copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name']); ?>. All rights reserved.
-        </p>
-    </footer>
-
     <script>
         async function handleApply(e) {
             e.preventDefault();
@@ -513,5 +441,5 @@ PageTracker::track('청소년노동안전동아리 신청');
             return false;
         }
     </script>
-</body>
-</html>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
