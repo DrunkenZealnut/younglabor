@@ -45,14 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $payload = file_get_contents('php://input');
 $secret = $CONFIG['secret'];
 
-if (!empty($secret)) {
-    $signature = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
-    $expected = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+if (empty($secret)) {
+    deployLog("REJECTED: DEPLOY_SECRET not configured");
+    respond(false, 'Deploy secret not configured', 403);
+}
 
-    if (!hash_equals($expected, $signature)) {
-        deployLog("REJECTED: Invalid signature from {$_SERVER['REMOTE_ADDR']}");
-        respond(false, 'Invalid signature', 403);
-    }
+$signature = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';
+$expected = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+
+if (!hash_equals($expected, $signature)) {
+    deployLog("REJECTED: Invalid signature from {$_SERVER['REMOTE_ADDR']}");
+    respond(false, 'Invalid signature', 403);
 }
 
 // 이벤트 확인

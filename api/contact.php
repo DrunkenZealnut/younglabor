@@ -5,7 +5,14 @@
  */
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+// CORS: 허용된 도메인만
+$allowedOrigins = ['https://younglabor.kr', 'http://localhost:8080'];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    header('Access-Control-Allow-Origin: https://younglabor.kr');
+}
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -83,7 +90,7 @@ try {
         ':name' => $rawName,
         ':email' => $rawEmail,
         ':message' => $rawMessage,
-        ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ':ip' => preg_replace('/\.\d+$/', '.0', $_SERVER['REMOTE_ADDR'] ?? ''),
         ':ua' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 512),
     ]);
     $dbSaved = true;
