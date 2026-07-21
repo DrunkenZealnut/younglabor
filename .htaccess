@@ -5,6 +5,3 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.+)$ $1.php [L]
-
-# MSDS 서브앱 제거: 기존 URL을 홈으로 301 리다이렉트
-RewriteRule ^msds(/.*)?$ / [R=301,L]
