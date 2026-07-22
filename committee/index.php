@@ -10,66 +10,47 @@ $pageDescription = '청소년노동안전동아리 신청 - ' . $site['name'];
 require_once __DIR__ . '/../includes/header.php';
 ?>
     <style>
-        body {
-            background: var(--color-background);
-        }
-
-        /* Page Content */
+        /* 동아리 신청 페이지 전용 (공통 토큰 상속) */
         .page-content {
             max-width: 720px;
             margin: 0 auto;
-            padding: 7rem 2rem 4rem;
+            padding: clamp(3rem, 6vw, 5rem) var(--space-gutter) 4rem;
         }
 
         .page-hero {
-            text-align: center;
             margin-bottom: 3rem;
-            position: relative;
-            background: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1200&q=80') center center / cover no-repeat;
-            border-radius: 20px;
-            overflow: hidden;
-            padding: 4rem 2rem;
-        }
-
-        .page-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(2px);
-        }
-
-        .page-hero > * {
-            position: relative;
-            z-index: 1;
         }
 
         .page-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: var(--color-primary);
-            margin-bottom: 1rem;
+            font-size: var(--fs-display);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.08;
+            color: var(--color-ink-pure);
+            margin: 2rem 0 1.25rem;
         }
 
         .page-desc {
-            font-size: 1.1rem;
-            color: #666;
+            font-size: var(--fs-caption);
+            color: var(--color-gray);
             line-height: 1.8;
         }
 
-        /* Info Box */
+        /* Info Box — 헤어라인 + 라임 태그 */
         .info-box {
-            background: var(--color-background-alt);
-            border-left: 4px solid var(--color-accent);
-            border-radius: 0 12px 12px 0;
-            padding: 1.5rem;
+            border-top: var(--hairline);
+            padding: 1.5rem 0 0;
             margin-bottom: 2.5rem;
         }
 
         .info-box h3 {
-            color: var(--color-accent);
-            margin-bottom: 0.8rem;
-            font-size: 1.1rem;
+            display: inline-block;
+            background: var(--color-lime);
+            color: var(--color-ink-pure);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            padding: 0.2rem 0.6rem;
+            margin-bottom: 1rem;
         }
 
         .info-box ul {
@@ -78,36 +59,33 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         .info-box ul li {
-            padding: 0.3rem 0;
-            padding-left: 1.5rem;
+            padding: 0.3rem 0 0.3rem 1.25rem;
             position: relative;
-            color: #555;
+            color: var(--color-gray);
+            font-size: var(--fs-caption);
         }
 
         .info-box ul li::before {
-            content: '>';
+            content: '→';
             position: absolute;
             left: 0;
-            color: var(--color-primary);
-            font-weight: 700;
+            color: var(--color-ink);
         }
 
         /* 후원 안내 */
         .sponsor-box {
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 0.7rem;
             margin-bottom: 2.5rem;
-            padding: 1rem 1.5rem;
-            background: var(--color-background-alt);
-            border-radius: 12px;
-            border: 1px solid var(--color-border, #eee);
+            padding: 1rem 0;
+            border-top: var(--hairline);
+            border-bottom: var(--hairline);
         }
 
         .sponsor-box span {
-            font-size: 0.95rem;
-            color: var(--color-text-muted, #666);
+            font-size: var(--fs-caption);
+            color: var(--color-gray);
         }
 
         .sponsor-box img {
@@ -115,117 +93,45 @@ require_once __DIR__ . '/../includes/header.php';
             width: auto;
         }
 
-        /* Form */
-        .apply-form {
-            background: var(--color-background-alt);
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--color-text-dark);
-            font-size: 0.95rem;
-        }
-
+        /* Form — 공통 언더라인 시스템 상속, 페이지 고유분만 정의 */
         .form-group label .required {
-            color: #e74c3c;
+            color: var(--color-purple);
             margin-left: 2px;
         }
 
         .form-group label .optional {
-            color: #999;
+            color: var(--color-gray);
             font-weight: 400;
             font-size: 0.85rem;
             margin-left: 4px;
         }
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background: #fff;
-            height: auto;
-        }
-
         .form-group select {
-            height: 3.1rem;
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23111' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 1rem center;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(91, 192, 222, 0.15);
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: #bbb;
+            background-position: right 0 center;
         }
 
         .form-group textarea {
             min-height: 150px;
-            resize: vertical;
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 1.5rem;
         }
 
         .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: var(--color-primary);
-            color: var(--color-text-light);
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
             margin-top: 0.5rem;
-        }
-
-        .btn-submit:hover {
-            background: var(--color-primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(91, 192, 222, 0.3);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         /* Success Message */
         .success-message {
             display: none;
-            text-align: center;
-            padding: 3rem 2rem;
+            padding: 3rem 0;
         }
 
         .success-message.show {
@@ -233,81 +139,52 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         .success-icon {
-            font-size: 4rem;
+            font-size: 3rem;
             margin-bottom: 1.5rem;
         }
 
         .success-message h2 {
-            font-size: 1.8rem;
-            color: var(--color-primary);
+            font-size: var(--fs-h2);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--color-ink-pure);
             margin-bottom: 1rem;
         }
 
         .success-message p {
-            color: #666;
-            font-size: 1.1rem;
+            color: var(--color-gray);
+            font-size: 1.05rem;
             margin-bottom: 2rem;
         }
 
         .btn-home {
             display: inline-block;
             padding: 0.8rem 2rem;
-            background: var(--color-primary);
+            background: var(--color-ink);
             color: var(--color-text-light);
             text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s;
+            border-radius: 0;
+            font-weight: 500;
+            transition: background 0.2s;
         }
 
         .btn-home:hover {
-            background: var(--color-primary-dark);
-            transform: translateY(-2px);
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--color-primary-dark);
-            color: var(--color-text-light);
-            padding: 2rem;
-            text-align: center;
-            margin-top: 4rem;
-        }
-
-        .footer-copyright {
-            opacity: 0.8;
-            font-size: 0.9rem;
+            background: var(--color-purple);
         }
 
         /* Mobile */
-        @media (max-width: 768px) {
-            .page-content {
-                padding: 6rem 1rem 3rem;
-            }
-
-            .page-title {
-                font-size: 1.8rem;
-            }
-
-            .apply-form {
-                padding: 1.5rem;
-            }
-
+        @media (max-width: 799px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
-
-            .header-inner {
-                padding: 1rem;
-            }
         }
     </style>
-</head>
-<body>
+
     <!-- Page Content -->
     <div class="page-content">
         <!-- Hero -->
         <div class="page-hero">
+            <?php require __DIR__ . '/../includes/symbols.php'; ?>
             <h1 class="page-title">청소년노동안전동아리</h1>
             <p class="page-desc">
                 청소년 당사자가 직접 참여하여<br>
@@ -324,7 +201,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <li>방학에는 반도체관련 특강, 관련시설 견학등 특별프로그램에 참여할 수 있습니다.</li>
                 <li>모임운영에 들어가는 식사비나 음료비등을 지원합니다.</li>
             </ul>
-            <p style="margin-top: 1rem; font-size: 0.9rem; color: #888; font-style: italic;">* 신청자가 많을 경우 어쩔 수 없이 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--color-gray); font-style: italic;">* 신청자가 많을 경우 어쩔 수 없이 단체가 정한 기준에 따른 심사를 거칠 예정입니다. 양해 바랍니다.</p>
         </div>
 
         <!-- 후원 안내 -->

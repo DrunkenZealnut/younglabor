@@ -103,16 +103,19 @@ $baseUrlLocal = env('BASE_URL_LOCAL', 'http://localhost:8080/younglabor');
 $baseUrlProduction = env('BASE_URL_PRODUCTION', 'https://younglabor.kr');
 $baseUrl = ($environment === 'local') ? $baseUrlLocal : $baseUrlProduction;
 
-// 테마 색상 설정
+// 테마 색상 설정 (Frame & Form 디자인 시스템)
 $theme = [
-    'primary' => env('THEME_PRIMARY', '#5BC0DE'),
-    'primary_dark' => env('THEME_PRIMARY_DARK', '#3498DB'),
-    'secondary' => env('THEME_SECONDARY', '#87CEEB'),
-    'accent' => env('THEME_ACCENT', '#F0A500'),
-    'text_dark' => env('THEME_TEXT_DARK', '#333333'),
+    'primary' => env('THEME_PRIMARY', '#111111'),
+    'primary_dark' => env('THEME_PRIMARY_DARK', '#000000'),
+    'secondary' => env('THEME_SECONDARY', '#430086'),
+    'accent' => env('THEME_ACCENT', '#CEE84F'),
+    'text_dark' => env('THEME_TEXT_DARK', '#111111'),
     'text_light' => env('THEME_TEXT_LIGHT', '#FFFFFF'),
-    'background' => env('THEME_BACKGROUND', '#E8F4F8'),
+    'background' => env('THEME_BACKGROUND', '#FFFFFF'),
     'background_alt' => env('THEME_BACKGROUND_ALT', '#FFFFFF'),
+    'accent_soft' => env('THEME_ACCENT_SOFT', '#F8FF9F'),
+    'accent_deep' => env('THEME_ACCENT_DEEP', '#AECE2B'),
+    'accent_green' => env('THEME_ACCENT_GREEN', '#18B201'),
 ];
 
 // 사이트 정보
@@ -138,6 +141,9 @@ if (!function_exists('getThemeCSSVariables')) {
             --color-text-light: {$theme['text_light']};
             --color-background: {$theme['background']};
             --color-background-alt: {$theme['background_alt']};
+            --color-accent-soft: {$theme['accent_soft']};
+            --color-accent-deep: {$theme['accent_deep']};
+            --color-accent-green: {$theme['accent_green']};
         ";
     }
 }

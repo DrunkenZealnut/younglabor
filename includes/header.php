@@ -21,7 +21,7 @@ if (!isset($pageDescription)) $pageDescription = $site['slogan'];
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>">
+    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>?v=2">
 
     <style>
         :root {

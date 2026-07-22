@@ -12,6 +12,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <div class="page-header">
         <div class="container">
+            <?php require __DIR__ . '/includes/symbols.php'; ?>
             <h1>사업소개</h1>
             <p>4대 핵심사업으로 청년노동자의 안전한 일터를 만들어갑니다</p>
         </div>
@@ -19,26 +20,38 @@ require_once __DIR__ . '/includes/header.php';
 
     <section class="section">
         <div class="container">
-            <div class="card-grid">
-                <div class="card fade-in">
-                    <div class="card-number">1</div>
-                    <h3 class="card-title">노동안전보건 교과서</h3>
-                    <p class="card-desc">반도체고 학생들이 졸업 전에 반드시 알아야 할 노동안전보건 지식을 담은 교과서를 개발합니다. 현장 인터뷰와 전문가 연구를 거쳐, 인정교과서로 학교에 채택되는 것을 목표로 합니다.</p>
+            <div class="work-grid">
+                <div class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">01</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 01</span>
+                        <span class="work-card-title">노동안전보건 교과서</span>
+                    </div>
+                    <p class="work-card-desc">반도체고 학생들이 졸업 전에 반드시 알아야 할 노동안전보건 지식을 담은 교과서를 개발합니다. 현장 인터뷰와 전문가 연구를 거쳐, 인정교과서로 학교에 채택되는 것을 목표로 합니다.</p>
                 </div>
-                <div class="card fade-in">
-                    <div class="card-number">2</div>
-                    <h3 class="card-title">노동안전보건 앱</h3>
-                    <p class="card-desc">교과서가 정적이라면, 앱은 동적으로 최신 안전정보를 제공합니다. 학교뿐 아니라 산업현장에서도 활용할 수 있는 도구로, 위험인자 데이터베이스를 지속적으로 업데이트합니다.</p>
+                <div class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">02</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 02</span>
+                        <span class="work-card-title">노동안전보건 앱</span>
+                    </div>
+                    <p class="work-card-desc">교과서가 정적이라면, 앱은 동적으로 최신 안전정보를 제공합니다. 학교뿐 아니라 산업현장에서도 활용할 수 있는 도구로, 위험인자 데이터베이스를 지속적으로 업데이트합니다.</p>
                 </div>
-                <div class="card fade-in">
-                    <div class="card-number">3</div>
-                    <h3 class="card-title">청소년노동안전동아리</h3>
-                    <p class="card-desc">반도체고 학생들이 직접 참여하는 동아리입니다. 안전 관련 자격증 공부, 학내 캠페인, 동료 학생들에게 노동안전을 알리는 활동을 합니다.</p>
+                <div class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">03</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 03</span>
+                        <span class="work-card-title">청소년노동안전동아리</span>
+                    </div>
+                    <p class="work-card-desc">반도체고 학생들이 직접 참여하는 동아리입니다. 안전 관련 자격증 공부, 학내 캠페인, 동료 학생들에게 노동안전을 알리는 활동을 합니다.</p>
                 </div>
-                <div class="card fade-in">
-                    <div class="card-number">4</div>
-                    <h3 class="card-title">학교 캠페인</h3>
-                    <p class="card-desc">전국 5개 반도체고교를 방문하여 학생들과 관계를 만들어갑니다. 입학식, 졸업식, 축제 등 학교 일정에 맞춰 세심하게 준비합니다.</p>
+                <div class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">04</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 04</span>
+                        <span class="work-card-title">학교 캠페인</span>
+                    </div>
+                    <p class="work-card-desc">전국 5개 반도체고교를 방문하여 학생들과 관계를 만들어갑니다. 입학식, 졸업식, 축제 등 학교 일정에 맞춰 세심하게 준비합니다.</p>
                 </div>
             </div>
         </div>

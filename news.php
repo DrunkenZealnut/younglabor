@@ -22,6 +22,7 @@ $newsItems = [
 
     <div class="page-header">
         <div class="container">
+            <?php require __DIR__ . '/includes/symbols.php'; ?>
             <h1>소식</h1>
             <p>활동 기록, 공지사항, 배경 이야기</p>
         </div>
@@ -32,7 +33,7 @@ $newsItems = [
             <?php if (empty($newsItems)): ?>
                 <div class="empty-state fade-in">
                     <p>아직 등록된 소식이 없습니다.</p>
-                    <p style="font-size: 0.95rem; color: #aaa;">학교 캠페인이 시작되면 활동 소식을 전해드리겠습니다.<br>먼저 <a href="<?php echo url('about'); ?>" style="color: var(--color-primary-dark);">단체 소개</a>를 확인해보세요.</p>
+                    <p style="font-size: 0.95rem;">학교 캠페인이 시작되면 활동 소식을 전해드리겠습니다.<br>먼저 <a href="<?php echo url('about'); ?>">단체 소개</a>를 확인해보세요.</p>
                 </div>
             <?php else: ?>
                 <div class="news-list">

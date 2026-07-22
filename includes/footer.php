@@ -1,22 +1,28 @@
     </main>
 
     <footer class="footer" role="contentinfo">
-        <div class="footer-content">
-            <div>
-                <div class="footer-logo"><?php echo htmlspecialchars($site['name']); ?></div>
-                <p class="footer-text"><?php echo htmlspecialchars($site['slogan']); ?></p>
-                <p class="footer-text">대표: <?php echo htmlspecialchars($site['representative']); ?></p>
-            </div>
-            <div>
-                <p class="footer-text">
-                    <a href="mailto:<?php echo htmlspecialchars($site['email']); ?>" style="color: inherit; text-decoration: none;">
-                        <?php echo htmlspecialchars($site['email']); ?>
-                    </a>
-                </p>
-            </div>
-        </div>
         <div class="container">
-            <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name']); ?></p>
+            <div class="footer-grid">
+                <?php require __DIR__ . '/symbols.php'; ?>
+                <div>
+                    <div class="footer-label">Contact</div>
+                    <p class="footer-text">
+                        <a href="mailto:<?php echo htmlspecialchars($site['email']); ?>"><?php echo htmlspecialchars($site['email']); ?></a><br>
+                        대표: <?php echo htmlspecialchars($site['representative']); ?>
+                    </p>
+                </div>
+                <div>
+                    <div class="footer-label">Menu</div>
+                    <nav class="footer-menu" aria-label="푸터 메뉴">
+                        <a href="<?php echo url('about'); ?>">단체소개</a>
+                        <a href="<?php echo url('activities'); ?>">사업소개</a>
+                        <a href="<?php echo url('news'); ?>">소식</a>
+                        <a href="<?php echo url('committee'); ?>">동아리 신청</a>
+                    </nav>
+                </div>
+            </div>
+            <div class="footer-wordmark"><?php echo htmlspecialchars($site['name']); ?></div>
+            <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name']); ?> &middot; <?php echo htmlspecialchars($site['slogan']); ?></p>
         </div>
     </footer>
 

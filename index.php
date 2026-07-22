@@ -10,71 +10,13 @@ $pageDescription = $site['slogan'];
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-    <style>
-        /* 홈페이지 전용 스타일 */
-        .hero {
-            min-height: 90vh;
-            display: flex;
-            align-items: center;
-            padding: 8rem 2rem 4rem;
-            background: linear-gradient(135deg, var(--color-background) 0%, #fff 50%, var(--color-background) 100%);
-        }
-
-        .hero-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--color-text-dark);
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-title span {
-            color: var(--color-primary-dark);
-        }
-
-        .hero-subtitle {
-            font-size: 1.3rem;
-            color: #666;
-            margin-bottom: 2.5rem;
-            max-width: 600px;
-            line-height: 1.7;
-        }
-
-        .hero-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        @media (max-width: 768px) {
-            .hero {
-                min-height: auto;
-                padding: 6rem 1.5rem 3rem;
-            }
-            .hero-title {
-                font-size: 2.2rem;
-            }
-            .hero-subtitle {
-                font-size: 1.1rem;
-            }
-        }
-    </style>
-
-    <!-- 히어로 -->
+    <!-- 히어로: 심볼 + 초대형 헤드라인 -->
     <section class="hero">
-        <div class="hero-content">
+        <div class="container">
+            <?php require __DIR__ . '/includes/symbols.php'; ?>
             <h1 class="hero-title fade-in">
-                <?php echo htmlspecialchars($site['name']); ?>
-            </h1>
-            <p class="hero-subtitle fade-in">
                 <?php echo htmlspecialchars($site['slogan']); ?>
-            </p>
+            </h1>
             <div class="hero-actions fade-in">
                 <a href="<?php echo url('about'); ?>" class="btn-cta">단체 알아보기</a>
                 <a href="<?php echo url('committee'); ?>" class="btn-cta btn-secondary">동아리 신청하기</a>
@@ -87,29 +29,45 @@ require_once __DIR__ . '/includes/header.php';
         <div class="container">
             <h2 class="section-title fade-in">핵심사업</h2>
             <p class="section-subtitle fade-in">현장 기반 노동안전보건 전문단체로서 4가지 핵심사업을 수행합니다.</p>
-            <div class="card-grid">
-                <a href="<?php echo url('activities'); ?>" class="card card-link fade-in">
-                    <div class="card-number">1</div>
-                    <h3 class="card-title">노동안전보건 교과서</h3>
-                    <p class="card-desc">반도체고 노동안전보건 교과서 개발. 안전하게 일할 권리를 위한 최소한의 지침서</p>
+            <div class="work-grid">
+                <a href="<?php echo url('activities'); ?>" class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">01</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 01</span>
+                        <span class="work-card-title">노동안전보건 교과서</span>
+                    </div>
+                    <p class="work-card-desc">반도체고 노동안전보건 교과서 개발. 안전하게 일할 권리를 위한 최소한의 지침서</p>
+                    <span class="work-card-link">자세히 보기 &rarr;</span>
                 </a>
 
-                <a href="<?php echo url('activities'); ?>" class="card card-link fade-in">
-                    <div class="card-number">2</div>
-                    <h3 class="card-title">노동안전보건 앱</h3>
-                    <p class="card-desc">누구나 쉽게 접근할 수 있는 안전정보 플랫폼. 최신 데이터 기반의 위험인자 정보 제공</p>
+                <a href="<?php echo url('activities'); ?>" class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">02</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 02</span>
+                        <span class="work-card-title">노동안전보건 앱</span>
+                    </div>
+                    <p class="work-card-desc">누구나 쉽게 접근할 수 있는 안전정보 플랫폼. 최신 데이터 기반의 위험인자 정보 제공</p>
+                    <span class="work-card-link">자세히 보기 &rarr;</span>
                 </a>
 
-                <a href="<?php echo url('committee'); ?>" class="card card-link fade-in">
-                    <div class="card-number">3</div>
-                    <h3 class="card-title">청소년노동안전동아리</h3>
-                    <p class="card-desc">청소년 당사자가 직접 참여합니다. 노동안전보건을 공부하고 알리는 활동</p>
+                <a href="<?php echo url('committee'); ?>" class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">03</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 03</span>
+                        <span class="work-card-title">청소년노동안전동아리</span>
+                    </div>
+                    <p class="work-card-desc">청소년 당사자가 직접 참여합니다. 노동안전보건을 공부하고 알리는 활동</p>
+                    <span class="work-card-link">자세히 보기 &rarr;</span>
                 </a>
 
-                <a href="<?php echo url('activities'); ?>" class="card card-link fade-in">
-                    <div class="card-number">4</div>
-                    <h3 class="card-title">학교 캠페인</h3>
-                    <p class="card-desc">전국 5개 반도체고교 방문. 학생들과 관계를 만들어가는 세심한 캠페인 활동</p>
+                <a href="<?php echo url('activities'); ?>" class="work-card fade-in">
+                    <div class="work-card-block"><span class="work-card-num">04</span></div>
+                    <div class="work-card-meta">
+                        <span class="work-card-label">사업 04</span>
+                        <span class="work-card-title">학교 캠페인</span>
+                    </div>
+                    <p class="work-card-desc">전국 5개 반도체고교 방문. 학생들과 관계를 만들어가는 세심한 캠페인 활동</p>
+                    <span class="work-card-link">자세히 보기 &rarr;</span>
                 </a>
             </div>
         </div>
@@ -123,12 +81,12 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="contact-info fade-in">
                     <h3>함께하고 싶으시다면 연락주세요</h3>
                     <div class="contact-item">
-                        <span>✉️ <a href="mailto:<?php echo htmlspecialchars($site['email']); ?>"><?php echo htmlspecialchars($site['email']); ?></a></span>
+                        <span><a href="mailto:<?php echo htmlspecialchars($site['email']); ?>"><?php echo htmlspecialchars($site['email']); ?></a></span>
                     </div>
                     <div class="contact-item">
-                        <span>👤 대표: <?php echo htmlspecialchars($site['representative']); ?></span>
+                        <span>대표: <?php echo htmlspecialchars($site['representative']); ?></span>
                     </div>
-                    <p style="margin-top: 1.5rem; color: #666; line-height: 1.8; font-size: 0.95rem;">
+                    <p style="margin-top: 1.5rem; color: var(--color-gray); line-height: 1.8; font-size: 0.95rem;">
                         <?php echo htmlspecialchars($site['name']); ?>는 제조업, 특히 반도체 청년노동자들의 안전한 일터를 위해 활동합니다.
                     </p>
                 </div>

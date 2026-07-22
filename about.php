@@ -12,6 +12,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <div class="page-header">
         <div class="container">
+            <?php require __DIR__ . '/includes/symbols.php'; ?>
             <h1>단체소개</h1>
             <p>반도체산업 청년노동자에게 안전할 권리를</p>
         </div>
@@ -33,26 +34,26 @@ require_once __DIR__ . '/includes/header.php';
     <section class="section section-alt">
         <div class="container">
             <h2 class="section-title fade-in">설립목적</h2>
-            <div class="card-grid">
-                <div class="card fade-in">
-                    <div class="card-number">1</div>
-                    <h3 class="card-title">교육환경 조성</h3>
-                    <p class="card-desc">반도체고를 비롯한 직업계고의 모든 청소년들이 노동안전보건교육을 받을 수 있는 교육환경을 조성합니다.</p>
+            <div class="work-grid">
+                <div class="work-card work-card--text fade-in">
+                    <span class="work-card-num">01</span>
+                    <div class="work-card-meta"><span class="work-card-title">교육환경 조성</span></div>
+                    <p class="work-card-desc">반도체고를 비롯한 직업계고의 모든 청소년들이 노동안전보건교육을 받을 수 있는 교육환경을 조성합니다.</p>
                 </div>
-                <div class="card fade-in">
-                    <div class="card-number">2</div>
-                    <h3 class="card-title">안전할 권리 지원</h3>
-                    <p class="card-desc">일하는 청년노동자들이 스스로 안전할 권리를 요구할 수 있도록 지원합니다.</p>
+                <div class="work-card work-card--text fade-in">
+                    <span class="work-card-num">02</span>
+                    <div class="work-card-meta"><span class="work-card-title">안전할 권리 지원</span></div>
+                    <p class="work-card-desc">일하는 청년노동자들이 스스로 안전할 권리를 요구할 수 있도록 지원합니다.</p>
                 </div>
-                <div class="card fade-in">
-                    <div class="card-number">3</div>
-                    <h3 class="card-title">사회 변화</h3>
-                    <p class="card-desc">일하는 청년노동자들이 안전하게 일할 수 있는 사회로의 변화를 만들어갑니다.</p>
+                <div class="work-card work-card--text fade-in">
+                    <span class="work-card-num">03</span>
+                    <div class="work-card-meta"><span class="work-card-title">사회 변화</span></div>
+                    <p class="work-card-desc">일하는 청년노동자들이 안전하게 일할 수 있는 사회로의 변화를 만들어갑니다.</p>
                 </div>
-                <div class="card fade-in">
-                    <div class="card-number">4</div>
-                    <h3 class="card-title">사회적 자원 연계</h3>
-                    <p class="card-desc">청년노동자들의 일과 일상의 고민을 해결하는 데 필요한 사회적 자원을 연계합니다.</p>
+                <div class="work-card work-card--text fade-in">
+                    <span class="work-card-num">04</span>
+                    <div class="work-card-meta"><span class="work-card-title">사회적 자원 연계</span></div>
+                    <p class="work-card-desc">청년노동자들의 일과 일상의 고민을 해결하는 데 필요한 사회적 자원을 연계합니다.</p>
                 </div>
             </div>
         </div>
@@ -73,7 +74,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="container">
             <h2 class="section-title fade-in">사람들</h2>
 
-            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--color-primary-dark); margin-bottom: 1.5rem;" class="fade-in">대표</h3>
+            <h3 class="group-label fade-in">대표</h3>
             <div class="people-grid fade-in" style="margin-bottom: 2.5rem;">
                 <div class="person-card">
                     <div class="person-name"><?php echo htmlspecialchars($site['representative']); ?></div>
@@ -82,7 +83,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--color-primary-dark); margin-bottom: 1.5rem;" class="fade-in">운영위원</h3>
+            <h3 class="group-label fade-in">운영위원</h3>
             <div class="people-grid fade-in" style="margin-bottom: 2.5rem;">
                 <div class="person-card">
                     <div class="person-name">김동규</div>
@@ -96,7 +97,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--color-primary-dark); margin-bottom: 1.5rem;" class="fade-in">자문위원</h3>
+            <h3 class="group-label fade-in">자문위원</h3>
             <div class="people-grid fade-in" style="margin-bottom: 2.5rem;">
                 <div class="person-card">
                     <div class="person-name">박동욱</div>
@@ -115,7 +116,7 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
-            <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--color-primary-dark); margin-bottom: 1.5rem;" class="fade-in">협력 단체</h3>
+            <h3 class="group-label fade-in">협력 단체</h3>
             <div class="people-grid fade-in">
                 <div class="person-card">
                     <div class="person-name">대구노동자권익센터</div>
