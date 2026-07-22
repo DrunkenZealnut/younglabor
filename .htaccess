@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# .php 확장자 없이 접근 가능하도록 (about → about.php)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]

@@ -27,8 +27,16 @@ class PageTracker {
                 INSERT INTO younglabor_visitor_log (ip_address, user_agent, visit_date, page_url, referrer)
                 VALUES (:ip, :ua, CURDATE(), :url, :ref)
             ");
+            // IP 마스킹: 마지막 옥텟을 0으로 (개인정보보호법 준수)
+            $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+            if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                $ip = preg_replace('/\.\d+$/', '.0', $ip);
+            } elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+                $ip = preg_replace('/:[^:]+$/', ':0', $ip);
+            }
+
             $stmt->execute([
-                ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                ':ip' => $ip,
                 ':ua' => substr($ua, 0, 500),
                 ':url' => substr($pageUrl, 0, 500),
                 ':ref' => substr($_SERVER['HTTP_REFERER'] ?? '', 0, 500),
