@@ -29,10 +29,14 @@ function deployLog($msg) {
 }
 
 // JSON 응답
-function respond($success, $message, $code = 200) {
+function respond($success, $message, $code = 200, array $data = []) {
     http_response_code($code);
     header('Content-Type: application/json');
-    echo json_encode(['success' => $success, 'message' => $message]);
+    echo json_encode([
+        'success' => $success,
+        'message' => $message,
+        'data' => (object) $data,
+    ]);
     exit;
 }
 

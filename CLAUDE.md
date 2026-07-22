@@ -42,7 +42,7 @@ No automated test suite exists. Testing is manual via browser:
 
 ## Architecture
 
-```
+```text
 younglabor/
 ├── config.php              # Root config: multi-env .env loader, helpers, theme, site globals
 ├── .htaccess               # URL rewrite: extensionless URLs (about → about.php)

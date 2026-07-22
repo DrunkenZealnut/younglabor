@@ -7,6 +7,7 @@
 if (!isset($currentPage)) $currentPage = 'home';
 if (!isset($pageTitle)) $pageTitle = $site['name'];
 if (!isset($pageDescription)) $pageDescription = $site['slogan'];
+if (!isset($pageUrl)) $pageUrl = url($currentPage === 'home' ? '' : $currentPage);
 ?>
 <!DOCTYPE html>
 <html lang="ko">
@@ -17,7 +18,7 @@ if (!isset($pageDescription)) $pageDescription = $site['slogan'];
     <meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="<?php echo htmlspecialchars($site['base_url']); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars($pageUrl); ?>">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
