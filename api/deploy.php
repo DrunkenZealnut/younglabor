@@ -13,12 +13,15 @@ $CONFIG = [
     'branch' => 'main',
     'deploy_dir' => dirname(__DIR__),
     'log_file' => dirname(__DIR__) . '/deploy.log',
+    // 배포 대상에서 항상 제외 (복사도, 삭제도 하지 않음)
     'exclude' => [
         '.env', '.env.local', '.env.production',
         '.git', '.github', '.gitignore',
         'CLAUDE.md', '.claude',
         'deploy.log',
     ],
+    // git에서 삭제된 파일을 프로덕션에서도 정리할지 여부 (기본 비활성 — 검토 후 .env에서 켤 것)
+    'prune' => env('DEPLOY_PRUNE_REMOVED', 'false') === 'true',
 ];
 
 // 로깅
@@ -38,6 +41,48 @@ function respond($success, $message, $code = 200, array $data = []) {
         'data' => (object) $data,
     ]);
     exit;
+}
+
+// $path가 $prefixes 중 하나로 시작하는지 (제외 목록 체크용)
+function startsWithAny($path, array $prefixes) {
+    foreach ($prefixes as $prefix) {
+        if (strpos($path, $prefix) === 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// 간이 .gitignore 파서: 주석/빈 줄/네거티브 패턴(!) 제외한 라인 목록 반환
+// 네거티브 패턴은 별도 처리하지 않음 — 해당 파일은 git에 추적되어 있어 $expectedFiles에 자연히 포함되므로 안전함
+function parseGitignore($path) {
+    if (!is_file($path)) {
+        return [];
+    }
+    $patterns = [];
+    foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || strpos($line, '#') === 0 || strpos($line, '!') === 0) {
+            continue;
+        }
+        $patterns[] = rtrim($line, '/');
+    }
+    return $patterns;
+}
+
+// 상대경로가 .gitignore 패턴 중 하나에 매치되는지 (디렉토리/글롭 패턴 단순 매칭)
+function matchesGitignorePattern($relativePath, array $patterns) {
+    foreach ($patterns as $pattern) {
+        // 디렉토리/경로 접두 매칭 (예: data/file/notices, logs)
+        if (strpos($relativePath, $pattern) === 0) {
+            return true;
+        }
+        // 파일명 글롭 매칭 (예: *.log, test-*.php)
+        if (fnmatch($pattern, basename($relativePath)) || fnmatch($pattern, $relativePath)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // POST만 허용
@@ -138,10 +183,11 @@ if (empty($extracted)) {
 }
 $srcDir = $extracted[0];
 
-// 파일 복사 (제외 목록 제외)
+// 파일 복사 (제외 목록 제외) + 삭제 동기화용 "현재 저장소 파일 목록" 수집
 $deployDir = $CONFIG['deploy_dir'];
 $copied = 0;
 $errors = [];
+$expectedFiles = []; // relativePath => true (제외 목록을 뺀, 이번 배포에 존재해야 하는 파일)
 
 $iterator = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator($srcDir, RecursiveDirectoryIterator::SKIP_DOTS),
@@ -152,14 +198,9 @@ foreach ($iterator as $item) {
     $relativePath = substr($item->getPathname(), strlen($srcDir) + 1);
 
     // 제외 목록 체크
-    $skip = false;
-    foreach ($CONFIG['exclude'] as $exc) {
-        if (strpos($relativePath, $exc) === 0) {
-            $skip = true;
-            break;
-        }
+    if (startsWithAny($relativePath, $CONFIG['exclude'])) {
+        continue;
     }
-    if ($skip) continue;
 
     $target = $deployDir . '/' . $relativePath;
 
@@ -168,6 +209,8 @@ foreach ($iterator as $item) {
             mkdir($target, 0755, true);
         }
     } else {
+        $expectedFiles[$relativePath] = true;
+
         $dir = dirname($target);
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
@@ -176,6 +219,51 @@ foreach ($iterator as $item) {
             $copied++;
         } else {
             $errors[] = $relativePath;
+        }
+    }
+}
+
+// 삭제 동기화 (옵트인, DEPLOY_PRUNE_REMOVED=true 일 때만)
+// git에서 제거된 파일을 프로덕션에서도 제거. 단 아래는 항상 보존:
+//   1) $CONFIG['exclude'] 목록 (.env*, .git, deploy.log 등)
+//   2) 이번 배포본의 .gitignore에 매치되는 경로 (사용자 업로드 data/file/notices/* 등)
+$pruned = 0;
+$pruneErrors = [];
+
+if ($CONFIG['prune']) {
+    $gitignorePatterns = parseGitignore($srcDir . '/.gitignore');
+
+    $prodIterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($deployDir, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($prodIterator as $item) {
+        $relativePath = substr($item->getPathname(), strlen($deployDir) + 1);
+
+        if (startsWithAny($relativePath, $CONFIG['exclude'])) {
+            continue;
+        }
+        if (matchesGitignorePattern($relativePath, $gitignorePatterns)) {
+            continue;
+        }
+
+        if ($item->isDir()) {
+            // 파일 삭제 후 비어있는 디렉토리만 정리 (보호 대상이 남아있으면 자동으로 스킵됨)
+            $isEmpty = (count(scandir($item->getPathname())) === 2);
+            if ($isEmpty) {
+                @rmdir($item->getPathname());
+            }
+            continue;
+        }
+
+        if (!isset($expectedFiles[$relativePath])) {
+            if (@unlink($item->getPathname())) {
+                $pruned++;
+                deployLog("PRUNED: $relativePath");
+            } else {
+                $pruneErrors[] = $relativePath;
+            }
         }
     }
 }
@@ -192,11 +280,23 @@ rmdir($tmpDir);
 
 // 결과
 $errorCount = count($errors);
-$msg = "Deployed $copied files" . ($errorCount > 0 ? ", $errorCount errors" : "");
+$msg = "Deployed $copied files";
+if ($CONFIG['prune']) {
+    $msg .= ", pruned $pruned files";
+}
+if ($errorCount > 0) {
+    $msg .= ", $errorCount copy errors";
+}
+if (count($pruneErrors) > 0) {
+    $msg .= ", " . count($pruneErrors) . " prune errors";
+}
 deployLog("SUCCESS: $msg");
 
 if ($errorCount > 0) {
-    deployLog("Errors: " . implode(', ', $errors));
+    deployLog("Copy errors: " . implode(', ', $errors));
+}
+if (count($pruneErrors) > 0) {
+    deployLog("Prune errors: " . implode(', ', $pruneErrors));
 }
 
-respond(true, $msg);
+respond(true, $msg, 200, ['copied' => $copied, 'pruned' => $pruned]);
