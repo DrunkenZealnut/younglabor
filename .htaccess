@@ -1,5 +1,17 @@
 RewriteEngine On
 
+# 디렉터리 파일 목록 노출 차단
+Options -Indexes
+
+# 환경설정, 저장소 메타데이터 등 숨김 경로 차단
+# 인증서 자동 갱신에 사용하는 .well-known 경로는 허용
+RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L,NC]
+
+# 내부 설정 및 개발/운영 자료의 직접 다운로드 차단
+RewriteRule ^(?:config|test-config)\.php$ - [F,L,NC]
+RewriteRule \.(?:log|sql|md)$ - [F,L,NC]
+RewriteRule ^(?:docs|includes)(?:/|$) - [F,L,NC]
+
 # .php 확장자 없이 접근 가능하도록 (about → about.php)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
