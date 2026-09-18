@@ -182,7 +182,7 @@ function openDetail(id) {
     document.getElementById('modalTitle').textContent = inq.name + '님의 문의';
     document.getElementById('modalBody').innerHTML = `
         <div class="field"><div class="field-label">이름</div><div class="field-value">${esc(inq.name)}</div></div>
-        <div class="field"><div class="field-label">이메일</div><div class="field-value"><a href="mailto:${esc(inq.email)}">${esc(inq.email)}</a></div></div>
+        <div class="field"><div class="field-label">이메일</div><div class="field-value"><a id="inquiryEmailLink"></a></div></div>
         ${inq.phone ? `<div class="field"><div class="field-label">연락처</div><div class="field-value">${esc(inq.phone)}</div></div>` : ''}
         ${inq.subject ? `<div class="field"><div class="field-label">제목</div><div class="field-value">${esc(inq.subject)}</div></div>` : ''}
         <div class="field"><div class="field-label">문의일</div><div class="field-value">${esc(inq.created_at)}</div></div>
@@ -201,6 +201,10 @@ function openDetail(id) {
             <button class="btn btn-outline btn-sm" onclick="markAs(${inq.id},'closed')">보관</button>
         </div>
     `;
+
+    const emailLink = document.getElementById('inquiryEmailLink');
+    emailLink.textContent = inq.email;
+    emailLink.href = 'mailto:' + inq.email;
 
     document.getElementById('detailModal').classList.add('active');
 }
