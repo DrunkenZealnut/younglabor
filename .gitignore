@@ -50,3 +50,6 @@ msds/.expo/
 
 # Claude Code 설정
 .claude/
+
+# 격리 개발 작업공간
+.worktrees/
