@@ -42,7 +42,7 @@
 **Interfaces:**
 
 - Consumes: no database or request state
-- Produces: `siteWorkAreas(): array`, `siteTools(): array`, `siteImpactStats(): array`, and `siteSupportPartners(): array`
+- Produces: `siteWorkAreas(): array`, `siteTools(): array`, and `siteSupportPartners(): array`
 
 - [ ] **Step 1: Write the failing pure-content test**
 
@@ -71,8 +71,6 @@ foreach ($tools as $tool) {
     if (!in_array($parts['host'] ?? '', ['safefactory.kr', 'laborconsult.vercel.app'], true)) exit(1);
 }
 
-$stats = siteImpactStats();
-assertSameValue(['6곳', '4회'], array_column($stats, 'value'), '검증된 활동 수치만 표시해야 합니다.');
 $support = siteSupportPartners();
 assertSameValue('아름다운재단', $support[0]['name'], '지원기관 이름이 다릅니다.');
 assertSameValue('2025 공익단체 인큐베이팅 지원사업', $support[0]['program'], '지원사업 크레딧이 다릅니다.');
@@ -118,13 +116,6 @@ function siteTools(): array {
             'description' => '근로기준법, 판례와 행정해석을 근거로 상담 정보를 제공하고 28종의 임금 계산을 돕습니다.',
             'cta' => '기초 노동상담 사용해보기',
         ],
-    ];
-}
-
-function siteImpactStats(): array {
-    return [
-        ['value' => '6곳', 'label' => '반도체고 현장 접촉'],
-        ['value' => '4회', 'label' => '일하는 열아홉 강좌'],
     ];
 }
 
@@ -232,7 +223,7 @@ git commit -m "fix: correct public page landmarks and navigation"
 
 **Interfaces:**
 
-- Consumes: `siteWorkAreas()`, `siteTools()`, `siteImpactStats()`, and `siteSupportPartners()` from Task 1; `ContentRepository::latestPublished()` from the managed-content plan
+- Consumes: `siteWorkAreas()`, `siteTools()`, and `siteSupportPartners()` from Task 1; `ContentRepository::latestPublished()` from the managed-content plan
 - Produces: `loadHomeContent(callable $repositoryFactory): array` with `activity`, `press`, and `unavailable` keys; the approved homepage section order and citizen-facing identity/work copy
 
 - [ ] **Step 1: Write the failing approved-copy and section-order test**
@@ -245,7 +236,7 @@ $activities = file_get_contents(__DIR__ . '/../activities.php');
 $required = [
     '제조업 청년노동자들의 안전과 노동권을 지킵니다.',
     '현장에서 무슨 일이 있었나', '왜 이 일을 하는가', '우리가 하는 일',
-    '현장에서 쓰는 안전 도구', '언론이 본 현장', '숫자로 보는 활동', '함께하기', '함께하는 곳들',
+    '현장에서 쓰는 안전 도구', '언론이 본 현장', '함께하기', '함께하는 곳들',
 ];
 $last = -1;
 foreach ($required as $copy) {

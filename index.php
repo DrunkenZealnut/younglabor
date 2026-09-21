@@ -117,18 +117,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </section>
 
-<section class="section section-alt">
-    <div class="container">
-        <h2 class="section-title">숫자로 보는 활동</h2>
-        <div class="impact-grid">
-        <?php foreach (siteImpactStats() as $stat): ?>
-            <div class="impact-stat"><strong><?php echo htmlspecialchars($stat['value'], ENT_QUOTES, 'UTF-8'); ?></strong><span><?php echo htmlspecialchars($stat['label'], ENT_QUOTES, 'UTF-8'); ?></span></div>
-        <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-<section class="section" id="contact">
+<section class="section section-alt" id="contact">
     <div class="container">
         <h2 class="section-title">함께하기</h2>
         <div class="contact-content">
