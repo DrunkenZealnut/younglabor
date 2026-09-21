@@ -59,14 +59,6 @@ function siteTools(): array
     ];
 }
 
-function siteImpactStats(): array
-{
-    return [
-        ['value' => '6곳', 'label' => '반도체고 현장 접촉'],
-        ['value' => '4회', 'label' => '일하는 열아홉 강좌'],
-    ];
-}
-
 function siteSupportPartners(): array
 {
     return [[

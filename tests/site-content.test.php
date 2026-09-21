@@ -25,8 +25,7 @@ foreach ($tools as $tool) {
     }
 }
 
-$stats = siteImpactStats();
-assertSameValue(['6곳', '4회'], array_column($stats, 'value'), '검증된 활동 수치만 표시해야 합니다.');
+if (function_exists('siteImpactStats')) exit(1);
 $support = siteSupportPartners();
 assertSameValue('아름다운재단', $support[0]['name'], '지원기관 이름이 다릅니다.');
 assertSameValue('2025 공익단체 인큐베이팅 지원사업', $support[0]['program'], '지원사업 크레딧이 다릅니다.');
