@@ -3,7 +3,7 @@ $home = file_get_contents(__DIR__ . '/../index.php');
 $about = file_get_contents(__DIR__ . '/../about.php');
 $activities = file_get_contents(__DIR__ . '/../activities.php');
 $required = [
-    '중소영세 제조업 청년노동자와 함께, 처음 일하는 몸을 지킵니다.',
+    '제조업 청년노동자들의 안전과 노동권을 지킵니다.',
     '현장에서 무슨 일이 있었나', '왜 이 일을 하는가', '우리가 하는 일',
     '현장에서 쓰는 안전 도구', '언론이 본 현장', '숫자로 보는 활동', '함께하기', '함께하는 곳들',
 ];
