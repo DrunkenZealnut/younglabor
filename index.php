@@ -135,7 +135,11 @@ require_once __DIR__ . '/includes/header.php';
             <div class="contact-info">
                 <h3>현장의 이야기, 교육과 협력 제안을 기다립니다.</h3>
                 <p>청년노동자의 안전한 첫 일터를 함께 만들고 싶다면 연락해 주세요.</p>
-                <p class="contact-item"><a href="mailto:<?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <?php if ($site['email'] !== ''): ?>
+                    <p class="contact-item"><a href="mailto:<?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <?php else: ?>
+                    <p class="contact-item">문의 폼으로 연락해 주세요.</p>
+                <?php endif; ?>
                 <a class="btn-cta btn-secondary" href="<?php echo url('committee'); ?>">청소년 동아리 신청</a>
             </div>
             <div class="contact-form">

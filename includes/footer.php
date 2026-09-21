@@ -7,7 +7,7 @@
                 <div>
                     <div class="footer-label">Contact</div>
                     <p class="footer-text">
-                        <a href="mailto:<?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?></a><br>
+                        <?php if ($site['email'] !== ''): ?><a href="mailto:<?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?></a><br><?php endif; ?>
                         대표: <?php echo htmlspecialchars($site['representative'], ENT_QUOTES, 'UTF-8'); ?>
                     </p>
                 </div>
