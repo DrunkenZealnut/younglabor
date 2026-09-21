@@ -12,9 +12,10 @@
 
 ## Global Constraints
 
-- Do not start public-page or journal implementation until this plan's gate in Task 3 passes.
+- Do not start public-page or managed-content implementation until this plan's gate in Task 3 passes.
 - Do not copy `.env`, credentials, session files, logs, database rows, or uploaded personal data into the repository.
 - Treat `/admin/login.php` and `/committee/` plus their data as production-owned behavior that must be preserved.
+- Require PHP modules `pdo_mysql`, `fileinfo`, `gd`, `mbstring`, and `zip`, plus GD WebP encoding support, before managed-content implementation.
 - Record schema only; do not export table rows during inventory.
 - Store collector output outside the web document root and delete the remote temporary output after the sanitized report is committed.
 - A failed or incomplete inventory blocks deployment and is reported as such; it is never treated as an empty server.
@@ -85,6 +86,7 @@ case "$output_dir/" in "$docroot/"*) echo 'output directory must be outside docu
 } > "$output_dir/runtime.txt" 2>> "$output_dir/errors.txt"
 {
   php -m | LC_ALL=C sort
+  php -r '$info = function_exists("gd_info") ? gd_info() : []; echo "gd_webp=" . (!empty($info["WebP Support"]) ? "enabled" : "disabled") . PHP_EOL;'
   command -v apachectl >/dev/null 2>&1 && apachectl -M || true
 } > "$output_dir/modules.txt" 2>> "$output_dir/errors.txt"
 find "$docroot" -xdev -type f \
@@ -170,6 +172,7 @@ Use this exact report structure:
 ## Access and runtime
 - Access mode: SSH or FTP-only
 - PHP version: exact output of `php -r 'echo PHP_VERSION;'`
+- Required PHP modules (`pdo_mysql`, `fileinfo`, `gd`, `mbstring`, `zip`) and `gd_info()['WebP Support']`: enabled/disabled list
 - Database engine/version: exact output of `SELECT VERSION()` from the approved read-only console
 - Apache modules relevant to rewrite, headers, expires, and compression: enabled/disabled list
 
@@ -209,7 +212,7 @@ Expected: only the exact two `/tmp` targets created in Step 2 are removed. If FT
 
 **Interfaces:**
 - Consumes: sanitized report from Task 2
-- Produces: an explicit `PASS` or `BLOCKED` gate for the public redesign and activity-journal plans
+- Produces: an explicit `PASS` or `BLOCKED` gate for the public redesign and managed-content plans
 
 - [ ] **Step 1: Verify the report contains every required decision input**
 

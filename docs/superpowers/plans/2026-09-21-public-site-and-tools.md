@@ -4,7 +4,7 @@
 
 **Goal:** Rebuild the public information flow around the center's identity and field work, add a first-class safety-tools page for SafeFactory and Basic Labor Consultation, and improve initial rendering performance without changing the existing administrator or committee workflows.
 
-**Architecture:** Keep PHP server-rendered pages and introduce one pure content module for work areas, impact figures, and external tools. Shared header/footer markup owns the document landmarks, while the existing single public stylesheet owns all public-page presentation. Apache supplies compression and versioned-asset caching; the public content remains readable without JavaScript.
+**Architecture:** Keep PHP server-rendered pages and introduce one pure content module for work areas, impact figures, and external tools. Shared header/footer markup owns the document landmarks, while the existing single public stylesheet owns all public-page presentation. The managed-content repository supplies the latest activity and press cards behind failure-isolating loaders; Apache supplies compression and versioned-asset caching.
 
 **Tech Stack:** Apache, PHP 7.4+, HTML5, CSS, minimal vanilla JavaScript, shell, curl, Node.js for the existing XSS regression test
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Start only after `docs/audits/2026-09-21-production-inventory.md` contains the exact line `Gate: PASS`.
+- Start only after `docs/audits/2026-09-21-production-inventory.md` contains the exact line `Gate: PASS` and the managed-content plan is implemented.
 - Preserve `/admin/login.php`, `/committee/`, both form APIs, and all existing production data.
 - Use the hero copy `중소영세 제조업 청년노동자와 함께, 처음 일하는 몸을 지킵니다.` exactly.
 - Use the four work areas `현장 조직`, `교육`, `안전 도구`, and `연구`.
@@ -20,13 +20,13 @@
 - Do not iframe, hotlink images from, or fetch runtime data from either external service.
 - Remove the public Pretendard network request; use the Korean system-font stack.
 - Keep public content server-rendered and usable with JavaScript disabled.
-- Target mobile p75 LCP <= 2.5 seconds, INP <= 200 milliseconds, and CLS <= 0.1.
+- Target mobile p75 LCP &lt;= 2.5 seconds, INP &lt;= 200 milliseconds, and CLS &lt;= 0.1.
 
 ## Review Focus
 
 - Missing or malformed external-tool data must not produce unsafe URLs or broken HTML.
 - Mobile navigation must expose its open state, retain keyboard focus visibility, and remain usable without animation.
-- A database outage in PageTracker must not prevent static pages from rendering.
+- A database outage in PageTracker or a latest-content query must not prevent static pages from rendering.
 - Apache instances without `mod_expires`, `mod_headers`, or `mod_deflate` must not return 500 because every directive is module-guarded.
 - Existing administrator, contact, and committee pages must keep their current routes and POST behavior.
 
@@ -35,12 +35,14 @@
 ### Task 1: Add the public content contract
 
 **Files:**
+
 - Create: `includes/SiteContent.php`
 - Create: `tests/site-content.test.php`
 
 **Interfaces:**
+
 - Consumes: no database or request state
-- Produces: `siteWorkAreas(): array`, `siteTools(): array`, and `siteImpactStats(): array`
+- Produces: `siteWorkAreas(): array`, `siteTools(): array`, `siteImpactStats(): array`, and `siteSupportPartners(): array`
 
 - [ ] **Step 1: Write the failing pure-content test**
 
@@ -71,6 +73,9 @@ foreach ($tools as $tool) {
 
 $stats = siteImpactStats();
 assertSameValue(['6곳', '4회'], array_column($stats, 'value'), '검증된 활동 수치만 표시해야 합니다.');
+$support = siteSupportPartners();
+assertSameValue('아름다운재단', $support[0]['name'], '지원기관 이름이 다릅니다.');
+assertSameValue('2025 공익단체 인큐베이팅 지원사업', $support[0]['program'], '지원사업 크레딧이 다릅니다.');
 ```
 
 - [ ] **Step 2: Run the test and verify it fails**
@@ -123,6 +128,14 @@ function siteImpactStats(): array {
         ['value' => '4회', 'label' => '일하는 열아홉 강좌'],
     ];
 }
+
+function siteSupportPartners(): array {
+    return [[
+        'name' => '아름다운재단',
+        'relationship' => '지원',
+        'program' => '2025 공익단체 인큐베이팅 지원사업',
+    ]];
+}
 ```
 
 - [ ] **Step 4: Run the test and verify it passes**
@@ -141,14 +154,16 @@ git commit -m "feat: define public site content"
 ### Task 2: Correct the shared landmark and navigation shell
 
 **Files:**
+
 - Modify: `includes/header.php`
 - Modify: `includes/footer.php`
 - Modify: `assets/css/style.css`
 - Create: `tests/public-layout.test.php`
 
 **Interfaces:**
+
 - Consumes: `$currentPage`, `$pageTitle`, `$pageDescription`, and `url()`
-- Produces: one `<main id="main-content">` opened by the header and closed by the footer; five-item public navigation
+- Produces: one `<main id="main-content">` opened by the header and closed by the footer; seven-item public navigation
 
 - [ ] **Step 1: Write the failing source-level landmark test**
 
@@ -156,13 +171,15 @@ git commit -m "feat: define public site content"
 <?php
 $header = file_get_contents(__DIR__ . '/../includes/header.php');
 $footer = file_get_contents(__DIR__ . '/../includes/footer.php');
-foreach (['우리는 누구인가', '현장일지', '우리가 하는 일', '안전 도구', '함께하기'] as $label) {
+foreach (['우리는 누구인가', '우리가 하는 일', '활동게시판', '언론보도', '자료실', '안전 도구', '함께하기'] as $label) {
     if (strpos($header, $label) === false) exit(1);
 }
 if (substr_count($header, '<main') !== 1) exit(1);
 if (strpos($header, '</main>') !== false) exit(1);
 if (strpos($footer, '</main>') === false) exit(1);
+if (strpos($footer, 'siteSupportPartners()') === false) exit(1);
 if (strpos($header, 'aria-expanded="false"') === false) exit(1);
+if (strpos($header, "document.documentElement.classList.add('js')") === false) exit(1);
 if (strpos($footer, "setAttribute('aria-expanded'") === false) exit(1);
 if (strpos($header, 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard') !== false) exit(1);
 ```
@@ -175,7 +192,7 @@ Expected: FAIL because the header closes `<main>`, lacks the new links, and load
 
 - [ ] **Step 3: Implement the semantic shell**
 
-Replace the public navigation with links to `about`, `journal/`, `activities`, `tools`, and `#contact`; open `<main id="main-content">` after the header and close it as the first element in `includes/footer.php`. Initialize the menu button with `aria-controls="nav" aria-expanded="false"` and update both `aria-expanded` and the label inside `toggleMenu()`.
+Replace the public navigation with links to `about`, `activities`, `activity`, `press`, `resources`, `tools`, and `#contact`; open `<main id="main-content">` after the header and close it as the first element in `includes/footer.php`. Initialize the menu button with `aria-controls="nav" aria-expanded="false"` and update both `aria-expanded` and the label inside `toggleMenu()`. Add `document.documentElement.classList.add('js')` before the stylesheet, keep the mobile navigation visible by default, and apply the collapsed state only through `.js .nav`; without JavaScript all seven links remain available. Render `siteSupportPartners()` in the footer with separate relationship, organization, and program text; use the existing logo only with its intrinsic dimensions and `alt="아름다운재단"`.
 
 Use this body font declaration in `assets/css/style.css`:
 
@@ -205,15 +222,19 @@ git commit -m "fix: correct public page landmarks and navigation"
 ### Task 3: Rebuild the home, identity, and work pages
 
 **Files:**
+
 - Modify: `index.php`
 - Modify: `about.php`
 - Modify: `activities.php`
 - Modify: `assets/css/style.css`
+- Create: `includes/HomeContent.php`
 - Create: `tests/public-copy.test.php`
+- Create: `tests/home-content.test.php`
 
 **Interfaces:**
-- Consumes: `siteWorkAreas()`, `siteTools()`, and `siteImpactStats()` from Task 1
-- Produces: the approved homepage section order and citizen-facing identity/work copy
+
+- Consumes: `siteWorkAreas()`, `siteTools()`, `siteImpactStats()`, and `siteSupportPartners()` from Task 1; `ContentRepository::latestPublished()` from the managed-content plan
+- Produces: `loadHomeContent(callable $repositoryFactory): array` with `activity`, `press`, and `unavailable` keys; the approved homepage section order and citizen-facing identity/work copy
 
 - [ ] **Step 1: Write the failing approved-copy and section-order test**
 
@@ -225,7 +246,7 @@ $activities = file_get_contents(__DIR__ . '/../activities.php');
 $required = [
     '중소영세 제조업 청년노동자와 함께, 처음 일하는 몸을 지킵니다.',
     '현장에서 무슨 일이 있었나', '왜 이 일을 하는가', '우리가 하는 일',
-    '현장에서 쓰는 안전 도구', '숫자로 보는 활동', '함께하기', '함께하는 곳들',
+    '현장에서 쓰는 안전 도구', '언론이 본 현장', '숫자로 보는 활동', '함께하기', '함께하는 곳들',
 ];
 $last = -1;
 foreach ($required as $copy) {
@@ -241,39 +262,74 @@ foreach (['현장 조직', '교육', '안전 도구', '연구'] as $copy) {
 }
 ```
 
+Create the failure-isolation test alongside it:
+
+```php
+<?php
+require __DIR__ . '/../includes/HomeContent.php';
+$ok = loadHomeContent(static function () {
+    return new class {
+        public function latestPublished(string $type, int $limit): array { return [['type'=>$type,'limit'=>$limit]]; }
+    };
+});
+if (count($ok['activity']) !== 1 || count($ok['press']) !== 1 || $ok['unavailable']) exit(1);
+$failed = loadHomeContent(static function () { throw new RuntimeException('database unavailable'); });
+if ($failed !== ['activity'=>[], 'press'=>[], 'unavailable'=>true]) exit(1);
+```
+
 - [ ] **Step 2: Run the test and verify it fails**
 
-Run: `php tests/public-copy.test.php`
+Run: `php tests/public-copy.test.php && php tests/home-content.test.php`
 
-Expected: FAIL because the approved structure and copy are absent.
+Expected: FAIL because the approved structure, copy, and failure-isolating loader are absent.
 
 - [ ] **Step 3: Implement the approved page structure**
 
-Require `includes/SiteContent.php` before the shared header. Render the home sections in the exact tested order. Use loops over the three content functions for work areas, tools, and impact figures; do not duplicate those arrays in page templates. The initial journal section contains a static link and the sentence `현장 기록을 준비하고 있습니다.` until the journal plan replaces it with published entries.
+Implement the loader as follows, then require it and `includes/SiteContent.php` before the shared header:
 
-Replace the current grant-output framing in `activities.php` with four work-area sections, each containing its purpose, current activities, and a link to related journal entries. Rewrite `about.php` around identity, manufacturing youth, the semiconductor-school starting point, intended change, people, and partners. Remove comparison-led copy about other organizations.
+```php
+function loadHomeContent(callable $repositoryFactory): array {
+    try {
+        $repository = $repositoryFactory();
+        return [
+            'activity' => $repository->latestPublished('activity', 3),
+            'press' => $repository->latestPublished('press', 3),
+            'unavailable' => false,
+        ];
+    } catch (Throwable $error) {
+        error_log('Home content unavailable');
+        return ['activity'=>[], 'press'=>[], 'unavailable'=>true];
+    }
+}
+```
+
+Render the home sections in the exact tested order. Use loops over the four static content functions and the two latest arrays; do not duplicate those arrays in templates. When `unavailable` is true, render `최근 소식을 불러오지 못했습니다. 각 게시판에서 다시 확인해 주세요.` while keeping every later section available.
+
+Replace the current grant-output framing in `activities.php` with four work-area sections, each containing its purpose, current activities, and a link to related activity posts or resources. Rewrite `about.php` around identity, manufacturing youth, the semiconductor-school starting point, intended change, people, and partners. Remove comparison-led copy about other organizations.
 
 - [ ] **Step 4: Run copy and syntax tests**
 
-Run: `php tests/public-copy.test.php && php -l index.php && php -l about.php && php -l activities.php`
+Run: `php tests/public-copy.test.php && php tests/home-content.test.php && php -l includes/HomeContent.php && php -l index.php && php -l about.php && php -l activities.php`
 
 Expected: all commands exit 0.
 
 - [ ] **Step 5: Commit the public information architecture**
 
 ```bash
-git add index.php about.php activities.php assets/css/style.css tests/public-copy.test.php
+git add index.php about.php activities.php assets/css/style.css includes/HomeContent.php tests/public-copy.test.php tests/home-content.test.php
 git commit -m "feat: refocus public pages on field impact"
 ```
 
 ### Task 4: Add the safety-tools page
 
 **Files:**
+
 - Create: `tools.php`
 - Modify: `assets/css/style.css`
 - Create: `tests/tools-page.test.php`
 
 **Interfaces:**
+
 - Consumes: `siteTools(): array`
 - Produces: `/tools` with two local-rendered service cards and same-window external links
 
@@ -338,6 +394,7 @@ git commit -m "feat: showcase public safety tools"
 ### Task 5: Add safe asset versioning, cache policy, and compression
 
 **Files:**
+
 - Modify: `config.php`
 - Modify: `includes/header.php`
 - Modify: `.htaccess`
@@ -346,6 +403,7 @@ git commit -m "feat: showcase public safety tools"
 - Create: `tests/public-performance.test.php`
 
 **Interfaces:**
+
 - Consumes: a repository-relative public asset path
 - Produces: `assetUrl(string $path): string` with a file modification version; module-guarded Apache performance directives
 
@@ -429,6 +487,7 @@ git commit -m "perf: optimize public asset delivery"
 ### Task 6: Add public smoke, accessibility, and performance gates
 
 **Files:**
+
 - Create: `tests/public-http-smoke.sh`
 - Create: `tests/public-accessibility.test.js`
 - Create: `tests/page-tracker-failure.test.php`
@@ -438,8 +497,14 @@ git commit -m "perf: optimize public asset delivery"
 - Modify: `about.php`
 - Modify: `activities.php`
 - Modify: `tools.php`
+- Modify: `activity/index.php`
+- Modify: `activity/view.php`
+- Modify: `press/index.php`
+- Modify: `resources/index.php`
+- Modify: `resources/view.php`
 
 **Interfaces:**
+
 - Consumes: `SITE_BASE_URL`, defaulting to `http://localhost:8080/younglabor`
 - Produces: repeatable HTTP, landmark, metadata, external-link, and transfer-budget checks
 
@@ -449,7 +514,7 @@ git commit -m "perf: optimize public asset delivery"
 #!/usr/bin/env bash
 set -euo pipefail
 base_url="${SITE_BASE_URL:-http://localhost:8080/younglabor}"
-for path in / /about /activities /tools /committee/ /admin/login.php; do
+for path in / /about /activities /activity /press /resources /tools /committee/ /admin/login.php; do
   code="$(curl -sS -o /tmp/yl-smoke-body -w '%{http_code}' "$base_url$path")"
   test "$code" = 200
 done
@@ -466,7 +531,7 @@ const assert = require('node:assert/strict');
 const base = process.env.SITE_BASE_URL || 'http://localhost:8080/younglabor';
 
 (async () => {
-    for (const path of ['/', '/about', '/activities', '/tools']) {
+    for (const path of ['/', '/about', '/activities', '/activity', '/press', '/resources', '/tools']) {
         const response = await fetch(base + path);
         assert.equal(response.status, 200, `${path} must return 200`);
         const html = await response.text();
@@ -521,6 +586,7 @@ Run:
 php tests/site-content.test.php
 php tests/public-layout.test.php
 php tests/public-copy.test.php
+php tests/home-content.test.php
 php tests/tools-page.test.php
 php tests/public-performance.test.php
 php tests/page-tracker-failure.test.php
@@ -530,17 +596,17 @@ node tests/admin-contact-xss.test.js
 find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
 ```
 
-Expected: every command exits 0; 29 existing PHP files plus the newly added PHP files report no syntax errors.
+Expected: every command exits 0 and every tracked PHP file reports no syntax errors.
 
 - [ ] **Step 7: Measure the mobile baseline and result**
 
 Run: `npx --yes lighthouse@12.8.2 http://localhost:8080/younglabor/ --only-categories=performance,accessibility,seo --form-factor=mobile --output=json --output-path=/tmp/younglabor-lighthouse.json --chrome-flags='--headless'`
 
-Expected: save the score and LCP/CLS values in the PR description. Treat failure to reach LCP <= 2.5 seconds or CLS <= 0.1 as a release blocker; record INP from production field data after deployment because a one-shot Lighthouse run cannot establish p75 INP.
+Expected: save the score and LCP/CLS values in the PR description. Treat failure to reach LCP &lt;= 2.5 seconds or CLS &lt;= 0.1 as a release blocker; record INP from production field data after deployment because a one-shot Lighthouse run cannot establish p75 INP.
 
 - [ ] **Step 8: Commit the public quality gates**
 
 ```bash
-git add tests/public-http-smoke.sh tests/public-accessibility.test.js tests/page-tracker-failure.test.php includes/header.php includes/footer.php index.php about.php activities.php tools.php assets/css/style.css
+git add tests/public-http-smoke.sh tests/public-accessibility.test.js tests/page-tracker-failure.test.php includes/header.php includes/footer.php index.php about.php activities.php tools.php activity press resources assets/css/style.css
 git commit -m "test: add public site quality gates"
 ```
