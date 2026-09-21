@@ -15,7 +15,7 @@
 - Start only after `docs/audits/2026-09-21-production-inventory.md` contains the exact line `Gate: PASS` and the managed-content plan is implemented.
 - Preserve `/admin/login.php`, `/committee/`, both form APIs, and all existing production data.
 - Use the hero copy `제조업 청년노동자들의 안전과 노동권을 지킵니다.` exactly.
-- Use the four work areas `현장 조직`, `교육`, `안전 도구`, and `연구`.
+- Use the three work areas `교육`, `안전 도구`, and `연구`.
 - Link SafeFactory only to `https://safefactory.kr/` and Basic Labor Consultation only to `https://laborconsult.vercel.app/`; label both `제작 중`.
 - Do not iframe, hotlink images from, or fetch runtime data from either external service.
 - Remove the public Pretendard network request; use the Korean system-font stack.
@@ -90,7 +90,6 @@ Expected: FAIL because `includes/SiteContent.php` does not exist.
 <?php
 function siteWorkAreas(): array {
     return [
-        ['key' => 'field', 'title' => '현장 조직', 'summary' => '학교 방문, 교사 만남, 캠페인과 동아리로 관계를 만듭니다.'],
         ['key' => 'education', 'title' => '교육', 'summary' => '일을 시작하기 전에 위험을 알고 질문할 수 있게 합니다.'],
         ['key' => 'tools', 'title' => '안전 도구', 'summary' => '학교와 일터에서 필요한 안전·노동 정보를 쉽게 찾게 합니다.'],
         ['key' => 'research', 'title' => '연구', 'summary' => '현장 경험을 근거로 만들고 교육과 제도 개선에 연결합니다.'],
@@ -257,7 +256,7 @@ foreach ($required as $copy) {
 foreach (['왜 제조업 청년노동자인가', '왜 반도체고에서 시작하는가'] as $copy) {
     if (strpos($about, $copy) === false) exit(1);
 }
-foreach (['현장 조직', '교육', '안전 도구', '연구'] as $copy) {
+foreach (['교육', '안전 도구', '연구'] as $copy) {
     if (strpos($activities, $copy) === false) exit(1);
 }
 ```
