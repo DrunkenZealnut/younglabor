@@ -246,6 +246,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .area-number { color: var(--color-gray); }
 .plain-list { list-style: none; border-top: var(--hairline); }
 .plain-list li { padding: 1rem 0; border-bottom: var(--hairline); }
+.tool-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: var(--hairline); border-left: var(--hairline); }
+.tool-card { display: flex; flex-direction: column; align-items: flex-start; min-height: 100%; padding: clamp(1.5rem, 4vw, 3rem); border-right: var(--hairline); border-bottom: var(--hairline); }
+.tool-card h2, .tool-card h3 { margin: 1rem 0; font-size: clamp(1.75rem, 4vw, 3rem); line-height: 1.1; }
+.tool-status { display: inline-block; padding: .25rem .6rem; background: var(--color-lime); font-size: .8125rem; font-weight: 600; }
+.tool-tagline { max-width: 35rem; font-size: 1.15rem; font-weight: 600; }
+.tool-details { margin: 2rem 0; }
+.tool-details div { padding: 1rem 0; border-top: var(--hairline); }
+.tool-details dt { margin-bottom: .35rem; font-size: .8125rem; color: var(--color-gray); }
+.tool-details dd { margin: 0; }
+.tool-link { display: grid; grid-template-columns: auto auto; gap: .15rem .5rem; margin-top: auto; color: var(--color-ink); font-weight: 600; text-underline-offset: 4px; }
+.tool-domain { grid-column: 1 / -1; font-size: .8125rem; color: var(--color-gray); font-weight: 400; }
+.notice-panel { max-width: 48rem; }
+.notice-panel p + p { margin-top: 1rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 .page-header {
     padding: clamp(3rem, 6vw, 5rem) 0 clamp(3rem, 6vw, 5rem);
@@ -875,6 +889,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     .split-intro, .activity-area, .principle-grid, .impact-grid {
         grid-template-columns: 1fr;
     }
+
+    .tool-grid { grid-template-columns: 1fr; }
 
     .work-card-block {
         aspect-ratio: 4 / 3;
