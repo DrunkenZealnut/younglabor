@@ -19,7 +19,7 @@ require_once __DIR__ . '/includes/header.php';
 <section class="hero">
     <div class="container">
         <p class="eyebrow">청년노동자인권센터</p>
-        <h1 class="hero-title">중소영세 제조업 청년노동자와 함께, 처음 일하는 몸을 지킵니다.</h1>
+        <h1 class="hero-title">제조업 청년노동자들의 안전과 노동권을 지킵니다.</h1>
         <p class="hero-lead">학교에서 일터로 향하는 청년 곁에서 위험을 알아보는 힘, 질문할 사람, 실제로 쓸 수 있는 안전 정보를 만듭니다.</p>
         <div class="hero-actions">
             <a href="<?php echo url('about'); ?>" class="btn-cta">센터 알아보기</a>
