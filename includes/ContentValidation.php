@@ -100,6 +100,9 @@ function contentExternalUrlIsSafe(string $url, ?callable $hostResolver = null): 
         return false;
     }
     $host = strtolower(rtrim((string)($parts['host'] ?? ''), '.'));
+    if (strlen($host) > 2 && $host[0] === '[' && substr($host, -1) === ']') {
+        $host = substr($host, 1, -1);
+    }
     if ($host === '' || $host === 'localhost' || substr($host, -6) === '.local') {
         return false;
     }

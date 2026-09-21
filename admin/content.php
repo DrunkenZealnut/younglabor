@@ -12,6 +12,15 @@ $repository = new ContentRepository($db);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrfToken()) {
         $_SESSION['content_flash'] = ['type'=>'error', 'message'=>'요청을 확인할 수 없습니다. 다시 시도해 주세요.'];
+    } elseif (($_POST['action'] ?? '') === 'retry_cleanup') {
+        try {
+            $storage = new ContentStorage(contentStoragePath());
+            $manager = new ContentManager($db, $repository, $storage);
+            $completed = $manager->retryPendingCleanup();
+            $_SESSION['content_flash'] = ['type'=>'success', 'message'=>'파일 정리 재시도 완료: ' . $completed . '건'];
+        } catch (Throwable $error) {
+            $_SESSION['content_flash'] = ['type'=>'error', 'message'=>'파일 정리를 재시도하지 못했습니다.'];
+        }
     } elseif (($_POST['action'] ?? '') === 'delete') {
         $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
         $revision = filter_var($_POST['expected_revision'] ?? null, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
@@ -50,7 +59,10 @@ adminHeader();
 ?>
 <div class="main-header">
     <h1>콘텐츠 관리</h1>
-    <a class="btn btn-primary" href="<?php echo e(url('admin/content-edit.php')); ?>">새 콘텐츠</a>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <form method="post"><?php echo csrfField(); ?><input type="hidden" name="action" value="retry_cleanup"><button class="btn btn-outline" type="submit">파일 정리 재시도</button></form>
+        <a class="btn btn-primary" href="<?php echo e(url('admin/content-edit.php')); ?>">새 콘텐츠</a>
+    </div>
 </div>
 
 <?php if ($flash): ?>

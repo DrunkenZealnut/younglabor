@@ -12,6 +12,7 @@ logs/
 # 업로드 파일 (사용자 데이터)
 data/file/notices/*
 !data/file/notices/.gitkeep
+data/content/
 
 # macOS
 .DS_Store
