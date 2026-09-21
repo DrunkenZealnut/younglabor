@@ -2,6 +2,10 @@
 
 점검일: 2026-09-21 (Asia/Seoul)
 
+Gate: BLOCKED
+
+차단 사유: 운영 문서 루트의 파일·해시, 운영 PHP/Apache 모듈, 운영 DB 스키마, 업로드 보존 규칙과 복구 가능한 백업을 확인할 접근 수단이 없다.
+
 ## Access and runtime
 
 - Access mode: unavailable. 이 실행 환경에는 승인된 `YL_SSH_HOST`, `YL_DOCUMENT_ROOT`, FTP 접속 설정 또는 호스팅 제어판 세션이 없다.
