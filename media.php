@@ -13,16 +13,17 @@ try {
     if ($file === null) throw new RuntimeException('not found');
     $storage = new ContentStorage(contentStoragePath());
     $path = $storage->pathFor((string)$file['storage_name']);
+    $isVariant = false;
     $variantWidth = filter_var($_GET['w'] ?? null, FILTER_VALIDATE_INT);
     if (in_array($variantWidth, [480, 960], true) && (int)$file['width'] > $variantWidth) {
         $variantPath = $storage->ensureVariant((string)$file['storage_name'], (int)$variantWidth);
         if ($variantPath !== null && is_file($variantPath)) {
             $path = $variantPath;
-            $file['sha256'] = hash('sha256', (string)$file['sha256'] . ':w' . $variantWidth);
+            $isVariant = true;
         }
     }
     if ($path === null || !is_file($path)) throw new RuntimeException('not found');
-    streamContentFile($file, $path, false);
+    streamContentFile($file, $path, false, $isVariant);
 } catch (Throwable $error) {
     http_response_code(404);
 }

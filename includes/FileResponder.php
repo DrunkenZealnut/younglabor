@@ -43,7 +43,16 @@ function safeDownloadName(string $name): string
     return $name !== '' ? $name : 'download';
 }
 
-function streamContentFile(array $file, string $absolutePath, bool $attachment): void
+function hashContentHandle($handle): ?string
+{
+    if (!is_resource($handle) || !@rewind($handle)) return null;
+    $context = hash_init('sha256');
+    if (hash_update_stream($context, $handle) === false) return null;
+    $hash = hash_final($context);
+    return @rewind($handle) ? $hash : null;
+}
+
+function streamContentFile(array $file, string $absolutePath, bool $attachment, bool $hashActualBytes = false): void
 {
     $handle = @fopen($absolutePath, 'rb');
     if ($handle === false) {
@@ -57,7 +66,17 @@ function streamContentFile(array $file, string $absolutePath, bool $attachment):
         http_response_code(404);
         return;
     }
-    $etag = '"' . (string)$file['sha256'] . '"';
+    $sha256 = (string)$file['sha256'];
+    if ($hashActualBytes) {
+        $actualHash = hashContentHandle($handle);
+        if ($actualHash === null) {
+            fclose($handle);
+            http_response_code(404);
+            return;
+        }
+        $sha256 = $actualHash;
+    }
+    $etag = '"' . $sha256 . '"';
     header('ETag: ' . $etag);
     header('X-Content-Type-Options: nosniff');
     if (fileResponderEtagMatches((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''), $etag)) {

@@ -10,6 +10,10 @@ foreach (['bytes=100-101','bytes=0-1,4-5','items=0-1'] as $bad) {
 }
 if (safeDownloadName("../보고서\r\nX-Test: yes.pdf") !== '보고서 X-Test yes.pdf') exit(1);
 if (!fileResponderEtagMatches('W/"abc", "other"', '"abc"')) exit(1);
+$hashFixture = fopen('php://temp', 'w+b');
+fwrite($hashFixture, 'variant bytes');
+if (hashContentHandle($hashFixture) !== hash('sha256', 'variant bytes') || ftell($hashFixture) !== 0) exit(1);
+fclose($hashFixture);
 $missing = sys_get_temp_dir() . '/missing-managed-file-' . bin2hex(random_bytes(4));
 ob_start();
 streamContentFile(['sha256'=>str_repeat('a', 64), 'mime'=>'image/webp', 'original_name'=>'missing.webp'], $missing, false);

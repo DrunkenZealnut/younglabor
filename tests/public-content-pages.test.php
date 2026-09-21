@@ -17,6 +17,7 @@ foreach ([$activityIndex, $activityView] as $source) {
 if (strpos(file_get_contents(__DIR__ . '/../media.php'), 'ensureVariant') === false) exit(1);
 $mediaSource = file_get_contents(__DIR__ . '/../media.php');
 if (strpos($mediaSource, 'hash_file(') !== false || strpos($mediaSource, 'filesize(') !== false) exit(1);
+if (strpos($mediaSource, 'streamContentFile($file, $path, false, $isVariant)') === false) exit(1);
 $srcset = contentImageSrcset(['file_id'=>7, 'file_width'=>1600]);
 foreach (['media/7?w=480 480w', 'media/7?w=960 960w', 'media/7 1600w'] as $candidate) {
     if (strpos($srcset, $candidate) === false) exit(1);
