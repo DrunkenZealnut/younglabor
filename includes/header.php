@@ -19,6 +19,7 @@ if (!isset($pageUrl)) $pageUrl = url($currentPage === 'home' ? '' : $currentPage
     <meta property="og:description" content="<?php echo htmlspecialchars($pageDescription); ?>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="<?php echo htmlspecialchars($pageUrl); ?>">
+    <link rel="canonical" href="<?php echo htmlspecialchars($pageUrl); ?>">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">

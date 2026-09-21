@@ -18,6 +18,15 @@ RewriteRule \.(?:bak|backup|sql(?:\.gz)?|zip|tar|tgz|gz|7z)$ - [F,L,NC]
 RewriteRule \.(?:log|sql|md)$ - [F,L,NC]
 RewriteRule ^(?:docs|includes)(?:/|$) - [F,L,NC]
 
+# 관리형 공개 콘텐츠 경로
+RewriteRule ^activity/?$ activity/index.php [L,QSA]
+RewriteRule ^activity/([a-z0-9-]+)/?$ activity/view.php?slug=$1 [L,QSA]
+RewriteRule ^press/?$ press/index.php [L,QSA]
+RewriteRule ^resources/?$ resources/index.php [L,QSA]
+RewriteRule ^resources/([a-z0-9-]+)/?$ resources/view.php?slug=$1 [L,QSA]
+RewriteRule ^media/([0-9]+)/?$ media.php?id=$1 [L,QSA]
+RewriteRule ^downloads/([0-9]+)/?$ download.php?id=$1 [L,QSA]
+
 # .php 확장자 없이 접근 가능하도록 (about → about.php)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
