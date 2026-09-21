@@ -4,15 +4,6 @@ function siteWorkAreas(): array
 {
     return [
         [
-            'key' => 'field',
-            'title' => '현장 조직',
-            'summary' => '학교 방문, 교사 만남, 캠페인과 동아리로 관계를 만듭니다.',
-            'purpose' => '청년이 일을 시작하기 전부터 안전을 말할 사람과 연결합니다.',
-            'activities' => ['반도체고 방문과 교사 만남', '커피차 캠페인', '청소년 노동안전 동아리'],
-            'href' => 'activity',
-            'link_label' => '현장 활동 보기',
-        ],
-        [
             'key' => 'education',
             'title' => '교육',
             'summary' => '일을 시작하기 전에 위험을 알고 질문할 수 있게 합니다.',

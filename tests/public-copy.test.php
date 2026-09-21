@@ -16,6 +16,7 @@ foreach ($required as $copy) {
 foreach (['왜 제조업 청년노동자인가', '왜 반도체고에서 시작하는가'] as $copy) {
     if (strpos($about, $copy) === false) exit(1);
 }
-foreach (['현장 조직', '교육', '안전 도구', '연구'] as $copy) {
+foreach (['교육', '안전 도구', '연구'] as $copy) {
     if (strpos($activities, $copy) === false) exit(1);
 }
+if (strpos($activities, '현장 조직') !== false) exit(1);

@@ -7,7 +7,7 @@ PageTracker::track('우리가 하는 일');
 
 $currentPage = 'activities';
 $pageTitle = '우리가 하는 일 - ' . $site['name'];
-$pageDescription = '현장 조직, 교육, 안전 도구, 연구로 제조업 청년노동자의 안전할 권리를 만듭니다.';
+$pageDescription = '교육, 안전 도구, 연구로 제조업 청년노동자의 안전할 권리를 만듭니다.';
 $pageUrl = url('activities');
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -15,7 +15,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="container">
         <p class="eyebrow">우리가 하는 일</p>
         <h1>산출물보다 현장에서 작동하는 변화를 만듭니다.</h1>
-        <p>현장 조직, 교육, 안전 도구, 연구를 연결해 청년이 알고 묻고 행동할 힘을 키웁니다.</p>
+        <p>교육, 안전 도구, 연구를 연결해 청년이 알고 묻고 행동할 힘을 키웁니다.</p>
     </div>
 </section>
 

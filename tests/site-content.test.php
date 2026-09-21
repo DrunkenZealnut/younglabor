@@ -10,7 +10,7 @@ function assertSameValue($expected, $actual, string $message): void
 }
 
 $areas = siteWorkAreas();
-assertSameValue(['field', 'education', 'tools', 'research'], array_column($areas, 'key'), '활동 갈래 순서가 달라졌습니다.');
+assertSameValue(['education', 'tools', 'research'], array_column($areas, 'key'), '활동 갈래 순서가 달라졌습니다.');
 
 $tools = siteTools();
 assertSameValue(2, count($tools), '안전 도구는 두 개여야 합니다.');
