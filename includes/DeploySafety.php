@@ -10,12 +10,25 @@ function deploymentPathIsUnder(string $path, string $root): bool
 
 function deploymentPathIsExcluded(string $path, array $roots): bool
 {
+    $normalizedPath = trim(str_replace('\\', '/', $path), '/');
     foreach ($roots as $root) {
-        if (deploymentPathIsUnder($path, (string)$root)) {
+        $normalizedRoot = trim(str_replace('\\', '/', (string)$root), '/');
+        if (strpbrk($normalizedRoot, '*?[') !== false) {
+            if (fnmatch($normalizedRoot, $normalizedPath, FNM_PATHNAME)) {
+                return true;
+            }
+            continue;
+        }
+        if (deploymentPathIsUnder($normalizedPath, $normalizedRoot)) {
             return true;
         }
     }
     return false;
+}
+
+function deploymentResultIsSuccessful(array $copyErrors, array $pruneErrors): bool
+{
+    return count($copyErrors) === 0 && count($pruneErrors) === 0;
 }
 
 function deploymentPathIsProtectedProductionData(string $path): bool
@@ -27,4 +40,3 @@ function deploymentPathIsProtectedProductionData(string $path): bool
     }
     return false;
 }
-

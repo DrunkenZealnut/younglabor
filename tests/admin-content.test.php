@@ -11,4 +11,7 @@ if (strpos($edit, '$adminUser[\'id\']') === false || strpos($edit, 'expected_rev
 if (strpos($edit, '$formRevision') === false || strpos($edit, '$conflicted') === false) exit(1);
 if (strpos($edit, 'value="<?php echo (int)$formRevision; ?>"') === false) exit(1);
 if (strpos($edit, "<?php echo \$conflicted ? ' disabled' : ''; ?>") === false) exit(1);
+if (strpos($edit, 'catch (ContentSlugConflictException $error)') === false) exit(1);
+if (strpos($edit, 'catch (ContentConflictException $error)') === false) exit(1);
+if (strpos($edit, "\$errors['slug'] = '이미 사용 중인 주소 이름입니다.';") === false) exit(1);
 if (stripos($edit, 'contenteditable') !== false || stripos($edit, 'wysiwyg') !== false) exit(1);

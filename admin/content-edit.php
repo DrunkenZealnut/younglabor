@@ -68,10 +68,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (ContentValidationException $error) {
             $errors = $error->errors();
             $values = array_replace($values, $error->values());
-        } catch (ContentConflictException $error) {
-            $generalError = '다른 변경과 충돌했습니다. 목록에서 다시 열어 주세요.';
+        } catch (ContentSlugConflictException $error) {
+            $generalError = '저장하지 못했습니다. 주소 이름이 이미 사용 중인지 확인해 주세요.';
+            $errors['slug'] = '이미 사용 중인 주소 이름입니다.';
             $values = array_replace($values, $input);
-            $conflicted = true;
+        } catch (ContentConflictException $error) {
+            if ($existing) {
+                $generalError = '다른 변경과 충돌했습니다. 목록에서 다시 열어 주세요.';
+                $conflicted = true;
+            } else {
+                $generalError = '저장하지 못했습니다. 입력 내용을 확인한 뒤 다시 시도해 주세요.';
+            }
+            $values = array_replace($values, $input);
         } catch (ContentUploadException $error) {
             $generalError = '파일을 확인하지 못했습니다. 형식과 크기를 확인해 주세요.';
             $values = array_replace($values, $input);

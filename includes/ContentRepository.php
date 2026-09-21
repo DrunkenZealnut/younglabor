@@ -1,6 +1,7 @@
 <?php
 
 class ContentConflictException extends RuntimeException {}
+class ContentSlugConflictException extends ContentConflictException {}
 
 class ContentRepository
 {
@@ -324,7 +325,7 @@ class ContentRepository
     private function translateConflict(PDOException $error): void
     {
         if ($error->getCode() === '23000') {
-            throw new ContentConflictException('Content slug already exists.', 0, $error);
+            throw new ContentSlugConflictException('Content slug already exists.', 0, $error);
         }
     }
 }

@@ -12,12 +12,15 @@
 
 ## 외부 저장소 준비
 
-SSH 계정의 홈처럼 문서 루트 밖 위치에 전용 디렉터리를 만든다.
+SSH 계정의 홈처럼 문서 루트 밖 위치에 전용 디렉터리를 만든다. 먼저 호스팅 관리 화면이나 공급자 문서에서 웹 PHP의 실행 계정이 SSH 계정과 같은 UID인지 확인한다. 같은 계정일 때만 `0700`을 사용한다. 계정이 다르면 두 계정이 속한 전용 그룹으로 소유 그룹을 바꾸고 `0770`을 사용한다.
 
 ```bash
-install -d -m 700 "$HOME/.younglabor-content"
+mkdir -p "$HOME/.younglabor-content"
+chmod 700 "$HOME/.younglabor-content" # 웹 PHP와 SSH가 같은 UID인 경우
 cd "$HOME/.younglabor-content" && pwd -P
 ```
+
+공유 그룹 방식은 호스팅 공급자가 허용한 경우에만 `chgrp <전용그룹> "$HOME/.younglabor-content" && chmod 770 "$HOME/.younglabor-content"`로 설정한다. 애플리케이션은 이미 존재하는 디렉터리의 운영자 지정 권한을 덮어쓰지 않는다.
 
 출력된 절대경로를 운영 환경 파일에 다음 키로 기록한다. 환경 파일과 실제 경로는 저장소에 커밋하지 않는다.
 
@@ -25,7 +28,20 @@ cd "$HOME/.younglabor-content" && pwd -P
 CONTENT_STORAGE_PATH=/absolute/path/outside/document-root
 ```
 
-웹 PHP 프로세스가 디렉터리를 읽고 쓸 수 있고, HTTP로 같은 경로에 접근할 수 없는지 확인한다. 파일은 0600, 디렉터리는 0700을 유지한다.
+웹 PHP 프로세스의 실제 쓰기 권한은 배포를 계속하기 전에 확인한다. 새 코드를 올린 뒤 관리자 인증이 필요한 임시 점검 파일을 `admin/storage-write-check.php`에 만들고 다음 코드로 파일 생성과 삭제를 모두 시험한다.
+
+```php
+<?php
+require_once __DIR__ . '/auth.php';
+$probe = contentStoragePath() . '/.write-check-' . bin2hex(random_bytes(8));
+if (file_put_contents($probe, 'ok', LOCK_EX) !== 2 || !unlink($probe)) {
+    http_response_code(500);
+    exit('storage-write=failed');
+}
+echo 'storage-write=ok';
+```
+
+관리자 로그인 후 이 경로에서 `storage-write=ok`를 확인하고 임시 파일을 즉시 삭제한다. 점검 파일을 운영 저장소나 커밋에 남기지 않는다. 외부 저장 경로가 HTTP로 접근되지 않는지도 확인한다. 같은 UID 구성에서는 파일 0600, 디렉터리 0700을 유지한다. 공유 그룹 구성에서는 공급자의 권한 정책과 실제 읽기·쓰기 시험 결과에 맞춰 그룹 권한을 유지한다.
 
 ## DB migration
 

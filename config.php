@@ -74,7 +74,6 @@ if (!function_exists('contentStoragePath')) {
         if (!is_dir($configured) && !mkdir($configured, 0700, true) && !is_dir($configured)) {
             throw new RuntimeException('Content storage directory could not be created.');
         }
-        @chmod($configured, 0700);
         $storage = realpath($configured);
         $documentRoot = realpath(__DIR__);
         if ($storage === false || $documentRoot === false || !is_writable($storage)) {

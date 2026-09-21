@@ -4,7 +4,7 @@ set -eu
 docroot="${1:?usage: collect-production-inventory.sh DOCUMENT_ROOT OUTPUT_DIR}"
 output_dir="${2:?usage: collect-production-inventory.sh DOCUMENT_ROOT OUTPUT_DIR}"
 
-if [[ ! -d "$docroot" || ! -d "$output_dir" ]]; then
+if [ ! -d "$docroot" ] || [ ! -d "$output_dir" ]; then
     echo 'document root and output directory must already exist' >&2
     exit 2
 fi

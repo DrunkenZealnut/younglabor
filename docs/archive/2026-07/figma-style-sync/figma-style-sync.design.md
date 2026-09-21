@@ -7,7 +7,7 @@
 > **Author**: 김창수 (with Claude Code)
 > **Date**: 2026-07-21
 > **Status**: Draft
-> **Planning Doc**: [figma-style-sync.plan.md](../../01-plan/features/figma-style-sync.plan.md)
+> **Planning Doc**: [figma-style-sync.plan.md](figma-style-sync.plan.md)
 
 ---
 
@@ -323,7 +323,7 @@ THEME_ACCENT_GREEN=#18B201
 - [ ] 데스크톱 1440: 히어로·카드·통계·푸터 워드마크가 참조 스크린샷(`docs/01-plan/assets/figma-refs/`)과 구조 일치
 - [ ] Tablet 1024 / Mobile 390: 그리드 재배치 (4→2→1열), 워드마크 넘침 없음
 - [ ] 대비 규칙 준수 (2.2 표) — 특히 그린 블록에 텍스트 없음
-- [ ] 라운딩·그림자 잔존 0건 (`grep -E 'border-radius|box-shadow' style.css` — 0 또는 `0` 값만)
+- [ ] 장식용 라운딩·그림자 잔존 0건 (`grep -E 'border-radius|box-shadow' style.css` — `box-shadow: 0 1px 0 0 var(--color-ink)`인 폼 focus 언더라인만 허용)
 
 ---
 

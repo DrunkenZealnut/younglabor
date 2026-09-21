@@ -5,7 +5,7 @@
 > **Project**: 청년노동자인권센터 (younglabor.kr)
 > **Date**: 2026-07-21
 > **Analyzer**: gap-detector Agent (독립 검증) + 정정 반영
-> **Design Doc**: [figma-style-sync.design.md](../02-design/features/figma-style-sync.design.md) (v0.3)
+> **Design Doc**: [figma-style-sync.design.md](figma-style-sync.design.md) (v0.3)
 > **판정**: ✅ **PASS** (기준 90% 이상 — Report 단계 진입 가능)
 
 ---

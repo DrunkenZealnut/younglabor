@@ -44,8 +44,8 @@
 - [ ] **Step 1: Write the failing collector contract test**
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
+set -eu
 repo_root="$(cd "$(dirname "$0")/.." && pwd -P)"
 fixture="$(mktemp -d)"
 trap 'rm -rf "$fixture"' EXIT
@@ -81,23 +81,27 @@ output_dir="$(cd "$output_dir" && pwd -P)"
 case "$output_dir/" in "$docroot/"*) echo 'output directory must be outside document root' >&2; exit 2;; esac
 : > "$output_dir/errors.txt"
 {
-  php -v | head -2
+  if command -v php >/dev/null 2>&1; then php -v | head -2; else printf '%s\n' 'php_cli=unavailable'; fi
   command -v apachectl >/dev/null 2>&1 && apachectl -v || true
 } > "$output_dir/runtime.txt" 2>> "$output_dir/errors.txt"
 {
-  php -m | LC_ALL=C sort
-  php -r '$info = function_exists("gd_info") ? gd_info() : []; echo "gd_webp=" . (!empty($info["WebP Support"]) ? "enabled" : "disabled") . PHP_EOL;'
+  if command -v php >/dev/null 2>&1; then
+    php -m | LC_ALL=C sort
+    php -r '$info = function_exists("gd_info") ? gd_info() : []; echo "gd_webp=" . (!empty($info["WebP Support"]) ? "enabled" : "disabled") . PHP_EOL;'
+  else
+    printf '%s\n' 'php_cli_modules=unavailable'
+  fi
   command -v apachectl >/dev/null 2>&1 && apachectl -M || true
 } > "$output_dir/modules.txt" 2>> "$output_dir/errors.txt"
 find "$docroot" -xdev -type f \
-  ! -path "$docroot/.git/*" ! -path "$docroot/uploads/*" \
+  ! -path "$docroot/.git/*" ! -path "$docroot/uploads/*" ! -path "$docroot/data/file/*" \
   ! -name '.env' ! -name '.env.*' ! -name '*.log' \
   -print | sed "s#^$docroot/##" | LC_ALL=C sort > "$output_dir/files.txt"
 find "$docroot" -xdev -type f \( -name '*.php' -o -name '*.css' -o -name '*.js' -o -name '.htaccess' \) \
-  ! -path "$docroot/.git/*" ! -path "$docroot/uploads/*" -exec sha256sum {} + \
+  ! -path "$docroot/.git/*" ! -path "$docroot/uploads/*" ! -path "$docroot/data/file/*" -exec sha256sum {} + \
   | sed "s#  $docroot/#  #" | LC_ALL=C sort > "$output_dir/hashes.txt" 2>> "$output_dir/errors.txt"
 for name in .env .env.local .env.production .git; do
-  if [[ -e "$docroot/$name" ]]; then printf '%s present\n' "$name"; else printf '%s absent\n' "$name"; fi
+  if [ -e "$docroot/$name" ]; then printf '%s present\n' "$name"; else printf '%s absent\n' "$name"; fi
 done > "$output_dir/sensitive-presence.txt"
 ```
 

@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/Database.php';
 require_once __DIR__ . '/../includes/Mailer.php';
+require_once __DIR__ . '/../includes/Privacy.php';
 
 /**
  * JSON 응답
@@ -82,13 +83,8 @@ try {
     $rawEmail = trim($data['email'] ?? '');
     $rawMessage = trim($data['message'] ?? '');
 
-    // IP 마스킹: 마지막 옥텟/구간을 0으로 (개인정보보호법 준수)
-    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        $ip = preg_replace('/\.\d+$/', '.0', $ip);
-    } elseif (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-        $ip = preg_replace('/:[^:]+$/', ':0', $ip);
-    }
+    // IP 마스킹: IPv4 마지막 옥텟, IPv6 마지막 16비트를 제거한다.
+    $ip = maskIpAddress($_SERVER['REMOTE_ADDR'] ?? '');
 
     $db = Database::getInstance()->getConnection();
     $stmt = $db->prepare("

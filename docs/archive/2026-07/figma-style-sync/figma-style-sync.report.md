@@ -42,7 +42,7 @@
 |-------------|---------|
 | **Problem** | 현재 사이트는 범용적인 스카이블루(#5BC0DE) 테마로 단체의 전문성과 신뢰를 전달하는 브랜드 아이덴티티가 부재함 |
 | **Solution** | Figma 커뮤니티 템플릿 'Frame & Form'의 에디토리얼 디자인 시스템(초대형 타이포+헤어라인 그리드+라임·퍼플·검정·화이트 팔레트)을 `.env` 테마 변수 + `style.css` 단일 교체로 전면 채택 |
-| **Function/UX Effect** | 히어로·사업카드·푸터가 매거진형 레이아웃으로 재구성되어 가독성과 시각적 위계 강화. 실적: Match Rate 97.4%(측정값, 잔여 편차 4건은 세션 내 수정 완료·재검증 전), 변경 파일 9개, 회귀 0건, 5개 공개 페이지 HTTP 200, 콘솔 에러 0건 |
+| **Function/UX Effect** | 히어로·사업카드·푸터가 매거진형 레이아웃으로 재구성되어 가독성과 시각적 위계 강화. 실적: Match Rate 97.4%(측정값, 잔여 편차 4건은 세션 내 수정 완료·재검증 전), 변경 대상 11개 항목(실제 파일 13개), 회귀 0건, 5개 공개 페이지 HTTP 200, 콘솔 에러 0건 |
 | **Core Value** | 코드 구조 변경 없이 CSS 테마 계층만 교체하여 "디자인 스튜디오급" 브랜드 인상 획득 — 향후 유지보수 비용 최소화 (폰트 CDN 추가 없음, 외부 리소스 0) |
 
 ---
@@ -50,14 +50,14 @@
 ## 2. PDCA 사이클 통합 기록
 
 ### 2.1 Plan Phase (기획)
-- **문서**: [figma-style-sync.plan.md](../../01-plan/features/figma-style-sync.plan.md)
+- **문서**: [figma-style-sync.plan.md](figma-style-sync.plan.md)
 - **목표**: Figma 디자인 시스템의 색상·타이포·레이아웃 언어를 사이트 전체에 이식
 - **주요 결정**: 전면 채택 방침 확정 (2026-07-21 사용자 결정)
 - **Scope**: 공개 페이지 5종(홈·소개·사업·소식·동아리신청) + 공통 헤더/푸터 + 폼 요소
 - **Out of Scope**: admin 패널, 콘텐츠 문구 변경, 기능 개발
 
 ### 2.2 Design Phase (설계)
-- **문서**: [figma-style-sync.design.md](../../02-design/features/figma-style-sync.design.md) (v0.3)
+- **문서**: [figma-style-sync.design.md](figma-style-sync.design.md) (v0.3)
 - **토큰**: 색상 11종, 타이포 6종, 레이아웃 상수 정의 (스크린샷 실측값)
 - **마크업 변경 최소화**: CSS만 교체, HTML 마크업 구조 유지 원칙
 - **페이지별 명세**: 5개 페이지 + 공통 컴포넌트 8종 + 재정의 맵 정의
@@ -65,7 +65,7 @@
 
 ### 2.3 Do Phase (구현)
 - **기간**: 2026-07-21 (당일 완료)
-- **변경 파일 9개**:
+- **변경 대상 11개 항목(실제 파일 13개)**:
   1. `.env` / `.env.local` / `.env.production` — THEME_* 색상 팔레트 교체 + 신규 3키
   2. `config.php` — `$theme` 배열·`getThemeCSSVariables()` 확장
   3. `assets/css/style.css` — **761줄 전면 재작성** (토큰→베이스→컴포넌트→페이지→반응형 5섹션)
@@ -79,7 +79,7 @@
   11. **신규**: `includes/symbols.php` — 브랜드 심볼 2종 SVG 인라인
 
 ### 2.4 Check Phase (검증)
-- **문서**: [figma-style-sync.analysis.md](../../03-analysis/figma-style-sync.analysis.md)
+- **문서**: [figma-style-sync.analysis.md](figma-style-sync.analysis.md)
 - **독립 검증**: bkit gap-detector 에이전트 (설계 기준 78개 항목 분석)
 - **1차 Match Rate**: 97.4% (74 일치 + 4 경미 편차)
 - **⚠️ 4건 갭 — 동일 세션에서 즉시 해소**:

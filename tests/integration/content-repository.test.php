@@ -18,6 +18,12 @@ $row = $repo->findAdminById($published);
 $repo->save(array_replace($row, ['title'=>'첫 수정']), (int)$row['revision']);
 try { $repo->save(array_replace($row, ['title'=>'뒤늦은 수정']), (int)$row['revision']); exit(1); } catch (ContentConflictException $expected) {}
 try { $repo->save(array_replace($row, ['id'=>null,'revision'=>1]), null); exit(1); } catch (ContentConflictException $expected) {}
+$otherActivity = $repo->save(['type'=>'activity','title'=>'다른 활동','slug'=>'other-activity','summary'=>'요약','body'=>'본문','content_date'=>'2026-09-21','status'=>'draft','outlet'=>null,'external_url'=>null,'resource_category'=>null,'author_id'=>1], null);
+$otherRow = $repo->findAdminById($otherActivity);
+try {
+    $repo->save(array_replace($otherRow, ['slug'=>'hidden']), (int)$otherRow['revision']);
+    exit(1);
+} catch (ContentSlugConflictException $expected) {}
 if ($repo->findPublishedFile(999999, 'attachment') !== null) exit(1);
 $resource = $repo->save(['type'=>'resource','title'=>'자료','slug'=>'guide','summary'=>'설명','body'=>null,'content_date'=>'2026-09-19','status'=>'published','outlet'=>null,'external_url'=>null,'resource_category'=>'guide','author_id'=>1], null);
 $firstFile = ['purpose'=>'attachment','storage_name'=>str_repeat('a', 64),'original_name'=>'guide.pdf','mime'=>'application/pdf','byte_size'=>12,'sha256'=>str_repeat('b', 64),'width'=>null,'height'=>null,'alt_text'=>null];

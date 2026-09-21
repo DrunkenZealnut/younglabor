@@ -16,7 +16,7 @@ $CONFIG = [
     'log_file' => dirname(__DIR__) . '/deploy.log',
     // 배포 대상에서 항상 제외 (복사도, 삭제도 하지 않음)
     'exclude' => [
-        '.env', '.env.local', '.env.production',
+        '.env*',
         '.git', '.github', '.gitignore',
         'CLAUDE.md', '.claude',
         'deploy.log',
@@ -285,7 +285,8 @@ if ($errorCount > 0) {
 if (count($pruneErrors) > 0) {
     $msg .= ", " . count($pruneErrors) . " prune errors";
 }
-deployLog("SUCCESS: $msg");
+$success = deploymentResultIsSuccessful($errors, $pruneErrors);
+deployLog(($success ? 'SUCCESS: ' : 'FAILED: ') . $msg);
 
 if ($errorCount > 0) {
     deployLog("Copy errors: " . implode(', ', $errors));
@@ -294,4 +295,4 @@ if (count($pruneErrors) > 0) {
     deployLog("Prune errors: " . implode(', ', $pruneErrors));
 }
 
-respond(true, $msg, 200, ['copied' => $copied, 'pruned' => $pruned]);
+respond($success, $msg, $success ? 200 : 500, ['copied' => $copied, 'pruned' => $pruned]);
