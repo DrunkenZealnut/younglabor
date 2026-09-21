@@ -12,7 +12,18 @@ imagepng($canvas, $image); imagedestroy($canvas);
 $storage = new ContentStorage(contentStoragePath(), static function (string $from, string $to): bool { return rename($from, $to); });
 $cover = $storage->stageCover(['error'=>UPLOAD_ERR_OK,'tmp_name'=>$image,'size'=>filesize($image),'name'=>'cover.png'], '현장 사진');
 if ($cover['mime'] !== 'image/webp' || $cover['width'] !== 1600 || $cover['height'] !== 800) exit(1);
-$storage->discard($cover);
+if (array_keys($cover['variants'] ?? []) !== [480, 960]) exit(1);
+$storedCover = $storage->promote($cover);
+foreach ([480, 960] as $variantWidth) {
+    $variantPath = $storage->pathForVariant($storedCover['storage_name'], $variantWidth);
+    if ($variantPath === null || !is_file($variantPath)) exit(1);
+    $variantSize = getimagesize($variantPath);
+    if ($variantSize === false || $variantSize[0] !== $variantWidth) exit(1);
+}
+if (!$storage->remove($storedCover['storage_name'])) exit(1);
+foreach ([480, 960] as $variantWidth) {
+    if (is_file((string)$storage->pathForVariant($storedCover['storage_name'], $variantWidth))) exit(1);
+}
 $script = $root . '-bad.pdf'; file_put_contents($script, "<?php echo 1;");
 try { $storage->stageAttachment(['error'=>UPLOAD_ERR_OK,'tmp_name'=>$script,'size'=>filesize($script),'name'=>'bad.pdf']); exit(1); } catch (ContentUploadException $expected) {}
 $archive = $root . '-bad.zip';

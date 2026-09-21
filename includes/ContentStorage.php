@@ -44,7 +44,8 @@ class ContentStorage
             throw new ContentUploadException('Cover upload could not be staged.');
         }
         @chmod($rawPath, 0600);
-        $stagedPath = '';
+        $image = false;
+        $stagedPaths = [];
         try {
             $image = $this->decodeImage($rawPath, $mime);
             if ($image === false) {
@@ -58,25 +59,28 @@ class ContentStorage
             $scale = min(1, 1600 / max($sourceWidth, $sourceHeight));
             $width = max(1, (int)round($sourceWidth * $scale));
             $height = max(1, (int)round($sourceHeight * $scale));
-            $output = imagecreatetruecolor($width, $height);
-            imagealphablending($output, false);
-            imagesavealpha($output, true);
-            $transparent = imagecolorallocatealpha($output, 0, 0, 0, 127);
-            imagefilledrectangle($output, 0, 0, $width, $height, $transparent);
-            if (!imagecopyresampled($output, $image, 0, 0, 0, 0, $width, $height, $sourceWidth, $sourceHeight)) {
-                imagedestroy($output);
-                imagedestroy($image);
-                throw new ContentUploadException('Cover image could not be resized.');
-            }
-            imagedestroy($image);
             $storageName = bin2hex(random_bytes(32));
             $stagedPath = $this->staging . DIRECTORY_SEPARATOR . $storageName;
-            if (!imagewebp($output, $stagedPath, 82)) {
-                imagedestroy($output);
-                throw new ContentUploadException('Cover image could not be encoded.');
+            $stagedPaths[] = $stagedPath;
+            $this->writeResizedWebp($image, $sourceWidth, $sourceHeight, $width, $height, $stagedPath);
+
+            $variants = [];
+            foreach ([480, 960] as $variantWidth) {
+                if ($variantWidth >= $width) {
+                    continue;
+                }
+                $variantHeight = max(1, (int)round($height * ($variantWidth / $width)));
+                $variantName = $this->variantStorageName($storageName, $variantWidth);
+                $variantPath = $this->staging . DIRECTORY_SEPARATOR . $variantName;
+                $stagedPaths[] = $variantPath;
+                $this->writeResizedWebp($image, $sourceWidth, $sourceHeight, $variantWidth, $variantHeight, $variantPath);
+                $variants[$variantWidth] = [
+                    'staged_path' => $variantPath,
+                    'storage_name' => $variantName,
+                    'width' => $variantWidth,
+                    'height' => $variantHeight,
+                ];
             }
-            imagedestroy($output);
-            @chmod($stagedPath, 0600);
             return [
                 'staged_path' => $stagedPath,
                 'purpose' => 'cover',
@@ -88,14 +92,16 @@ class ContentStorage
                 'width' => $width,
                 'height' => $height,
                 'alt_text' => trim($altText),
+                'variants' => $variants,
             ];
+        } catch (Throwable $error) {
+            foreach ($stagedPaths as $path) {
+                if (is_file($path)) @unlink($path);
+            }
+            throw $error;
         } finally {
-            if (is_file($rawPath)) {
-                @unlink($rawPath);
-            }
-            if ($stagedPath !== '' && isset($output) && is_resource($output)) {
-                @imagedestroy($output);
-            }
+            if (is_file($rawPath)) @unlink($rawPath);
+            if ($image !== false) @imagedestroy($image);
         }
     }
 
@@ -166,26 +172,53 @@ class ContentStorage
 
     public function promote(array $staged): array
     {
-        $name = (string)($staged['storage_name'] ?? '');
-        $path = (string)($staged['staged_path'] ?? '');
-        if (!preg_match('/^[a-f0-9]{64}$/', $name) || !is_file($path) || dirname($path) !== $this->staging) {
-            throw new ContentUploadException('Invalid staged file.');
+        $items = [[
+            'storage_name' => (string)($staged['storage_name'] ?? ''),
+            'staged_path' => (string)($staged['staged_path'] ?? ''),
+        ]];
+        foreach (($staged['variants'] ?? []) as $variant) {
+            $items[] = $variant;
         }
-        $destination = $this->root . DIRECTORY_SEPARATOR . $name;
-        if (!rename($path, $destination)) {
-            throw new ContentUploadException('Staged file could not be promoted.');
+        foreach ($items as $item) {
+            if (!preg_match('/^[a-f0-9]{64}$/', (string)($item['storage_name'] ?? ''))
+                || !is_file((string)($item['staged_path'] ?? ''))
+                || dirname((string)$item['staged_path']) !== $this->staging) {
+                throw new ContentUploadException('Invalid staged file.');
+            }
         }
-        @chmod($destination, 0600);
+        $promoted = [];
+        try {
+            foreach ($items as $item) {
+                $destination = $this->root . DIRECTORY_SEPARATOR . $item['storage_name'];
+                if (!rename($item['staged_path'], $destination)) {
+                    throw new ContentUploadException('Staged file could not be promoted.');
+                }
+                @chmod($destination, 0600);
+                $promoted[] = $destination;
+            }
+        } catch (Throwable $error) {
+            foreach ($promoted as $path) {
+                if (is_file($path)) @unlink($path);
+            }
+            throw $error;
+        }
         $stored = $staged;
         unset($stored['staged_path']);
+        foreach ($stored['variants'] ?? [] as &$variant) {
+            unset($variant['staged_path']);
+        }
+        unset($variant);
         return $stored;
     }
 
     public function discard(array $staged): void
     {
-        $path = (string)($staged['staged_path'] ?? '');
-        if ($path !== '' && dirname($path) === $this->staging && is_file($path)) {
-            @unlink($path);
+        $paths = [(string)($staged['staged_path'] ?? '')];
+        foreach (($staged['variants'] ?? []) as $variant) {
+            $paths[] = (string)($variant['staged_path'] ?? '');
+        }
+        foreach ($paths as $path) {
+            if ($path !== '' && dirname($path) === $this->staging && is_file($path)) @unlink($path);
         }
     }
 
@@ -194,8 +227,14 @@ class ContentStorage
         if (!preg_match('/^[a-f0-9]{64}$/', $storageName)) {
             return false;
         }
-        $path = $this->root . DIRECTORY_SEPARATOR . $storageName;
-        return !is_file($path) || @unlink($path);
+        $removed = true;
+        foreach (array_merge([$storageName], array_map(function (int $width) use ($storageName): string {
+            return $this->variantStorageName($storageName, $width);
+        }, [480, 960])) as $name) {
+            $path = $this->root . DIRECTORY_SEPARATOR . $name;
+            if (is_file($path) && !@unlink($path)) $removed = false;
+        }
+        return $removed;
     }
 
     public function pathFor(string $storageName): ?string
@@ -204,6 +243,40 @@ class ContentStorage
             return null;
         }
         return $this->root . DIRECTORY_SEPARATOR . $storageName;
+    }
+
+    public function pathForVariant(string $storageName, int $width): ?string
+    {
+        if (!preg_match('/^[a-f0-9]{64}$/', $storageName) || !in_array($width, [480, 960], true)) {
+            return null;
+        }
+        return $this->root . DIRECTORY_SEPARATOR . $this->variantStorageName($storageName, $width);
+    }
+
+    private function variantStorageName(string $storageName, int $width): string
+    {
+        return hash('sha256', $storageName . ':w' . $width);
+    }
+
+    private function writeResizedWebp($image, int $sourceWidth, int $sourceHeight, int $width, int $height, string $path): void
+    {
+        $output = imagecreatetruecolor($width, $height);
+        if ($output === false) throw new ContentUploadException('Cover image could not be resized.');
+        try {
+            imagealphablending($output, false);
+            imagesavealpha($output, true);
+            $transparent = imagecolorallocatealpha($output, 0, 0, 0, 127);
+            imagefilledrectangle($output, 0, 0, $width, $height, $transparent);
+            if (!imagecopyresampled($output, $image, 0, 0, 0, 0, $width, $height, $sourceWidth, $sourceHeight)) {
+                throw new ContentUploadException('Cover image could not be resized.');
+            }
+            if (!imagewebp($output, $path, 82)) {
+                throw new ContentUploadException('Cover image could not be encoded.');
+            }
+            @chmod($path, 0600);
+        } finally {
+            imagedestroy($output);
+        }
     }
 
     private function assertUpload(array $upload, int $maxBytes): void

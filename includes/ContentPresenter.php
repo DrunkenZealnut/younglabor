@@ -36,3 +36,20 @@ function externalLinkHost(string $url): string
     $host = parse_url($url, PHP_URL_HOST);
     return is_string($host) ? strtolower(rtrim($host, '.')) : '';
 }
+
+function contentImageSrcset(array $file): string
+{
+    $id = (int)($file['file_id'] ?? 0);
+    $width = (int)($file['file_width'] ?? 0);
+    if ($id < 1 || $width < 1) {
+        return '';
+    }
+    $sources = [];
+    foreach ([480, 960] as $variantWidth) {
+        if ($variantWidth < $width) {
+            $sources[] = url('media/' . $id . '?w=' . $variantWidth) . ' ' . $variantWidth . 'w';
+        }
+    }
+    $sources[] = url('media/' . $id) . ' ' . $width . 'w';
+    return implode(', ', $sources);
+}
