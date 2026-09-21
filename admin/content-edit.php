@@ -30,6 +30,8 @@ $values['alt_text'] = (string)($fileByPurpose['cover']['alt_text'] ?? '');
 $values['remove_cover'] = false;
 $errors = [];
 $generalError = '';
+$formRevision = $existing ? (int)$existing['revision'] : null;
+$conflicted = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verifyCsrfToken()) {
@@ -53,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         if ($existing) $input['id'] = (int)$existing['id'];
         $expectedRevision = $existing ? filter_var($_POST['expected_revision'] ?? null, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]) : null;
+        if ($existing && $expectedRevision !== false) $formRevision = (int)$expectedRevision;
         $upload = $_FILES['upload'] ?? null;
         try {
             if ($existing && $expectedRevision === false) throw new ContentConflictException('Invalid revision.');
@@ -68,6 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (ContentConflictException $error) {
             $generalError = '다른 변경과 충돌했습니다. 목록에서 다시 열어 주세요.';
             $values = array_replace($values, $input);
+            $conflicted = true;
         } catch (ContentUploadException $error) {
             $generalError = '파일을 확인하지 못했습니다. 형식과 크기를 확인해 주세요.';
             $values = array_replace($values, $input);
@@ -87,11 +91,11 @@ adminHeader();
 </style>
 <div class="main-header"><h1><?php echo $existing ? '콘텐츠 수정' : '새 콘텐츠'; ?></h1><a class="btn btn-outline" href="<?php echo e(url('admin/content.php')); ?>">목록</a></div>
 <?php if ($flash): ?><div class="card" style="margin-bottom:16px;border-left:4px solid #22c55e"><?php echo e((string)$flash['message']); ?></div><?php endif; ?>
-<?php if ($generalError): ?><div class="card" style="margin-bottom:16px;border-left:4px solid #ef4444"><?php echo e($generalError); ?></div><?php endif; ?>
+<?php if ($generalError): ?><div class="card" style="margin-bottom:16px;border-left:4px solid #ef4444"><?php echo e($generalError); ?><?php if ($conflicted): ?> <a href="<?php echo e(url('admin/content-edit.php?id=' . (int)$existing['id'])); ?>">최신 내용 다시 불러오기</a><?php endif; ?></div><?php endif; ?>
 
 <form class="card content-form" method="post" enctype="multipart/form-data">
     <?php echo csrfField(); ?>
-    <?php if ($existing): ?><input type="hidden" name="expected_revision" value="<?php echo (int)$existing['revision']; ?>"><?php endif; ?>
+    <?php if ($existing): ?><input type="hidden" name="expected_revision" value="<?php echo (int)$formRevision; ?>"><?php endif; ?>
     <div class="form-grid">
         <div class="form-field">
             <label for="type">유형</label>
@@ -129,7 +133,7 @@ adminHeader();
         <div class="form-field"><label for="resource-url">외부 HTTPS 주소</label><input id="resource-url" type="url" name="external_url" value="<?php echo e((string)($values['external_url'] ?? '')); ?>"><div class="field-help">첨부파일과 외부 주소 중 하나만 사용합니다.</div><?php if (isset($errors['external_url'])): ?><div class="field-error"><?php echo e($errors['external_url']); ?></div><?php endif; ?></div>
     </div>
 
-    <div style="display:flex;gap:10px;margin-top:24px"><button class="btn btn-primary" type="submit">저장</button><a class="btn btn-outline" href="<?php echo e(url('admin/content.php')); ?>">취소</a></div>
+    <div style="display:flex;gap:10px;margin-top:24px"><button class="btn btn-primary" type="submit"<?php echo $conflicted ? ' disabled' : ''; ?>>저장</button><a class="btn btn-outline" href="<?php echo e(url('admin/content.php')); ?>">취소</a></div>
 </form>
 <script>
 function toggleContentFields() {

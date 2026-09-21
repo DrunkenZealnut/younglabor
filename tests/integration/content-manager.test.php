@@ -53,6 +53,24 @@ if ($repo->findAdminById($postId) !== null) exit(1);
 $pending = $pdo->query('SELECT post_id, cleanup_pending FROM content_files LIMIT 1')->fetch();
 if ($pending === false || $pending['post_id'] !== null || (int)$pending['cleanup_pending'] !== 1) exit(1);
 
+$activityId = $repo->save(['type'=>'activity','title'=>'활동','slug'=>'activity','summary'=>'설명','body'=>'본문','content_date'=>'2026-09-21','status'=>'draft','outlet'=>null,'external_url'=>null,'resource_category'=>null,'author_id'=>1], null);
+$coverName = str_repeat('c', 64);
+file_put_contents($storageRoot . '/' . $coverName, 'cover');
+$repo->replaceFile($activityId, ['purpose'=>'cover','storage_name'=>$coverName,'original_name'=>'cover.webp','mime'=>'image/webp','byte_size'=>5,'sha256'=>hash('sha256','cover'),'width'=>100,'height'=>80,'alt_text'=>'이전 설명']);
+$activity = $repo->findAdminById($activityId);
+$activityInput = ['id'=>$activityId,'type'=>'activity','title'=>'활동','slug'=>'activity','summary'=>'설명','body'=>'본문','content_date'=>'2026-09-21','status'=>'draft','alt_text'=>'새 설명','remove_cover'=>false,'author_id'=>1];
+$altManager = new ContentManager($pdo, $repo, new ContentStorage($storageRoot));
+$altManager->save($activityInput, null, (int)$activity['revision']);
+$cover = $repo->filesForPost($activityId)[0] ?? null;
+if (($cover['alt_text'] ?? '') !== '새 설명') exit(1);
+$activity = $repo->findAdminById($activityId);
+try {
+    $altManager->save(array_replace($activityInput, ['alt_text'=>'']), null, (int)$activity['revision']);
+    exit(1);
+} catch (ContentValidationException $expected) {
+    if (!isset($expected->errors()['alt_text'])) exit(1);
+}
+
 $pdo->exec(file_get_contents($root . '/database/migrations/20260921_drop_managed_content.sql'));
 foreach (glob($storageRoot . '/*') ?: [] as $path) if (is_file($path)) unlink($path);
 if (is_dir($storageRoot . '/.staging')) rmdir($storageRoot . '/.staging');

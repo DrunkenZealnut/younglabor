@@ -16,7 +16,7 @@ RewriteRule ^(?:config|test-config)\.php$ - [F,L,NC]
 RewriteRule ^(?:backup|dbeditor)(?:/|$) - [F,L,NC]
 RewriteRule \.(?:bak|backup|sql(?:\.gz)?|zip|tar|tgz|gz|7z)$ - [F,L,NC]
 RewriteRule \.(?:log|sql|md)$ - [F,L,NC]
-RewriteRule ^(?:docs|includes)(?:/|$) - [F,L,NC]
+RewriteRule ^(?:docs|includes|tests|scripts|database)(?:/|$) - [F,L,NC]
 
 # 관리형 공개 콘텐츠 경로
 RewriteRule ^activity/?$ activity/index.php [L,QSA]

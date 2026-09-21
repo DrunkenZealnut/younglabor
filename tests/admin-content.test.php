@@ -8,4 +8,7 @@ foreach ([$list, $edit] as $source) {
     }
 }
 if (strpos($edit, '$adminUser[\'id\']') === false || strpos($edit, 'expected_revision') === false) exit(1);
+if (strpos($edit, '$formRevision') === false || strpos($edit, '$conflicted') === false) exit(1);
+if (strpos($edit, 'value="<?php echo (int)$formRevision; ?>"') === false) exit(1);
+if (strpos($edit, "<?php echo \$conflicted ? ' disabled' : ''; ?>") === false) exit(1);
 if (stripos($edit, 'contenteditable') !== false || stripos($edit, 'wysiwyg') !== false) exit(1);

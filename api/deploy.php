@@ -6,6 +6,7 @@
 
 // 설정 로드
 require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../includes/DeploySafety.php';
 
 $CONFIG = [
     'secret' => env('DEPLOY_SECRET', ''),
@@ -19,6 +20,7 @@ $CONFIG = [
         '.git', '.github', '.gitignore',
         'CLAUDE.md', '.claude',
         'deploy.log',
+        'tests', 'scripts', 'database',
     ],
     // git에서 삭제된 파일을 프로덕션에서도 정리할지 여부 (기본 비활성 — 검토 후 .env에서 켤 것)
     'prune' => env('DEPLOY_PRUNE_REMOVED', 'false') === 'true',
@@ -41,16 +43,6 @@ function respond($success, $message, $code = 200, array $data = []) {
         'data' => (object) $data,
     ]);
     exit;
-}
-
-// $path가 $prefixes 중 하나로 시작하는지 (제외 목록 체크용)
-function startsWithAny($path, array $prefixes) {
-    foreach ($prefixes as $prefix) {
-        if (strpos($path, $prefix) === 0) {
-            return true;
-        }
-    }
-    return false;
 }
 
 // 간이 .gitignore 파서: 주석/빈 줄/네거티브 패턴(!) 제외한 라인 목록 반환
@@ -198,7 +190,7 @@ foreach ($iterator as $item) {
     $relativePath = substr($item->getPathname(), strlen($srcDir) + 1);
 
     // 제외 목록 체크
-    if (startsWithAny($relativePath, $CONFIG['exclude'])) {
+    if (deploymentPathIsExcluded($relativePath, $CONFIG['exclude'])) {
         continue;
     }
 
@@ -241,7 +233,10 @@ if ($CONFIG['prune']) {
     foreach ($prodIterator as $item) {
         $relativePath = substr($item->getPathname(), strlen($deployDir) + 1);
 
-        if (startsWithAny($relativePath, $CONFIG['exclude'])) {
+        if (deploymentPathIsExcluded($relativePath, $CONFIG['exclude'])) {
+            continue;
+        }
+        if (deploymentPathIsProtectedProductionData($relativePath)) {
             continue;
         }
         if (matchesGitignorePattern($relativePath, $gitignorePatterns)) {

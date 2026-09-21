@@ -173,6 +173,18 @@ class ContentRepository
         return $stmt->fetchAll();
     }
 
+    public function updateFileAltText(int $postId, string $purpose, string $altText): void
+    {
+        $this->assertPurpose($purpose);
+        $stmt = $this->pdo->prepare(
+            'UPDATE content_files SET alt_text = :alt_text WHERE post_id = :post_id AND purpose = :purpose AND cleanup_pending = 0'
+        );
+        $stmt->execute([':alt_text' => $altText, ':post_id' => $postId, ':purpose' => $purpose]);
+        if ($stmt->rowCount() > 1) {
+            throw new RuntimeException('More than one managed file was updated.');
+        }
+    }
+
     public function detachFile(int $postId, string $purpose): array
     {
         $this->assertPurpose($purpose);

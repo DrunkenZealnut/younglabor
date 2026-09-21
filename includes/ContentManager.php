@@ -73,8 +73,7 @@ class ContentManager
 
         if ($values['type'] === 'activity') {
             $coverRemains = $hasUpload || (!$values['remove_cover'] && isset($currentByPurpose['cover']));
-            $knownAlt = $values['alt_text'] !== '' ? $values['alt_text'] : (string)($currentByPurpose['cover']['alt_text'] ?? '');
-            if ($coverRemains && trim($knownAlt) === '') {
+            if ($coverRemains && $values['alt_text'] === '') {
                 $errors['alt_text'] = '표지 이미지의 대체 텍스트를 입력해 주세요.';
             }
         }
@@ -117,6 +116,8 @@ class ContentManager
                 if ($old !== []) {
                     $detached[] = $old;
                 }
+            } elseif ($values['type'] === 'activity' && isset($currentByPurpose['cover'])) {
+                $this->repository->updateFileAltText($savedId, 'cover', $values['alt_text']);
             }
 
             $this->pdo->commit();
