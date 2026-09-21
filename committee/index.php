@@ -207,7 +207,7 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- 후원 안내 -->
         <div class="sponsor-box">
             <span>이 사업은</span>
-            <img src="<?php echo url('assets/images/beautiful-foundation-ci.png'); ?>" alt="아름다운재단">
+            <img src="<?php echo url('assets/images/beautiful-foundation-ci.png'); ?>" width="524" height="126" loading="lazy" decoding="async" alt="아름다운재단">
             <span>지원으로 운영합니다.</span>
         </div>
 

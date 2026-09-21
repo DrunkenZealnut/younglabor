@@ -19,7 +19,7 @@ if (!isset($pageUrl)) $pageUrl = url($currentPage === 'home' ? '' : $currentPage
     <link rel="canonical" href="<?php echo htmlspecialchars($pageUrl, ENT_QUOTES, 'UTF-8'); ?>">
     <title><?php echo htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8'); ?></title>
     <script>document.documentElement.classList.add('js')</script>
-    <link rel="stylesheet" href="<?php echo url('assets/css/style.css'); ?>?v=3">
+    <link rel="stylesheet" href="<?php echo assetUrl('assets/css/style.css'); ?>">
     <style>:root { <?php echo getThemeCSSVariables($theme); ?> }</style>
 </head>
 <body>

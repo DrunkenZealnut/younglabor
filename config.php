@@ -187,6 +187,15 @@ if (!function_exists('url')) {
     }
 }
 
+if (!function_exists('assetUrl')) {
+    function assetUrl(string $path): string {
+        $relative = ltrim($path, '/');
+        $absolute = __DIR__ . '/' . $relative;
+        $version = is_file($absolute) ? (string)filemtime($absolute) : '1';
+        return url($relative) . '?v=' . rawurlencode($version);
+    }
+}
+
 /**
  * 현재 환경이 로컬인지 확인
  * @return bool
