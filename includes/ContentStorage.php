@@ -16,7 +16,7 @@ class ContentStorage
         }
         $this->root = rtrim($resolved, DIRECTORY_SEPARATOR);
         $this->staging = $this->root . DIRECTORY_SEPARATOR . '.staging';
-        if (!is_dir($this->staging) && !mkdir($this->staging, 0700, true) && !is_dir($this->staging)) {
+        if (!is_dir($this->staging) && !@mkdir($this->staging, 0700, true) && !is_dir($this->staging)) {
             throw new ContentUploadException('Staging storage is unavailable.');
         }
         @chmod($this->staging, 0700);
@@ -190,7 +190,7 @@ class ContentStorage
         try {
             foreach ($items as $item) {
                 $destination = $this->root . DIRECTORY_SEPARATOR . $item['storage_name'];
-                if (!rename($item['staged_path'], $destination)) {
+                if (!@rename($item['staged_path'], $destination)) {
                     throw new ContentUploadException('Staged file could not be promoted.');
                 }
                 @chmod($destination, 0600);
@@ -227,14 +227,20 @@ class ContentStorage
         if (!preg_match('/^[a-f0-9]{64}$/', $storageName)) {
             return false;
         }
-        $removed = true;
-        foreach (array_merge([$storageName], array_map(function (int $width) use ($storageName): string {
-            return $this->variantStorageName($storageName, $width);
-        }, [480, 960])) as $name) {
-            $path = $this->root . DIRECTORY_SEPARATOR . $name;
-            if (is_file($path) && !@unlink($path)) $removed = false;
+        $lock = $this->acquireStorageLock($storageName);
+        if ($lock === false) return false;
+        try {
+            $removed = true;
+            foreach (array_merge([$storageName], array_map(function (int $width) use ($storageName): string {
+                return $this->variantStorageName($storageName, $width);
+            }, [480, 960])) as $name) {
+                $path = $this->root . DIRECTORY_SEPARATOR . $name;
+                if (is_file($path) && !@unlink($path)) $removed = false;
+            }
+            return $removed;
+        } finally {
+            $this->releaseStorageLock($lock);
         }
-        return $removed;
     }
 
     public function pathFor(string $storageName): ?string
@@ -257,28 +263,56 @@ class ContentStorage
     {
         $destination = $this->pathForVariant($storageName, $width);
         if ($destination === null) return null;
-        if (is_file($destination)) return $destination;
-
-        $source = $this->pathFor($storageName);
-        if ($source === null || !is_file($source)) return null;
-        $image = @imagecreatefromwebp($source);
-        if ($image === false) return null;
-        $temporary = $this->staging . DIRECTORY_SEPARATOR . bin2hex(random_bytes(32));
+        $lock = $this->acquireStorageLock($storageName);
+        if ($lock === false) {
+            error_log('Image variant regeneration failed');
+            return null;
+        }
+        $temporary = '';
+        $image = false;
         try {
+            if (is_file($destination)) return $destination;
+            $source = $this->pathFor($storageName);
+            if ($source === null || !is_file($source)) return null;
+            $image = @imagecreatefromwebp($source);
+            if ($image === false) return null;
             $sourceWidth = imagesx($image);
             $sourceHeight = imagesy($image);
             if ($sourceWidth <= $width || $sourceHeight < 1) return null;
             $height = max(1, (int)round($sourceHeight * ($width / $sourceWidth)));
+            $temporary = $this->staging . DIRECTORY_SEPARATOR . bin2hex(random_bytes(32));
             $this->writeResizedWebp($image, $sourceWidth, $sourceHeight, $width, $height, $temporary);
-            if (!rename($temporary, $destination)) {
+            if (!@rename($temporary, $destination)) {
                 throw new ContentUploadException('Image variant could not be stored.');
             }
             @chmod($destination, 0600);
             return $destination;
+        } catch (Throwable $error) {
+            error_log('Image variant regeneration failed');
+            return null;
         } finally {
-            imagedestroy($image);
-            if (is_file($temporary)) @unlink($temporary);
+            if ($image !== false) imagedestroy($image);
+            if ($temporary !== '' && is_file($temporary)) @unlink($temporary);
+            $this->releaseStorageLock($lock);
         }
+    }
+
+    private function acquireStorageLock(string $storageName)
+    {
+        $path = $this->staging . DIRECTORY_SEPARATOR . hash('sha256', 'lock:' . $storageName) . '.lock';
+        $handle = @fopen($path, 'c');
+        if ($handle === false) return false;
+        if (!@flock($handle, LOCK_EX)) {
+            fclose($handle);
+            return false;
+        }
+        return $handle;
+    }
+
+    private function releaseStorageLock($handle): void
+    {
+        @flock($handle, LOCK_UN);
+        fclose($handle);
     }
 
     private function variantStorageName(string $storageName, int $width): string
@@ -298,7 +332,7 @@ class ContentStorage
             if (!imagecopyresampled($output, $image, 0, 0, 0, 0, $width, $height, $sourceWidth, $sourceHeight)) {
                 throw new ContentUploadException('Cover image could not be resized.');
             }
-            if (!imagewebp($output, $path, 82)) {
+            if (!@imagewebp($output, $path, 82)) {
                 throw new ContentUploadException('Cover image could not be encoded.');
             }
             @chmod($path, 0600);

@@ -24,6 +24,13 @@ $missingVariant = $storage->pathForVariant($storedCover['storage_name'], 480);
 unlink($missingVariant);
 $recreatedVariant = $storage->ensureVariant($storedCover['storage_name'], 480);
 if ($recreatedVariant !== $missingVariant || !is_file($recreatedVariant) || getimagesize($recreatedVariant)[0] !== 480) exit(1);
+unlink($missingVariant);
+mkdir($missingVariant, 0700);
+ob_start();
+$failedVariant = $storage->ensureVariant($storedCover['storage_name'], 480);
+$warningOutput = ob_get_clean();
+if ($failedVariant !== null || $warningOutput !== '') exit(1);
+rmdir($missingVariant);
 if (!$storage->remove($storedCover['storage_name'])) exit(1);
 foreach ([480, 960] as $variantWidth) {
     if (is_file((string)$storage->pathForVariant($storedCover['storage_name'], $variantWidth))) exit(1);
@@ -56,5 +63,6 @@ try { $storage->stageAttachment(['error'=>UPLOAD_ERR_OK,'tmp_name'=>$scriptZip,'
 foreach (glob($root . '*') ?: [] as $path) {
     if (is_file($path)) unlink($path);
 }
+foreach (glob($root . '/.staging/*') ?: [] as $path) if (is_file($path)) unlink($path);
 if (is_dir($root . '/.staging')) rmdir($root . '/.staging');
 if (is_dir($root)) rmdir($root);

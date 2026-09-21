@@ -73,5 +73,6 @@ try {
 
 $pdo->exec(file_get_contents($root . '/database/migrations/20260921_drop_managed_content.sql'));
 foreach (glob($storageRoot . '/*') ?: [] as $path) if (is_file($path)) unlink($path);
+foreach (glob($storageRoot . '/.staging/*') ?: [] as $path) if (is_file($path)) unlink($path);
 if (is_dir($storageRoot . '/.staging')) rmdir($storageRoot . '/.staging');
 rmdir($storageRoot);
