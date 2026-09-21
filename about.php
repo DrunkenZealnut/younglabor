@@ -2,136 +2,77 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/Database.php';
 require_once __DIR__ . '/includes/PageTracker.php';
+require_once __DIR__ . '/includes/SiteContent.php';
 PageTracker::track('단체소개');
 
 $currentPage = 'about';
-$pageTitle = '단체소개 - ' . $site['name'];
-$pageDescription = '반도체산업 청년노동자의 노동안전보건을 위한 전문 단체, ' . $site['name'];
+$pageTitle = '우리는 누구인가 - ' . $site['name'];
+$pageDescription = '중소영세 제조업 청년노동자가 처음 일을 시작할 때부터 안전할 권리를 지키도록 곁에서 연결하고 기록합니다.';
+$pageUrl = url('about');
 require_once __DIR__ . '/includes/header.php';
 ?>
+<section class="page-header">
+    <div class="container">
+        <p class="eyebrow">우리는 누구인가</p>
+        <h1>처음 일하는 청년 곁에 안전을 말할 사람을 만듭니다.</h1>
+        <p>청년노동자인권센터는 중소영세 제조업 청년노동자와 함께하는 단체입니다.</p>
+    </div>
+</section>
 
-    <div class="page-header">
-        <div class="container">
-            <?php require __DIR__ . '/includes/symbols.php'; ?>
-            <h1>단체소개</h1>
-            <p>반도체산업 청년노동자에게 안전할 권리를</p>
+<section class="section">
+    <div class="container split-intro">
+        <h2 class="section-title">왜 제조업 청년노동자인가</h2>
+        <div>
+            <p class="statement">첫 일터의 위험은 개인의 조심만으로 피할 수 없습니다.</p>
+            <p>제조업에 처음 들어가는 청년은 공정과 화학물질, 보호구, 작업중지권을 충분히 배우기 어렵습니다. 작은 사업장일수록 물어볼 사람과 정보가 부족합니다. 센터는 사고가 난 뒤가 아니라 일을 시작하기 전부터 안전을 이해하고 말할 수 있게 돕습니다.</p>
         </div>
     </div>
+</section>
 
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title fade-in">문제정의</h2>
-            <div class="section-subtitle fade-in">
-                <p>전국에 생겨나고 있는 반도체고교를 졸업하고 반도체회사에 취업하는 청년노동자들. 노동운동도, 기후환경운동도 이들을 위한 노동안전보건 보호장치에는 미처 관심을 갖기 어려운 상황입니다.</p>
-                <br>
-                <p>현장실습 중 사망사고가 발생했을 때만 잠깐 주목받는 존재들. 누군가는 관심을 갖고 노동안전보건교육을 받게 하고, 졸업해서는 위험인자를 인식하고 일할 수 있도록 해야 합니다.</p>
-                <br>
-                <p>최소한 건강하게 일할 권리는 우리 사회가 보장해줘야 합니다.</p>
-            </div>
+<section class="section section-alt">
+    <div class="container split-intro">
+        <h2 class="section-title">왜 반도체고에서 시작하는가</h2>
+        <div>
+            <p class="statement">반도체고는 학교와 첨단 제조업의 첫 일터가 맞닿는 현장입니다.</p>
+            <p>센터는 전국 6개 반도체고의 학생과 교사에게 다가가고 있습니다. 학교 방문, 교사 조직화, ‘일하는 열아홉’ 강좌와 캠페인을 통해 취업 전에 위험을 알아보는 경험을 만듭니다. 반도체 산업은 지금 가장 깊이 파고든 첫 현장이며, 여기서 배운 방법을 다른 제조업 청년에게 넓혀 갑니다.</p>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="section section-alt">
-        <div class="container">
-            <h2 class="section-title fade-in">설립목적</h2>
-            <div class="work-grid">
-                <div class="work-card work-card--text fade-in">
-                    <span class="work-card-num">01</span>
-                    <div class="work-card-meta"><span class="work-card-title">교육환경 조성</span></div>
-                    <p class="work-card-desc">반도체고를 비롯한 직업계고의 모든 청소년들이 노동안전보건교육을 받을 수 있는 교육환경을 조성합니다.</p>
-                </div>
-                <div class="work-card work-card--text fade-in">
-                    <span class="work-card-num">02</span>
-                    <div class="work-card-meta"><span class="work-card-title">안전할 권리 지원</span></div>
-                    <p class="work-card-desc">일하는 청년노동자들이 스스로 안전할 권리를 요구할 수 있도록 지원합니다.</p>
-                </div>
-                <div class="work-card work-card--text fade-in">
-                    <span class="work-card-num">03</span>
-                    <div class="work-card-meta"><span class="work-card-title">사회 변화</span></div>
-                    <p class="work-card-desc">일하는 청년노동자들이 안전하게 일할 수 있는 사회로의 변화를 만들어갑니다.</p>
-                </div>
-                <div class="work-card work-card--text fade-in">
-                    <span class="work-card-num">04</span>
-                    <div class="work-card-meta"><span class="work-card-title">사회적 자원 연계</span></div>
-                    <p class="work-card-desc">청년노동자들의 일과 일상의 고민을 해결하는 데 필요한 사회적 자원을 연계합니다.</p>
-                </div>
-            </div>
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">우리가 만들고 싶은 변화</h2>
+        <div class="principle-grid">
+            <article><strong>알 권리</strong><p>공정의 위험과 사용하는 물질을 이해합니다.</p></article>
+            <article><strong>질문할 권리</strong><p>모르는 것을 묻고 안전한 방법을 요구합니다.</p></article>
+            <article><strong>연결될 권리</strong><p>혼자 감당하지 않고 교사, 동료, 지역사회와 연결됩니다.</p></article>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="section">
-        <div class="container">
-            <h2 class="section-title fade-in">단체 차별성</h2>
-            <div class="section-subtitle fade-in">
-                <p>반올림이 산재피해자 및 현장의 노동권침해 문제에 집중한다면, <?php echo htmlspecialchars($site['name']); ?>는 <strong>노동안전보건교육과 사전 예방</strong>에 집중합니다.</p>
-                <br>
-                <p>반올림이 축적해온 반도체 관련 전문지식과, 대표의 청소년노동인권 교육 경험을 더해 '반도체고 노동인권교육 콘텐츠' 개발을 협의하고 있습니다.</p>
-            </div>
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">사람들</h2>
+        <div class="people-grid">
+            <article class="person-card"><div class="person-name"><?php echo htmlspecialchars($site['representative'], ENT_QUOTES, 'UTF-8'); ?></div><div class="person-role">대표</div><p class="person-desc">청소년노동인권 교육 경험을 바탕으로 현장과 교육을 잇습니다.</p></article>
+            <article class="person-card"><div class="person-name">김동규</div><div class="person-role">운영위원</div><p class="person-desc">캠페인과 청소년 참여 활동을 맡습니다.</p></article>
+            <article class="person-card"><div class="person-name">민경인</div><div class="person-role">운영위원</div><p class="person-desc">교육 프로그램을 기획합니다.</p></article>
+            <article class="person-card"><div class="person-name">박동욱 · 신수현 · 이남신</div><div class="person-role">자문위원</div><p class="person-desc">산업안전, 특성화고, 지역 노동권의 경험을 보탭니다.</p></article>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="section section-alt">
-        <div class="container">
-            <h2 class="section-title fade-in">사람들</h2>
-
-            <h3 class="group-label fade-in">대표</h3>
-            <div class="people-grid fade-in" style="margin-bottom: 2.5rem;">
-                <div class="person-card">
-                    <div class="person-name"><?php echo htmlspecialchars($site['representative']); ?></div>
-                    <div class="person-role">대표</div>
-                    <div class="person-desc">청소년노동인권 교육 경험을 바탕으로 센터를 이끌고 있습니다.</div>
-                </div>
-            </div>
-
-            <h3 class="group-label fade-in">운영위원</h3>
-            <div class="people-grid fade-in" style="margin-bottom: 2.5rem;">
-                <div class="person-card">
-                    <div class="person-name">김동규</div>
-                    <div class="person-role">운영위원</div>
-                    <div class="person-desc">캠페인 및 청소년참견위원회 담당</div>
-                </div>
-                <div class="person-card">
-                    <div class="person-name">민경인</div>
-                    <div class="person-role">운영위원</div>
-                    <div class="person-desc">교육 프로그램 기획 담당</div>
-                </div>
-            </div>
-
-            <h3 class="group-label fade-in">자문위원</h3>
-            <div class="people-grid fade-in" style="margin-bottom: 2.5rem;">
-                <div class="person-card">
-                    <div class="person-name">박동욱</div>
-                    <div class="person-role">자문위원 (교수)</div>
-                    <div class="person-desc">반도체 산업 노동안전보건 전문가. 교과서 연구 자문</div>
-                </div>
-                <div class="person-card">
-                    <div class="person-name">신수현</div>
-                    <div class="person-role">자문위원</div>
-                    <div class="person-desc">특성화고 노조 활동. 학교 캠페인 자문</div>
-                </div>
-                <div class="person-card">
-                    <div class="person-name">이남신</div>
-                    <div class="person-role">자문위원 (경북노동인권센터 소장)</div>
-                    <div class="person-desc">경북 지역 연계 자문</div>
-                </div>
-            </div>
-
-            <h3 class="group-label fade-in">협력 단체</h3>
-            <div class="people-grid fade-in">
-                <div class="person-card">
-                    <div class="person-name">대구노동자권익센터</div>
-                    <div class="person-desc">대구 지역 협력</div>
-                </div>
-                <div class="person-card">
-                    <div class="person-name">충청노동인권센터</div>
-                    <div class="person-desc">충청 지역 협력</div>
-                </div>
-                <div class="person-card">
-                    <div class="person-name">더불어함의노동자권익센터</div>
-                    <div class="person-desc">지역 협력</div>
-                </div>
-            </div>
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">함께하는 곳들</h2>
+        <div class="partner-list">
+            <p>대구노동자권익센터</p>
+            <p>충청노동인권센터</p>
+            <p>더불어함의노동자권익센터</p>
+            <?php foreach (siteSupportPartners() as $partner): ?>
+                <p><?php echo htmlspecialchars($partner['program'], ENT_QUOTES, 'UTF-8'); ?> · <?php echo htmlspecialchars($partner['name'], ENT_QUOTES, 'UTF-8'); ?> <?php echo htmlspecialchars($partner['relationship'], ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php endforeach; ?>
         </div>
-    </section>
-
+    </div>
+</section>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
