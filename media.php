@@ -18,8 +18,7 @@ try {
         $variantPath = $storage->ensureVariant((string)$file['storage_name'], (int)$variantWidth);
         if ($variantPath !== null && is_file($variantPath)) {
             $path = $variantPath;
-            $file['sha256'] = hash_file('sha256', $variantPath);
-            $file['byte_size'] = filesize($variantPath);
+            $file['sha256'] = hash('sha256', (string)$file['sha256'] . ':w' . $variantWidth);
         }
     }
     if ($path === null || !is_file($path)) throw new RuntimeException('not found');

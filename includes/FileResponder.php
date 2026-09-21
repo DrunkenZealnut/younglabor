@@ -45,12 +45,15 @@ function safeDownloadName(string $name): string
 
 function streamContentFile(array $file, string $absolutePath, bool $attachment): void
 {
-    if (!is_file($absolutePath) || !is_readable($absolutePath)) {
+    $handle = @fopen($absolutePath, 'rb');
+    if ($handle === false) {
         http_response_code(404);
         return;
     }
-    $size = filesize($absolutePath);
+    $stat = @fstat($handle);
+    $size = is_array($stat) ? ($stat['size'] ?? false) : false;
     if ($size === false || $size < 1) {
+        fclose($handle);
         http_response_code(404);
         return;
     }
@@ -58,6 +61,7 @@ function streamContentFile(array $file, string $absolutePath, bool $attachment):
     header('ETag: ' . $etag);
     header('X-Content-Type-Options: nosniff');
     if (fileResponderEtagMatches((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''), $etag)) {
+        fclose($handle);
         http_response_code(304);
         return;
     }
@@ -75,6 +79,7 @@ function streamContentFile(array $file, string $absolutePath, bool $attachment):
         try {
             $range = parseSingleByteRange($_SERVER['HTTP_RANGE'] ?? null, $size);
         } catch (InvalidRangeException $error) {
+            fclose($handle);
             http_response_code(416);
             header('Content-Range: bytes */' . $size);
             header('Content-Length: 0');
@@ -91,12 +96,7 @@ function streamContentFile(array $file, string $absolutePath, bool $attachment):
     $length = $end - $start + 1;
     header('Content-Length: ' . $length);
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'HEAD') {
-        return;
-    }
-
-    $handle = fopen($absolutePath, 'rb');
-    if ($handle === false) {
-        http_response_code(404);
+        fclose($handle);
         return;
     }
     if ($start > 0) {
