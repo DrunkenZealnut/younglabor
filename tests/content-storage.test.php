@@ -20,6 +20,10 @@ foreach ([480, 960] as $variantWidth) {
     $variantSize = getimagesize($variantPath);
     if ($variantSize === false || $variantSize[0] !== $variantWidth) exit(1);
 }
+$missingVariant = $storage->pathForVariant($storedCover['storage_name'], 480);
+unlink($missingVariant);
+$recreatedVariant = $storage->ensureVariant($storedCover['storage_name'], 480);
+if ($recreatedVariant !== $missingVariant || !is_file($recreatedVariant) || getimagesize($recreatedVariant)[0] !== 480) exit(1);
 if (!$storage->remove($storedCover['storage_name'])) exit(1);
 foreach ([480, 960] as $variantWidth) {
     if (is_file((string)$storage->pathForVariant($storedCover['storage_name'], $variantWidth))) exit(1);

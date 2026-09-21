@@ -14,7 +14,7 @@ foreach ([$activityIndex, $activityView] as $source) {
     if (strpos($source, "['file_width']") === false || strpos($source, "['file_height']") === false) exit(1);
     if (strpos($source, 'srcset=') === false || strpos($source, 'sizes=') === false) exit(1);
 }
-if (strpos(file_get_contents(__DIR__ . '/../media.php'), 'pathForVariant') === false) exit(1);
+if (strpos(file_get_contents(__DIR__ . '/../media.php'), 'ensureVariant') === false) exit(1);
 $srcset = contentImageSrcset(['file_id'=>7, 'file_width'=>1600]);
 foreach (['media/7?w=480 480w', 'media/7?w=960 960w', 'media/7 1600w'] as $candidate) {
     if (strpos($srcset, $candidate) === false) exit(1);

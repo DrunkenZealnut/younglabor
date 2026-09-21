@@ -15,7 +15,7 @@ try {
     $path = $storage->pathFor((string)$file['storage_name']);
     $variantWidth = filter_var($_GET['w'] ?? null, FILTER_VALIDATE_INT);
     if (in_array($variantWidth, [480, 960], true) && (int)$file['width'] > $variantWidth) {
-        $variantPath = $storage->pathForVariant((string)$file['storage_name'], (int)$variantWidth);
+        $variantPath = $storage->ensureVariant((string)$file['storage_name'], (int)$variantWidth);
         if ($variantPath !== null && is_file($variantPath)) {
             $path = $variantPath;
             $file['sha256'] = hash_file('sha256', $variantPath);

@@ -253,6 +253,34 @@ class ContentStorage
         return $this->root . DIRECTORY_SEPARATOR . $this->variantStorageName($storageName, $width);
     }
 
+    public function ensureVariant(string $storageName, int $width): ?string
+    {
+        $destination = $this->pathForVariant($storageName, $width);
+        if ($destination === null) return null;
+        if (is_file($destination)) return $destination;
+
+        $source = $this->pathFor($storageName);
+        if ($source === null || !is_file($source)) return null;
+        $image = @imagecreatefromwebp($source);
+        if ($image === false) return null;
+        $temporary = $this->staging . DIRECTORY_SEPARATOR . bin2hex(random_bytes(32));
+        try {
+            $sourceWidth = imagesx($image);
+            $sourceHeight = imagesy($image);
+            if ($sourceWidth <= $width || $sourceHeight < 1) return null;
+            $height = max(1, (int)round($sourceHeight * ($width / $sourceWidth)));
+            $this->writeResizedWebp($image, $sourceWidth, $sourceHeight, $width, $height, $temporary);
+            if (!rename($temporary, $destination)) {
+                throw new ContentUploadException('Image variant could not be stored.');
+            }
+            @chmod($destination, 0600);
+            return $destination;
+        } finally {
+            imagedestroy($image);
+            if (is_file($temporary)) @unlink($temporary);
+        }
+    }
+
     private function variantStorageName(string $storageName, int $width): string
     {
         return hash('sha256', $storageName . ':w' . $width);
