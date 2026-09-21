@@ -459,6 +459,9 @@ function adminHeader(): void {
                     <span class="nav-badge"><?php echo $unreadCount; ?></span>
                 <?php endif; ?>
             </a>
+            <a href="<?php echo $baseUrl; ?>/content" class="<?php echo in_array($currentPage, ['content', 'content-edit'], true) ? 'active' : ''; ?>">
+                <span class="icon">&#128196;</span> 콘텐츠 관리
+            </a>
             <a href="<?php echo $baseUrl; ?>/statistics" class="<?php echo $currentPage === 'statistics' ? 'active' : ''; ?>">
                 <span class="icon">&#128200;</span> 방문 통계
             </a>
