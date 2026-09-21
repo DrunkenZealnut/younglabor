@@ -64,6 +64,31 @@ $isLocalHost = (
 $envFile = $isLocalHost ? '/.env.local' : '/.env.production';
 loadEnv(__DIR__ . $envFile);
 
+if (!function_exists('contentStoragePath')) {
+    function contentStoragePath(): string {
+        $configured = trim(env('CONTENT_STORAGE_PATH', ''));
+        $isAbsolute = strpos($configured, '/') === 0 || preg_match('/^[A-Za-z]:[\\\\\/]/', $configured) === 1;
+        if ($configured === '' || !$isAbsolute) {
+            throw new RuntimeException('CONTENT_STORAGE_PATH must be an absolute path.');
+        }
+        if (!is_dir($configured) && !mkdir($configured, 0700, true) && !is_dir($configured)) {
+            throw new RuntimeException('Content storage directory could not be created.');
+        }
+        @chmod($configured, 0700);
+        $storage = realpath($configured);
+        $documentRoot = realpath(__DIR__);
+        if ($storage === false || $documentRoot === false || !is_writable($storage)) {
+            throw new RuntimeException('Content storage directory is unavailable.');
+        }
+        $storagePrefix = rtrim($storage, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $documentPrefix = rtrim($documentRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if ($storage === $documentRoot || strpos($storagePrefix, $documentPrefix) === 0) {
+            throw new RuntimeException('Content storage must be outside the document root.');
+        }
+        return $storage;
+    }
+}
+
 /**
  * 환경 감지 함수
  * @return string 'local' 또는 'production'
