@@ -14,8 +14,16 @@ function deploymentPathIsExcluded(string $path, array $roots): bool
     foreach ($roots as $root) {
         $normalizedRoot = trim(str_replace('\\', '/', (string)$root), '/');
         if (strpbrk($normalizedRoot, '*?[') !== false) {
-            if (fnmatch($normalizedRoot, $normalizedPath, FNM_PATHNAME)) {
-                return true;
+            $candidate = $normalizedPath;
+            while ($candidate !== '') {
+                if (fnmatch($normalizedRoot, $candidate, FNM_PATHNAME)) {
+                    return true;
+                }
+                $separator = strrpos($candidate, '/');
+                if ($separator === false) {
+                    break;
+                }
+                $candidate = substr($candidate, 0, $separator);
             }
             continue;
         }

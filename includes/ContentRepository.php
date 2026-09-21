@@ -41,7 +41,16 @@ class ContentRepository
         $stmt = $this->pdo->prepare($this->publicSelect() . " WHERE p.type = :type AND p.slug = :slug AND p.status = 'published' LIMIT 1");
         $stmt->execute([':type' => $type, ':slug' => $slug]);
         $row = $stmt->fetch();
-        return $row === false ? null : $row;
+        if ($row === false) {
+            return null;
+        }
+        if ($type === 'resource') {
+            $file = $this->findPostFileForPublic((int)$row['id'], 'attachment');
+            foreach (['file_id', 'file_purpose', 'file_original_name', 'file_mime', 'file_byte_size', 'file_width', 'file_height', 'file_alt_text'] as $key) {
+                $row[$key] = $file[$key] ?? null;
+            }
+        }
+        return $row;
     }
 
     public function latestPublished(string $type, int $limit): array
@@ -279,7 +288,22 @@ class ContentRepository
         return "SELECT p.*, f.id AS file_id, f.purpose AS file_purpose, f.original_name AS file_original_name,"
             . " f.mime AS file_mime, f.byte_size AS file_byte_size, f.width AS file_width, f.height AS file_height,"
             . " f.alt_text AS file_alt_text"
-            . " FROM content_posts p LEFT JOIN content_files f ON f.post_id = p.id AND f.cleanup_pending = 0";
+            . " FROM content_posts p LEFT JOIN content_files f"
+            . " ON f.post_id = p.id AND f.purpose = 'cover' AND f.cleanup_pending = 0";
+    }
+
+    private function findPostFileForPublic(int $postId, string $purpose): ?array
+    {
+        $this->assertPurpose($purpose);
+        $stmt = $this->pdo->prepare(
+            "SELECT f.id AS file_id, f.purpose AS file_purpose, f.original_name AS file_original_name,"
+            . " f.mime AS file_mime, f.byte_size AS file_byte_size, f.width AS file_width, f.height AS file_height,"
+            . " f.alt_text AS file_alt_text FROM content_files f"
+            . " WHERE f.post_id = :post_id AND f.purpose = :purpose AND f.cleanup_pending = 0 LIMIT 1"
+        );
+        $stmt->execute([':post_id' => $postId, ':purpose' => $purpose]);
+        $row = $stmt->fetch();
+        return $row === false ? null : $row;
     }
 
     private function adminFilters(array $filters): array
