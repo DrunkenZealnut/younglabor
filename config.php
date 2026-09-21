@@ -64,6 +64,30 @@ $isLocalHost = (
 $envFile = $isLocalHost ? '/.env.local' : '/.env.production';
 loadEnv(__DIR__ . $envFile);
 
+if (!function_exists('contentStoragePath')) {
+    function contentStoragePath(): string {
+        $configured = trim(env('CONTENT_STORAGE_PATH', ''));
+        $isAbsolute = strpos($configured, '/') === 0 || preg_match('/^[A-Za-z]:[\\\\\/]/', $configured) === 1;
+        if ($configured === '' || !$isAbsolute) {
+            throw new RuntimeException('CONTENT_STORAGE_PATH must be an absolute path.');
+        }
+        if (!is_dir($configured) && !mkdir($configured, 0700, true) && !is_dir($configured)) {
+            throw new RuntimeException('Content storage directory could not be created.');
+        }
+        $storage = realpath($configured);
+        $documentRoot = realpath(__DIR__);
+        if ($storage === false || $documentRoot === false || !is_writable($storage)) {
+            throw new RuntimeException('Content storage directory is unavailable.');
+        }
+        $storagePrefix = rtrim($storage, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $documentPrefix = rtrim($documentRoot, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if ($storage === $documentRoot || strpos($storagePrefix, $documentPrefix) === 0) {
+            throw new RuntimeException('Content storage must be outside the document root.');
+        }
+        return $storage;
+    }
+}
+
 /**
  * 환경 감지 함수
  * @return string 'local' 또는 'production'
@@ -103,16 +127,19 @@ $baseUrlLocal = env('BASE_URL_LOCAL', 'http://localhost:8080/younglabor');
 $baseUrlProduction = env('BASE_URL_PRODUCTION', 'https://younglabor.kr');
 $baseUrl = ($environment === 'local') ? $baseUrlLocal : $baseUrlProduction;
 
-// 테마 색상 설정
+// 테마 색상 설정 (Frame & Form 디자인 시스템)
 $theme = [
-    'primary' => env('THEME_PRIMARY', '#5BC0DE'),
-    'primary_dark' => env('THEME_PRIMARY_DARK', '#3498DB'),
-    'secondary' => env('THEME_SECONDARY', '#87CEEB'),
-    'accent' => env('THEME_ACCENT', '#F0A500'),
-    'text_dark' => env('THEME_TEXT_DARK', '#333333'),
+    'primary' => env('THEME_PRIMARY', '#111111'),
+    'primary_dark' => env('THEME_PRIMARY_DARK', '#000000'),
+    'secondary' => env('THEME_SECONDARY', '#430086'),
+    'accent' => env('THEME_ACCENT', '#CEE84F'),
+    'text_dark' => env('THEME_TEXT_DARK', '#111111'),
     'text_light' => env('THEME_TEXT_LIGHT', '#FFFFFF'),
-    'background' => env('THEME_BACKGROUND', '#E8F4F8'),
+    'background' => env('THEME_BACKGROUND', '#FFFFFF'),
     'background_alt' => env('THEME_BACKGROUND_ALT', '#FFFFFF'),
+    'accent_soft' => env('THEME_ACCENT_SOFT', '#F8FF9F'),
+    'accent_deep' => env('THEME_ACCENT_DEEP', '#AECE2B'),
+    'accent_green' => env('THEME_ACCENT_GREEN', '#18B201'),
 ];
 
 // 사이트 정보
@@ -138,6 +165,9 @@ if (!function_exists('getThemeCSSVariables')) {
             --color-text-light: {$theme['text_light']};
             --color-background: {$theme['background']};
             --color-background-alt: {$theme['background_alt']};
+            --color-accent-soft: {$theme['accent_soft']};
+            --color-accent-deep: {$theme['accent_deep']};
+            --color-accent-green: {$theme['accent_green']};
         ";
     }
 }
@@ -153,6 +183,15 @@ if (!function_exists('url')) {
         $baseUrl = rtrim($site['base_url'], '/');
         $path = ltrim($path, '/');
         return $path ? $baseUrl . '/' . $path : $baseUrl;
+    }
+}
+
+if (!function_exists('assetUrl')) {
+    function assetUrl(string $path): string {
+        $relative = ltrim($path, '/');
+        $absolute = __DIR__ . '/' . $relative;
+        $version = is_file($absolute) ? (string)filemtime($absolute) : '1';
+        return url($relative) . '?v=' . rawurlencode($version);
     }
 }
 

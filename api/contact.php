@@ -5,7 +5,14 @@
  */
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
+// CORS: 허용된 도메인만
+$allowedOrigins = ['https://younglabor.kr', 'http://localhost:8080'];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    header('Access-Control-Allow-Origin: https://younglabor.kr');
+}
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -26,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/Database.php';
 require_once __DIR__ . '/../includes/Mailer.php';
+require_once __DIR__ . '/../includes/Privacy.php';
 
 /**
  * JSON 응답
@@ -74,6 +82,10 @@ try {
     $rawName = trim($data['name'] ?? '');
     $rawEmail = trim($data['email'] ?? '');
     $rawMessage = trim($data['message'] ?? '');
+
+    // IP 마스킹: IPv4 마지막 옥텟, IPv6 마지막 16비트를 제거한다.
+    $ip = maskIpAddress($_SERVER['REMOTE_ADDR'] ?? '');
+
     $db = Database::getInstance()->getConnection();
     $stmt = $db->prepare("
         INSERT INTO inquiries (name, email, message, status, ip_address, user_agent, created_at)
@@ -83,7 +95,7 @@ try {
         ':name' => $rawName,
         ':email' => $rawEmail,
         ':message' => $rawMessage,
-        ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ':ip' => $ip,
         ':ua' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 512),
     ]);
     $dbSaved = true;

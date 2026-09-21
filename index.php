@@ -2,730 +2,188 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/Database.php';
 require_once __DIR__ . '/includes/PageTracker.php';
+require_once __DIR__ . '/includes/ContentRepository.php';
+require_once __DIR__ . '/includes/SiteContent.php';
+require_once __DIR__ . '/includes/HomeContent.php';
 PageTracker::track('메인페이지');
+
+$homeContent = loadHomeContent(static function () {
+    return new ContentRepository(Database::getInstance()->getConnection());
+});
+$currentPage = 'home';
+$pageTitle = $site['name'] . ' - 중소영세 제조업 청년노동자의 안전할 권리';
+$pageDescription = '중소영세 제조업 청년노동자가 처음 일을 시작할 때부터 안전할 권리를 지킬 수 있도록 현장, 교육, 도구와 연구를 잇습니다.';
+$pageUrl = url('');
+require_once __DIR__ . '/includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="<?php echo htmlspecialchars($site['slogan']); ?>">
-    <title><?php echo htmlspecialchars($site['name']); ?></title>
-
-    <!-- Base URL: <?php echo htmlspecialchars($site['base_url']); ?> (<?php echo htmlspecialchars($site['environment']); ?>) -->
-    <base href="<?php echo htmlspecialchars($site['base_url']); ?>/">
-
-    <!-- Pretendard 폰트 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-
-    <style>
-        :root {
-            <?php echo getThemeCSSVariables($theme); ?>
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            color: var(--color-text-dark);
-            line-height: 1.6;
-        }
-
-        /* Header */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: var(--color-background-alt);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            text-decoration: none;
-        }
-
-        .nav {
-            display: flex;
-            gap: 2rem;
-        }
-
-        .nav a {
-            text-decoration: none;
-            color: var(--color-text-dark);
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav a:hover {
-            color: var(--color-primary);
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--color-text-dark);
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 6rem 2rem 4rem;
-            overflow: hidden;
-            background-image: url('<?php echo url('assets/images/hero.jpg'); ?>');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, var(--color-background) 0%, var(--color-secondary) 100%);
-            opacity: 0.5;
-            z-index: 1;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('<?php echo url('assets/images/hero-bg.svg'); ?>');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0.6;
-            z-index: 2;
-            animation: heroBackgroundMove 30s ease-in-out infinite;
-        }
-
-        @keyframes heroBackgroundMove {
-            0%, 100% {
-                transform: scale(1) translateY(0);
-            }
-            50% {
-                transform: scale(1.05) translateY(-10px);
-            }
-        }
-
-        .hero-content {
-            max-width: 800px;
-            position: relative;
-            z-index: 3;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--color-primary);
-            margin-bottom: 1.5rem;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: 1.5rem;
-            color: var(--color-primary-dark);
-            margin-bottom: 2rem;
-        }
-
-        .hero-cta {
-            display: inline-block;
-            background: var(--color-primary);
-            color: var(--color-text-light);
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s;
-        }
-
-        .hero-cta:hover {
-            background: var(--color-primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(91, 192, 222, 0.3);
-        }
-
-        /* Section Common */
-        .section {
-            padding: 5rem 2rem;
-        }
-
-        .section-alt {
-            background: var(--color-background);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        /* Mission Section */
-        .mission-intro {
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 3rem;
-        }
-
-        .mission-intro p {
-            font-size: 1.25rem;
-            color: var(--color-text-dark);
-            line-height: 1.8;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .stat-card {
-            background: var(--color-background-alt);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--color-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            font-size: 1rem;
-            color: var(--color-text-dark);
-            font-weight: 500;
-        }
-
-        /* Services Section */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .service-card {
-            background: var(--color-background-alt);
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--color-primary);
-        }
-
-        .service-card.clickable {
-            position: relative;
-        }
-
-        .service-card.clickable::before {
-            content: '클릭하여 이동 →';
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            font-size: 0.85rem;
-            color: var(--color-primary);
-            font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .service-card.clickable:hover::before {
-            opacity: 1;
-        }
-
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2rem;
-        }
-
-        .service-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--color-text-dark);
-            margin-bottom: 1rem;
-        }
-
-        .service-desc {
-            color: #666;
-            line-height: 1.7;
-        }
-
-        /* Contact Section */
-        .contact-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .contact-info h3 {
-            font-size: 1.5rem;
-            color: var(--color-text-dark);
-            margin-bottom: 1.5rem;
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .contact-item-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--color-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--color-text-light);
-            flex-shrink: 0;
-        }
-
-        .contact-item a {
-            color: var(--color-primary-dark);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .contact-item a:hover {
-            color: var(--color-primary);
-            text-decoration: underline;
-        }
-
-        .contact-form {
-            background: var(--color-background-alt);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--color-text-dark);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--color-primary);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 1rem;
-            background: var(--color-primary);
-            color: var(--color-text-light);
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn-submit:hover {
-            background: var(--color-primary-dark);
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--color-primary-dark);
-            color: var(--color-text-light);
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .footer-text {
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-copyright {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            .header-inner {
-                padding: 1rem;
-            }
-
-            .nav {
-                position: fixed;
-                top: 60px;
-                left: 0;
-                right: 0;
-                background: var(--color-background-alt);
-                flex-direction: column;
-                padding: 1rem;
-                gap: 1rem;
-                display: none;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            }
-
-            .nav.active {
-                display: flex;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .hero::after {
-                background-size: 150%;
-                opacity: 0.5;
-            }
-
-            .hero-title {
-                font-size: 2.5rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1.2rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .stat-number {
-                font-size: 2.5rem;
-            }
-        }
-
-        /* Scroll Animation */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-inner">
-            <a href="#hero" class="logo"><?php echo htmlspecialchars($site['name']); ?></a>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-            <nav class="nav" id="nav">
-                <a href="#hero">소개</a>
-                <a href="#mission">미션</a>
-                <a href="#services">핵심사업</a>
-                <a href="#contact">연락하기</a>
-            </nav>
+<section class="hero">
+    <div class="container">
+        <p class="eyebrow">청년노동자인권센터</p>
+        <h1 class="hero-title">중소영세 제조업 청년노동자와 함께, 처음 일하는 몸을 지킵니다.</h1>
+        <p class="hero-lead">학교에서 일터로 향하는 청년 곁에서 위험을 알아보는 힘, 질문할 사람, 실제로 쓸 수 있는 안전 정보를 만듭니다.</p>
+        <div class="hero-actions">
+            <a href="<?php echo url('about'); ?>" class="btn-cta">센터 알아보기</a>
+            <a href="<?php echo url('activity'); ?>" class="btn-cta btn-secondary">현장 활동 보기</a>
         </div>
-    </header>
+    </div>
+</section>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title"><?php echo htmlspecialchars($site['name']); ?></h1>
-            <p class="hero-subtitle"><?php echo htmlspecialchars($site['slogan']); ?></p>
-            <a href="#mission" class="hero-cta">자세히 보기</a>
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">현장에서 무슨 일이 있었나</h2>
+        <p class="section-subtitle">학생과 교사를 만나고, 안전을 이야기하고, 다음 행동을 기록합니다.</p>
+        <?php if ($homeContent['unavailable']): ?>
+            <p class="content-empty">최근 소식을 불러오지 못했습니다. 각 게시판에서 다시 확인해 주세요.</p>
+        <?php elseif ($homeContent['activity'] === []): ?>
+            <p class="content-empty">첫 현장 기록을 준비하고 있습니다.</p>
+        <?php else: ?>
+            <div class="content-grid">
+            <?php foreach ($homeContent['activity'] as $item): ?>
+                <article class="content-card">
+                    <div class="content-meta"><time datetime="<?php echo htmlspecialchars($item['content_date'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($item['content_date'], ENT_QUOTES, 'UTF-8'); ?></time></div>
+                    <h3><a href="<?php echo htmlspecialchars(url('activity/' . $item['slug']), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($item['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></a></h3>
+                    <p><?php echo htmlspecialchars((string)$item['summary'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
+                </article>
+            <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+        <a class="section-link" href="<?php echo url('activity'); ?>">활동게시판 전체 보기 →</a>
+    </div>
+</section>
+
+<section class="section section-alt">
+    <div class="container split-intro">
+        <h2 class="section-title">왜 이 일을 하는가</h2>
+        <div>
+            <p class="statement">처음 취업한 청년은 공정의 위험과 몸의 변화를 알아차리기 어렵습니다.</p>
+            <p>중소영세 제조업에서는 안전 정보를 충분히 배우고 질문할 기회가 더 적습니다. 센터는 사고가 난 뒤의 관심에 머물지 않고, 학교와 첫 일터 사이에서 예방의 기반을 만듭니다.</p>
+            <a class="section-link" href="<?php echo url('about'); ?>">센터가 시작된 이유 →</a>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Services Section -->
-    <section id="services" class="section">
-        <div class="container">
-            <h2 class="section-title fade-in">현장기반 노동안전보건 전문단체</h2>
-            <h2 class="section-title fade-in">핵심사업</h2>
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">우리가 하는 일</h2>
+        <p class="section-subtitle">현장에서 관계를 만들고, 배움을 돕고, 도구와 근거를 남깁니다.</p>
+        <div class="work-grid">
+        <?php foreach (siteWorkAreas() as $index => $area): ?>
+            <article class="work-card">
+                <div class="work-card-block"><span class="work-card-num"><?php echo str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT); ?></span></div>
+                <div class="work-card-meta"><span class="work-card-title"><?php echo htmlspecialchars($area['title'], ENT_QUOTES, 'UTF-8'); ?></span></div>
+                <p class="work-card-desc"><?php echo htmlspecialchars($area['summary'], ENT_QUOTES, 'UTF-8'); ?></p>
+            </article>
+        <?php endforeach; ?>
+        </div>
+        <a class="section-link" href="<?php echo url('activities'); ?>">활동 방식 자세히 보기 →</a>
+    </div>
+</section>
 
-            <div class="services-grid">
-                <div class="service-card fade-in">
-                    <div class="service-icon">📚</div>
-                    <h3 class="service-title">노동안전보건 교과서</h3>
-                    <p class="service-desc">
-                        반도체고 노동안전보건 교과서 개발<br>
-                        안전하게 일할 권리를 위한 최소한의 지침서
-                    </p>
-                </div>
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">현장에서 쓰는 안전 도구</h2>
+        <p class="section-subtitle">복잡한 산업안전과 노동 정보를 시민이 직접 확인할 수 있게 만듭니다.</p>
+        <div class="tool-grid compact">
+        <?php foreach (siteTools() as $tool): ?>
+            <article class="tool-card">
+                <span class="tool-status"><?php echo htmlspecialchars($tool['status'], ENT_QUOTES, 'UTF-8'); ?></span>
+                <h3><?php echo htmlspecialchars($tool['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                <p><?php echo htmlspecialchars($tool['tagline'], ENT_QUOTES, 'UTF-8'); ?></p>
+                <a class="tool-link" href="<?php echo htmlspecialchars($tool['url'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($tool['cta'], ENT_QUOTES, 'UTF-8'); ?> ↗</a>
+            </article>
+        <?php endforeach; ?>
+        </div>
+        <a class="section-link" href="<?php echo url('tools'); ?>">도구와 이용 안내 보기 →</a>
+    </div>
+</section>
 
-                <a href="<?php echo url('msds'); ?>" class="service-card clickable fade-in">
-                    <div class="service-icon">📱</div>
-                    <h3 class="service-title">노동안전보건 APP</h3>
-                    <p class="service-desc">
-                        누구나 쉽게 접근할 수 있는 안전정보 플랫폼<br>
-                        법령, 매뉴얼, 안전노하우등 최신 데이터기반
-                    </p>
-                </a>
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">언론이 본 현장</h2>
+        <?php if (!$homeContent['unavailable'] && $homeContent['press'] !== []): ?>
+            <div class="content-list">
+            <?php foreach ($homeContent['press'] as $item): ?>
+                <article class="content-list-item">
+                    <div class="content-meta"><span><?php echo htmlspecialchars((string)$item['outlet'], ENT_QUOTES, 'UTF-8'); ?></span><time datetime="<?php echo htmlspecialchars($item['content_date'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($item['content_date'], ENT_QUOTES, 'UTF-8'); ?></time></div>
+                    <h3><?php echo htmlspecialchars($item['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></h3>
+                    <p><?php echo htmlspecialchars((string)$item['summary'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
+                </article>
+            <?php endforeach; ?>
+            </div>
+        <?php else: ?>
+            <p class="content-empty"><?php echo $homeContent['unavailable'] ? '최근 소식을 불러오지 못했습니다. 각 게시판에서 다시 확인해 주세요.' : '관련 보도를 준비하고 있습니다.'; ?></p>
+        <?php endif; ?>
+        <a class="section-link" href="<?php echo url('press'); ?>">언론보도 전체 보기 →</a>
+    </div>
+</section>
 
-                <a href="<?php echo url('committee'); ?>" class="service-card clickable fade-in">
-                    <div class="service-icon">👥</div>
-                    <h3 class="service-title">청소년노동안전동아리</h3>
-                    <p class="service-desc">
-                        청소년 당사자가 직접 참여합니다<br>
-                        노동안전보건을 공부하고 알리는 활동
-                    </p>
-                </a>
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">숫자로 보는 활동</h2>
+        <div class="impact-grid">
+        <?php foreach (siteImpactStats() as $stat): ?>
+            <div class="impact-stat"><strong><?php echo htmlspecialchars($stat['value'], ENT_QUOTES, 'UTF-8'); ?></strong><span><?php echo htmlspecialchars($stat['label'], ENT_QUOTES, 'UTF-8'); ?></span></div>
+        <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="contact">
+    <div class="container">
+        <h2 class="section-title">함께하기</h2>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>현장의 이야기, 교육과 협력 제안을 기다립니다.</h3>
+                <p>청년노동자의 안전한 첫 일터를 함께 만들고 싶다면 연락해 주세요.</p>
+                <?php if ($site['email'] !== ''): ?>
+                    <p class="contact-item"><a href="mailto:<?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <?php else: ?>
+                    <p class="contact-item">문의 폼으로 연락해 주세요.</p>
+                <?php endif; ?>
+                <a class="btn-cta btn-secondary" href="<?php echo url('committee'); ?>">청소년 동아리 신청</a>
+            </div>
+            <div class="contact-form">
+                <form action="<?php echo url('api/contact.php'); ?>" method="post" onsubmit="return handleSubmit(event)">
+                    <div class="form-group"><label for="name">이름</label><input type="text" id="name" name="name" required maxlength="50"></div>
+                    <div class="form-group"><label for="email">이메일</label><input type="email" id="email" name="email" required maxlength="100"></div>
+                    <div class="form-group"><label for="message">메시지</label><textarea id="message" name="message" required maxlength="3000"></textarea></div>
+                    <button type="submit" class="btn-submit">문의하기</button>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="section section-alt">
-        <div class="container">
-            <h2 class="section-title fade-in">연락하기</h2>
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">함께하는 곳들</h2>
+        <?php foreach (siteSupportPartners() as $partner): ?>
+            <p class="partner-credit"><?php echo htmlspecialchars($partner['program'], ENT_QUOTES, 'UTF-8'); ?> · <?php echo htmlspecialchars($partner['name'], ENT_QUOTES, 'UTF-8'); ?> <?php echo htmlspecialchars($partner['relationship'], ENT_QUOTES, 'UTF-8'); ?></p>
+        <?php endforeach; ?>
+    </div>
+</section>
 
-            <div class="contact-content">
-                <div class="contact-info fade-in">
-                    <h3>함께하고 싶으시다면 연락주세요</h3>
-
-                    <div class="contact-item">
-                        <div class="contact-item-icon">✉️</div>
-                        <span><a href="mailto:<?php echo htmlspecialchars($site['email']); ?>"><?php echo htmlspecialchars($site['email']); ?></a></span>
-                    </div>
-
-                    <div class="contact-item">
-                        <div class="contact-item-icon">👤</div>
-                        <span>대표: <?php echo htmlspecialchars($site['representative']); ?></span>
-                    </div>
-
-                    <p style="margin-top: 2rem; color: #666; line-height: 1.8;">
-                        청년노동자인권센터는 제조업,특히 반도체 청년노동자들의 안전한 일터를 위해 활동합니다.
-                        
-                    </p>
-                </div>
-
-                <div class="contact-form fade-in">
-                    <form action="#" method="post" onsubmit="return handleSubmit(event)">
-                        <div class="form-group">
-                            <label for="name">이름</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">이메일</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">메시지</label>
-                            <textarea id="message" name="message" required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn-submit">문의하기</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-logo"><?php echo htmlspecialchars($site['name']); ?></div>
-            <p class="footer-text"><?php echo htmlspecialchars($site['slogan']); ?></p>
-            <p class="footer-text"><?php echo htmlspecialchars($site['url']); ?></p>
-            <p class="footer-copyright">
-                &copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name']); ?>. All rights reserved.
-            </p>
-        </div>
-    </footer>
-
-    <script>
-        // Mobile menu toggle
-        function toggleMenu() {
-            const nav = document.getElementById('nav');
-            nav.classList.toggle('active');
-        }
-
-        // Close menu on link click
-        document.querySelectorAll('.nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('nav').classList.remove('active');
-            });
+<script>
+async function handleSubmit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const button = form.querySelector('button[type="submit"]');
+    button.disabled = true;
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(Object.fromEntries(new FormData(form)))
         });
-
-        // Scroll animation
-        const fadeElements = document.querySelectorAll('.fade-in');
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        });
-
-        fadeElements.forEach(el => observer.observe(el));
-
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('.header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
-                header.style.backdropFilter = 'blur(10px)';
-            } else {
-                header.style.background = 'var(--color-background-alt)';
-                header.style.backdropFilter = 'none';
-            }
-        });
-
-        // Form submit handler
-        async function handleSubmit(e) {
-            e.preventDefault();
-
-            const form = e.target;
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-
-            // 버튼 비활성화
-            submitBtn.disabled = true;
-            submitBtn.textContent = '전송 중...';
-
-            const data = {
-                name: form.querySelector('#name').value,
-                email: form.querySelector('#email').value,
-                message: form.querySelector('#message').value
-            };
-
-            try {
-                const response = await fetch('<?php echo url("api/contact.php"); ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert(result.message);
-                    form.reset();
-                } else {
-                    alert(result.message || '오류가 발생했습니다.');
-                }
-            } catch (error) {
-                console.error('Contact form error:', error);
-                alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            }
-
-            return false;
-        }
-    </script>
-</body>
-</html>
+        const result = await response.json();
+        alert(result.message);
+        if (result.success) form.reset();
+    } catch (error) {
+        alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+        button.disabled = false;
+    }
+    return false;
+}
+</script>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

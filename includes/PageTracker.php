@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/Privacy.php';
+
 /**
  * 페이지 방문 추적 클래스
  * younglabor_visitor_log 테이블에 기록
@@ -27,8 +29,11 @@ class PageTracker {
                 INSERT INTO younglabor_visitor_log (ip_address, user_agent, visit_date, page_url, referrer)
                 VALUES (:ip, :ua, CURDATE(), :url, :ref)
             ");
+            // IP 마스킹: IPv4 마지막 옥텟, IPv6 마지막 16비트를 제거한다.
+            $ip = maskIpAddress($_SERVER['REMOTE_ADDR'] ?? '');
+
             $stmt->execute([
-                ':ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+                ':ip' => $ip,
                 ':ua' => substr($ua, 0, 500),
                 ':url' => substr($pageUrl, 0, 500),
                 ':ref' => substr($_SERVER['HTTP_REFERER'] ?? '', 0, 500),

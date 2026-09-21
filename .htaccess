@@ -1,0 +1,52 @@
+RewriteEngine On
+
+<IfModule mod_alias.c>
+    RedirectMatch 403 ^/(?:backup|dbeditor)(?:/|$)
+</IfModule>
+
+# 디렉터리 파일 목록 노출 차단
+Options -Indexes
+
+# 환경설정, 저장소 메타데이터 등 숨김 경로 차단
+# 인증서 자동 갱신에 사용하는 .well-known 경로는 허용
+RewriteRule (^|/)\.(?!well-known(?:/|$)) - [F,L,NC]
+
+# 내부 설정 및 개발/운영 자료의 직접 다운로드 차단
+RewriteRule ^(?:config|test-config)\.php$ - [F,L,NC]
+RewriteRule ^(?:backup|dbeditor)(?:/|$) - [F,L,NC]
+RewriteRule \.(?:bak|backup|sql(?:\.gz)?|zip|tar|tgz|gz|7z)$ - [F,L,NC]
+RewriteRule \.(?:log|sql|md)$ - [F,L,NC]
+RewriteRule ^(?:docs|includes|tests|scripts|database)(?:/|$) - [F,L,NC]
+
+# 관리형 공개 콘텐츠 경로
+RewriteRule ^activity/?$ activity/index.php [L,QSA]
+RewriteRule ^activity/([a-z0-9-]+)/?$ activity/view.php?slug=$1 [L,QSA]
+RewriteRule ^press/?$ press/index.php [L,QSA]
+RewriteRule ^resources/?$ resources/index.php [L,QSA]
+RewriteRule ^resources/([a-z0-9-]+)/?$ resources/view.php?slug=$1 [L,QSA]
+RewriteRule ^media/([0-9]+)/?$ media.php?id=$1 [L,QSA]
+RewriteRule ^downloads/([0-9]+)/?$ download.php?id=$1 [L,QSA]
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    <FilesMatch "\.(?:css|js|png|jpe?g|svg|webp|avif)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# .php 확장자 없이 접근 가능하도록 (about → about.php)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
