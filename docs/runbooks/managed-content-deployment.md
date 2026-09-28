@@ -80,7 +80,7 @@ bash tests/managed-content-http-smoke.sh
 
 ## rollback
 
-바이브코딩동아리 전환(2026-09) 이후에는 전환 머지 이전 revision(`club.php`가 없는 revision)으로 되돌리지 않고 수정 배포로 대응한다. 운영 배포는 파일을 지우지 않으므로(prune 옵트인) 되돌리면 `club.php`만 남아 `/club`이 500이 되고, 옛 신청 폼과 신청 API가 되살아나 종료된 사업의 개인정보 접수가 다시 열린다. 불가피하게 되돌렸다면 전환 파일 4개(`club.php`, `includes/SiteContent.php`, `committee/index.php`, `api/committee.php`)를 전환 이후 버전으로 다시 올리고 `SITE_BASE_URL=https://younglabor.kr bash tests/public-http-smoke.sh`로 확인한다. 코드만 바뀐 배포를 되돌릴 때는 아래 DB 단계(2·4)를 건너뛴다.
+바이브코딩동아리 전환(2026-09) 이후에는 전환 머지 이전 revision(`club.php`가 없는 revision)으로 되돌리지 않고 수정 배포로 대응한다. 운영 배포는 파일을 지우지 않으므로(prune 옵트인) 되돌리면 `club.php`만 남아 `/club`이 500이 되고, 옛 신청 폼과 신청 API가 되살아나 종료된 사업의 개인정보 접수가 다시 열린다. 불가피하게 되돌렸다면 전환 파일 5개(`club.php`, `includes/SiteContent.php`, `committee/index.php`, `api/committee.php`, `assets/css/style.css`)를 전환 이후 버전으로 다시 올리고 `SITE_BASE_URL=https://younglabor.kr bash tests/public-http-smoke.sh`로 확인한다. 코드만 바뀐 배포를 되돌릴 때는 아래 DB 단계(2·4)를 건너뛴다.
 
 1. 유지보수 상태로 전환한다.
 2. `content_posts`, `content_files`와 `CONTENT_STORAGE_PATH` 디렉터리를 먼저 별도 보관한다.

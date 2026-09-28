@@ -15,6 +15,13 @@ expect() {
 for path in / /about /activities /activity/ /press/ /resources/ /tools /club /admin/login.php; do
   expect "GET $path" "$(curl -sS -A "$ua" -o "$body" -w '%{http_code}' "$base_url$path")" 200
 done
+# 헤더·푸터 링크의 슬래시 없는 게시판 주소는 Apache가 슬래시 경로로 보낸다 (운영에서는 http로 가는 기존 문제가 있어 경로 모양만 확인)
+for d in activity press resources; do
+  case "$(curl -sS -A "$ua" -o /dev/null -w '%{http_code} %{redirect_url}' "$base_url/$d")" in
+    "301 "*"/$d/") ;;
+    *) echo "FAIL GET /$d: expected 301 to /$d/" >&2; exit 1 ;;
+  esac
+done
 # 옛 동아리 신청 주소는 /club으로 영구 이동하고, 옛 신청 API는 아무것도 받지 않는다
 expect "GET /committee/" "$(curl -sS -A "$ua" -o /dev/null -w '%{http_code} %{redirect_url}' "$base_url/committee/")" "301 $base_url/club"
 expect "GET /committee (follow)" "$(curl -sS -A "$ua" -L -o /dev/null -w '%{http_code} %{url_effective}' "$base_url/committee")" "200 $base_url/club"
