@@ -33,7 +33,7 @@ $files = new RecursiveIteratorIterator(new RecursiveCallbackFilterIterator(
         if ($current->isDir()) {
             return preg_match('#^(?:\.|admin$|tests$|docs$|backup$|dbeditor$|data$|node_modules$)#', $relative) !== 1;
         }
-        return preg_match('/\.(?:php|css|js)$/', $relative) === 1;
+        return preg_match('/\.(?:php|css|js|txt|xml|html|json|svg)$/', $relative) === 1;
     }
 ));
 foreach ($files as $file) {
@@ -43,5 +43,8 @@ foreach ($files as $file) {
         if (strpos($source, $needle) !== false) {
             failRetired("{$relative}에 폐기 문구가 남아 있습니다: {$needle}");
         }
+    }
+    if (stripos($source, 'committee') !== false) {
+        failRetired("{$relative}에 옛 경로(committee)가 남아 있습니다.");
     }
 }
