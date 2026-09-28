@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const base = process.env.SITE_BASE_URL || 'http://localhost:8080/younglabor';
 
 (async () => {
-    for (const path of ['/', '/about', '/activities', '/activity', '/press', '/resources', '/tools']) {
+    for (const path of ['/', '/about', '/activities', '/activity', '/press', '/resources', '/tools', '/club']) {
         const response = await fetch(base + path);
         assert.equal(response.status, 200, `${path} must return 200`);
         const html = await response.text();
@@ -16,6 +16,15 @@ const base = process.env.SITE_BASE_URL || 'http://localhost:8080/younglabor';
                 assert.ok(html.includes(value), `tools page must include ${value}`);
             }
             assert.doesNotMatch(html, /<iframe\b/i, 'tools page must not embed services');
+        }
+        if (path === '/club') {
+            assert.doesNotMatch(html, /<iframe\b/i, 'club page must not embed the application form');
+            assert.ok(html.includes('지원으로 진행됩니다.'), 'club page must credit the foundation');
+            if (html.includes('zealot-survey.vercel.app')) {
+                assert.ok(html.includes('https://zealot-survey.vercel.app/RJXag60aMfMT'), 'club page must link the exact application form');
+                assert.match(html, />\s*zealot-survey\.vercel\.app\s*</, 'club page must show the form domain as visible text');
+                assert.ok(html.includes('외부 서비스로 이동'), 'club page must announce the external link');
+            }
         }
     }
 })().catch((error) => { console.error(error); process.exit(1); });
