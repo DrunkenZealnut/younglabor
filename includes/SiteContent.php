@@ -64,6 +64,6 @@ function siteSupportPartners(): array
     return [[
         'name' => '아름다운재단',
         'relationship' => '지원',
-        'program' => '2025 공익단체 인큐베이팅 지원사업',
+        'program' => '공익단체 인큐베이팅 지원사업',
     ]];
 }

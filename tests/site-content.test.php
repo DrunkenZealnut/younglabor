@@ -28,4 +28,5 @@ foreach ($tools as $tool) {
 if (function_exists('siteImpactStats')) exit(1);
 $support = siteSupportPartners();
 assertSameValue('아름다운재단', $support[0]['name'], '지원기관 이름이 다릅니다.');
-assertSameValue('2025 공익단체 인큐베이팅 지원사업', $support[0]['program'], '지원사업 크레딧이 다릅니다.');
+assertSameValue('공익단체 인큐베이팅 지원사업', $support[0]['program'], '지원사업 크레딧이 다릅니다.');
+assertSameValue(0, preg_match('/\d{4}/', $support[0]['program']), '지원사업 크레딧에 연도를 넣지 않습니다.');
