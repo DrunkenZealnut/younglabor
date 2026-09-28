@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../includes/SiteContent.php';
+date_default_timezone_set('UTC');
 
 function assertClub(bool $condition, string $message): void
 {
@@ -24,3 +25,4 @@ assertClub(clubRecruitmentIsOpen(new DateTimeImmutable('2026-10-15 23:59:59', $s
 assertClub(!clubRecruitmentIsOpen(new DateTimeImmutable('2026-10-16 00:00:00', $seoul)), '마감 다음 날 0시에는 마감이어야 합니다.');
 assertClub(clubRecruitmentIsOpen(new DateTimeImmutable('2026-10-15 14:59:59', $utc)), 'UTC로 주어져도 서울 기준으로 판정해야 합니다.');
 assertClub(!clubRecruitmentIsOpen(new DateTimeImmutable('2026-10-15 15:00:00', $utc)), 'UTC 15시는 서울 16일 0시이므로 마감이어야 합니다.');
+clubRecruitmentIsOpen();

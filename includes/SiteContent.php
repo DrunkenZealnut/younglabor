@@ -74,6 +74,7 @@ function siteClubRecruitment(): array
         'name' => '바이브코딩동아리',
         'apply_url' => 'https://zealot-survey.vercel.app/RJXag60aMfMT',
         'apply_domain' => 'zealot-survey.vercel.app',
+        // Y-m-d. 당일 23:59:59(Asia/Seoul)까지 모집. 연장할 때는 이 값과 tests/club-recruitment.test.php의 경계 시각을 함께 고친다.
         'deadline' => '2026-10-15',
     ];
 }
