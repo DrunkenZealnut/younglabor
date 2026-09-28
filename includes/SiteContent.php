@@ -67,3 +67,27 @@ function siteSupportPartners(): array
         'program' => '공익단체 인큐베이팅 지원사업',
     ]];
 }
+
+function siteClubRecruitment(): array
+{
+    return [
+        'name' => '바이브코딩동아리',
+        'apply_url' => 'https://zealot-survey.vercel.app/RJXag60aMfMT',
+        'apply_domain' => 'zealot-survey.vercel.app',
+        'deadline' => '2026-10-15',
+    ];
+}
+
+function clubRecruitmentIsOpen(?DateTimeImmutable $now = null): bool
+{
+    $zone = new DateTimeZone('Asia/Seoul');
+    $now = ($now ?? new DateTimeImmutable('now', $zone))->setTimezone($zone);
+    $closesAt = (new DateTimeImmutable(siteClubRecruitment()['deadline'], $zone))->modify('+1 day');
+    return $now < $closesAt;
+}
+
+function clubDeadlineLabel(): string
+{
+    $deadline = new DateTimeImmutable(siteClubRecruitment()['deadline'], new DateTimeZone('Asia/Seoul'));
+    return $deadline->format('n월 j일');
+}
