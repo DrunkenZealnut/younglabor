@@ -911,7 +911,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* 홈 모집 알림 띠 */
 .club-banner { background: var(--color-lime); border-bottom: var(--hairline); }
-.club-banner-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1.5rem; padding-top: 1rem; padding-bottom: 1rem; }
+.club-banner-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: .5rem 1.5rem; padding-top: 1rem; padding-bottom: 1rem; }
 .club-banner p { margin: 0; }
 .club-banner a { color: var(--color-ink); font-weight: 600; text-underline-offset: 4px; }
 

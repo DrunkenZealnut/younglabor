@@ -29,3 +29,7 @@ if (strpos($home, '$clubOpen = clubRecruitmentIsOpen();') === false) exit(1);
 if (substr_count($home, "url('club')") < 2) exit(1);
 if (strpos($home, "url('committee')") !== false) exit(1);
 if (strpos(file_get_contents(__DIR__ . '/../assets/css/style.css'), '.club-banner') === false) exit(1);
+if (!preg_match('/<\?php if \(\$clubOpen\): \?>\s*<aside class="club-banner"[^>]*>.*?<\/aside>\s*<\?php endif; \?>/s', $home)) exit(1);
+if (strpos($home, "\$clubOpen ? '신청' : '소식'") === false) exit(1);
+$heroEnd = strpos($home, '</section>', $heroAt);
+if ($heroEnd === false || $bannerAt < $heroEnd) exit(1);

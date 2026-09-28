@@ -34,7 +34,7 @@ require_once __DIR__ . '/includes/header.php';
 <aside class="club-banner" aria-label="<?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> 모집 안내">
     <div class="container club-banner-inner">
         <p><strong><?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> 모집 중</strong> · <?php echo htmlspecialchars(clubDeadlineLabel(), ENT_QUOTES, 'UTF-8'); ?> 마감</p>
-        <a href="<?php echo url('club'); ?>">자세히 보기<span aria-hidden="true"> →</span></a>
+        <a href="<?php echo url('club'); ?>"><span class="sr-only"><?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> 모집 </span>자세히 보기<span aria-hidden="true"> →</span></a>
     </div>
 </aside>
 <?php endif; ?>
