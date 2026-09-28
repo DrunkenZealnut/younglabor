@@ -1,9 +1,14 @@
 const assert = require('node:assert/strict');
 const base = (process.env.SITE_BASE_URL || 'http://localhost:8080/younglabor').replace(/\/$/, '');
 const headers = { 'user-agent': 'younglabor-a11y-bot' };
+const expectedClubState = process.env.CLUB_EXPECT_STATE || '';
+if (expectedClubState && !['open', 'closed'].includes(expectedClubState)) {
+    console.error('CLUB_EXPECT_STATE must be "open" or "closed"');
+    process.exit(1);
+}
 
 (async () => {
-    for (const path of ['/', '/about', '/activities', '/activity', '/press', '/resources', '/tools', '/club']) {
+    for (const path of ['/', '/about', '/activities', '/activity/', '/press/', '/resources/', '/tools', '/club']) {
         const response = await fetch(base + path, { headers });
         assert.equal(response.status, 200, `${path} must return 200`);
         assert.equal(response.redirected, false, `${path} must not redirect`);
@@ -33,8 +38,8 @@ const headers = { 'user-agent': 'younglabor-a11y-bot' };
                 assert.ok(!html.includes('zealot-survey.vercel.app'), 'closed club page must not link the application form');
                 assert.ok(html.includes('이번 모집은 마감되었습니다.'), 'closed club page must say recruitment is closed');
             }
-            if (process.env.CLUB_EXPECT_STATE) {
-                assert.equal(open ? 'open' : 'closed', process.env.CLUB_EXPECT_STATE, 'club recruitment state differs from CLUB_EXPECT_STATE');
+            if (expectedClubState) {
+                assert.equal(open ? 'open' : 'closed', expectedClubState, 'club recruitment state differs from CLUB_EXPECT_STATE');
             }
         }
     }

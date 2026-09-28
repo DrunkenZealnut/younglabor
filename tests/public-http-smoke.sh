@@ -12,7 +12,7 @@ expect() {
     exit 1
   fi
 }
-for path in / /about /activities /activity /press /resources /tools /club /admin/login.php; do
+for path in / /about /activities /activity/ /press/ /resources/ /tools /club /admin/login.php; do
   expect "GET $path" "$(curl -sS -A "$ua" -o "$body" -w '%{http_code}' "$base_url$path")" 200
 done
 # 옛 동아리 신청 주소는 /club으로 영구 이동하고, 옛 신청 API는 아무것도 받지 않는다
