@@ -910,19 +910,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* 바이브코딩동아리 (/club) */
-.club-status { display: inline-block; margin-top: 1.5rem; padding: .25rem .6rem; background: var(--color-lime); color: var(--color-ink); font-size: .875rem; font-weight: 600; }
+.page-header .club-status { display: inline-block; margin-top: 1.5rem; padding: .25rem .6rem; background: var(--color-lime); color: var(--color-ink); font-size: .875rem; font-weight: 600; }
 .club-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.5rem; margin-top: 1.5rem; padding: 0; list-style: none; }
 .club-examples li { padding: 1rem 0; border-top: var(--hairline); font-weight: 600; }
-.club-facts { margin: 0; }
+.club-facts { max-width: 48rem; margin: 0; }
 .club-facts div { display: grid; grid-template-columns: 5rem minmax(0, 1fr); gap: 1rem; padding: 1rem 0; border-top: var(--hairline); }
 .club-facts dt { font-weight: 600; }
 .club-facts dd { margin: 0; color: var(--color-gray); }
-.notice-panel .tool-link { margin: 1.5rem 0; }
+.notice-panel .tool-link { width: fit-content; grid-template-columns: auto 1fr; margin: 1.5rem 0; }
 .notice-panel .btn-cta { margin-top: 1.5rem; }
-.sponsor-box { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-top: clamp(2rem, 5vw, 4rem); padding: 1rem 0; border-top: var(--hairline); border-bottom: var(--hairline); }
-.sponsor-box span { font-size: var(--fs-caption); color: var(--color-gray); }
-.sponsor-box img { height: 28px; width: auto; }
 @media (max-width: 600px) {
     .club-examples { grid-template-columns: 1fr; }
     .club-facts div { grid-template-columns: 1fr; gap: .25rem; }
 }
+
+/* 재단 지원 표기 (공통) */
+.sponsor-box { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-top: clamp(2rem, 5vw, 4rem); padding: 1rem 0; border-top: var(--hairline); border-bottom: var(--hairline); }
+.sponsor-box span { font-size: var(--fs-caption); color: var(--color-gray); }
+.sponsor-box img { height: 28px; width: auto; }

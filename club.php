@@ -11,15 +11,18 @@ $clubName = htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8');
 $deadlineLabel = htmlspecialchars(clubDeadlineLabel(), ENT_QUOTES, 'UTF-8');
 
 $currentPage = 'club';
-$pageTitle = $club['name'] . ' 모집 - ' . $site['name'];
-$pageDescription = '반도체고등학교 청소년과 함께 AI로 나만의 앱을 만드는 3개월. 코딩을 몰라도 참가할 수 있습니다.';
+$pageTitle = $club['name'] . ($clubOpen ? ' 모집' : '') . ' - ' . $site['name'];
+$pageDescription = $clubOpen
+    ? '반도체고등학교 청소년과 함께 AI로 나만의 앱을 만드는 3개월. 코딩을 몰라도 참가할 수 있습니다.'
+    : '반도체고등학교 청소년과 함께 AI로 나만의 앱을 만드는 ' . $club['name'] . ' 소식을 전합니다.';
 $pageUrl = url('club');
 require_once __DIR__ . '/includes/header.php';
 ?>
 <section class="page-header">
     <div class="container">
-        <p class="eyebrow">함께하기 · 청소년 동아리</p>
-        <h1><?php echo $clubName; ?></h1>
+        <a class="content-back" href="<?php echo url('/'); ?>#contact">← 함께하기</a>
+        <p class="eyebrow">청소년 동아리</p>
+        <h1><?php echo str_replace('동아리', '<wbr>동아리', $clubName); ?></h1>
         <p>나도 개발자! — 반도체고 청소년과 함께하는 3개월</p>
         <?php if ($clubOpen): ?>
             <p class="club-status">모집 중 · <?php echo $deadlineLabel; ?> 마감</p>
@@ -62,7 +65,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="notice-panel">
             <p>AI 코딩은 학교가 따로 제공하기 어려운 경험입니다.</p>
             <p>필요한 도구를 스스로 만들다 보면 일하는 사람과 안전을 다시 보게 됩니다. 노동안전을 가르치는 대신, 학생이 만들며 익히는 동아리입니다.</p>
-            <p>올해 첫 모델을 만들고, 내년에 더 많은 학교로 넓혀 갑니다.</p>
+            <p>올해 첫 모델을 만들고, 내년에 더 많은 학교로 넓혀 가려 합니다.</p>
         </div>
     </div>
 </section>
