@@ -10,6 +10,21 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-27-public-site-phase2-design.md`
 
+## 1단계 실행 기록 (2026-09-28)
+
+Task 0~6을 작업마다 구현 → 스펙 리뷰 → 품질 리뷰 순서로 실행했다(`0467ae8..5ea44ee`, 커밋 14개). 1단계 전체 최종 리뷰는 "코드는 배포 준비 완료, 배포는 O1 완료 뒤"로 판정했다. 리뷰에서 나와 계획의 코드와 달라진 점은 다음과 같다. 최종 코드는 커밋을 따른다.
+
+| Task | 달라진 점 | 이유 |
+|---|---|---|
+| 1 | Step 4의 grep에 `--exclude-dir=.worktrees --exclude-dir=.git` | 작업 트리 안 `.worktrees/`의 옛 사본이 오탐을 낸다 |
+| 2 | 테스트에 `date_default_timezone_set('UTC')`와 인자 없는 `clubRecruitmentIsOpen()` 호출 추가, 마감일 설정에 설명 주석 | 서버 기본 시간대가 서울일 때 시간대 누락 회귀가 통과했다 |
+| 3 | `.page-header .club-status`(명시도), `.notice-panel .tool-link { width: fit-content; grid-template-columns: auto 1fr }`, `.club-facts { max-width: 48rem }`, 상단 `← 함께하기` 링크(설계 §6), h1의 `<wbr>`, 마감 뒤 title·description, "넓혀 가려 합니다", `.sponsor-box`를 공통 주석 아래로, 테스트 needle 보강 | 상태 배지 대비 3.30:1(WCAG AA 미달), 신청 링크의 ↗가 패널 끝으로 벌어짐, 360px 넘침 |
+| 4 | 테스트에 조건문·삼항식·히어로 뒤 위치 검사 추가, 띠 링크에 `sr-only` 설명, `justify-content: flex-start` | 조건 제거·반전 등 변이 5가지가 통과했다. 링크 목록에서 목적이 드러나지 않았다 |
+| 5 | 301에 `Cache-Control: max-age=86400`, 종료 테스트가 `committee` 문자열 전체와 txt·xml·html·json·svg까지 검사 | 롤백 때 캐시된 301이 깨진 `/club`에 묶이는 것을 막는다 |
+| 6 | 스모크: `expect()` 진단, 봇 UA(방문 통계 제외), 게시판은 `/activity/ /press/ /resources/`로 요청, 슬래시 없는 게시판 주소의 301 모양 확인, `/committee` 체인, 410 본문 확인. 접근성: 렌더된 모집 상태로 분기, `CLUB_EXPECT_STATE=open|closed`, `redirected === false`. `managed-content-http-smoke.sh`도 끝 슬래시로. 런북: 배포 확인 9번에 운영 명령, `## rollback` 첫머리에 "전환 이전으로 되돌리지 말고 수정 배포" 경고 | 실제 Apache와 운영에서는 슬래시 없는 디렉터리가 `.htaccess`보다 먼저 301 된다. 링크 존재 여부로 분기하면 링크가 사라져도 통과했다 |
+
+검증 환경: XAMPP가 꺼져 있을 때는 XAMPP의 httpd를 별도 설정으로 sudo 없이 띄워(127.0.0.1:8080, DocumentRoot `htdocs`, mod_rewrite·mod_dir·PHP 모듈) 운영과 같은 Apache 동작으로 HTTP 검사를 돌렸다. PHP 내장 서버는 mod_dir 동작이 달라 쓰지 않는다. `tests/apache-security-rules.test.sh`는 bash에 ripgrep이 없어 돌리지 못했다(`brew install ripgrep` 필요).
+
 ## 전제와 제약
 
 - 작업 트리는 `/Applications/XAMPP/xamppfiles/htdocs/younglabor`이다. XAMPP가 이 경로를 `http://localhost:8080/younglabor`로 서비스한다. `.worktrees/` 아래는 루트 `.htaccess`가 403으로 막아 HTTP 테스트를 할 수 없다.
@@ -69,7 +84,7 @@
 | 모집·선발 | 10-05 ~ 10-23 | 운영 O3·O6 | — |
 | 3단계 | 10-12 목표 | Task 11~12 | O4(옛 신청 데이터 파기) 완료 기록 |
 
-코드 밖 운영 작업(O1~O8)은 문서 끝 "운영 작업"에 있다.
+코드 밖 운영 작업(O1~O12)은 문서 끝 "운영 작업"에 있다.
 
 ---
 
@@ -886,6 +901,16 @@ git commit -m "test: cover club page and retired committee routes"
 
 선행 조건: 운영 작업 O1(신청서 수정)이 끝나 있어야 한다. 신청서가 아직 `9월 30일`·`클로드코드`를 말하면 배포하지 않는다.
 
+- [ ] **Step 0: 신청서(O1) 확인**
+
+```bash
+form="$(curl -sS https://zealot-survey.vercel.app/RJXag60aMfMT)"
+printf '%s' "$form" | grep -c '9월 30일'; printf '%s' "$form" | grep -c '클로드코드'; printf '%s' "$form" | grep -c 'Claude Code'
+printf '%s' "$form" | grep -c '10월 15일'; printf '%s' "$form" | grep -c '러버블'; printf '%s' "$form" | grep -c '아름다운재단'
+```
+
+Expected: 앞의 세 값은 `0`, 뒤의 세 값은 `1` 이상. macOS `grep`은 한글 대체 패턴(`\|`)을 잘못 세므로 문자열마다 따로 센다.
+
 - [ ] **Step 1: 푸시와 PR (승인 후)**
 
 ```bash
@@ -917,17 +942,41 @@ gh pr merge --merge
 gh run list --workflow deploy.yml --limit 1
 ```
 
-Expected: 배포 워크플로 `completed success`
+Expected: 배포 워크플로 `completed success`. 워크플로 로그의 배포 응답에 copy error가 없어야 한다.
 
 - [ ] **Step 4: 운영 확인**
 
 ```bash
 SITE_BASE_URL=https://younglabor.kr bash tests/public-http-smoke.sh && echo PROD-SMOKE-OK
-SITE_BASE_URL=https://younglabor.kr node tests/public-accessibility.test.js && echo PROD-A11Y-OK
-curl -sS https://younglabor.kr/ | grep -o '공익단체 인큐베이팅 지원사업[^<]*' | sort -u
+SITE_BASE_URL=https://younglabor.kr CLUB_EXPECT_STATE=open node tests/public-accessibility.test.js && echo PROD-A11Y-OK
+curl -sS -A check-bot https://younglabor.kr/ | grep -c '2025 공익단체'
+curl -sS -A check-bot https://younglabor.kr/ | grep -c 'class="club-banner"'
+curl -sS -A check-bot https://younglabor.kr/ | grep -o '바이브코딩동아리 신청</a>'
+curl -sSI -A check-bot https://younglabor.kr/club | grep -i '^cf-cache-status'
 ```
 
-Expected: `PROD-SMOKE-OK`, `PROD-A11Y-OK`, 크레딧에 `2025`가 없음. 실패하면 직전 revision으로 되돌리는 절차(런북 rollback 3~5)를 사용자와 정한다.
+Expected: `PROD-SMOKE-OK`, `PROD-A11Y-OK`, `0`, `1`, `바이브코딩동아리 신청</a>`, `cf-cache-status: DYNAMIC`(HTML이 엣지에 캐시되면 10-16 0시 전환이 늦어진다).
+
+사람이 확인할 것:
+- 실제 휴대전화로 홈 띠 → `/club` → 신청서가 같은 탭에서 열리는지 한 번 확인한다.
+- iPhone VoiceOver에서 띠의 링크가 "바이브코딩동아리 모집 자세히 보기"로 읽히는지 확인한다.
+
+실패했을 때:
+- smoke가 `/club` 404로 실패하면 되돌리지 말고 배포 워크플로를 다시 실행한다(`gh run rerun <run-id>`). 배포는 같은 결과를 다시 만든다.
+- 그 밖의 실패는 수정 배포로 대응한다. 전환 이전 revision으로 되돌리지 않는다(런북 `## rollback` 첫 문단).
+
+- [ ] **Step 5: 마감 시점 확인 (2026-10-16 00:00 KST 직후)**
+
+- zealot-survey 신청서를 직접 닫는다. 신청서에는 자동 마감이 없다.
+- 운영 확인:
+
+```bash
+SITE_BASE_URL=https://younglabor.kr CLUB_EXPECT_STATE=closed node tests/public-accessibility.test.js && echo CLOSED-OK
+curl -sS -A check-bot https://younglabor.kr/ | grep -c 'class="club-banner"'
+curl -sS -A check-bot https://younglabor.kr/ | grep -o '바이브코딩동아리 소식</a>'
+```
+
+Expected: `CLOSED-OK`, `0`, `바이브코딩동아리 소식</a>`
 
 ---
 
@@ -1103,7 +1152,7 @@ git commit -m "feat: add social share images"
 
 **Interfaces:**
 
-- `sitemapStaticPaths(): array` — 정적 공개 경로
+- `sitemapStaticPaths(): array` — 정적 공개 경로. 게시판 디렉터리(`activity/`·`press/`·`resources/`)는 끝 슬래시를 붙인다. 슬래시 없는 주소는 Apache(mod_dir)가 301로 보내므로 sitemap에 넣지 않는다
 - `sitemapEntries(callable $repositoryFactory, callable $urlFor): array` — `[['loc' => string, 'lastmod' => ?string], …]`. 게시물은 `listPublished()`로만 읽는다(draft 제외). 조회에 실패하면 정적 경로만 돌려준다
 - `renderSitemap(array $entries): string` — sitemaps.org XML
 
@@ -1184,7 +1233,7 @@ Expected: `includes/Sitemap.php`를 찾지 못하는 치명적 오류와 `exit=2
 
 function sitemapStaticPaths(): array
 {
-    return ['', 'about', 'activities', 'activity', 'press', 'resources', 'tools', 'club'];
+    return ['', 'about', 'activities', 'activity/', 'press/', 'resources/', 'tools', 'club'];
 }
 
 function sitemapEntries(callable $repositoryFactory, callable $urlFor): array
@@ -1273,48 +1322,36 @@ RewriteRule ^downloads/([0-9]+)/?$ download.php?id=$1 [L,QSA]
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 ```
 
-- [ ] **Step 5: 스모크 테스트 교체**
+- [ ] **Step 5: 스모크 테스트에 검색 노출 검사 추가**
 
-`tests/public-http-smoke.sh` 전체:
+1단계에서 `tests/public-http-smoke.sh`는 `expect()` 도우미와 봇 UA를 쓰는 형태로 바뀌었다(1단계 실행 기록 참조). 전체를 교체하지 말고, `grep -q '"success":false' "$body" || …` 줄 바로 아래에 다음을 넣는다.
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-base_url="${SITE_BASE_URL:-http://localhost:8080/younglabor}"
-body="$(mktemp /tmp/yl-public-smoke.XXXXXX)"
-trap 'rm -f "$body"' EXIT
-for path in / /about /activities /activity /press /resources /tools /club /admin/login.php; do
-  code="$(curl -sS -o "$body" -w '%{http_code}' "$base_url$path")"
-  test "$code" = 200
-done
-# 옛 동아리 신청 주소는 /club으로 영구 이동하고, 옛 신청 API는 아무것도 받지 않는다
-test "$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' "$base_url/committee/")" = "301 $base_url/club"
-api_code="$(curl -sS -o "$body" -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{}' "$base_url/api/committee.php")"
-test "$api_code" = 410
 # 검색 노출
-test "$(curl -sS -o /dev/null -w '%{http_code}' "$base_url/robots.txt")" = 200
-test "$(curl -sS -o "$body" -w '%{http_code}' "$base_url/sitemap.xml")" = 200
-grep -q '<urlset' "$body"
-grep -q "<loc>$base_url/club</loc>" "$body"
-if grep -q 'committee' "$body"; then exit 1; fi
-home_bytes="$(curl -sS "$base_url/" | wc -c | tr -d ' ')"
-css_bytes="$(curl -sS "$base_url/assets/css/style.css" | wc -c | tr -d ' ')"
-test "$home_bytes" -lt 81920
-test "$css_bytes" -lt 40960
+expect "GET /robots.txt" "$(curl -sS -A "$ua" -o /dev/null -w '%{http_code}' "$base_url/robots.txt")" 200
+expect "GET /sitemap.xml" "$(curl -sS -A "$ua" -o "$body" -w '%{http_code}' "$base_url/sitemap.xml")" 200
+grep -q '<urlset' "$body" || { echo 'FAIL sitemap.xml: no urlset' >&2; exit 1; }
+grep -q "<loc>$base_url/club</loc>" "$body" || { echo 'FAIL sitemap.xml: /club missing' >&2; exit 1; }
+if grep -q 'committee' "$body"; then echo 'FAIL sitemap.xml: lists a retired committee path' >&2; exit 1; fi
 ```
 
+`robots.txt`·`sitemap.php`·`includes/Sitemap.php`에는 주석으로도 `committee`를 쓰지 않는다. `tests/retired-club.test.php`가 공개 파일의 이 문자열을 막는다.
+
 - [ ] **Step 6: 테스트·구문·로컬 확인**
+
+XAMPP가 꺼져 있으면 1단계와 같이 실제 Apache 도우미(`yl-http.sh`, 1단계 실행 기록 참조)로 HTTP 검사를 돌린다.
 
 ```bash
 php tests/sitemap.test.php; echo "exit=$?"
 php tests/public-content-pages.test.php; echo "exit=$?"
-bash tests/apache-security-rules.test.sh && echo rules-ok
+php tests/retired-club.test.php; echo "exit=$?"
+bash -c 'command -v rg' >/dev/null && bash tests/apache-security-rules.test.sh && echo rules-ok
 php -l includes/Sitemap.php && php -l sitemap.php
 bash tests/public-http-smoke.sh && echo smoke-ok
 curl -sS http://localhost:8080/younglabor/sitemap.xml | head -4
 ```
 
-Expected: 두 테스트 `exit=0`, `rules-ok`, 구문 오류 없음, `smoke-ok`, XML 머리와 첫 `<url>` 줄
+Expected: 세 테스트 `exit=0`, `rules-ok`(ripgrep이 설치된 경우), 구문 오류 없음, `smoke-ok`, XML 머리와 첫 `<url>` 줄
 
 - [ ] **Step 7: 커밋**
 
@@ -1559,23 +1596,26 @@ if (file_exists($root . '/api/committee.php')) {
 }
 ```
 
-`tests/public-http-smoke.sh`에서
+`tests/public-http-smoke.sh`에서 다음 두 줄을
 
 ```bash
-test "$api_code" = 410
+expect "POST /api/committee.php" "$(curl -sS -A "$ua" -o "$body" -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{}' "$base_url/api/committee.php")" 410
+grep -q '"success":false' "$body" || { echo 'FAIL POST /api/committee.php: body is not the retired stub' >&2; exit 1; }
 ```
 
-을 다음으로 바꾼다. 운영 prune이 꺼져 있으면 수동 삭제(Task 12) 전까지 410이 남는다.
+다음으로 바꾼다. 운영 prune이 꺼져 있으면 수동 삭제(Task 12) 전까지 410이 남는다.
 
 ```bash
-case "$api_code" in 404|410) ;; *) exit 1 ;; esac
+api_code="$(curl -sS -A "$ua" -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d '{}' "$base_url/api/committee.php")"
+case "$api_code" in 404|410) ;; *) echo "FAIL POST /api/committee.php: expected 404 or 410 got [$api_code]" >&2; exit 1 ;; esac
 ```
 
-`docs/runbooks/managed-content-deployment.md`에서 세 곳을 바꾼다.
+`docs/runbooks/managed-content-deployment.md`에서 네 곳을 바꾼다.
 
-- 3행 `(`/committee` → `/club` 301, 옛 신청 API 410)` → `(`/committee` → `/club` 301, 옛 신청 API·관리 화면·테이블은 2026-10 삭제)`
-- 54행 `` 기존 `admin_user`, `committee_applications`, `inquiries`, `younglabor_visitor_log`는 변경하지 않는다. `` → `` 기존 `admin_user`, `inquiries`, `younglabor_visitor_log`는 변경하지 않는다(`committee_applications`는 2026-10 파기 후 삭제). ``
-- 78행 `옛 동아리 신청 API의 410도 확인한다.` → `옛 동아리 신청 API가 404(삭제됨)인지도 확인한다.`
+- 3행: `(`/committee` → `/club` 301, 옛 신청 API 410)`를 `(`/committee` → `/club` 301, 옛 신청 API·관리 화면·테이블은 2026-10 삭제)`로 바꾼다.
+- 54행: `` 기존 `admin_user`, `committee_applications`, `inquiries`, `younglabor_visitor_log`는 변경하지 않는다. ``를 `` 기존 `admin_user`, `inquiries`, `younglabor_visitor_log`는 변경하지 않는다(`committee_applications`는 2026-10 파기 후 삭제). ``로 바꾼다.
+- 배포 확인 9번: `옛 동아리 신청 API가 410인지`를 `옛 동아리 신청 API가 404(삭제됨)인지`로 바꾼다.
+- `## rollback` 첫 문단: `전환 파일 5개(`club.php`, `includes/SiteContent.php`, `committee/index.php`, `api/committee.php`, `assets/css/style.css`)를 전환 이후 버전으로 다시 올리고`를 `전환 파일 4개(`club.php`, `includes/SiteContent.php`, `committee/index.php`, `assets/css/style.css`)를 전환 이후 버전으로 다시 올리고 되살아난 `api/committee.php`를 지운 뒤`로 바꾼다.
 
 - [ ] **Step 7: 테스트·구문 확인**
 
@@ -1674,6 +1714,8 @@ Expected: `PROD-SMOKE-OK`, `404`
 | O8 | 2027년 1월분 비용 처리 (D6 a) | 12월 | 대표 (관리시스템) |
 | O9 | 메시지 확인 — 반도체고 재학생 연령대 3명 이상에게 `/club`을 모바일로 보여 주고 "무엇을 하는 동아리이고 어떻게 신청하는가"를 묻는다. 모두 "AI로 앱을 만든다"와 "신청서 링크"를 답하면 통과 (설계 §11) | 1단계 배포 직후 | 대표 |
 | O10 | 소개 페이지 협력기관 3곳의 이름·관계(지원·협력·자문)를 kb `facts.partners`와 대조해 확인. 바꿀 내용이 정해지면 `about.php` 한 곳만 고치는 별도 작은 변경으로 처리 (설계 §9.3) | 10월 중 | 대표 |
+| O11 | Cloudflare "Always Use HTTPS"(와 HSTS) 검토. 지금은 `/committee`·`/activity` 같은 슬래시 없는 주소가 Apache 301로 `http://`를 거친다 (1단계 리뷰, 기존 문제) | 10월 중 | 대표 |
+| O12 | 운영 백로그(코드): 헤더·푸터·canonical의 게시판 링크를 슬래시 경로로 바꾸거나 슬래시 없는 주소를 직접 처리, `/club/`(끝 슬래시)가 403인 것을 `/club`으로 301, 옛 신청 API 410 문구에 `/club` 안내 추가 검토 | 3단계 이후 | 개발 |
 
 ### O1 신청서 수정
 

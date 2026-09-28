@@ -217,7 +217,7 @@
 | 1 | `committee/index.php`, `api/committee.php`, `includes/Mailer.php` | §4.1 |
 | 1 | `assets/css/style.css` | 알림 띠·`/club` 스타일. 기존 예산(`public-http-smoke.sh`: CSS 40KB 미만, 홈 80KB 미만) 안에서 |
 | 1 | `tests/site-content.test.php` | 크레딧 기대값 변경, 모집 설정(HTTPS·허용 호스트·마감 경계: 10-15 23:59:59 모집 중, 10-16 00:00 마감) |
-| 1 | `tests/public-copy.test.php` | 폐기 문구 금지 목록(§4.1)을 공개 파일 전체에 적용, `/club` 필수 문구 |
+| 1 | `tests/public-copy.test.php`, `tests/retired-club.test.php` | 홈 알림 띠·버튼 계약(public-copy), 폐기 문구 금지 목록(§4.1)을 공개 파일 전체에 적용(retired-club) |
 | 1 | `tests/public-http-smoke.sh`, 런북, `CLAUDE.md` | §4.1 |
 | 2 | `includes/header.php` | 기본 `og:image` + 페이지별 `$pageImage` 덮어쓰기 (절대 URL) |
 | 2 | `assets/images/og-default.png`, `og-club.png` | 1200×630. `/promo` og-banner 템플릿으로 제작 (Pretendard OFL) |
