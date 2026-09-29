@@ -54,7 +54,7 @@ require_once __DIR__ . '/includes/header.php';
             <div><dt>대상</dt><dd>반도체고등학교 재학생. 코딩 경험이 없어도 됩니다.</dd></div>
             <div><dt>기간</dt><dd>3개월</dd></div>
             <div><dt>지원</dt><dd>러버블(Lovable) 이용 지원, AI 전문가 자문</dd></div>
-            <div><dt>계정</dt><dd>러버블 계정은 센터가 준비해 안내합니다. 만 18세 미만 참가자는 보호자 동의가 필요합니다.</dd></div>
+            <div><dt>계정</dt><dd>러버블 가입은 센터가 안내합니다. 만 18세 미만 참가자는 보호자 동의가 필요합니다.</dd></div>
         </dl>
     </div>
 </section>
