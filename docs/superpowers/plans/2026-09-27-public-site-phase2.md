@@ -22,6 +22,7 @@ Task 0~6을 작업마다 구현 → 스펙 리뷰 → 품질 리뷰 순서로 �
 | 4 | 테스트에 조건문·삼항식·히어로 뒤 위치 검사 추가, 띠 링크에 `sr-only` 설명, `justify-content: flex-start` | 조건 제거·반전 등 변이 5가지가 통과했다. 링크 목록에서 목적이 드러나지 않았다 |
 | 5 | 301에 `Cache-Control: max-age=86400`, 종료 테스트가 `committee` 문자열 전체와 txt·xml·html·json·svg까지 검사 | 롤백 때 캐시된 301이 깨진 `/club`에 묶이는 것을 막는다 |
 | 6 | 스모크: `expect()` 진단, 봇 UA(방문 통계 제외), 게시판은 `/activity/ /press/ /resources/`로 요청, 슬래시 없는 게시판 주소의 301 모양 확인, `/committee` 체인, 410 본문 확인. 접근성: 렌더된 모집 상태로 분기, `CLUB_EXPECT_STATE=open|closed`, `redirected === false`. `managed-content-http-smoke.sh`도 끝 슬래시로. 런북: 배포 확인 9번에 운영 명령, `## rollback` 첫머리에 "전환 이전으로 되돌리지 말고 수정 배포" 경고 | 실제 Apache와 운영에서는 슬래시 없는 디렉터리가 `.htaccess`보다 먼저 301 된다. 링크 존재 여부로 분기하면 링크가 사라져도 통과했다 |
+| D8 변경 (2026-09-30) | `/club` 참가 정보의 "러버블 계정은 센터가 준비해 안내합니다" → "러버블 가입은 센터가 안내합니다" | D8이 "보호자 동의 후 본인 가입"으로 바뀌어 센터가 계정을 만들지 않는다 |
 
 검증 환경: XAMPP가 꺼져 있을 때는 XAMPP의 httpd를 별도 설정으로 sudo 없이 띄워(127.0.0.1:8080, DocumentRoot `htdocs`, mod_rewrite·mod_dir·PHP 모듈) 운영과 같은 Apache 동작으로 HTTP 검사를 돌렸다. PHP 내장 서버는 mod_dir 동작이 달라 쓰지 않는다. `tests/apache-security-rules.test.sh`는 bash에 ripgrep이 없어 돌리지 못했다(`brew install ripgrep` 필요).
 
@@ -413,7 +414,7 @@ require_once __DIR__ . '/includes/header.php';
             <div><dt>대상</dt><dd>반도체고등학교 재학생. 코딩 경험이 없어도 됩니다.</dd></div>
             <div><dt>기간</dt><dd>3개월</dd></div>
             <div><dt>지원</dt><dd>러버블(Lovable) 이용 지원, AI 전문가 자문</dd></div>
-            <div><dt>계정</dt><dd>러버블 계정은 센터가 준비해 안내합니다. 만 18세 미만 참가자는 보호자 동의가 필요합니다.</dd></div>
+            <div><dt>계정</dt><dd>러버블 가입은 센터가 안내합니다. 만 18세 미만 참가자는 보호자 동의가 필요합니다.</dd></div>
         </dl>
     </div>
 </section>
@@ -1705,7 +1706,7 @@ Expected: `PROD-SMOKE-OK`, `404`
 | # | 할 일 | 기한 | 담당 |
 |---|---|---|---|
 | O1 | 신청서 수정 (S1·S2·S4~S8) | Task 7 배포 전 (09-30) | 대표 |
-| O2 | 러버블 교육 프로그램 서면 계약 문의 (D8 a) | 09-28 발송 | 대표 |
+| O2 | 러버블 문의 — 보호자 동의 후 본인 가입 확인과 학생 요금 (D8) | 09-30 발송 | 대표 |
 | O3 | 활동 동의서·보호자 동의서 (S9) | 10-23 선발 안내 전 | 대표 |
 | O4 | 옛 신청자 안내·파기 (D3) | 10-05 ~ 10-10 | 대표 |
 | O5 | 첫 게시 전 런북 확인과 초기 게시물 | 10-05 ~ | 대표 |
@@ -1724,7 +1725,7 @@ zealot-survey 신청서에서 다음을 바꾼다.
 | 위치 | 바꿀 내용 |
 |---|---|
 | 제목 | `반도체고등학교 청소년들과 함께하는 바이브코딩동아리 신청서` |
-| 참가자에게 | `3개월 동안 러버블(Lovable) 이용 지원 · AI 전문가 자문. 러버블 계정은 센터가 준비해 안내합니다. 만 18세 미만 참가자는 보호자 동의가 필요합니다.` |
+| 참가자에게 | `3개월 동안 러버블(Lovable) 이용 지원 · AI 전문가 자문. 러버블 가입은 센터가 안내합니다. 만 18세 미만 참가자는 보호자 동의 후 본인이 가입합니다.` |
 | 신청 마감 | `2026년 10월 15일 · 신청자가 많을 경우 소정의 심사가 진행될 수 있습니다. 결과는 10월 23일(금)까지 개별 안내합니다.` |
 | 설명 끝 | `이 사업은 아름다운재단 지원으로 진행됩니다.` |
 | 새 문항 (필수, 이름 다음) | `학교` (단답), `학과` (단답) |
@@ -1732,41 +1733,39 @@ zealot-survey 신청서에서 다음을 바꾼다.
 | 동의 — 수집 항목 | `이름, 학교·학과·학년, 휴대전화, 이메일, 신청서에 적어주신 내용` |
 | 동의 — 이용 목적 | `참가자 선정(심사), 참가 안내(일정·장소 공지), 러버블 이용 안내, AI 전문가 자문 연결` |
 | 동의 — 보유 기간 | `선발되지 않은 분: 선발 결과 안내 후 바로 파기 / 참가자: 프로그램 종료 후 3개월 이내 파기` |
-| 동의 — 덧붙임 | `선발 후 러버블 이용에 필요한 정보 처리는 활동 동의서로 따로 안내하고 동의를 받습니다.` |
+| 동의 — 덧붙임 | `선발 후 러버블 가입과 이용은 보호자 동의서로 따로 안내하고 동의를 받습니다.` |
 | 공유 이미지 (가능하면) | `og-club.png`와 같은 1200×630 이미지 (Task 8에서 생성) |
 
 ### O2 러버블 문의 메일
 
-받는 곳: privacy@lovable.dev (영업·교육 창구를 안내받으면 그쪽으로 이어 간다)
+받는 곳: privacy@lovable.dev (학생 할인·교육 창구를 안내받으면 그쪽으로 이어 간다)
 
 ```text
-Subject: Written agreement for supervised access — nonprofit coding club for high-school students in Korea
+Subject: Under-18 students signing up with parental permission — nonprofit coding club in Korea
 
 Hello Lovable team,
 
-We are 청년노동자인권센터 (Young Labor Workers' Rights Center), a nonprofit in South Korea (younglabor.kr). From late October 2026 we will run a three-month vibe-coding club for students at semiconductor vocational high schools. Most participants will be under 18.
+We are 청년노동자인권센터 (Young Labor Workers' Rights Center), a nonprofit in South Korea (younglabor.kr). From late October 2026 we will run a three-month vibe-coding club for students at semiconductor vocational high schools. Most participants will be 15 to 17 years old.
 
-Your Privacy Policy says organizations can give people under 18 supervised access under a written agreement. Could you tell us:
-1. how to set up that agreement and how long it usually takes;
-2. pricing, or any education or nonprofit terms, for about 5 student seats (possibly up to 10) and 1–2 instructor seats for three months;
-3. in which countries student data is processed and stored, so we can inform students and guardians;
-4. any supervision or safety requirements we must meet.
-
-We will obtain guardian consent under Korean law before students start.
+Your Terms say users under 18 may use Lovable with a parent's or legal guardian's permission, while your Privacy Policy says people must be 18 or older to create their own account and that accounts created by under-18s outside an organization program will be closed. We plan to have each student sign up for their own account after we collect written guardian permission. Could you confirm:
+1. that this is acceptable, or tell us what you require instead (for example a written agreement or Lovable for Classrooms);
+2. pricing, student discounts, or nonprofit terms for about 5 students (possibly up to 10) for three months;
+3. in which countries account and project data is processed and stored, so we can inform students and guardians.
 
 Thank you,
 Kim Changsu, Representative
 청년노동자인권센터 (Young Labor Workers' Rights Center)
 ```
 
-답이 오면 계약 조건·요금으로 설계 §10 C3(예산 편성)을 확인한다. 10-23까지 계약 전망이 없으면 D8 (b)(학생 계정 없이 지도자 화면 공동 작업)로 활동을 시작한다.
+답이 오면 요금으로 설계 §10 C3(예산 편성)을 확인한다. 러버블이 본인 가입을 허용하지 않는다고 답하면, 학생에게 가입을 안내하기 전에 Lovable for Classrooms(담당교사 운영)나 서면 계약으로 경로를 바꾼다. 답이 없더라도 학생 프로젝트는 GitHub 연동으로 백업하도록 안내한다(설계 §10 C5).
 
-### O3 활동 동의서·보호자 동의서
+### O3 보호자 동의서
 
 선발 안내(10-23)와 함께 보낸다. 들어갈 항목은 다음과 같다.
 
 - 참가자: 이름, 학교, 학년, 만 18세 미만 여부(예/아니오 — 생년월일은 받지 않는다)
-- 러버블 이용 고지(처리 위탁·국외 이전): 받는 자 Lovable Labs Inc., 처리 국가(O2 답변 또는 러버블 개인정보처리방침에서 확인한 값), 항목(이름·이메일·작업 내용), 목적(바이브코딩동아리 활동 계정 제공), 보유 기간(계약 조건), 거부 시 대안(지도자 화면 공동 작업으로 참여)
+- 러버블 가입 허락: 학생이 러버블에 본인 계정을 만드는 것에 동의(러버블 이용약관이 18세 미만에게 보호자 허락을 요구한다)
+- 해외 서비스 이용 안내: 운영사 Lovable Labs Inc., 처리 국가(O2 답변 또는 러버블 개인정보처리방침에서 확인한 값), 입력하는 정보(이름·이메일·작업 내용), 러버블의 약관·개인정보처리방침이 적용된다는 점
 - AI 이용 안내: 입력한 내용은 AI 서비스로 전송·처리된다. 자기·다른 사람의 개인정보를 입력하지 않는다. AI 결과는 틀릴 수 있다
 - 선택 동의: 활동 사진 게시(얼굴이 나오지 않는 사진만/얼굴 포함), 산출물 링크 소개
 - 보호자 동의(만 18세 미만): 보호자 이름, 관계, 동의 서명, 연락처
