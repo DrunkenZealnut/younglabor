@@ -1,6 +1,6 @@
 # 관리형 콘텐츠 배포 런북
 
-대상 기능은 활동게시판, 언론보도, 자료실과 관리자 작성·수정·삭제다. 운영 데이터와 기존 관리자 로그인, 동아리 신청, 문의 API를 보존한다.
+대상 기능은 활동게시판, 언론보도, 자료실과 관리자 작성·수정·삭제다. 운영 데이터와 기존 관리자 로그인, 문의 API를 보존한다. 옛 동아리 신청은 2026-09 바이브코딩동아리 전환으로 종료됐다(`/committee` → `/club` 301, 옛 신청 API 410).
 
 ## 배포 전 확인
 
@@ -75,16 +75,18 @@ CONTENT_DRAFT_FILE_ID=4 \
 bash tests/managed-content-http-smoke.sh
 ```
 
-9. `/admin/login.php`, `/committee/`가 200인지 확인한다. 실제 데이터를 만들지 않는 범위에서 문의·동아리 API의 OPTIONS/검증 실패 응답도 확인한다.
+9. `/admin/login.php`, `/club`이 200이고 `/committee`·`/committee/`가 `/club`으로 이동하는지, 옛 동아리 신청 API가 410인지 `SITE_BASE_URL=https://younglabor.kr bash tests/public-http-smoke.sh`로 확인한다. 모집 기간(`includes/SiteContent.php`의 `deadline`까지)에는 `SITE_BASE_URL=https://younglabor.kr CLUB_EXPECT_STATE=open node tests/public-accessibility.test.js`, 마감 뒤에는 `CLUB_EXPECT_STATE=closed`로 확인한다. 실제 데이터를 만들지 않는 범위에서 문의 API의 OPTIONS/검증 실패 응답도 확인한다.
 10. `backup/`, `dbeditor/`, `.env`, 외부 저장소가 계속 HTTP 차단되는지 확인한다.
 
 ## rollback
+
+바이브코딩동아리 전환(2026-09) 이후에는 전환 머지 이전 revision(`club.php`가 없는 revision)으로 되돌리지 않고 수정 배포로 대응한다. 운영 배포는 파일을 지우지 않으므로(prune 옵트인) 되돌리면 `club.php`만 남아 `/club`이 500이 되고, 옛 신청 폼과 신청 API가 되살아나 종료된 사업의 개인정보 접수가 다시 열린다. 불가피하게 되돌렸다면 전환 파일 5개(`club.php`, `includes/SiteContent.php`, `committee/index.php`, `api/committee.php`, `assets/css/style.css`)를 전환 이후 버전으로 다시 올리고 `SITE_BASE_URL=https://younglabor.kr bash tests/public-http-smoke.sh`로 확인한다. 코드만 바뀐 배포를 되돌릴 때는 아래 DB 단계(2·4)를 건너뛴다.
 
 1. 유지보수 상태로 전환한다.
 2. `content_posts`, `content_files`와 `CONTENT_STORAGE_PATH` 디렉터리를 먼저 별도 보관한다.
 3. 직전 revision을 배포한다.
 4. 보존할 관리형 콘텐츠가 있으면 배포 전 DB 백업을 복원한다. 보존할 콘텐츠가 전혀 없을 때만 `database/migrations/20260921_drop_managed_content.sql`을 실행한다.
-5. `/`, `/admin/login.php`, `/committee/`, 문의와 동아리 신청 기능을 확인한다.
+5. `/`, `/admin/login.php`와 문의 기능을 확인한다. 되돌린 revision이 바이브코딩동아리 전환 이후라면 `/club` 200과 `/committee/` 301도 확인한다.
 6. 원래 상태가 확인된 뒤 유지보수 상태를 해제한다.
 
 DB 메타데이터를 보관하기 전에 외부 저장소를 삭제하지 않는다. 백업·환경 파일·업로드 파일을 배포 prune 대상으로 포함하지 않는다.

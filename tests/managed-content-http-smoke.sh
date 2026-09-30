@@ -11,7 +11,7 @@ body="$(mktemp /tmp/yl-content-body.XXXXXX)"
 draft="$(mktemp /tmp/yl-content-draft.XXXXXX)"
 range="$(mktemp /tmp/yl-content-range.XXXXXX)"
 trap 'rm -f "$body" "$draft" "$range"' EXIT
-for path in /activity /press /resources "/activity/$CONTENT_PUBLISHED_ACTIVITY_SLUG" "/media/$CONTENT_PUBLIC_MEDIA_ID" "/downloads/$CONTENT_PUBLIC_FILE_ID"; do
+for path in /activity/ /press/ /resources/ "/activity/$CONTENT_PUBLISHED_ACTIVITY_SLUG" "/media/$CONTENT_PUBLIC_MEDIA_ID" "/downloads/$CONTENT_PUBLIC_FILE_ID"; do
   test "$(curl -sS -o "$body" -w '%{http_code}' "$base$path")" = 200
 done
 for path in "/activity/$CONTENT_DRAFT_ACTIVITY_SLUG" "/media/$CONTENT_DRAFT_MEDIA_ID" "/downloads/$CONTENT_DRAFT_FILE_ID"; do

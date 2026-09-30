@@ -21,3 +21,15 @@ foreach (['교육', '안전 도구', '연구'] as $copy) {
     if (strpos($activities, $copy) === false) exit(1);
 }
 if (strpos($activities, '현장 조직') !== false) exit(1);
+$heroAt = strpos($home, '제조업 청년노동자들의 안전과 노동권을 지킵니다.');
+$bannerAt = strpos($home, 'class="club-banner"');
+$fieldAt = strpos($home, '현장에서 무슨 일이 있었나');
+if ($bannerAt === false || $bannerAt < $heroAt || $bannerAt > $fieldAt) exit(1);
+if (strpos($home, '$clubOpen = clubRecruitmentIsOpen();') === false) exit(1);
+if (substr_count($home, "url('club')") < 2) exit(1);
+if (strpos($home, "url('committee')") !== false) exit(1);
+if (strpos(file_get_contents(__DIR__ . '/../assets/css/style.css'), '.club-banner') === false) exit(1);
+if (!preg_match('/<\?php if \(\$clubOpen\): \?>\s*<aside class="club-banner"[^>]*>.*?<\/aside>\s*<\?php endif; \?>/s', $home)) exit(1);
+if (strpos($home, "\$clubOpen ? '신청' : '소식'") === false) exit(1);
+$heroEnd = strpos($home, '</section>', $heroAt);
+if ($heroEnd === false || $bannerAt < $heroEnd) exit(1);

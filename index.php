@@ -10,6 +10,8 @@ PageTracker::track('메인페이지');
 $homeContent = loadHomeContent(static function () {
     return new ContentRepository(Database::getInstance()->getConnection());
 });
+$club = siteClubRecruitment();
+$clubOpen = clubRecruitmentIsOpen();
 $currentPage = 'home';
 $pageTitle = $site['name'] . ' - 중소영세 제조업 청년노동자의 안전할 권리';
 $pageDescription = '중소영세 제조업 청년노동자가 처음 일을 시작할 때부터 안전할 권리를 지킬 수 있도록 현장, 교육, 도구와 연구를 잇습니다.';
@@ -27,6 +29,15 @@ require_once __DIR__ . '/includes/header.php';
         </div>
     </div>
 </section>
+
+<?php if ($clubOpen): ?>
+<aside class="club-banner" aria-label="<?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> 모집 안내">
+    <div class="container club-banner-inner">
+        <p><strong><?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> 모집 중</strong> · <?php echo htmlspecialchars(clubDeadlineLabel(), ENT_QUOTES, 'UTF-8'); ?> 마감</p>
+        <a href="<?php echo url('club'); ?>"><span class="sr-only"><?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> 모집 </span>자세히 보기<span aria-hidden="true"> →</span></a>
+    </div>
+</aside>
+<?php endif; ?>
 
 <section class="section">
     <div class="container">
@@ -129,7 +140,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php else: ?>
                     <p class="contact-item">문의 폼으로 연락해 주세요.</p>
                 <?php endif; ?>
-                <a class="btn-cta btn-secondary" href="<?php echo url('committee'); ?>">청소년 동아리 신청</a>
+                <a class="btn-cta btn-secondary" href="<?php echo url('club'); ?>"><?php echo htmlspecialchars($club['name'], ENT_QUOTES, 'UTF-8'); ?> <?php echo $clubOpen ? '신청' : '소식'; ?></a>
             </div>
             <div class="contact-form">
                 <form action="<?php echo url('api/contact.php'); ?>" method="post" onsubmit="return handleSubmit(event)">
