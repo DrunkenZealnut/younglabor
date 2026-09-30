@@ -23,6 +23,7 @@ Task 0~6을 작업마다 구현 → 스펙 리뷰 → 품질 리뷰 순서로 �
 | 5 | 301에 `Cache-Control: max-age=86400`, 종료 테스트가 `committee` 문자열 전체와 txt·xml·html·json·svg까지 검사 | 롤백 때 캐시된 301이 깨진 `/club`에 묶이는 것을 막는다 |
 | 6 | 스모크: `expect()` 진단, 봇 UA(방문 통계 제외), 게시판은 `/activity/ /press/ /resources/`로 요청, 슬래시 없는 게시판 주소의 301 모양 확인, `/committee` 체인, 410 본문 확인. 접근성: 렌더된 모집 상태로 분기, `CLUB_EXPECT_STATE=open|closed`, `redirected === false`. `managed-content-http-smoke.sh`도 끝 슬래시로. 런북: 배포 확인 9번에 운영 명령, `## rollback` 첫머리에 "전환 이전으로 되돌리지 말고 수정 배포" 경고 | 실제 Apache와 운영에서는 슬래시 없는 디렉터리가 `.htaccess`보다 먼저 301 된다. 링크 존재 여부로 분기하면 링크가 사라져도 통과했다 |
 | D8 변경 (2026-09-30) | `/club` 참가 정보의 "러버블 계정은 센터가 준비해 안내합니다" → "러버블 가입은 센터가 안내합니다" | D8이 "보호자 동의 후 본인 가입"으로 바뀌어 센터가 계정을 만들지 않는다 |
+| 신청 페이지 (2026-09-30) | `/club` 신청 안내의 "신청서는 외부 설문 서비스에서 받으며" → "신청은 센터가 따로 만든 신청 페이지에서 받으며". Task 7 선행 조건을 링크 확인으로 바꿈 | 신청서는 센터가 직접 만든 서베이 페이지이고, 사이트는 링크만 한다 |
 
 검증 환경: XAMPP가 꺼져 있을 때는 XAMPP의 httpd를 별도 설정으로 sudo 없이 띄워(127.0.0.1:8080, DocumentRoot `htdocs`, mod_rewrite·mod_dir·PHP 모듈) 운영과 같은 Apache 동작으로 HTTP 검사를 돌렸다. PHP 내장 서버는 mod_dir 동작이 달라 쓰지 않는다. `tests/apache-security-rules.test.sh`는 bash에 ripgrep이 없어 돌리지 못했다(`brew install ripgrep` 필요).
 
@@ -80,7 +81,7 @@ Task 0~6을 작업마다 구현 → 스펙 리뷰 → 품질 리뷰 순서로 �
 | 단계 | 기간 | 작업 | 선행 조건 |
 |---|---|---|---|
 | 준비 | 09-28 | Task 0, 운영 O1·O2 시작 | — |
-| 1단계 | 09-28 ~ 10-02 | Task 1~7 | O1(신청서 수정)이 Task 7 배포 전에 끝나야 함 |
+| 1단계 | 09-28 ~ 10-02 | Task 1~7 | 신청 페이지 링크가 열려야 함 (O1 문구 수정은 서베이 쪽 작업) |
 | 2단계 | 10-05 ~ 10-10 | Task 8~10, 운영 O4~O6 | 1단계 배포 |
 | 모집·선발 | 10-05 ~ 10-23 | 운영 O3·O6 | — |
 | 3단계 | 10-12 목표 | Task 11~12 | O4(옛 신청 데이터 파기) 완료 기록 |
@@ -442,7 +443,7 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="tool-domain"><?php echo htmlspecialchars($club['apply_domain'], ENT_QUOTES, 'UTF-8'); ?></span>
                 <span class="sr-only">외부 서비스로 이동</span>
             </a>
-            <p>신청서는 외부 설문 서비스에서 받으며, 신청서에 안내된 개인정보 처리 기준이 적용됩니다.</p>
+            <p>신청은 센터가 따로 만든 신청 페이지에서 받으며, 그 페이지에 안내된 개인정보 처리 기준이 적용됩니다.</p>
         <?php else: ?>
             <p><strong>이번 모집은 마감되었습니다.</strong> 동아리 활동 소식은 활동게시판에서 전합니다.</p>
             <a class="btn-cta btn-secondary" href="<?php echo url('activity'); ?>">활동게시판 보기</a>
@@ -900,17 +901,15 @@ git commit -m "test: cover club page and retired committee routes"
 
 **Files:** 없음
 
-선행 조건: 운영 작업 O1(신청서 수정)이 끝나 있어야 한다. 신청서가 아직 `9월 30일`·`클로드코드`를 말하면 배포하지 않는다.
+신청서는 센터가 직접 만든 별도 서베이 페이지다(2026-09-30 확인). 사이트는 신청서를 붙이지 않고 링크만 하므로, 신청서 문구 수정(O1)은 서베이 쪽 작업이며 사이트 배포 조건이 아니다.
 
-- [ ] **Step 0: 신청서(O1) 확인**
+- [ ] **Step 0: 신청 페이지 링크 확인**
 
 ```bash
-form="$(curl -sS https://zealot-survey.vercel.app/RJXag60aMfMT)"
-printf '%s' "$form" | grep -c '9월 30일'; printf '%s' "$form" | grep -c '클로드코드'; printf '%s' "$form" | grep -c 'Claude Code'
-printf '%s' "$form" | grep -c '10월 15일'; printf '%s' "$form" | grep -c '러버블'; printf '%s' "$form" | grep -c '아름다운재단'
+curl -sS -o /dev/null -w '%{http_code}\n' https://zealot-survey.vercel.app/RJXag60aMfMT
 ```
 
-Expected: 앞의 세 값은 `0`, 뒤의 세 값은 `1` 이상. macOS `grep`은 한글 대체 패턴(`\|`)을 잘못 세므로 문자열마다 따로 센다.
+Expected: `200`. 신청 페이지 문구(마감일·러버블·재단 표기)가 사이트와 맞는지는 서베이 쪽에서 O1로 맞춘다.
 
 - [ ] **Step 1: 푸시와 PR (승인 후)**
 
