@@ -82,7 +82,7 @@ require_once __DIR__ . '/includes/header.php';
                 <span class="tool-domain"><?php echo htmlspecialchars($club['apply_domain'], ENT_QUOTES, 'UTF-8'); ?></span>
                 <span class="sr-only">외부 서비스로 이동</span>
             </a>
-            <p>신청서는 외부 설문 서비스에서 받으며, 신청서에 안내된 개인정보 처리 기준이 적용됩니다.</p>
+            <p>신청은 센터가 따로 만든 신청 페이지에서 받으며, 그 페이지에 안내된 개인정보 처리 기준이 적용됩니다.</p>
         <?php else: ?>
             <p><strong>이번 모집은 마감되었습니다.</strong> 동아리 활동 소식은 활동게시판에서 전합니다.</p>
             <a class="btn-cta btn-secondary" href="<?php echo url('activity'); ?>">활동게시판 보기</a>
