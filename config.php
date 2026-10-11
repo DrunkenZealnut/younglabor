@@ -182,7 +182,7 @@ if (!function_exists('url')) {
         global $site;
         $baseUrl = rtrim($site['base_url'], '/');
         $path = ltrim($path, '/');
-        return $path ? $baseUrl . '/' . $path : $baseUrl;
+        return $path ? $baseUrl . '/' . $path : $baseUrl . '/';
     }
 }
 

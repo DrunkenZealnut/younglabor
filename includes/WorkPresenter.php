@@ -25,7 +25,7 @@ function programStateLabel(array $program): string {
 function programAction(array $program, ?DateTimeImmutable $now = null): ?array {
  return programAcceptsApplications($program,$now) ? ['label'=>'참가 신청','href'=>$program['application_url']] : null;
 }
-function programPath(array $program): string { return $program['kind']==='club' ? 'club' : 'work/programs/'.$program['slug']; }
+function programPath(array $program): string { return $program['kind']==='club' && $program['slug']==='vibecoding-club' ? 'club' : 'work/programs/'.$program['slug']; }
 function workAction(array $row): ?array {
  $path=(string)($row['action_path']??'');$label=(string)($row['action_label']??'');
  return $path!=='' && $label!=='' && workActionPathIsSafe($path) ? ['label'=>$label,'href'=> $path==='#contact' ? url('').$path : url($path)] : null;

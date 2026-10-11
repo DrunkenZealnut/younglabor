@@ -1,8 +1,14 @@
 <?php
 require_once __DIR__.'/../includes/PublicCards.php';$slug=requestText('slug');
-$r=loadPublicWork(static function($repo)use($slug){$p=$repo->findProgram($slug);if(!$p || $p['kind']!=='course')return null;$p['sessions']=$repo->sessions((int)$p['id']);return $p;});publicNotFoundStatus($r);$p=$r['data'];
+$r=loadPublicWork(static function($repo)use($slug){$p=$repo->findProgram($slug);if(!$p)return null;$p['sessions']=$repo->sessions((int)$p['id']);return $p;});publicNotFoundStatus($r);$p=$r['data'];
 startPublicPage('work',$p['title']??'교육 안내',$p['summary']??'교육프로그램 안내','work/programs/'.$slug);
 if(!$p){renderUnavailableDetail($r);endPublicPage();exit;}
+if($p['kind']==='club') {
+ renderPageIntro('함께 만드는 경험',$p['title'],$p['summary']); ?>
+ <section class="section"><div class="container"><span class="state-label"><?php echo publicEscape(programStateLabel($p)); ?></span><div class="plain-content"><?php echo renderPlainText($p['body']??''); ?></div><dl class="program-facts"><div><dt>대상</dt><dd><?php echo publicEscape($p['audience']); ?></dd></div><div><dt>참가비</dt><dd><?php echo publicEscape($p['fee']); ?></dd></div><div><dt>지원</dt><dd><?php echo publicEscape($p['support_details']); ?></dd></div><div><dt>문의</dt><dd><a href="mailto:<?php echo publicEscape($p['contact_email']); ?>"><?php echo publicEscape($p['contact_email']); ?></a></dd></div></dl>
+ <div class="participation-block"><h2>참여 안내</h2><?php if($act=programAction($p)): ?><a class="btn-cta" href="<?php echo publicEscape($act['href']); ?>">신청서 작성하기 ↗</a><p>외부 신청 페이지(<?php echo publicEscape(externalLinkHost($act['href'])); ?>)로 이동합니다.</p><?php else: ?><p><?php echo publicEscape(programStateLabel($p)); ?></p><?php endif; ?></div><p><?php echo publicEscape($p['credit']); ?></p><a class="content-back" href="<?php echo publicEscape(url('work')); ?>">사업소개 보기</a></div></section>
+ <?php endPublicPage();exit;
+}
 renderPageIntro('2026 하반기 연속강좌',$p['title'],$p['summary']);
 ?>
 <section class="section"><div class="container"><div class="program-detail-intro"><div><span class="state-label"><?php echo publicEscape(programStateLabel($p)); ?></span><div class="plain-content"><?php echo renderPlainText($p['body']??''); ?></div><a class="arrow-link" href="#sessions">회차별 일정 보기 ↓</a></div><dl class="program-facts"><div><dt>대상</dt><dd><?php echo publicEscape($p['audience']); ?></dd></div><div><dt>참가비</dt><dd><?php echo publicEscape($p['fee']); ?></dd></div><div><dt>문의</dt><dd><a href="mailto:<?php echo publicEscape($p['contact_email']); ?>"><?php echo publicEscape($p['contact_email']); ?></a></dd></div></dl></div>

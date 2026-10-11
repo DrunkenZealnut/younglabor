@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__.'/includes/PublicCards.php';require_once __DIR__.'/includes/PageTracker.php';PageTracker::track('홈');
-$work=loadPublicWork(static fn($r)=>['areas'=>$r->listAreas(),'programs'=>$r->listPrograms()]);
+$work=loadPublicWork(static fn($r)=>['areas'=>array_values(array_filter($r->listAreas(),static fn($row)=>(int)$row['home_featured']===1)),'programs'=>array_values(array_filter($r->listPrograms(),static fn($row)=>(int)$row['home_featured']===1))]);
 $articles=loadPublicSection('publicRepository','youth-labor',['home_featured'=>1],1,3);
 $news=loadPublicSection('publicRepository','board',['home_featured'=>1],1,3);
 $programs=$work['data']['programs']??[];$hasOpen=(bool)array_filter($programs,'programAcceptsApplications');

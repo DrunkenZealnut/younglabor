@@ -7,7 +7,7 @@ function renewalSeedData(): array {
  ['slug'=>'community','title'=>'연결·모임','summary'=>'고민을 함께 풀 사람을 만나다','audience'=>'함께 배우고 경험을 나누려는 청년·학생과 협력단체','body'=>'학교와 일터에서 겪는 고민을 혼자 풀지 않아도 되도록 사람과 모임을 연결합니다. 학생이 필요한 앱과 웹을 직접 만드는 바이브코딩동아리와 학교·지역의 만남을 이어갑니다.','provision'=>'바이브코딩동아리 안내와 실제 운영 가능한 협력 문의 경로를 제공합니다. 전문 상담·자동 전문가 연결을 약속하지 않습니다.'],
  ['slug'=>'voice','title'=>'목소리·정책','summary'=>'보이지 않는 노동을 사회의 의제로','audience'=>'제조현장 청년노동자, 시민·언론·정책 관계자','body'=>'잘 드러나지 않는 청년의 노동과 삶을 함께 보고 사회의 의제로 이어갑니다. 당사자의 경험과 칼럼, 정책·제도 제안, 강좌를 통해 질문을 나눕니다.','provision'=>'연속강좌와 공개 글, 확인된 활동 기록을 연결합니다.']
  ];
- foreach($areas as $i=>&$a) $a+= $published+['phase'=>'preparing','sort_order'=>$i+1]; unset($a);
+ foreach($areas as $i=>&$a) $a+= $published+['phase'=>'preparing','sort_order'=>$i+1,'home_featured'=>1]; unset($a);
  $funding=$published+['slug'=>'incubating-2026','title'=>'아름다운재단 공익단체 인큐베이팅 지원사업','summary'=>'학교에서 일터로, 안전하게 일할 권리를 함께 준비합니다.','body'=>'청년노동자인권센터는 아름다운재단 인큐베이팅 지원사업을 통해 직업계고 학생과 청년노동자가 안전하게 일할 권리를 배우고 실현할 기반을 마련하고자 합니다. 교과서 기초연구, 온라인 안전 학습도구, 학교 캠페인과 학생이 직접 만드는 바이브코딩동아리를 연결합니다. 학교·지역과 함께 활동을 이어갈 기반을 모색합니다.','year'=>2026,'term'=>1,'sponsor'=>'아름다운재단'];
  $units=[
  ['slug'=>'textbook-research','title'=>'노동안전보건 교과서 기초연구','summary'=>'교과서에서 안전할 권리를 찾다','body'=>'직업계고 교과서 분석, 기초연구보고서와 전문 기술교정·인터뷰, 연구를 공유하는 교육·토론회를 준비합니다.','areas'=>['education','voice'],'action_label'=>'교육프로그램 보기','action_path'=>'work/programs/2026-youth-labor'],

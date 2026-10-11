@@ -22,7 +22,7 @@ function validateWorkInput(string $kind, array $input): array {
  if($values['title']==='' || mb_strlen($values['title'])>160) $errors['title']='제목은 1~160자로 입력해 주세요.';
  if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D',$values['slug']) || strlen($values['slug'])>180) $errors['slug']='영문 소문자·숫자·단일 하이픈을 사용해 주세요.';
  if($values['summary']==='' || mb_strlen($values['summary'])>2000) $errors['summary']='소개는 1~2000자로 입력해 주세요.';
- if(mb_strlen($values['body'])>30000) $errors['body']='본문은 30000자 이하로 입력해 주세요.';
+ if(mb_strlen($values['body'])>30000 || strlen($values['body'])>65535) $errors['body']='본문이 너무 깁니다. 내용을 줄이거나 나누어 입력해 주세요.';
  if(!in_array($values['status'],['draft','published'],true)) $errors['status']='공개 상태를 선택해 주세요.';
  $values['home_featured']=!empty($input['home_featured']) ? 1 : 0;
  foreach(['sort_order','year','term','funding_id','work_area_id'] as $field) if(array_key_exists($field,$values)) {

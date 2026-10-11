@@ -39,7 +39,7 @@ adminHeader();
 <form method="post" class="card work-form"><?php echo csrfField(); ?>
 <?php if($existing): ?><input type="hidden" name="expected_revision" value="<?php echo (int)$revision; ?>"><?php endif; ?>
 <div class="edit-grid">
-<?php foreach(workFields($entityKind) as $f): $v=$values[$f]??'';$wide=in_array($f,['summary','body','provision','support_details'],true); ?>
+<?php foreach(workFields($entityKind) as $f): if($f==='home_featured' && !in_array($entityKind,['area','program'],true))continue; $v=$values[$f]??'';$wide=in_array($f,['summary','body','provision','support_details'],true); ?>
 <div class="edit-field<?php echo $wide?' wide':''; ?>"><label for="work-<?php echo $f; ?>"><?php echo e($labels[$f]); ?></label>
 <?php if(isset($options[$f])): ?><select id="work-<?php echo $f; ?>" name="<?php echo $f; ?>"><?php foreach($options[$f] as $key=>$label): ?><option value="<?php echo e((string)$key); ?>"<?php echo (string)$v===(string)$key?' selected':''; ?>><?php echo e($label); ?></option><?php endforeach; ?></select>
 <?php elseif($f==='home_featured'): ?><input id="work-<?php echo $f; ?>" type="checkbox" name="<?php echo $f; ?>" value="1"<?php echo $v?' checked':''; ?>>
