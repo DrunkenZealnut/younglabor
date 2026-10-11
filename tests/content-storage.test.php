@@ -2,6 +2,7 @@
 $root = sys_get_temp_dir() . '/younglabor-content-' . bin2hex(random_bytes(4));
 putenv('CONTENT_STORAGE_PATH=' . $root);
 require __DIR__ . '/../config.php';
+unset($_ENV['CONTENT_STORAGE_PATH'], $_SERVER['CONTENT_STORAGE_PATH']);
 require __DIR__ . '/../includes/ContentStorage.php';
 putenv('CONTENT_STORAGE_PATH=' . __DIR__);
 try { contentStoragePath(); exit(1); } catch (RuntimeException $expected) {}

@@ -7,7 +7,7 @@
                 <div>
                     <div class="footer-label">Contact</div>
                     <p class="footer-text">
-                        <?php if ($site['email'] !== ''): ?><a href="mailto:<?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'], ENT_QUOTES, 'UTF-8'); ?></a><br><?php endif; ?>
+                        <?php if (($site['email'] ?: 'admin@younglabor.kr') !== ''): ?><a href="mailto:<?php echo htmlspecialchars($site['email'] ?: 'admin@younglabor.kr', ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($site['email'] ?: 'admin@younglabor.kr', ENT_QUOTES, 'UTF-8'); ?></a><br><?php endif; ?>
                         대표: <?php echo htmlspecialchars($site['representative'], ENT_QUOTES, 'UTF-8'); ?>
                     </p>
                 </div>
@@ -23,14 +23,9 @@
                 </div>
             </div>
             <nav class="footer-menu" aria-label="푸터 메뉴">
-                <a href="<?php echo url('about'); ?>">우리는 누구인가</a>
-                <a href="<?php echo url('activities'); ?>">우리가 하는 일</a>
-                <a href="<?php echo url('activity'); ?>">활동게시판</a>
-                <a href="<?php echo url('press'); ?>">언론보도</a>
-                <a href="<?php echo url('resources'); ?>">자료실</a>
-                <a href="<?php echo url('tools'); ?>">안전 도구</a>
+                <?php foreach(['about'=>'단체소개','work'=>'사업소개','youth-labor'=>'청년과노동','board'=>'게시판','resources'=>'자료실','tools'=>'온라인 도구','privacy'=>'개인정보 안내'] as $path=>$label): ?><a href="<?php echo publicEscape(url($path)); ?>"><?php echo $label; ?></a><?php endforeach; ?>
             </nav>
-            <div class="footer-wordmark"><?php echo htmlspecialchars($site['name'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="footer-wordmark"><?php echo htmlspecialchars('청쎈', ENT_QUOTES, 'UTF-8'); ?></div>
             <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name'], ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
     </footer>
@@ -44,6 +39,8 @@
         btn.setAttribute('aria-label', isOpen ? '메뉴 닫기' : '메뉴 열기');
         btn.textContent = isOpen ? '✕' : '☰';
     }
+
+    document.addEventListener('keydown', event => { if(event.key === 'Escape' && document.getElementById('nav').classList.contains('active')) { toggleMenu(); document.querySelector('.mobile-menu-btn').focus(); } });
 
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {

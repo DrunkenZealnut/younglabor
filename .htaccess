@@ -18,6 +18,16 @@ RewriteRule \.(?:bak|backup|sql(?:\.gz)?|zip|tar|tgz|gz|7z)$ - [F,L,NC]
 RewriteRule \.(?:log|sql|md)$ - [F,L,NC]
 RewriteRule ^(?:docs|includes|tests|scripts|database)(?:/|$) - [F,L,NC]
 
+# 청쎈 네 메뉴와 사업·프로그램 상세
+RewriteRule ^work/?$ work/index.php [L,QSA]
+RewriteRule ^work/areas/([a-z0-9-]+)/?$ work/area.php?slug=$1 [L,QSA]
+RewriteRule ^work/programs/([a-z0-9-]+)/?$ work/program.php?slug=$1 [L,QSA]
+RewriteRule ^work/incubating/([0-9]{4})/?$ work/incubating.php?year=$1 [L,QSA]
+RewriteRule ^youth-labor/?$ youth-labor/index.php [L,QSA]
+RewriteRule ^youth-labor/([a-z0-9-]+)/?$ youth-labor/view.php?slug=$1 [L,QSA]
+RewriteRule ^board/?$ board/index.php [L,QSA]
+RewriteRule ^board/([a-z0-9-]+)/?$ board/view.php?slug=$1 [L,QSA]
+
 # 관리형 공개 콘텐츠 경로
 RewriteRule ^activity/?$ activity/index.php [L,QSA]
 RewriteRule ^activity/([a-z0-9-]+)/?$ activity/view.php?slug=$1 [L,QSA]
