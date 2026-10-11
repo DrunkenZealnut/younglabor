@@ -49,3 +49,17 @@ PHP 문법·단위/DB 테스트, Apache 신규 주소/옛 주소 이동·404·�
 후속 개선: 미래에 추가하는 강좌의 소개 표제는 현재 `2026 하반기 연속강좌`를 공유한다. 현재 강좌는 정확하며 향후 프로그램 추가 시 일반 표제로 개선할 필요가 있다.
 
 최종 검수: PHP 파일 116개 문법 검사와 PHP 단위/DB 테스트 35개 모두 통과(종료 코드 0). 로컬 DB·Apache 기준이며 생산 환경 실행은 포함하지 않는다.
+
+## 실행 중 판단 기록
+
+- Ruling: Use a private temporary MariaDB instance and PHP dev router when XAMPP is stopped — avoid changing shared server state — cost if wrong: Apache-specific rules need a separate smoke check.
+- Task 3: Ruling: update legacy activity label expectation to 활동 소식 — new board classifies activity as a category — cost if wrong: label-only regression.
+- Task 5: Ruling: legacy menu/copy source checks follow new approved four-menu layout and shared templates — obsolete source locations no longer implement those routes — cost if wrong: public route tests guard behavior.
+- Task 5: Ruling: storage test clears file-loaded environment aliases before putenv overrides — private preview env revealed existing test isolation assumption — cost if wrong: test-only environment cleanup.
+- Task 7: Ruling: use Aside for snapshots and local Puppeteer for actual viewport QA — Aside exposes no setViewportSize — cost if wrong: two local browser engines instead of one.
+- Task 7: Ruling: turn off DirectorySlash with explicit committee route — Apache otherwise redirects extensionless new directories and leaves retired no-slash path unhandled — cost if wrong: explicit route smoke protects paths.
+- Final: Ruling: SMTP, production migration/deployment, live DB, actual participant usability and final privacy/foundation approvals remain operational follow-up — authorized scope is local implementation — cost if wrong: production still needs those checks.
+- Final: Ruling: external application form remains user-approved destination, no external submission or mutation — website describes its own entry route — cost if wrong: external form conditions need operator confirmation.
+- Final: Ruling: locally fast-forward original feature/vibecoding-club after verification — user authorized redesign of this shared workspace, reversible integration is within scope under developer instructions — cost if wrong: local branch moves; no remote publication.
+
+원래 작업 브랜치 `feature/vibecoding-club`에 로컬 반영하고 문법·PHP 단위 테스트와 Apache 검사를 다시 확인했다. 사용자가 작업하던 파일은 그대로 유지했다. 미리보기 서버가 이 격리 작업공간을 사용하므로 작업공간은 보존한다.
