@@ -8,7 +8,7 @@ if (expectedClubState && !['open', 'closed'].includes(expectedClubState)) {
 }
 
 (async () => {
-    for (const path of ['/', '/about', '/activities', '/activity/', '/press/', '/resources/', '/tools', '/club']) {
+    for (const path of ['/', '/about', '/work', '/work/incubating/2026', '/work/programs/2026-youth-labor', '/youth-labor', '/board', '/resources/', '/tools', '/club']) {
         const response = await fetch(base + path, { headers });
         assert.equal(response.status, 200, `${path} must return 200`);
         assert.equal(response.redirected, false, `${path} must not redirect`);
@@ -27,8 +27,8 @@ if (expectedClubState && !['open', 'closed'].includes(expectedClubState)) {
         if (path === '/club') {
             assert.doesNotMatch(html, /<iframe\b/i, 'club page must not embed the application form');
             assert.match(html, /class="sponsor-box">[\s\S]*?alt="아름다운재단"[\s\S]*?지원으로 진행됩니다\./, 'club page must credit the foundation with its logo');
-            const open = html.includes('class="club-status">모집 중');
-            const closed = html.includes('class="club-status">모집 마감');
+            const open = html.includes('class="club-status">상시모집');
+            const closed = html.includes('class="club-status">접수 종료');
             assert.ok(open !== closed, 'club page must show exactly one recruitment state');
             if (open) {
                 assert.ok(html.includes('href="https://zealot-survey.vercel.app/RJXag60aMfMT"'), 'open club page must link the exact application form');
@@ -36,7 +36,7 @@ if (expectedClubState && !['open', 'closed'].includes(expectedClubState)) {
                 assert.ok(html.includes('외부 서비스로 이동'), 'open club page must announce the external link');
             } else {
                 assert.ok(!html.includes('zealot-survey.vercel.app'), 'closed club page must not link the application form');
-                assert.ok(html.includes('이번 모집은 마감되었습니다.'), 'closed club page must say recruitment is closed');
+                assert.ok(html.includes('현재 접수를 받지 않습니다.'), 'closed club page must say recruitment is closed');
             }
             if (expectedClubState) {
                 assert.equal(open ? 'open' : 'closed', expectedClubState, 'club recruitment state differs from CLUB_EXPECT_STATE');

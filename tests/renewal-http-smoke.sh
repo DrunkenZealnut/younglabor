@@ -5,6 +5,7 @@ body="$(mktemp /tmp/yl-renewal-http.XXXXXX)"
 trap 'rm -f "$body"' EXIT
 for path in / /about /work /work/incubating/2026 /work/areas/education /work/areas/tools /work/areas/community /work/areas/voice /work/programs/2026-youth-labor /youth-labor /board; do
  code="$(curl -sS -o "$body" -w '%{http_code}' "$base$path")"
+ if rg -q "Warning|Deprecated|Fatal error" "$body"; then echo "FAIL $path: runtime warning"; exit 1; fi
  test "$code" = 200 || { echo "FAIL $path: $code"; exit 1; }
  test "$(rg -o '<h1[ >]' "$body" | wc -l | tr -d ' ')" = 1
  test "$(rg -o '<main[ >]' "$body" | wc -l | tr -d ' ')" = 1

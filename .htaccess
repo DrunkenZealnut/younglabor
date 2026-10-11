@@ -1,5 +1,9 @@
 RewriteEngine On
 
+<IfModule mod_dir.c>
+    DirectorySlash Off
+</IfModule>
+
 <IfModule mod_alias.c>
     RedirectMatch 403 ^/(?:backup|dbeditor)(?:/|$)
 </IfModule>
@@ -27,6 +31,8 @@ RewriteRule ^youth-labor/?$ youth-labor/index.php [L,QSA]
 RewriteRule ^youth-labor/([a-z0-9-]+)/?$ youth-labor/view.php?slug=$1 [L,QSA]
 RewriteRule ^board/?$ board/index.php [L,QSA]
 RewriteRule ^board/([a-z0-9-]+)/?$ board/view.php?slug=$1 [L,QSA]
+
+RewriteRule ^committee/?$ committee/index.php [L,QSA]
 
 # 관리형 공개 콘텐츠 경로
 RewriteRule ^activity/?$ activity/index.php [L,QSA]

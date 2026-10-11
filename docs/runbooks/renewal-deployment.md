@@ -1,0 +1,43 @@
+# 청쎈 사이트 개편 적용과 검증
+
+## 구현 범위
+
+PHP·MySQL 사이트를 네 메뉴(단체소개·사업소개·청년과노동·게시판)로 개편했다. 사업축·지원사업·단위사업·프로그램·회차와 글 분류를 관리자에서 편집한다. 바이브코딩동아리는 상시모집이고 특정 제품명과 모집 기한을 표시하지 않는다. 문의는 비공개 저장 이후 메일을 알리며 알림 실패가 접수 실패로 안내되지 않는다.
+
+## 적용 절차
+
+1. 적용 대상 환경과 DB 이름을 확인한다. 운영 작업 전 기존 DB 전체와 콘텐츠 저장 디렉터리, 현재 코드·환경 파일을 백업한다. 백업은 공개 웹 디렉터리 밖에 둔다.
+2. PHP PDO MySQL·mbstring·fileinfo·GD, Apache rewrite와 외부 웹 루트의 쓰기 가능한 `CONTENT_STORAGE_PATH`를 확인한다. 기존 `.env.local` 설정을 유지하며 비밀번호를 커밋하지 않는다. `BASE_URL_LOCAL` 또는 운영 BASE URL은 실제 제공 주소와 일치해야 한다.
+3. 대상 환경을 확인한 CLI에서 `php scripts/migrate-renewal.php`, `php scripts/seed-renewal.php`를 차례로 실행한다. 추가 스키마를 생성하고 기존 글·파일·신청 데이터를 보존한다. Seed는 기존 관리자 편집값을 덮어쓰지 않는다.
+4. 관리자에서 사업 상태, 프로그램·회차, 공개 글과 연결 사업을 확인한다. 교육 강좌는 초기값이 **신청 안내 확인 중**이다. 운영자가 실제 접수 조건을 확인한 뒤 모집 상태를 바꾼다. 동아리는 공개/open/rolling 상태이며 운영자가 closed로 바꾸면 신청 링크가 사라진다.
+5. 아래 HTTP·접수 검사를 대상 환경에서 실행한다. 운영 SMTP 확인은 담당자와 실제 수신을 확인하는 별도 단계다. 이번 개발 검수에서는 운영 이메일을 발송하지 않았다.
+6. 개인정보 열람 담당자·보관/삭제 기준과 외부 신청 페이지 안내, 재단 표기를 확인한 뒤 운영에 공개한다. 공개 페이지에 미확정 보관 기간을 임의로 적지 않았다.
+
+## 되돌리기
+
+현재 DB와 새 접수·게시물·파일을 먼저 백업하고 코드를 이전 버전으로 복구한다. 새 테이블/열은 보존한다. DB 삭제나 이전 백업 덮어쓰기로 신규 접수를 유실하지 않는다. 복구 후 이전 콘텐츠·파일·문의 열람과 인증을 확인한다.
+
+## 개발 검수 환경
+
+공유 XAMPP 서비스가 중지되어 별도 로컬 MariaDB(`127.0.0.1:33317`, `younglabor_renewal_test`)와 Apache(`127.0.0.1:18764`)를 사용했다. 운영 DB 이관·운영 배포는 수행하지 않았다. 로컬 미리보기: `http://127.0.0.1:18764/younglabor/`.
+
+테스트 DB 전용 `tests/support/bootstrap-db.php`는 관리자·문의·접속 로그 fixture를 만든다. 운영에서 실행하지 않는다. 기존 콘텐츠 통합 테스트는 `_test` DB의 콘텐츠 테이블을 교체/정리하므로 먼저 실행하고 bootstrap 후 개편 테스트를 실행한다.
+
+```sh
+for test in tests/*.test.php; do php "$test" || exit; done
+TEST_DB_NAME=younglabor_renewal_test TEST_DB_PORT=33317 php tests/integration/content-repository.test.php
+TEST_DB_NAME=younglabor_renewal_test TEST_DB_PORT=33317 php tests/integration/content-manager.test.php
+php tests/support/bootstrap-db.php
+for test in tests/integration/renewal-*.test.php; do php "$test" || exit; done
+SITE_BASE_URL=http://127.0.0.1:18764/younglabor bash tests/public-http-smoke.sh
+SITE_BASE_URL=http://127.0.0.1:18764/younglabor node tests/public-accessibility.test.js
+SITE_BASE_URL=http://127.0.0.1:18764/younglabor bash tests/renewal-http-smoke.sh
+```
+
+PHP 문법·단위/DB 테스트, Apache 신규 주소/옛 주소 이동·404·폐기 API 410·비정상 문의 400·canonical·홈/CSS 용량을 확인했다. 파일 smoke는 공개/초안 이미지와 PDF fixture의 GET/HEAD/Range(206, 10bytes), ETag·캐시·초안 404를 확인한다. fixture ID와 slug는 `tests/managed-content-http-smoke.sh` 환경변수로 제공한다.
+
+브라우저 검수는 Aside snapshot과 로컬 Chrome/Puppeteer를 사용했다(Aside의 viewport 변경 API 미지원). 390px·1440px에서 홈·사업 두 탭·강좌·동아리·글 목록의 가로 넘침과 화면 배치를 확인한다. 키보드 메뉴 Enter/Escape와 초점 복귀, 문의 필수값·서버 오류/접수 완료·입력 초기화, 관리자 회차 표시를 확인한다. 개발 검수는 실제 당사자 사용성 조사와 운영 담당자의 독립 운영 검증을 대신하지 않는다.
+
+## 구현 중 결정
+
+기존의 옛 마감일·메뉴·소스 문자열 검사는 승인된 새 상태·공개 경로에 맞춰 수정했다. 저장소 테스트의 환경변수 우선순위를 격리했고, Apache의 디렉터리 슬래시 이동을 끄고 명시적 라우트를 사용한다. 기존 정적 `HomeContent` 도우미 대신 공통 `PublicContent` 로더를 새 화면에서 사용한다. 기존 비공개 파일·CSRF·충돌·rollback 검증은 유지했다.

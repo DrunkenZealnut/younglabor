@@ -15,10 +15,10 @@ function loadPublicWork(callable $read): array {
 function workUnavailableMessage(string $state): string {return $state==='preparing'?'사업 안내를 준비하고 있습니다. 문의는 이메일로 보내 주세요.':'안내를 불러오지 못했습니다. 잠시 후 다시 확인하거나 이메일로 문의해 주세요.';}
 function publicNotFoundStatus(array $result): void {if($result['state']!=='ready')http_response_code(503);elseif($result['data']===null)http_response_code(404);}
 function startPublicPage(string $menu,string $title,string $description,string $path): void {
- global $site,$currentPage,$pageTitle,$pageDescription,$pageUrl;
+ global $site,$theme,$currentPage,$pageTitle,$pageDescription,$pageUrl;
  $currentPage=$menu;$pageTitle=$title.' - '.$site['name'];$pageDescription=$description;$pageUrl=url($path);require __DIR__.'/header.php';
 }
-function endPublicPage(): void {require __DIR__.'/footer.php';}
+function endPublicPage(): void {global $site;require __DIR__.'/footer.php';}
 function renderPageIntro(string $eyebrow,string $title,string $description): void { ?>
 <section class="page-header"><div class="container"><p class="eyebrow"><?php echo publicEscape($eyebrow); ?></p><h1><?php echo publicEscape($title); ?></h1><?php if($description!==''): ?><p><?php echo publicEscape($description); ?></p><?php endif; ?></div></section>
 <?php }
