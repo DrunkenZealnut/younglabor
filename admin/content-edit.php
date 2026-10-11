@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'resource_category'=>$_POST['resource_category'] ?? '',
             'alt_text'=>$_POST['alt_text'] ?? '',
             'remove_cover'=>isset($_POST['remove_cover']),
-            'author_id'=>$adminUser['id'],
+            'author_id'=>$adminUser['id'], 'public_author'=>$_POST['public_author']??'', 'editorial_category'=>$_POST['editorial_category']??'', 'work_area_id'=>$_POST['work_area_id']??'', 'program_id'=>$_POST['program_id']??'', 'home_featured'=>isset($_POST['home_featured']),
         ];
         if ($existing) $input['id'] = (int)$existing['id'];
         $expectedRevision = $existing ? filter_var($_POST['expected_revision'] ?? null, FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]) : null;
@@ -111,7 +111,7 @@ adminHeader();
                 <input type="text" value="<?php echo e(contentTypeLabel((string)$existing['type'])); ?>" disabled>
             <?php else: ?>
                 <select id="type" name="type" onchange="toggleContentFields()">
-                    <?php foreach (['activity','press','resource'] as $option): ?><option value="<?php echo $option; ?>"<?php echo ($values['type'] ?? '') === $option ? ' selected' : ''; ?>><?php echo e(contentTypeLabel($option)); ?></option><?php endforeach; ?>
+                    <?php foreach (['activity','press','resource','article','notice'] as $option): ?><option value="<?php echo $option; ?>"<?php echo ($values['type'] ?? '') === $option ? ' selected' : ''; ?>><?php echo e(contentTypeLabel($option)); ?></option><?php endforeach; ?>
                 </select>
             <?php endif; ?>
             <?php if (isset($errors['type'])): ?><div class="field-error"><?php echo e($errors['type']); ?></div><?php endif; ?>
@@ -123,8 +123,16 @@ adminHeader();
         <div class="form-field full"><label for="summary">요약/설명</label><textarea id="summary" name="summary" maxlength="500" required><?php echo e((string)($values['summary'] ?? '')); ?></textarea><?php if (isset($errors['summary'])): ?><div class="field-error"><?php echo e($errors['summary']); ?></div><?php endif; ?></div>
     </div>
 
-    <div class="type-section" data-type="activity">
-        <div class="form-field"><label for="body">활동 내용</label><textarea id="body" name="body" rows="12"><?php echo e((string)($values['body'] ?? '')); ?></textarea><?php if (isset($errors['body'])): ?><div class="field-error"><?php echo e($errors['body']); ?></div><?php endif; ?></div>
+    <div class="form-grid">
+    <div class="form-field"><label for="public_author">공개 작성 주체 (청년과노동 필수)</label><input id="public_author" name="public_author" maxlength="160" value="<?php echo e($values['public_author']??''); ?>"><?php if(isset($errors['public_author'])): ?><p class="field-error"><?php echo e($errors['public_author']); ?></p><?php endif; ?></div>
+    <div class="form-field"><label for="editorial_category">글 분류</label><select id="editorial_category" name="editorial_category"><option value="">유형에 맞는 분류 선택</option><?php foreach(['story','column','policy','notice','recruitment'] as $c): ?><option value="<?php echo $c; ?>"<?php echo ($values['editorial_category']??'')===$c?' selected':''; ?>><?php echo e(editorialCategoryLabel($c)); ?></option><?php endforeach; ?></select><?php if(isset($errors['editorial_category'])): ?><p class="field-error"><?php echo e($errors['editorial_category']); ?></p><?php endif; ?></div>
+    <?php require_once __DIR__.'/../includes/WorkRepository.php';$workRepository=new WorkRepository($db); foreach(['work_area_id'=>['연결 사업축',$workRepository->listAreas(false)],'program_id'=>['연결 프로그램',$workRepository->listPrograms(false)]] as $field=>[$label,$options]): ?>
+    <div class="form-field"><label for="<?php echo $field; ?>"><?php echo $label; ?></label><select id="<?php echo $field; ?>" name="<?php echo $field; ?>"><option value="">연결 없음</option><?php foreach($options as $option): ?><option value="<?php echo (int)$option['id']; ?>"<?php echo (string)($values[$field]??'')===(string)$option['id']?' selected':''; ?>><?php echo e($option['title']); ?></option><?php endforeach; ?></select></div>
+    <?php endforeach; ?>
+    <div class="form-field"><label><input type="checkbox" name="home_featured" value="1"<?php echo !empty($values['home_featured'])?' checked':''; ?>> 홈에 노출</label></div>
+    </div>
+    <div class="type-section" data-type="activity article notice">
+        <div class="form-field"><label for="body">본문</label><textarea id="body" name="body" rows="12"><?php echo e((string)($values['body'] ?? '')); ?></textarea><?php if (isset($errors['body'])): ?><div class="field-error"><?php echo e($errors['body']); ?></div><?php endif; ?></div>
         <div class="form-field"><label for="activity-upload">표지 이미지</label><input id="activity-upload" type="file" name="upload" accept="image/jpeg,image/png,image/webp"><div class="field-help">JPEG, PNG, WebP · 최대 5 MiB. 식별 가능한 미성년자의 얼굴은 필요한 동의를 확인한 경우에만 업로드하세요.</div></div>
         <div class="form-field"><label for="alt_text">대체 텍스트</label><input id="alt_text" name="alt_text" maxlength="255" value="<?php echo e((string)($values['alt_text'] ?? '')); ?>"><?php if (isset($errors['alt_text'])): ?><div class="field-error"><?php echo e($errors['alt_text']); ?></div><?php endif; ?></div>
         <?php if (isset($fileByPurpose['cover'])): ?><label><input type="checkbox" name="remove_cover" value="1"<?php echo !empty($values['remove_cover']) ? ' checked' : ''; ?>> 현재 표지 이미지 제거</label><?php endif; ?>
@@ -147,7 +155,7 @@ adminHeader();
 function toggleContentFields() {
     const fixedType = <?php echo json_encode($existing['type'] ?? null); ?>;
     const selected = fixedType || document.getElementById('type').value;
-    document.querySelectorAll('.type-section').forEach(section => { section.hidden = section.dataset.type !== selected; });
+    document.querySelectorAll('.type-section').forEach(section => { section.hidden = !section.dataset.type.split(' ').includes(selected); });
     document.querySelectorAll('.type-section input, .type-section textarea, .type-section select').forEach(field => { field.disabled = field.closest('.type-section').hidden; });
 }
 toggleContentFields();

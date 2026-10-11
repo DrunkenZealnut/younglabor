@@ -71,7 +71,7 @@ class ContentManager
         }
         $hasUpload = $upload !== null && (int)($upload['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
 
-        if ($values['type'] === 'activity') {
+        if (in_array($values['type'], ['activity','article','notice'], true)) {
             $coverRemains = $hasUpload || (!$values['remove_cover'] && isset($currentByPurpose['cover']));
             if ($coverRemains && $values['alt_text'] === '') {
                 $errors['alt_text'] = '표지 이미지의 대체 텍스트를 입력해 주세요.';
@@ -84,6 +84,10 @@ class ContentManager
             } elseif ($values['external_url'] === null && !isset($currentByPurpose['attachment'])) {
                 $errors['external_url'] = '첨부파일 또는 HTTPS 주소 중 하나를 입력해 주세요.';
             }
+        }
+
+        foreach (['work_area_id'=>'work_areas','program_id'=>'work_programs'] as $field=>$table) {
+            if (!empty($values[$field])) { $q=$this->pdo->prepare("SELECT id FROM $table WHERE id=?");$q->execute([$values[$field]]);if (!$q->fetchColumn()) $errors[$field]='연결 항목을 확인해 주세요.'; }
         }
 
         if ($errors !== []) {
@@ -111,12 +115,12 @@ class ContentManager
                 if ($old !== []) {
                     $detached[] = $old;
                 }
-            } elseif ($values['type'] === 'activity' && $values['remove_cover'] && isset($currentByPurpose['cover'])) {
+            } elseif (in_array($values['type'], ['activity','article','notice'], true) && $values['remove_cover'] && isset($currentByPurpose['cover'])) {
                 $old = $this->repository->detachFile($savedId, 'cover');
                 if ($old !== []) {
                     $detached[] = $old;
                 }
-            } elseif ($values['type'] === 'activity' && isset($currentByPurpose['cover'])) {
+            } elseif (in_array($values['type'], ['activity','article','notice'], true) && isset($currentByPurpose['cover'])) {
                 $this->repository->updateFileAltText($savedId, 'cover', $values['alt_text']);
             }
 

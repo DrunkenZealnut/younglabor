@@ -15,4 +15,4 @@ foreach (['https://user@news.example/a','https://news.example:444/a','https://ne
     $result = validateContentInput(['type'=>'press','title'=>'제목','slug'=>'unsafe','summary'=>'소개','content_date'=>'2026-09-21','status'=>'draft','outlet'=>'언론사','external_url'=>$unsafe], $publicDns);
     if (!isset($result['errors']['external_url'])) exit(1);
 }
-if (contentTypeLabel('activity') !== '활동게시판' || resourceCategoryLabel('guide') !== '안내자료') exit(1);
+if (contentTypeLabel('activity') !== '활동 소식' || resourceCategoryLabel('guide') !== '안내자료') exit(1);

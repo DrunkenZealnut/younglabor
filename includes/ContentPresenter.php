@@ -15,9 +15,10 @@ function renderPlainText(string $text): string
 function contentTypeLabel(string $type): string
 {
     return [
-        'activity' => '활동게시판',
+        'activity' => '활동 소식',
         'press' => '언론보도',
         'resource' => '자료실',
+        'article' => '청년과노동', 'notice' => '공지·모집',
     ][$type] ?? $type;
 }
 
@@ -52,4 +53,20 @@ function contentImageSrcset(array $file): string
     }
     $sources[] = url('media/' . $id) . ' ' . $width . 'w';
     return implode(', ', $sources);
+}
+
+function publicPostPath(array $post): string
+{
+    $slug=$post['slug'];
+    return match($post['type']) {
+        'article'=>'youth-labor/'.$slug,
+        'notice'=>'board/notice--'.$slug,
+        'press'=>'board/press--'.$slug,
+        'activity'=>'board/'.$slug,
+        'resource'=>'resources/'.$slug,
+        default=>throw new InvalidArgumentException('Unknown content type')
+    };
+}
+function editorialCategoryLabel(string $category): string {
+    return ['story'=>'당사자 이야기','column'=>'칼럼','policy'=>'정책·제도 제안','notice'=>'공지','recruitment'=>'모집','activity'=>'활동 소식','press'=>'언론 소식'][$category]??$category;
 }
