@@ -63,3 +63,5 @@ PHP 문법·단위/DB 테스트, Apache 신규 주소/옛 주소 이동·404·�
 - Final: Ruling: locally fast-forward original feature/vibecoding-club after verification — user authorized redesign of this shared workspace, reversible integration is within scope under developer instructions — cost if wrong: local branch moves; no remote publication.
 
 원래 작업 브랜치 `feature/vibecoding-club`에 로컬 반영하고 문법·PHP 단위 테스트와 Apache 검사를 다시 확인했다. 사용자가 작업하던 파일은 그대로 유지했다. 미리보기 서버가 이 격리 작업공간을 사용하므로 작업공간은 보존한다.
+
+2026-10-13: 기존 웹자보 원본의 강사 네 명 사진을 회차별 일정에 추가했다. 파일 출처는 `assets/images/speakers/README.md`에 기록했다. 프로그램/강사명 일치로 사진을 연결하며 관리자에서 강사명이 변경되면 이전 사진을 숨긴다. 새로운 강좌 사진은 확인된 자료로 별도 연결한다.

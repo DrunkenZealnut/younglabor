@@ -30,3 +30,15 @@ function workAction(array $row): ?array {
  $path=(string)($row['action_path']??'');$label=(string)($row['action_label']??'');
  return $path!=='' && $label!=='' && workActionPathIsSafe($path) ? ['label'=>$label,'href'=> $path==='#contact' ? url('').$path : url($path)] : null;
 }
+
+/** Portraits supplied in the 2026 course poster materials. Match the speaker, never the session order. */
+function sessionSpeakerPhoto(string $programSlug,string $speaker): ?array {
+ if($programSlug!=='2026-youth-labor')return null;
+ $photos=[
+  '신수연'=>['path'=>'assets/images/speakers/shin-su-yeon.png','width'=>206,'height'=>206],
+  '연혜원'=>['path'=>'assets/images/speakers/yeon-hye-won.png','width'=>200,'height'=>200],
+  '천현우'=>['path'=>'assets/images/speakers/cheon-hyeon-woo.png','width'=>243,'height'=>243],
+  '박동욱'=>['path'=>'assets/images/speakers/park-dong-wook.png','width'=>400,'height'=>400],
+ ];
+ return $photos[$speaker]??null;
+}
