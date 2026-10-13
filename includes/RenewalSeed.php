@@ -21,8 +21,8 @@ function renewalSeedData(): array {
  $published+['slug'=>'vibecoding-club','title'=>'바이브코딩동아리','summary'=>'코딩을 몰라도, AI와 대화하며 나에게 필요한 앱과 웹을 만듭니다.','body'=>'나에게 필요했지만 상상만 했던 앱을 직접 만들어 봅니다. 과제 자료를 정리하는 도우미, 공부 도구, 게임 공략 챗봇처럼 자기 필요에서 시작하세요. 바이브코딩도구로 원하는 것을 설명하고 함께 만들며 배웁니다.','kind'=>'club','area_slug'=>'community','audience'=>'반도체고등학교 재학생. 코딩 경험이 없어도 됩니다.','venue'=>null,'fee'=>'무료','application_url'=>'https://zealot-survey.vercel.app/RJXag60aMfMT','recruitment_status'=>'open','recruitment_mode'=>'rolling','deadline_at'=>null,'contact_email'=>'admin@younglabor.kr','organizers'=>'청년노동자인권센터','credit'=>'이 사업은 아름다운재단 지원으로 진행됩니다.','support_details'=>'바이브코딩도구 이용 지원과 제작·학습 안내','home_featured'=>1]
  ];
  $sessions=[
- ['number'=>1,'starts_at'=>'2026-10-14 19:00:00','speaker'=>'신수연','title'=>'우리는 학생이자 노동자였다','description'=>'특성화고 학생들의 삶','mode'=>'hybrid','panel'=>null],
- ['number'=>2,'starts_at'=>'2026-10-21 19:00:00','speaker'=>'연혜원','title'=>'지연된 실패를 넘어','description'=>'공고생들의 일상과 고민','mode'=>'hybrid','panel'=>null],
+ ['number'=>1,'starts_at'=>'2026-10-14 19:00:00','speaker'=>'신수연','title'=>'우리는 학생이자 노동자였다','description'=>'특성화고 학생들의 삶','mode'=>'online','panel'=>null],
+ ['number'=>2,'starts_at'=>'2026-10-21 19:00:00','speaker'=>'연혜원','title'=>'지연된 실패를 넘어','description'=>'공고생들의 일상과 고민','mode'=>'online','panel'=>null],
  ['number'=>3,'starts_at'=>'2026-10-28 19:00:00','speaker'=>'천현우','title'=>'쇳밥일지, 그 후','description'=>'조선소에서 본 지역 청년 노동자의 삶','mode'=>'online','panel'=>null],
  ['number'=>4,'starts_at'=>'2026-11-04 19:00:00','speaker'=>'박동욱','title'=>'보이지 않는 위험을 가르치다','description'=>'반도체고 노동안전교과서 기초연구 발제 및 종합토론','mode'=>'hybrid','panel'=>'토론 패널 추후 공지']
  ];
