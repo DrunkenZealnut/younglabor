@@ -3,7 +3,6 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
-                <?php require __DIR__ . '/symbols.php'; ?>
                 <div>
                     <div class="footer-label">Contact</div>
                     <p class="footer-text">
