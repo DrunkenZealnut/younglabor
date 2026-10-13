@@ -725,6 +725,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .footer-grid {
     display: grid;
+    text-align: center;
     grid-template-columns: minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);
     gap: 2rem;
     align-items: start;
@@ -761,7 +762,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     margin-bottom: 2rem;
 }
 
-.footer-support { display: grid; gap: 0.5rem; color: var(--color-gray); font-size: 0.8125rem; }
+.footer-support { display: grid; justify-items: center; gap: 0.5rem; color: var(--color-gray); font-size: 0.8125rem; }
 .footer-support img { width: 150px; max-width: 100%; height: auto; }
 
 .footer-menu a {
@@ -790,7 +791,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     color: var(--color-gray);
     border-top: none;
     opacity: 1;
-    text-align: left;
+    text-align: center;
     padding-top: 0;
     margin-top: 0;
 }
