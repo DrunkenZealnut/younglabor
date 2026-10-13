@@ -1,35 +1,6 @@
 <?php
-$home = file_get_contents(__DIR__ . '/../index.php');
-$about = file_get_contents(__DIR__ . '/../about.php');
-$activities = file_get_contents(__DIR__ . '/../activities.php');
-$required = [
-    '제조업 청년노동자들의 안전과 노동권을 지킵니다.',
-    '현장에서 무슨 일이 있었나', '왜 이 일을 하는가', '우리가 하는 일',
-    '현장에서 쓰는 안전 도구', '언론이 본 현장', '함께하기', '함께하는 곳들',
-];
-$last = -1;
-foreach ($required as $copy) {
-    $position = strpos($home, $copy);
-    if ($position === false || $position <= $last) exit(1);
-    $last = $position;
-}
-if (strpos($home, '숫자로 보는 활동') !== false) exit(1);
-foreach (['왜 제조업 청년노동자인가', '왜 반도체고에서 시작하는가'] as $copy) {
-    if (strpos($about, $copy) === false) exit(1);
-}
-foreach (['교육', '안전 도구', '연구'] as $copy) {
-    if (strpos($activities, $copy) === false) exit(1);
-}
-if (strpos($activities, '현장 조직') !== false) exit(1);
-$heroAt = strpos($home, '제조업 청년노동자들의 안전과 노동권을 지킵니다.');
-$bannerAt = strpos($home, 'class="club-banner"');
-$fieldAt = strpos($home, '현장에서 무슨 일이 있었나');
-if ($bannerAt === false || $bannerAt < $heroAt || $bannerAt > $fieldAt) exit(1);
-if (strpos($home, '$clubOpen = clubRecruitmentIsOpen();') === false) exit(1);
-if (substr_count($home, "url('club')") < 2) exit(1);
-if (strpos($home, "url('committee')") !== false) exit(1);
-if (strpos(file_get_contents(__DIR__ . '/../assets/css/style.css'), '.club-banner') === false) exit(1);
-if (!preg_match('/<\?php if \(\$clubOpen\): \?>\s*<aside class="club-banner"[^>]*>.*?<\/aside>\s*<\?php endif; \?>/s', $home)) exit(1);
-if (strpos($home, "\$clubOpen ? '신청' : '소식'") === false) exit(1);
-$heroEnd = strpos($home, '</section>', $heroAt);
-if ($heroEnd === false || $bannerAt < $heroEnd) exit(1);
+$home=file_get_contents(__DIR__.'/../index.php');
+$last=-1;
+foreach(['일하는 청년이,','청쎈이 만나는 청년','네 가지 방식,','지금, 함께할 활동','청년과노동','새 소식','질문도, 제안도.'] as $copy){$at=strpos($home,$copy);if($at===false || $at<=$last)exit(1);$last=$at;}
+if(str_contains($home,'숫자로 보는 활동'))exit(1);
+if(!str_contains($home,"array_filter(\$programs,'programAcceptsApplications')"))exit(1);

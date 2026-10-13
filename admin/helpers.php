@@ -21,7 +21,7 @@ function csrfField(): string {
 function verifyCsrfToken(): bool {
     $sessionToken = $_SESSION[ADMIN_CSRF_TOKEN_NAME] ?? '';
     $token = $_POST[ADMIN_CSRF_TOKEN_NAME] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    if ($sessionToken === '' || $token === '') {
+    if (!is_string($sessionToken) || !is_string($token) || $sessionToken === '' || $token === '') {
         return false;
     }
     return hash_equals($sessionToken, $token);
@@ -31,16 +31,6 @@ function getUnreadContactCount(): int {
     try {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->query("SELECT COUNT(*) FROM inquiries WHERE status = 'new'");
-        return (int)$stmt->fetchColumn();
-    } catch (\Throwable $e) {
-        return 0;
-    }
-}
-
-function getPendingCommitteeCount(): int {
-    try {
-        $db = Database::getInstance()->getConnection();
-        $stmt = $db->query("SELECT COUNT(*) FROM committee_applications WHERE status = 'pending'");
         return (int)$stmt->fetchColumn();
     } catch (\Throwable $e) {
         return 0;
@@ -66,7 +56,6 @@ function adminHeader(): void {
     global $theme, $site, $adminUser;
     $currentPage = basename($_SERVER['SCRIPT_NAME'], '.php');
     $unreadCount = getUnreadContactCount();
-    $pendingCount = getPendingCommitteeCount();
     $baseUrl = url('admin');
 ?>
 <!DOCTYPE html>
@@ -447,12 +436,7 @@ function adminHeader(): void {
             <a href="<?php echo $baseUrl; ?>/dashboard" class="<?php echo $currentPage === 'dashboard' ? 'active' : ''; ?>">
                 <span class="icon">&#128202;</span> 대시보드
             </a>
-            <a href="<?php echo $baseUrl; ?>/committee" class="<?php echo $currentPage === 'committee' ? 'active' : ''; ?>">
-                <span class="icon">&#128101;</span> 동아리 신청
-                <?php if ($pendingCount > 0): ?>
-                    <span class="nav-badge"><?php echo $pendingCount; ?></span>
-                <?php endif; ?>
-            </a>
+            <a href="<?php echo $baseUrl; ?>/work" class="<?php echo in_array($currentPage, ['work','work-edit','program-edit','funding-edit'],true) ? 'active':''; ?>"><span class="icon">&#128101;</span> 사업·프로그램 관리</a>
             <a href="<?php echo $baseUrl; ?>/contacts" class="<?php echo $currentPage === 'contacts' ? 'active' : ''; ?>">
                 <span class="icon">&#128172;</span> 문의 내역
                 <?php if ($unreadCount > 0): ?>

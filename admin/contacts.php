@@ -3,6 +3,7 @@
  * 문의 내역 관리 페이지
  */
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/../includes/ContactValidation.php';
 
 $db = Database::getInstance()->getConnection();
 
@@ -82,7 +83,7 @@ adminHeader();
                 <tr>
                     <th style="width:40px"><input type="checkbox" id="checkAll" aria-label="전체 문의 선택" onchange="toggleAll(this)"></th>
                     <th>#</th>
-                    <th>이름</th>
+                    <th>유형</th><th>이름</th>
                     <th class="hide-mobile">이메일</th>
                     <th>내용</th>
                     <th>상태</th>
@@ -95,7 +96,7 @@ adminHeader();
                 <tr style="cursor:pointer;<?php echo $inq['status'] === 'new' ? 'font-weight:600' : ''; ?>" onclick="openDetail(<?php echo $inq['id']; ?>)">
                     <td onclick="event.stopPropagation()"><input type="checkbox" class="row-check" value="<?php echo $inq['id']; ?>" aria-label="<?php echo e($inq['name']); ?> 문의 선택" onchange="updateSelection()"></td>
                     <td style="color:#94a3b8"><?php echo $inq['id']; ?></td>
-                    <td><?php echo e($inq['name']); ?></td>
+                    <td><?php echo e(inquiryTypeLabel($inq['inquiry_type']??'general')); ?></td><td><?php echo e($inq['name']?:'이름 미기재'); ?></td>
                     <td class="hide-mobile" style="font-size:13px"><?php echo e($inq['email']); ?></td>
                     <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
                         <?php echo e(mb_substr($inq['message'], 0, 50)); ?><?php echo mb_strlen($inq['message']) > 50 ? '...' : ''; ?>

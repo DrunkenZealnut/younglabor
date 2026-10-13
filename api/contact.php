@@ -1,148 +1,19 @@
 <?php
-/**
- * 문의 폼 API 엔드포인트
- * POST 요청으로 문의 메일 발송
- */
-
 header('Content-Type: application/json; charset=utf-8');
-// CORS: 허용된 도메인만
-$allowedOrigins = ['https://younglabor.kr', 'http://localhost:8080'];
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins)) {
-    header('Access-Control-Allow-Origin: ' . $origin);
-} else {
-    header('Access-Control-Allow-Origin: https://younglabor.kr');
-}
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-
-// Preflight 요청 처리
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
-
-// POST만 허용
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'message' => 'POST 요청만 허용됩니다.']);
-    exit;
-}
-
-// 설정 로드
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/../includes/Database.php';
-require_once __DIR__ . '/../includes/Mailer.php';
-require_once __DIR__ . '/../includes/Privacy.php';
-
-/**
- * JSON 응답
- */
-function sendResponse(array $data, int $statusCode = 200): void
-{
-    http_response_code($statusCode);
-    echo json_encode($data, JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-// 요청 데이터 파싱
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-
-if (json_last_error() !== JSON_ERROR_NONE) {
-    // form-urlencoded 형식 시도
-    $data = $_POST;
-}
-
-// 필수 필드 검증
-$name = trim($data['name'] ?? '');
-$email = trim($data['email'] ?? '');
-$message = trim($data['message'] ?? '');
-
-if (empty($name)) {
-    sendResponse(['success' => false, 'message' => '이름을 입력해주세요.'], 400);
-}
-
-if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    sendResponse(['success' => false, 'message' => '유효한 이메일을 입력해주세요.'], 400);
-}
-
-if (empty($message)) {
-    sendResponse(['success' => false, 'message' => '메시지를 입력해주세요.'], 400);
-}
-
-// XSS 방지
-$name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
-$email = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
-$message = htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
-
-// 데이터베이스에 문의 저장 (이스케이프 전 원문 사용)
-$dbSaved = false;
-try {
-    $rawName = trim($data['name'] ?? '');
-    $rawEmail = trim($data['email'] ?? '');
-    $rawMessage = trim($data['message'] ?? '');
-
-    // IP 마스킹: IPv4 마지막 옥텟, IPv6 마지막 16비트를 제거한다.
-    $ip = maskIpAddress($_SERVER['REMOTE_ADDR'] ?? '');
-
-    $db = Database::getInstance()->getConnection();
-    $stmt = $db->prepare("
-        INSERT INTO inquiries (name, email, message, status, ip_address, user_agent, created_at)
-        VALUES (:name, :email, :message, 'new', :ip, :ua, NOW())
-    ");
-    $stmt->execute([
-        ':name' => $rawName,
-        ':email' => $rawEmail,
-        ':message' => $rawMessage,
-        ':ip' => $ip,
-        ':ua' => substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 512),
-    ]);
-    $dbSaved = true;
-} catch (\Throwable $e) {
-    error_log('Contact DB save error: ' . $e->getMessage());
-}
-
-// 수신자 이메일 (SITE_EMAIL)
-$toEmail = env('SITE_EMAIL', '');
-if (empty($toEmail)) {
-    error_log('Contact form error: SITE_EMAIL not configured');
-    sendResponse(['success' => false, 'message' => '메일 설정이 완료되지 않았습니다. 관리자에게 문의하세요.'], 500);
-}
-
-// 메일 발송
-$mailer = new Mailer();
-
-if (!$mailer->isConfigured()) {
-    error_log('Contact form error: SMTP not configured');
-    sendResponse(['success' => false, 'message' => '메일 서버 설정이 완료되지 않았습니다.'], 500);
-}
-
-$subject = "[{$site['name']}] {$name}님의 문의";
-$body = Mailer::buildContactEmailBody($name, $email, $message);
-
-$result = $mailer->send($toEmail, $subject, $body, $email);
-
-if ($result) {
-    sendResponse([
-        'success' => true,
-        'message' => '문의가 성공적으로 전송되었습니다. 빠른 시일 내에 답변드리겠습니다.'
-    ]);
-} else {
-    $errors = $mailer->getErrors();
-    $errorMsg = implode(', ', $errors);
-    error_log('Contact form mail error: ' . $errorMsg);
-
-    // 인증 오류인 경우
-    if (strpos($errorMsg, '인증') !== false || strpos($errorMsg, 'Gmail') !== false) {
-        sendResponse([
-            'success' => false,
-            'message' => '메일 서버 인증에 실패했습니다. 관리자에게 문의해주세요.'
-        ], 500);
-    } else {
-        sendResponse([
-            'success' => false,
-            'message' => '메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
-        ], 500);
-    }
-}
+if($_SERVER['REQUEST_METHOD']==='OPTIONS'){header('Allow: POST, OPTIONS');http_response_code(204);exit;}
+if($_SERVER['REQUEST_METHOD']!=='POST'){http_response_code(405);echo json_encode(['success'=>false,'message'=>'POST 요청만 허용됩니다.'],JSON_UNESCAPED_UNICODE);exit;}
+require_once __DIR__.'/../config.php';require_once __DIR__.'/../includes/Database.php';require_once __DIR__.'/../includes/Mailer.php';require_once __DIR__.'/../includes/Privacy.php';require_once __DIR__.'/../includes/ContactService.php';
+$contentType=$_SERVER['CONTENT_TYPE']??'';$input=str_contains($contentType,'application/json')?json_decode(file_get_contents('php://input'),true):$_POST;
+if(!is_array($input)){http_response_code(400);echo json_encode(['success'=>false,'message'=>'문의 형식을 확인해 주세요.'],JSON_UNESCAPED_UNICODE);exit;}
+$service=new ContactService(
+ static function(array $v): bool {
+  $pdo=Database::getInstance()->getConnection();$q=$pdo->prepare("INSERT INTO inquiries(inquiry_type,name,email,message,status,ip_address,user_agent,created_at) VALUES (:type,:name,:email,:message,'new',:ip,:ua,NOW())");
+  return $q->execute([':type'=>$v['inquiry_type'],':name'=>$v['name'],':email'=>$v['email'],':message'=>$v['message'],':ip'=>maskIpAddress($_SERVER['REMOTE_ADDR']??''),':ua'=>substr($_SERVER['HTTP_USER_AGENT']??'',0,512)]);
+ },
+ static function(array $v): bool {
+  $recipient=env('SITE_EMAIL','admin@younglabor.kr');$mailer=new Mailer();if(!$recipient || !$mailer->isConfigured())return false;
+  $name=htmlspecialchars($v['name']?:'이름 미기재',ENT_QUOTES,'UTF-8');$email=htmlspecialchars($v['email'],ENT_QUOTES,'UTF-8');$message=htmlspecialchars('['.inquiryTypeLabel($v['inquiry_type'])."]\n".$v['message'],ENT_QUOTES,'UTF-8');
+  return $mailer->send($recipient,'[청쎈] '.inquiryTypeLabel($v['inquiry_type']).' 문의',Mailer::buildContactEmailBody($name,$email,$message),$v['email']);
+ }
+);
+$result=$service->submit($input);http_response_code($result['success']?200:($result['errors']?400:503));unset($result['notification']);echo json_encode($result,JSON_UNESCAPED_UNICODE);

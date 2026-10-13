@@ -5,7 +5,7 @@ class ContentSlugConflictException extends ContentConflictException {}
 
 class ContentRepository
 {
-    private const TYPES = ['activity', 'press', 'resource'];
+    private const TYPES = ['activity', 'press', 'resource', 'article', 'notice'];
     private const PURPOSES = ['cover', 'attachment'];
 
     protected PDO $pdo;
@@ -131,7 +131,7 @@ class ContentRepository
 
         $sql = "UPDATE content_posts SET title = :title, slug = :slug, summary = :summary, body = :body,"
             . " content_date = :content_date, status = :status, outlet = :outlet, external_url = :external_url,"
-            . " resource_category = :resource_category, author_id = :author_id, revision = revision + 1,"
+            . " resource_category = :resource_category, author_id = :author_id, public_author = :public_author, editorial_category = :editorial_category, work_area_id = :work_area_id, program_id = :program_id, home_featured = :home_featured, revision = revision + 1,"
             . " published_at = CASE WHEN :status_publish = 'published' AND published_at IS NULL THEN CURRENT_TIMESTAMP ELSE published_at END"
             . " WHERE id = :id AND revision = :expected_revision";
         $params = $this->postParams($post);
@@ -251,8 +251,8 @@ class ContentRepository
     private function insert(array $post): int
     {
         $sql = "INSERT INTO content_posts"
-            . " (type, title, slug, summary, body, content_date, status, outlet, external_url, resource_category, author_id, published_at)"
-            . " VALUES (:type, :title, :slug, :summary, :body, :content_date, :status, :outlet, :external_url, :resource_category, :author_id,"
+            . " (type, title, slug, summary, body, content_date, status, outlet, external_url, resource_category, author_id, public_author, editorial_category, work_area_id, program_id, home_featured, published_at)"
+            . " VALUES (:type, :title, :slug, :summary, :body, :content_date, :status, :outlet, :external_url, :resource_category, :author_id, :public_author, :editorial_category, :work_area_id, :program_id, :home_featured,"
             . " CASE WHEN :status_publish = 'published' THEN CURRENT_TIMESTAMP ELSE NULL END)";
         $params = $this->postParams($post);
         $params[':status_publish'] = $params[':status'];
@@ -264,6 +264,40 @@ class ContentRepository
             throw $error;
         }
         return (int)$this->pdo->lastInsertId();
+    }
+
+    public function listPublicSection(string $section, array $filters, int $limit, int $offset): array
+    {
+        [$where,$params]=$this->sectionFilters($section,$filters);
+        $limit=max(1,min(100,$limit));$offset=max(0,$offset);
+        $q=$this->pdo->prepare($this->publicSelect()." WHERE $where ORDER BY p.content_date DESC,p.id DESC LIMIT $limit OFFSET $offset");
+        $q->execute($params);return $q->fetchAll();
+    }
+    public function countPublicSection(string $section, array $filters): int
+    {
+        [$where,$params]=$this->sectionFilters($section,$filters);
+        $q=$this->pdo->prepare("SELECT COUNT(*) FROM content_posts p WHERE $where");$q->execute($params);return (int)$q->fetchColumn();
+    }
+    private function sectionFilters(string $section, array $filters): array
+    {
+        if(!in_array($section,['board','youth-labor'],true))throw new InvalidArgumentException('Unknown section');
+        $where="p.status='published' AND ".($section==='board'?"p.type IN ('activity','press','notice')":"p.type='article'");$params=[];
+        $category=$filters['category']??'';
+        if($category!=='') {
+            if(in_array($category,['activity','press'],true)){$where.=' AND p.type=:category';}
+            else{$where.=' AND p.editorial_category=:category';}
+            $params[':category']=$category;
+        }
+        foreach(['area'=>'work_area_id','program'=>'program_id'] as $key=>$column)if(!empty($filters[$key])){$where.=" AND p.$column=:$key";$params[":$key"]=(int)$filters[$key];}
+        if(!empty($filters['home_featured']))$where.=' AND p.home_featured=1';
+        return [$where,$params];
+    }
+    public function findPublicBoard(string $routeSlug): ?array
+    {
+        $type='activity';$slug=$routeSlug;
+        foreach(['press','notice'] as $t)if(strpos($routeSlug,$t.'--')===0){$type=$t;$slug=substr($routeSlug,strlen($t)+2);break;}
+        if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/D',$slug))return null;
+        return $this->findPublishedBySlug($type,$slug);
     }
 
     private function postParams(array $post): array
@@ -280,6 +314,8 @@ class ContentRepository
             ':external_url' => $post['external_url'] ?? null,
             ':resource_category' => $post['resource_category'] ?? null,
             ':author_id' => (int)($post['author_id'] ?? 0),
+            ':public_author'=>$post['public_author']??null, ':editorial_category'=>$post['editorial_category']??null,
+            ':work_area_id'=>$post['work_area_id']??null, ':program_id'=>$post['program_id']??null, ':home_featured'=>!empty($post['home_featured'])?1:0,
         ];
     }
 

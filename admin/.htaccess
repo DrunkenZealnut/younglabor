@@ -1,5 +1,10 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # 하위 설정에서도 /admin과 /admin/의 진입 경로를 보장합니다.
+    RewriteOptions AllowNoSlash
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteCond %{REQUEST_URI} /admin/?$
+    RewriteRule ^ index.php [END,QSA]
 
     # api 폴더는 직접 접근 허용
     RewriteCond %{REQUEST_URI} api/

@@ -2,6 +2,10 @@
 
 function validateContentInput(array $input, ?callable $hostResolver = null): array
 {
+    $errors = [];
+    foreach ($input as $field => $raw) {
+        if (!is_scalar($raw) && $raw !== null) { $errors[$field] = '값을 확인해 주세요.'; $input[$field] = ''; }
+    }
     $values = [
         'type' => trim((string)($input['type'] ?? '')),
         'title' => trim((string)($input['title'] ?? '')),
@@ -16,9 +20,20 @@ function validateContentInput(array $input, ?callable $hostResolver = null): arr
         'alt_text' => trim((string)($input['alt_text'] ?? '')),
         'remove_cover' => !empty($input['remove_cover']),
     ];
-    $errors = [];
+    $values += ['public_author'=>trim((string)($input['public_author']??'')), 'editorial_category'=>trim((string)($input['editorial_category']??'')), 'work_area_id'=>null, 'program_id'=>null, 'home_featured'=>!empty($input['home_featured'])?1:0];
+    foreach (['work_area_id','program_id'] as $field) {
+        if (($input[$field]??'') !== '' && $input[$field] !== null) {
+            $n=filter_var($input[$field], FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
+            if ($n===false) $errors[$field]='연결 항목을 확인해 주세요.'; else $values[$field]=$n;
+        }
+    }
+    if (mb_strlen($values['public_author'])>160) $errors['public_author']='작성 주체는 160자 이하로 입력해 주세요.';
+    if ($values['type']==='article' && $values['public_author']==='') $errors['public_author']='공개 작성 주체를 입력해 주세요.';
+    $categories=['article'=>['story','column','policy'],'notice'=>['notice','recruitment']];
+    if (isset($categories[$values['type']]) && !in_array($values['editorial_category'],$categories[$values['type']],true)) $errors['editorial_category']='글 분류를 선택해 주세요.';
+    if (!isset($categories[$values['type']])) $values['editorial_category']=null;
 
-    if (!in_array($values['type'], ['activity', 'press', 'resource'], true)) {
+    if (!in_array($values['type'], ['activity', 'press', 'resource', 'article', 'notice'], true)) {
         $errors['type'] = '콘텐츠 유형을 선택해 주세요.';
     }
     if ($values['title'] === '' || mb_strlen($values['title'], 'UTF-8') > 160) {
@@ -37,9 +52,9 @@ function validateContentInput(array $input, ?callable $hostResolver = null): arr
         $errors['summary'] = '요약은 1자 이상 500자 이하로 입력해 주세요.';
     }
 
-    if ($values['type'] === 'activity') {
+    if (in_array($values['type'], ['activity','article','notice'],true)) {
         if ($values['body'] === '') {
-            $errors['body'] = '활동 내용을 입력해 주세요.';
+            $errors['body'] = '본문을 입력해 주세요.';
         }
         $values['outlet'] = null;
         $values['external_url'] = null;

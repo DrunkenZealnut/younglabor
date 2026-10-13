@@ -3,33 +3,10 @@
 function siteWorkAreas(): array
 {
     return [
-        [
-            'key' => 'education',
-            'title' => '교육',
-            'summary' => '일을 시작하기 전에 위험을 알고 질문할 수 있게 합니다.',
-            'purpose' => '안전 지식을 권리를 지키는 말과 행동으로 이어 줍니다.',
-            'activities' => ['일하는 열아홉 강좌', '반도체 산업과 유해인자 교육', '교사와 함께 만드는 수업 자료'],
-            'href' => 'resources',
-            'link_label' => '교육 자료 보기',
-        ],
-        [
-            'key' => 'tools',
-            'title' => '안전 도구',
-            'summary' => '학교와 일터에서 필요한 안전·노동 정보를 쉽게 찾게 합니다.',
-            'purpose' => '복잡한 안전 정보와 노동 기준을 시민이 직접 확인할 수 있게 합니다.',
-            'activities' => ['SafeFactory 산업안전 학습 도구', '기초 노동상담과 임금계산', 'MSDS와 안전 자료 탐색'],
-            'href' => 'tools',
-            'link_label' => '안전 도구 보기',
-        ],
-        [
-            'key' => 'research',
-            'title' => '연구',
-            'summary' => '현장 경험을 근거로 만들고 교육과 제도 개선에 연결합니다.',
-            'purpose' => '학교와 제조업 현장의 문제를 기록하고 바꿀 근거를 쌓습니다.',
-            'activities' => ['반도체고·산업 기초연구', '현장 경험과 사례 기록', '교육·제도 개선 제안'],
-            'href' => 'resources',
-            'link_label' => '연구 자료 보기',
-        ],
+        ['key'=>'education','title'=>'안전교육·교과서','summary'=>'처음 일하는 사람의 안전을 배우다','href'=>'work/areas/education','link_label'=>'자세히 보기'],
+        ['key'=>'tools','title'=>'온라인 도구','summary'=>'일터에서 권리와 안전을 챙기는 도구','href'=>'work/areas/tools','link_label'=>'자세히 보기'],
+        ['key'=>'community','title'=>'연결·모임','summary'=>'고민을 함께 풀 사람을 만나다','href'=>'work/areas/community','link_label'=>'자세히 보기'],
+        ['key'=>'voice','title'=>'목소리·정책','summary'=>'보이지 않는 노동을 사회의 의제로','href'=>'work/areas/voice','link_label'=>'자세히 보기'],
     ];
 }
 
@@ -68,27 +45,18 @@ function siteSupportPartners(): array
     ]];
 }
 
-function siteClubRecruitment(): array
+function siteClubRecruitment(?callable $repositoryFactory = null): array
 {
-    return [
-        'name' => '바이브코딩동아리',
-        'apply_url' => 'https://zealot-survey.vercel.app/RJXag60aMfMT',
-        'apply_domain' => 'zealot-survey.vercel.app',
-        // Y-m-d. 당일 23:59:59(Asia/Seoul)까지 모집. 연장할 때는 이 값과 tests/club-recruitment.test.php의 경계 시각을 함께 고친다.
-        'deadline' => '2026-10-15',
-    ];
+    require_once __DIR__.'/Database.php';require_once __DIR__.'/WorkRepository.php';
+    try {
+        $repository=$repositoryFactory ? $repositoryFactory() : new WorkRepository(Database::getInstance()->getConnection());
+        $p=$repository->findProgram('vibecoding-club');
+        if($p)return $p+['name'=>$p['title'],'apply_url'=>$p['application_url'],'apply_domain'=>parse_url($p['application_url']??'',PHP_URL_HOST)?:''];
+    }catch(Throwable $e){}
+    return ['name'=>'바이브코딩동아리','status'=>'draft','recruitment_status'=>'pending','recruitment_mode'=>'rolling','deadline_at'=>null,'apply_url'=>'','apply_domain'=>'','application_url'=>''];
 }
-
-function clubRecruitmentIsOpen(?DateTimeImmutable $now = null): bool
+function clubRecruitmentIsOpen(?DateTimeImmutable $now=null,?array $club=null): bool
 {
-    $zone = new DateTimeZone('Asia/Seoul');
-    $now = ($now ?? new DateTimeImmutable('now', $zone))->setTimezone($zone);
-    $closesAt = (new DateTimeImmutable(siteClubRecruitment()['deadline'], $zone))->modify('+1 day');
-    return $now < $closesAt;
-}
-
-function clubDeadlineLabel(): string
-{
-    $deadline = new DateTimeImmutable(siteClubRecruitment()['deadline'], new DateTimeZone('Asia/Seoul'));
-    return $deadline->format('n월 j일');
+    require_once __DIR__.'/WorkPresenter.php';
+    return programAcceptsApplications($club??siteClubRecruitment(),$now);
 }

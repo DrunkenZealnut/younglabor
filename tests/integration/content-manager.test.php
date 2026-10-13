@@ -6,6 +6,7 @@ $pdo = new PDO($dsn, getenv('TEST_DB_USER') ?: 'root', getenv('TEST_DB_PASSWORD'
 $root = dirname(__DIR__, 2);
 $pdo->exec(file_get_contents($root . '/database/migrations/20260921_drop_managed_content.sql'));
 $pdo->exec(file_get_contents($root . '/database/migrations/20260921_create_managed_content.sql'));
+require_once $root.'/includes/RenewalMigration.php';migrateRenewal($pdo);
 require $root . '/includes/ContentRepository.php';
 require $root . '/includes/ContentValidation.php';
 require $root . '/includes/ContentStorage.php';

@@ -1,7 +1,7 @@
 <?php
 $header = file_get_contents(__DIR__ . '/../includes/header.php');
 $footer = file_get_contents(__DIR__ . '/../includes/footer.php');
-foreach (['우리는 누구인가', '우리가 하는 일', '활동게시판', '언론보도', '자료실', '안전 도구', '함께하기'] as $label) {
+foreach (['단체소개','사업소개','청년과노동','게시판'] as $label) {
     if (strpos($header, $label) === false) exit(1);
 }
 if (substr_count($header, '<main') !== 1) exit(1);

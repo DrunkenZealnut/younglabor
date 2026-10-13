@@ -1,0 +1,20 @@
+<?php
+require __DIR__.'/../support/renewal.php';
+check(is_file(__DIR__.'/../../includes/RenewalMigration.php'),'Renewal migration must exist');
+require __DIR__.'/../../includes/RenewalMigration.php';
+require __DIR__.'/../../includes/RenewalSeed.php';
+$p=renewalTestPdo();
+migrateRenewal($p); seedRenewal($p);
+$p->exec("INSERT INTO content_posts (type,title,slug,summary,body,content_date,status,author_id) VALUES ('activity','보존','legacy','설명','내용','2026-09-21','draft',1) ON DUPLICATE KEY UPDATE title=title");
+$id=$p->query("SELECT id FROM content_posts WHERE slug='legacy'")->fetchColumn();
+$q=$p->prepare("INSERT INTO content_files(post_id,purpose,storage_name,original_name,mime,byte_size,sha256) VALUES (?,'cover',?,'old.webp','image/webp',10,?) ON DUPLICATE KEY UPDATE post_id=post_id");$q->execute([$id,str_repeat('f',64),str_repeat('a',64)]);
+$p->exec("UPDATE work_areas SET summary='관리자 수정' WHERE slug='education'");
+migrateRenewal($p); seedRenewal($p);
+check($p->query("SELECT id FROM content_posts WHERE slug='legacy'")->fetchColumn()==$id,'legacy id must survive');
+check($p->query("SELECT status FROM content_posts WHERE slug='legacy'")->fetchColumn()==='draft','draft preserved');
+check($p->query("SELECT summary FROM work_areas WHERE slug='education'")->fetchColumn()==='관리자 수정','seed never overwrites edits');
+check($p->query("SELECT post_id FROM content_files WHERE storage_name='".str_repeat('f',64)."'")->fetchColumn()==$id,'legacy attachment relationship preserved');
+check((int)$p->query('SELECT COUNT(*) FROM work_sessions')->fetchColumn()===4,'four sessions');
+check((int)$p->query('SELECT COUNT(*) FROM work_areas')->fetchColumn()===4,'four work axes');
+$p->exec("UPDATE work_areas SET summary='처음 일하는 사람의 안전을 배우다' WHERE slug='education'");
+echo "PASS migration, legacy preservation, idempotent seed\n";

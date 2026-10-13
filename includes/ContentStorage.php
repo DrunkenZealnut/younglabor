@@ -161,7 +161,7 @@ class ContentStorage
 
     public function stageForType(string $type, array $upload, string $altText = ''): array
     {
-        if ($type === 'activity') {
+        if (in_array($type, ['activity','article','notice'], true)) {
             return $this->stageCover($upload, $altText);
         }
         if ($type === 'resource') {

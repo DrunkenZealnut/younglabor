@@ -6,6 +6,7 @@ $pdo = new PDO($dsn, getenv('TEST_DB_USER') ?: 'root', getenv('TEST_DB_PASSWORD'
 $root = dirname(__DIR__, 2);
 $pdo->exec(file_get_contents($root . '/database/migrations/20260921_drop_managed_content.sql'));
 $pdo->exec(file_get_contents($root . '/database/migrations/20260921_create_managed_content.sql'));
+require_once $root.'/includes/RenewalMigration.php';migrateRenewal($pdo);
 require $root . '/includes/ContentRepository.php';
 $repo = new ContentRepository($pdo);
 $draft = $repo->save(['type'=>'activity','title'=>'비공개','slug'=>'hidden','summary'=>'요약','body'=>'본문','content_date'=>'2026-09-21','status'=>'draft','outlet'=>null,'external_url'=>null,'resource_category'=>null,'author_id'=>1], null);

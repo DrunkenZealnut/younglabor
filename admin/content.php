@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$allowedTypes = ['activity','press','resource'];
+$allowedTypes = ['activity','press','resource','article','notice'];
 $allowedStatuses = ['draft','published'];
 $type = in_array($_GET['type'] ?? '', $allowedTypes, true) ? (string)$_GET['type'] : '';
 $status = in_array($_GET['status'] ?? '', $allowedStatuses, true) ? (string)$_GET['status'] : '';
