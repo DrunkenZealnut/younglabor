@@ -27,8 +27,10 @@ if (expectedClubState && !['open', 'closed'].includes(expectedClubState)) {
         if (path === '/club') {
             assert.doesNotMatch(html, /<iframe\b/i, 'club page must not embed the application form');
             assert.match(html, /class="sponsor-box">[\s\S]*?alt="아름다운재단"[\s\S]*?지원으로 진행됩니다\./, 'club page must credit the foundation with its logo');
-            const open = html.includes('class="club-status">상시모집');
-            const closed = html.includes('class="club-status">접수 종료');
+            const state = html.match(/class="club-status">([^<]+)</)?.[1];
+            assert.ok(['상시모집', '모집 중', '신청 안내 확인 중', '접수 종료'].includes(state), 'club must show a supported recruitment state');
+            const open = html.includes('href="https://zealot-survey.vercel.app/RJXag60aMfMT"');
+            const closed = ['신청 안내 확인 중', '접수 종료'].includes(state);
             assert.ok(open !== closed, 'club page must show exactly one recruitment state');
             if (open) {
                 assert.ok(html.includes('href="https://zealot-survey.vercel.app/RJXag60aMfMT"'), 'open club page must link the exact application form');

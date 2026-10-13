@@ -16,3 +16,8 @@ foreach (['https://user@news.example/a','https://news.example:444/a','https://ne
     if (!isset($result['errors']['external_url'])) exit(1);
 }
 if (contentTypeLabel('activity') !== '활동 소식' || resourceCategoryLabel('guide') !== '안내자료') exit(1);
+
+foreach(['activity','article','notice'] as $type){
+ $result=validateContentInput(['type'=>$type,'title'=>'제목','slug'=>'body-error','summary'=>'소개','content_date'=>'2026-10-13','status'=>'draft','body'=>'','public_author'=>'센터']);
+ if(($result['errors']['body']??'')!=='본문을 입력해 주세요.'){fwrite(STDERR,"FAIL generic body error for $type\n");exit(1);}
+}

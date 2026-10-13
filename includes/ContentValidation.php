@@ -54,7 +54,7 @@ function validateContentInput(array $input, ?callable $hostResolver = null): arr
 
     if (in_array($values['type'], ['activity','article','notice'],true)) {
         if ($values['body'] === '') {
-            $errors['body'] = '활동 내용을 입력해 주세요.';
+            $errors['body'] = '본문을 입력해 주세요.';
         }
         $values['outlet'] = null;
         $values['external_url'] = null;
