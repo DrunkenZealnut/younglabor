@@ -3,6 +3,13 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
+                <div class="footer-brand">
+            <nav class="footer-menu" aria-label="푸터 메뉴">
+                <?php foreach(['about'=>'단체소개','work'=>'사업소개','youth-labor'=>'청년과노동','board'=>'게시판','resources'=>'자료실','tools'=>'온라인 도구','privacy'=>'개인정보 안내'] as $path=>$label): ?><a href="<?php echo publicEscape(url($path)); ?>"><?php echo $label; ?></a><?php endforeach; ?>
+            </nav>
+            <div class="footer-wordmark"><?php echo htmlspecialchars('청쎈', ENT_QUOTES, 'UTF-8'); ?></div>
+            <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name'], ENT_QUOTES, 'UTF-8'); ?></p>
+                </div>
                 <div>
                     <div class="footer-label">Contact</div>
                     <p class="footer-text">
@@ -21,11 +28,7 @@
                     <?php endforeach; ?>
                 </div>
             </div>
-            <nav class="footer-menu" aria-label="푸터 메뉴">
-                <?php foreach(['about'=>'단체소개','work'=>'사업소개','youth-labor'=>'청년과노동','board'=>'게시판','resources'=>'자료실','tools'=>'온라인 도구','privacy'=>'개인정보 안내'] as $path=>$label): ?><a href="<?php echo publicEscape(url($path)); ?>"><?php echo $label; ?></a><?php endforeach; ?>
-            </nav>
-            <div class="footer-wordmark"><?php echo htmlspecialchars('청쎈', ENT_QUOTES, 'UTF-8'); ?></div>
-            <p class="footer-copyright">&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars($site['name'], ENT_QUOTES, 'UTF-8'); ?></p>
+
         </div>
     </footer>
 

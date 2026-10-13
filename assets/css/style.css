@@ -725,10 +725,10 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);
     gap: 2rem;
     align-items: start;
-    margin-bottom: clamp(3rem, 8vw, 6rem);
+    margin-bottom: 0;
 }
 
 .footer-label {
@@ -741,6 +741,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .footer-text {
+    overflow-wrap: anywhere;
     font-size: var(--fs-caption);
     color: var(--color-ink);
     line-height: 1.8;
@@ -761,7 +762,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 .footer-support { display: grid; gap: 0.5rem; color: var(--color-gray); font-size: 0.8125rem; }
-.footer-support img { width: 150px; height: auto; }
+.footer-support img { width: 150px; max-width: 100%; height: auto; }
 
 .footer-menu a {
     font-size: var(--fs-caption);
@@ -818,8 +819,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 
     .footer-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(0,1fr) minmax(0,1fr);
     }
+    .footer-brand { grid-column: 1 / -1; }
 
 }
 
@@ -890,8 +892,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
     }
 
     .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
+        gap: 2.5rem 1.25rem;
     }
 
     .footer-wordmark {
