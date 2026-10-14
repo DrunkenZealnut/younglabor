@@ -10,6 +10,14 @@
 - **Context:** 디자인 문서 Approach C에서 보류. 캠페인(3월 시작) 이후 콘텐츠 양을 보고 필요성 판단. admin 패널 프레임워크가 이미 있으므로 확장은 비교적 간단
 - **Depends on:** 사이트 재편 (Phase 1-5) 완료 후. 실제 콘텐츠 운영 경험 후 판단
 
+## 공개 화면 (헤더·레이아웃)
+
+### 큰 글자에서 고정 헤더가 앵커 이동 대상 제목을 가림
+- **Priority:** P2
+- **What:** 브라우저 글자 크기를 150% 이상으로 키우면 새 로고(`청년노동자인권센터 청쎈`)가 2~3줄로 접혀 sticky 헤더가 높아진다(800px·200%에서 155px → 248px). `style.css`에 `scroll-padding`이 없어서 홈 주 버튼의 `work#programs`나 `#contact`로 이동하면 섹션 제목이 헤더 뒤에 가려진다. 평소 크기(100%)에서는 영향이 없다.
+- **Fix:** 헤더 높이에 맞춘 `html{scroll-padding-top:...}`을 넣는다. 높이가 글자 크기와 폭에 따라 달라지므로, CSS 변수에 헤더 높이를 넣고 `ResizeObserver`로 갱신하는 방식을 검토한다. 100/150/200% × 320–1440px에서 측정해 확인한다.
+- **Context:** design/logo-hero-cleanup 브랜치의 /ship 최종 리뷰(Claude adversarial)에서 발견. 같은 PR에서 큰 글자일 때의 로고·메뉴 겹침과 넘침은 이미 고쳤다.
+
 ## DB 이관 (RenewalMigration / RenewalSeed)
 
 Migrate Cafe24 DB workflow로 apply를 쉽게 재실행할 수 있게 되면서 드러난 기존 이관 코드의 약점. 첫 apply 한 번에는 영향 없음 (런북에 "apply는 한 번만" 명시).
