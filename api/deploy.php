@@ -1,10 +1,14 @@
 <?php
 /**
  * GitHub Webhook 자동 배포 엔드포인트
- * GitHub push 이벤트 수신 → 최신 코드 다운로드 → 배포
+ * push 이벤트: 최신 코드 다운로드 → 배포
+ * migrate 이벤트: 운영 DB 이관 상태 확인/적용 (.github/workflows/migrate.yml)
  */
 
-// 설정 로드
+// 응답 본문이 공개 Actions 로그에 찍히므로 PHP 경고·오류(서버 경로 등)를 출력하지 않는다
+ini_set('display_errors', '0');
+
+// 설정 로드 (배포 경로는 이 두 파일에만 의존 — 다른 파일이 깨져도 수정본을 다시 배포할 수 있게)
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../includes/DeploySafety.php';
 
@@ -20,7 +24,8 @@ $CONFIG = [
         '.git', '.github', '.gitignore',
         'CLAUDE.md', '.claude',
         'deploy.log',
-        'tests', 'scripts', 'database',
+        // database/migrations는 이관 요청(migrate)이 읽으므로 배포한다. 웹 접근은 .htaccess가 차단
+        'tests', 'scripts',
     ],
     // git에서 삭제된 파일을 프로덕션에서도 정리할지 여부 (기본 비활성 — 검토 후 .env에서 켤 것)
     'prune' => env('DEPLOY_PRUNE_REMOVED', 'false') === 'true',
@@ -99,9 +104,61 @@ if (!hash_equals($expected, $signature)) {
     respond(false, 'Invalid signature', 403);
 }
 
+// 배포와 이관이 서버에서 겹치지 않게 잠근다. Actions concurrency는 curl 타임아웃 뒤 풀리므로 서버 쪽에서 막는다.
+// deploy.log는 배포 제외·gitignore 대상이라 잠금 파일로 함께 쓴다. 잠금을 지원하지 않는 환경이면 잠금 없이 진행한다.
+ignore_user_abort(true);
+$lockHandle = @fopen($CONFIG['log_file'], 'c');
+if ($lockHandle && !flock($lockHandle, LOCK_EX | LOCK_NB, $lockWouldBlock) && $lockWouldBlock) {
+    deployLog("REJECTED: Another deploy or migration is running");
+    respond(false, 'Another deploy or migration is running. Try again later.', 409);
+}
+
 // 이벤트 확인
 $event = $_SERVER['HTTP_X_GITHUB_EVENT'] ?? 'unknown';
 $data = json_decode($payload, true);
+
+// 운영 DB 이관 (.github/workflows/migrate.yml 수동 실행)
+// mode=status: 상태만 확인, mode=apply: 이관 + 초기 콘텐츠 적용 (재실행 가능)
+if ($event === 'migrate') {
+    try {
+        require_once __DIR__ . '/../includes/Database.php';
+        require_once __DIR__ . '/../includes/DeployMigration.php';
+    } catch (Throwable $e) {
+        deployLog("FAILED: Migration code could not be loaded - " . get_class($e) . ': ' . $e->getMessage());
+        respond(false, 'Migration failed. See deploy.log on the server.', 500);
+    }
+
+    if (!is_array($data) || !deployMigrationRequestIsFresh($data, time())) {
+        // 서버 시계가 어긋나 계속 거부되는 경우를 가려낼 수 있게 시차를 남긴다
+        $skew = is_array($data) && is_int($data['requested_at'] ?? null) ? (time() - $data['requested_at']) . 's' : 'n/a';
+        deployLog("REJECTED: Stale migration request from {$_SERVER['REMOTE_ADDR']} (clock skew $skew)");
+        respond(false, 'Stale migration request', 403);
+    }
+
+    $mode = $data['mode'] ?? '';
+    if (!in_array($mode, ['status', 'apply'], true)) {
+        respond(false, 'Unknown migration mode', 400);
+    }
+
+    deployLog("Migration started - mode $mode");
+    try {
+        $pdo = Database::getInstance()->getConnection();
+        $status = $mode === 'apply' ? deployMigrationApply($pdo) : deployMigrationStatus($pdo);
+    } catch (Throwable $e) {
+        // 공개 저장소의 Actions 로그에 DB 정보가 남지 않도록 상세 오류는 서버 로그에만 기록
+        deployLog("FAILED: Migration ($mode) - " . get_class($e) . ': ' . $e->getMessage());
+        respond(false, 'Migration failed. See deploy.log on the server.', 500);
+    }
+
+    if ($mode === 'apply' && $status['pending']) {
+        deployLog("FAILED: Migration (apply) still pending - " . json_encode($status));
+        respond(false, 'Migration still pending after apply. See deploy.log on the server.', 500);
+    }
+
+    $msg = $status['pending'] ? 'Migration pending' : 'Migration up to date';
+    deployLog("SUCCESS: Migration ($mode) - $msg");
+    respond(true, $msg, 200, $status);
+}
 
 if ($event !== 'push') {
     respond(true, "Ignored event: $event");

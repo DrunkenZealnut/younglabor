@@ -1,0 +1,70 @@
+name: Migrate Cafe24 DB
+
+# 운영 DB 이관을 수동으로 실행한다 (운영 서버에 PHP CLI가 없어 deploy webhook으로 요청).
+# status: 이관 상태만 확인 / apply: 이관과 초기 콘텐츠 적용 — apply 전에 카페24 DB 백업 필수
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'status = 상태 확인만, apply = 이관 적용 (DB 백업 후 실행)'
+        required: true
+        default: status
+        type: choice
+        options:
+          - status
+          - apply
+
+# 배포와 겹치는 것은 서버(api/deploy.php)의 잠금이 409로 막는다.
+# 배포와 같은 그룹을 쓰면 대기 중인 배포가 취소되므로 이관 전용 그룹을 쓴다.
+concurrency:
+  group: cafe24-db-migration
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  migrate:
+    name: Webhook Migration (${{ inputs.mode }})
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call migration webhook
+        env:
+          DEPLOY_SECRET: ${{ secrets.DEPLOY_SECRET }}
+          MODE: ${{ inputs.mode }}
+        run: |
+          PAYLOAD=$(printf '{"mode":"%s","requested_at":%s}' "$MODE" "$(date +%s)")
+          SIGNATURE="sha256=$(printf '%s' "$PAYLOAD" | openssl dgst -sha256 -hmac "$DEPLOY_SECRET" | awk '{print $2}')"
+
+          RESPONSE=$(curl -sS -w "\n%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: migrate" \
+            -H "X-Hub-Signature-256: $SIGNATURE" \
+            -d "$PAYLOAD" \
+            "https://younglabor.kr/api/deploy.php" \
+            --max-time 120)
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | head -n -1)
+
+          echo "Response: $BODY"
+          echo "HTTP Code: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Migration request failed!"
+            exit 1
+          fi
+
+          # 서버에 새 deploy.php가 아직 없으면 옛 코드가 "Ignored event: migrate"를 200으로 돌려준다
+          if ! echo "$BODY" | jq -e '.message | startswith("Migration ")' > /dev/null; then
+            echo "Server did not run the migration. Re-run the Deploy to Cafe24 workflow, then try again."
+            exit 1
+          fi
+
+          if [ "$MODE" = "apply" ] && ! echo "$BODY" | jq -e '.data.pending == false' > /dev/null; then
+            echo "Migration still pending after apply. Check deploy.log on the server."
+            exit 1
+          fi
+
+          echo "Migration request successful!"
