@@ -129,6 +129,8 @@ GitHub Actions (`.github/workflows/deploy.yml`) → `main` push → HMAC-signed 
 - Deploy excludes `.env*`, `.git`, `.github`, `CLAUDE.md`, `.claude`, `deploy.log`
 - Status: `gh run list --limit 5`; re-run: `gh run rerun <run-id>`
 - **Prune sync (opt-in)**: set `DEPLOY_PRUNE_REMOVED=true` in server `.env` to also delete files on production that were removed from git. Always protects the exclude list above plus anything matching the deployed `.gitignore` (e.g. `data/file/notices/*` user uploads). Defaults to `false` — review `api/deploy.php`'s prune block before enabling on a live server.
+- **DB migration**: production has no PHP CLI and code deploy never touches the DB. Run the manual **Migrate Cafe24 DB** workflow (`.github/workflows/migrate.yml`): `status` is read-only, `apply` runs `migrateRenewal()` + `seedRenewal()` (idempotent; back up the DB first). `gh workflow run migrate.yml -f mode=status`. Deploy and migrate share a server-side `flock` on `deploy.log`; a request that arrives while another runs gets 409.
+- **Server `.env`** is never deployed — theme colors (`THEME_*`) and other config must be edited on the server directly.
 
 ## External APIs
 
