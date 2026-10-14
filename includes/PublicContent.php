@@ -20,7 +20,7 @@ function startPublicPage(string $menu,string $title,string $description,string $
 }
 function endPublicPage(): void {global $site;require __DIR__.'/footer.php';}
 function renderPageIntro(string $eyebrow,string $title,string $description): void { ?>
-<section class="page-header"><div class="container"><p class="eyebrow"><?php echo publicEscape($eyebrow); ?></p><h1><?php echo publicEscape($title); ?></h1><?php if($description!==''): ?><p><?php echo publicEscape($description); ?></p><?php endif; ?></div></section>
+<section class="page-header"><div class="container"><?php if(trim($eyebrow)!==''): ?><p class="eyebrow"><?php echo publicEscape($eyebrow); ?></p><?php endif; ?><h1><?php echo publicEscape($title); ?></h1><?php if($description!==''): ?><p><?php echo publicEscape($description); ?></p><?php endif; ?></div></section>
 <?php }
 function renderWorkTabs(string $active): void { ?>
 <nav class="work-tabs" aria-label="사업소개 분류"><a href="<?php echo publicEscape(url('work')); ?>"<?php echo $active==='all'?' aria-current="page"':''; ?>>전체 사업</a><a href="<?php echo publicEscape(url('work/incubating/2026')); ?>"<?php echo $active==='funding'?' aria-current="page"':''; ?>>아름다운재단 인큐베이팅 지원사업</a></nav>
