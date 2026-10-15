@@ -12,11 +12,17 @@
 
 ## 공개 화면 (헤더·레이아웃)
 
-### 큰 글자에서 고정 헤더가 앵커 이동 대상 제목을 가림
+### 모바일 메뉴를 연 채 Tab으로 나가면 메뉴가 닫히지 않음
 - **Priority:** P2
-- **What:** 브라우저 글자 크기를 150% 이상으로 키우면 새 로고(`청년노동자인권센터 청쎈`)가 2~3줄로 접혀 sticky 헤더가 높아진다(800px·200%에서 155px → 248px). `style.css`에 `scroll-padding`이 없어서 홈 주 버튼의 `work#programs`나 `#contact`로 이동하면 섹션 제목이 헤더 뒤에 가려진다. 평소 크기(100%)에서는 영향이 없다.
-- **Fix:** 헤더 높이에 맞춘 `html{scroll-padding-top:...}`을 넣는다. 높이가 글자 크기와 폭에 따라 달라지므로, CSS 변수에 헤더 높이를 넣고 `ResizeObserver`로 갱신하는 방식을 검토한다. 100/150/200% × 320–1440px에서 측정해 확인한다.
-- **Context:** design/logo-hero-cleanup 브랜치의 /ship 최종 리뷰(Claude adversarial)에서 발견. 같은 PR에서 큰 글자일 때의 로고·메뉴 겹침과 넘침은 이미 고쳤다.
+- **What:** 799px 이하에서 모바일 메뉴(`.nav`, `position:absolute`)를 연 채 Tab으로 메뉴 밖 본문으로 가도 메뉴가 열려 있다. 드롭다운(375px에서 약 200px)은 `--header-h`에 들어가지 않아서, 드롭다운 아래에 있는 본문 요소에 포커스가 가도 가려진다(WCAG 2.4.11). JS가 꺼지면 메뉴가 늘 열린 채 헤더 아래를 덮는다. 앵커 여백 수정 전부터 있던 문제다.
+- **Fix:** `footer.php`에서 헤더에 `focusout` 리스너를 달고, 메뉴가 열려 있고 `relatedTarget`이 헤더 밖이면 `toggleMenu()`로 닫는다. `tests/public-anchor-offset.test.js`에 Tab으로 메뉴를 빠져나가는 경우를 추가한다.
+- **Context:** fix/sticky-header-scroll-padding의 /ship 적대적 리뷰(Claude)에서 발견했고, 사용자 결정으로 후속 작업으로 미뤘다.
+
+### 브라우저 테스트가 Chrome이 종료되지 않으면 멈출 수 있음
+- **Priority:** P3
+- **What:** `tests/public-anchor-offset.test.js`의 `cleanup()`이 Chrome의 `exit`를 제한 시간 없이 기다린다. Chrome이 SIGTERM을 무시하면 60초 감시 타이머도 끝나지 않아 테스트가 멈춘다. 임시 프로필 삭제(`fs.rmSync`)가 실패하면 통과한 실행이 exit 1로 바뀔 수도 있다.
+- **Fix:** 일정 시간 뒤 SIGKILL로 올리고, 감시 타이머가 cleanup과 별개로 프로세스를 끝내게 한다. 프로필 삭제 실패는 경고만 남긴다.
+- **Context:** fix/sticky-header-scroll-padding의 /ship 적대적 리뷰(Codex, Low)와 테스트 스페셜리스트(신뢰도 4)에서 나왔다. 테스트를 처음 확장한 직후 1회가 원인을 확인하지 못한 채 실패했고, 이후 25회 연속 통과했다.
 
 ## DB 이관 (RenewalMigration / RenewalSeed)
 
@@ -56,3 +62,12 @@ Migrate Cafe24 DB workflow로 apply를 쉽게 재실행할 수 있게 되면서 
 - **Priority:** P3
 - **What:** `opcache.validate_timestamps=0`이거나 `revalidate_freq`가 길면, 배포 직후에도 옛 deploy.php가 migrate를 "Ignored event"로 응답할 수 있다. 이 경우 "Deploy를 다시 실행" 안내로 해결되지 않는다.
 - **Fix:** 카페24 phpinfo에서 opcache 설정을 확인하고, 필요하면 배포 끝에 복사한 .php 파일마다 `opcache_invalidate()`를 호출한다.
+
+## Completed
+
+### 고정 헤더가 앵커 이동 대상 제목을 가림 (좁은 폭·큰 글자)
+- **Priority:** P2
+- **What:** 앵커 이동 대상에 sticky 헤더만큼의 여백이 없어서 홈 주 버튼의 `work#programs`나 `#contact`로 이동하면 섹션 제목이 sticky 헤더 뒤에 가려진다. 처음에는 큰 글자에서만 생긴다고 봤다. 글자를 150% 이상 키우면 새 로고(`청년노동자인권센터 청쎈`)가 2~3줄로 접혀 헤더가 높아진다(800px·200%에서 155px → 248px). 그러나 측정해 보니 평소 크기(100%)에서도 375·800px 폭이면 77~89px가 가려졌다.
+- **Fix:** (처음 계획) 헤더 높이에 맞춘 `html{scroll-padding-top:...}`을 넣는다. 이 방식은 헤더 메뉴로 포커스가 갈 때 페이지가 튀어서 쓰지 않았다. 실제 수정은 아래 Completed 줄에 적었다.
+- **Context:** design/logo-hero-cleanup 브랜치의 /ship 최종 리뷰(Claude adversarial)에서 발견. 같은 PR에서 큰 글자일 때의 로고·메뉴 겹침과 넘침은 이미 고쳤다.
+- **Completed:** 2026-10-15 (fix/sticky-header-scroll-padding). `footer.php`의 `ResizeObserver`가 실제 헤더 높이를 `--header-h`에 넣고, `style.css`가 앵커 대상(`main`과 그 안의 `[id]`)에는 헤더 높이보다 1px 작게(섹션 윗선이 헤더 아랫선과 겹치도록), 헤더 밖 포커스 요소에는 헤더 높이 + .5rem(포커스 링이 보이도록) `scroll-margin-top`을 준다. `html`에 `scroll-padding-top`을 쓰지 않는 이유는 헤더 메뉴로 포커스가 갈 때 페이지가 튀기 때문이다. `tests/public-anchor-offset.test.js`가 Chrome에서 확인한다.

@@ -45,6 +45,15 @@
 
     document.addEventListener('keydown', event => { if(event.key === 'Escape' && document.getElementById('nav').classList.contains('active')) { toggleMenu(); document.querySelector('.mobile-menu-btn').focus(); } });
 
+    // 글자 크기·화면 폭에 따라 바뀌는 헤더 높이를 앵커·포커스 여백(--header-h, style.css의 scroll-margin-top)에 반영
+    const siteHeader = document.querySelector('.header');
+    if (siteHeader) {
+        const setHeaderHeight = () => document.documentElement.style.setProperty('--header-h', siteHeader.getBoundingClientRect().height + 'px');
+        setHeaderHeight();
+        if ('ResizeObserver' in window) new ResizeObserver(setHeaderHeight).observe(siteHeader);
+        else window.addEventListener('resize', setHeaderHeight);
+    }
+
     if ('IntersectionObserver' in window) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
