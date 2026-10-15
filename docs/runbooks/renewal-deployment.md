@@ -36,6 +36,7 @@ php tests/support/bootstrap-db.php
 for test in tests/integration/renewal-*.test.php; do php "$test" || exit; done
 SITE_BASE_URL=http://127.0.0.1:18764/younglabor bash tests/public-http-smoke.sh
 SITE_BASE_URL=http://127.0.0.1:18764/younglabor node tests/public-accessibility.test.js
+SITE_BASE_URL=http://127.0.0.1:18764/younglabor node --test tests/public-anchor-offset.test.js  # Node 22 이상·Chrome 필요(Chrome이 다른 경로면 CHROME_BIN)
 SITE_BASE_URL=http://127.0.0.1:18764/younglabor bash tests/renewal-http-smoke.sh
 ```
 

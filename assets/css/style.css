@@ -32,6 +32,7 @@
 
     /* 레이아웃 */
     --container-max: 1376px;
+    --header-h: 6rem; /* 스크립트가 꺼졌을 때의 헤더 높이 기본값. footer.php가 실제 높이로 덮어쓴다 */
     --space-gutter: 2rem;
     --space-section: clamp(4rem, 8vw, 7rem);
     --hairline: 1px solid var(--color-ink);
@@ -48,6 +49,18 @@
 
 html {
     scroll-behavior: smooth;
+}
+
+/* sticky 헤더가 앵커 이동 대상(건너뛰기 링크의 main 포함)을 가리지 않게 한다. --header-h는 footer.php 스크립트가 실제 헤더 높이로 갱신.
+   1px 덜 띄워 대상 섹션의 윗선이 헤더 아랫선과 한 줄로 겹치게 한다.
+   html의 scroll-padding을 쓰면 헤더 안 요소에 포커스할 때 페이지가 튀므로 대상 요소에 scroll-margin을 준다 */
+:is(main, main [id]) {
+    scroll-margin-top: calc(var(--header-h) - 1px);
+}
+
+/* 포커스한 요소와 포커스 링(outline 3px + offset 3px)이 헤더 밑에 가려지지 않게 한다. 헤더 안 요소는 제외 */
+:is(a, button, input, select, textarea, [tabindex]):not(.header *) {
+    scroll-margin-top: calc(var(--header-h) + .5rem);
 }
 
 body {
