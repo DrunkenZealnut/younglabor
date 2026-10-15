@@ -572,161 +572,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* --------------------------------------------------------------------------
-   11. People / Timeline / News — 헤어라인 리스트 재스킨
-   -------------------------------------------------------------------------- */
-.group-label {
-    font-size: var(--fs-caption);
-    font-weight: 500;
-    color: var(--color-gray);
-    margin-bottom: 1.25rem;
-}
-
-.people-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-}
-
-.person-card {
-    padding: 1.25rem 0 0;
-    border-top: var(--hairline);
-    background: transparent;
-    border-radius: 0;
-}
-
-.person-name {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--color-ink);
-    margin-bottom: 0.25rem;
-}
-
-.person-role {
-    font-size: var(--fs-caption);
-    color: var(--color-gray);
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-}
-
-.person-desc {
-    font-size: var(--fs-caption);
-    color: var(--color-gray);
-    line-height: 1.6;
-}
-
-/* Timeline */
-.timeline {
-    position: relative;
-    padding-left: 2rem;
-}
-
-.timeline::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--color-ink);
-}
-
-.timeline-item {
-    position: relative;
-    padding-bottom: 2.5rem;
-    padding-left: 1.5rem;
-}
-
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: calc(-2rem - 5px);
-    top: 0.4rem;
-    width: 11px;
-    height: 11px;
-    background: var(--color-ink-pure);
-    border: none;
-    border-radius: 0;
-}
-
-.timeline-year {
-    font-size: var(--fs-caption);
-    font-weight: 600;
-    color: var(--color-ink);
-    margin-bottom: 0.4rem;
-}
-
-.timeline-desc {
-    font-size: var(--fs-caption);
-    color: var(--color-gray);
-    line-height: 1.7;
-}
-
-/* News */
-.news-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.news-item {
-    padding: 1.5rem 0;
-    background: transparent;
-    border: 0;
-    border-top: var(--hairline);
-    border-radius: 0;
-}
-
-.news-item:last-child {
-    border-bottom: var(--hairline);
-}
-
-.news-date {
-    font-size: var(--fs-caption);
-    color: var(--color-gray);
-    margin-bottom: 0.4rem;
-}
-
-.news-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--color-ink);
-    margin-bottom: 0.4rem;
-}
-
-.news-summary {
-    font-size: var(--fs-caption);
-    color: var(--color-gray);
-    line-height: 1.6;
-}
-
-.news-category {
-    display: inline-block;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    padding: 0.2rem 0.6rem;
-    border-radius: 0;
-    background: var(--color-lime);
-    color: var(--color-ink-pure);
-    margin-bottom: 0.6rem;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: left;
-    padding: 3rem 0 4rem;
-    color: var(--color-gray);
-}
-
-.empty-state p {
-    font-size: 1.05rem;
-    margin-bottom: 1.25rem;
-}
-
-.empty-state a {
-    color: var(--color-ink);
-}
-
-/* --------------------------------------------------------------------------
-   12. Footer — 3열 + 초대형 워드마크
+   11. Footer — 3열 + 초대형 워드마크
    -------------------------------------------------------------------------- */
 .footer {
     background: var(--color-bg);
@@ -810,7 +656,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* --------------------------------------------------------------------------
-   13. Utilities
+   12. Utilities
    -------------------------------------------------------------------------- */
 .fade-in {
     opacity: 0;
@@ -824,7 +670,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* --------------------------------------------------------------------------
-   14. Responsive — Tablet 800–1279 / Mobile <800 (Figma 프레임 기준)
+   13. Responsive — Tablet 800–1279 / Mobile <800 (Figma 프레임 기준)
    -------------------------------------------------------------------------- */
 @media (max-width: 1279px) {
     .work-grid {
