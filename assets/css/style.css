@@ -841,6 +841,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .report-chapters li { display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem; padding: .95rem 0; border-bottom: var(--hairline); line-height: 1.6; }
 .report-chapters span { font-size: .85rem; color: var(--color-gray); padding-top: .1rem; }
 .report-download { background: var(--color-lime); border-top: var(--hairline); }
+.report-download .eyebrow { color: var(--color-ink); }
 .report-download-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; }
 .report-download h2 { font-size: clamp(1.8rem, 3.2vw, 2.8rem); line-height: 1.35; letter-spacing: -.05em; margin-bottom: 1.4rem; }
 .report-download p { line-height: 1.9; margin-bottom: 1.8rem; }
