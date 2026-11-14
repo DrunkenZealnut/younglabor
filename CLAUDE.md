@@ -75,7 +75,8 @@ younglabor/
 │   ├── helpers.php         # Admin utility functions
 │   └── api/                # committee-action.php, contact-action.php, stats-data.php
 ├── data/file/notices/      # Uploaded notice attachments
-├── assets/                 # css/, images/, js/
+├── assets/                 # css/, images/, js/, files/ (공개 내려받기 PDF)
+├── research/               # 정적 연구 소개 페이지 (예: semiconductor-textbook.php → /research/semiconductor-textbook)
 ├── admin-panel-migration.sql   # Admin panel DB migration
 └── DEPLOYMENT.md           # Webhook deployment guide
 ```
@@ -130,7 +131,15 @@ GitHub Actions (`.github/workflows/deploy.yml`) → `main` push → HMAC-signed 
 - Status: `gh run list --limit 5`; re-run: `gh run rerun <run-id>`
 - **Prune sync (opt-in)**: set `DEPLOY_PRUNE_REMOVED=true` in server `.env` to also delete files on production that were removed from git. Always protects the exclude list above plus anything matching the deployed `.gitignore` (e.g. `data/file/notices/*` user uploads). Defaults to `false` — review `api/deploy.php`'s prune block before enabling on a live server.
 - **DB migration**: production has no PHP CLI and code deploy never touches the DB. Run the manual **Migrate Cafe24 DB** workflow (`.github/workflows/migrate.yml`): `status` is read-only, `apply` runs `migrateRenewal()` + `seedRenewal()` (idempotent; back up the DB first). `gh workflow run migrate.yml -f mode=status`. Deploy and migrate share a server-side `flock` on `deploy.log`; a request that arrives while another runs gets 409.
+- **Public PDFs**: `.gitignore` ignores `*.pdf` except `assets/files/*.pdf`. Deploy copies the GitHub ZIP, so a PDF meant for download must live in `assets/files/` (and be committed) or it never reaches production. Link it with `assetUrl()`.
 - **Server `.env`** is never deployed — theme colors (`THEME_*`) and other config must be edited on the server directly.
+
+## Static Research Pages
+
+Some content is hard-coded instead of DB-managed (`content_posts`):
+
+- `research/semiconductor-textbook.php` — 『반도체고등학교 노동안전교과서 제작을 위한 기초연구보고서』(2026.11) 소개. Copy (stats, findings, 15장 목차) lives in PHP arrays at the top of the file; PDF is `assets/files/semiconductor-textbook-basic-research-2026.pdf` (1104판). Linked from the home page (`report-feature` block after '네 가지 방식') and the top of `resources/index.php`. Styles: `.report-*` at the end of `assets/css/style.css`. Test: `tests/research-report-page.test.php`.
+- To replace the report, overwrite the PDF at the same path (`assetUrl()` cache-busts by mtime) and update the copy if numbers change.
 
 ## External APIs
 
