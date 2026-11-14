@@ -817,3 +817,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .session-content{display:flex;align-items:flex-start;gap:1.5rem;min-width:0}.session-portrait{width:112px;height:112px;object-fit:cover;flex-shrink:0;border-radius:50%}.session-description{min-width:0;overflow-wrap:anywhere}@media(max-width:700px){.session-content{gap:1rem}.session-portrait{width:80px;height:80px}}
 
 .footer-brand{width:fit-content;max-width:100%;text-align:center}
+
+/* --------------------------------------------------------------------------
+   연구 보고서 소개 (research/semiconductor-textbook.php) · 홈·자료실 진입 카드
+   -------------------------------------------------------------------------- */
+.report-lead { max-width: 52rem; font-size: clamp(1rem, 1.6vw, 1.15rem) !important; line-height: 1.85; color: var(--color-ink) !important; }
+.report-header .hero-actions { margin-top: 2.5rem; }
+.report-prose p:not(.statement) { line-height: 1.9; margin-bottom: 1rem; }
+.report-prose .plain-list { margin-top: 2rem; }
+.report-prose .plain-list li { line-height: 1.8; }
+.report-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: var(--hairline); border-left: var(--hairline); }
+.report-stat { padding: clamp(1.5rem, 3vw, 2.25rem); border-right: var(--hairline); border-bottom: var(--hairline); min-width: 0; }
+.report-stat:first-child { background: var(--color-lime); }
+.report-stat strong { display: block; font-size: clamp(2.75rem, 5.5vw, 4.5rem); line-height: 1; letter-spacing: -.05em; font-weight: 800; margin-bottom: 1.5rem; }
+.report-stat p { font-size: .95rem; line-height: 1.75; }
+.report-findings { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: var(--hairline); border-left: var(--hairline); }
+.report-findings li { padding: clamp(1.5rem, 3vw, 2.25rem); border-right: var(--hairline); border-bottom: var(--hairline); min-width: 0; }
+.report-number { font-size: .9rem; font-weight: 700; color: var(--color-purple); }
+.report-findings h3 { font-size: 1.45rem; letter-spacing: -.04em; line-height: 1.4; margin: 1.25rem 0 .9rem; }
+.report-findings p { font-size: .95rem; line-height: 1.85; }
+.report-note { margin-top: 1.5rem; line-height: 1.9; color: var(--color-gray); }
+.report-chapters { list-style: none; border-top: var(--hairline); }
+.report-chapters li { display: grid; grid-template-columns: 4.5rem 1fr; gap: 1rem; padding: .95rem 0; border-bottom: var(--hairline); line-height: 1.6; }
+.report-chapters span { font-size: .85rem; color: var(--color-gray); padding-top: .1rem; }
+.report-download { background: var(--color-lime); border-top: var(--hairline); }
+.report-download-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 4rem; }
+.report-download h2 { font-size: clamp(1.8rem, 3.2vw, 2.8rem); line-height: 1.35; letter-spacing: -.05em; margin-bottom: 1.4rem; }
+.report-download p { line-height: 1.9; margin-bottom: 1.8rem; }
+.report-download .report-contact { margin: 2rem 0 0; font-size: .95rem; }
+.report-download a:not(.btn-cta) { color: var(--color-ink); text-underline-offset: 4px; }
+.report-feature { display: grid; grid-template-columns: 1.6fr 1fr; gap: 3rem; align-items: end; padding: clamp(1.75rem, 4vw, 3rem); border: var(--hairline); background: var(--color-lime); }
+.report-feature h2, .report-feature h3 { font-size: clamp(1.6rem, 3vw, 2.5rem); line-height: 1.35; letter-spacing: -.05em; margin: .5rem 0 1rem; }
+.report-feature h2 a, .report-feature h3 a { color: inherit; text-decoration: none; }
+.report-feature p:not(.eyebrow) { line-height: 1.85; }
+.report-feature .eyebrow { color: var(--color-ink); margin-bottom: 0; }
+.report-feature-actions { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+.resources-feature { margin-bottom: 3rem; }
+@media (max-width: 1100px) { .report-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .report-findings { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .report-stats, .report-findings, .report-download-layout, .report-feature { grid-template-columns: 1fr; } .report-download-layout, .report-feature { gap: 2rem; } .report-chapters li { grid-template-columns: 3.75rem 1fr; } }
